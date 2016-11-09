@@ -1,0 +1,1790 @@
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 1
+
+
+   1              		.file	"framework.c"
+   2              		.text
+   3              	.Ltext0:
+   4              		.cfi_sections	.debug_frame
+   5              		.align	2
+   6              		.type	exceptionHandlerIrq, %function
+   7              	exceptionHandlerIrq:
+   8              	.LFB5:
+   9              		.file 1 "framework.c"
+   1:framework.c   **** /******************************************************************************
+   2:framework.c   ****  *
+   3:framework.c   ****  * Copyright:
+   4:framework.c   ****  *    (C) 2000 - 2005 Embedded Artists AB
+   5:framework.c   ****  *
+   6:framework.c   ****  * Description:
+   7:framework.c   ****  *    Framework for ARM7 processor
+   8:framework.c   ****  *
+   9:framework.c   ****  *****************************************************************************/
+  10:framework.c   **** 
+  11:framework.c   **** /******************************************************************************
+  12:framework.c   ****  * Includes
+  13:framework.c   ****  *****************************************************************************/
+  14:framework.c   **** #include "lpc2xxx.h"                            /* LPC2xxx definitions */
+  15:framework.c   **** #include "config.h"
+  16:framework.c   **** #include "framework.h"
+  17:framework.c   **** #include "consol.h"
+  18:framework.c   **** #ifdef __IAR_SYSTEMS_ICC__
+  19:framework.c   **** #include <intrinsic.h>
+  20:framework.c   **** #endif
+  21:framework.c   **** 
+  22:framework.c   **** /******************************************************************************
+  23:framework.c   ****  * Defines, macros, and typedefs
+  24:framework.c   ****  *****************************************************************************/
+  25:framework.c   **** 
+  26:framework.c   **** 
+  27:framework.c   **** /******************************************************************************
+  28:framework.c   ****  * External variables
+  29:framework.c   ****  *****************************************************************************/
+  30:framework.c   **** #ifndef __IAR_SYSTEMS_ICC__
+  31:framework.c   **** extern char end asm ("end");  //the symbol "end" is defined by the linker script
+  32:framework.c   **** 
+  33:framework.c   **** /******************************************************************************
+  34:framework.c   ****  * Public variables
+  35:framework.c   ****  *****************************************************************************/
+  36:framework.c   **** unsigned char *pHeapStart;
+  37:framework.c   **** unsigned char *pHeapEnd;
+  38:framework.c   **** #endif
+  39:framework.c   **** 
+  40:framework.c   **** 
+  41:framework.c   **** /******************************************************************************
+  42:framework.c   ****  * External functions
+  43:framework.c   ****  *****************************************************************************/
+  44:framework.c   **** 
+  45:framework.c   **** 
+  46:framework.c   **** /******************************************************************************
+  47:framework.c   ****  * Public functions
+  48:framework.c   ****  *****************************************************************************/
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 2
+
+
+  49:framework.c   **** void lowLevelInit(void);
+  50:framework.c   **** void eaInit(void);
+  51:framework.c   **** void exceptionHandlerInit(void);
+  52:framework.c   **** 
+  53:framework.c   **** /******************************************************************************
+  54:framework.c   ****  * Implementation of local functions
+  55:framework.c   ****  *****************************************************************************/
+  56:framework.c   **** 
+  57:framework.c   **** /*****************************************************************************
+  58:framework.c   ****  *
+  59:framework.c   ****  * Description:
+  60:framework.c   ****  *    Default exception handler for undefined instruction.
+  61:framework.c   ****  *    Prints information and halt. Observe that code execture in exception
+  62:framework.c   ****  *    mode (as opposed to supervisor mode, which is the normal execution mode).
+  63:framework.c   ****  *
+  64:framework.c   ****  ****************************************************************************/
+  65:framework.c   **** #ifdef __IAR_SYSTEMS_ICC__
+  66:framework.c   **** __arm
+  67:framework.c   **** #endif
+  68:framework.c   **** static void
+  69:framework.c   **** exceptionHandlerUndef(void)
+  70:framework.c   **** {
+  71:framework.c   **** #ifdef __IAR_SYSTEMS_ICC__
+  72:framework.c   ****   register unsigned int programCounter;
+  73:framework.c   ****   asm("  mov r0, lr");
+  74:framework.c   **** #else
+  75:framework.c   ****   register unsigned int programCounter asm ("lr");
+  76:framework.c   **** #endif
+  77:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x04;
+  78:framework.c   **** 
+  79:framework.c   ****   consolSendString("Undefined instruction exception !!!\nAddress: 0x");
+  80:framework.c   ****   consolSendNumber(16, 8, 0, '0', value); 
+  81:framework.c   ****   while(1)
+  82:framework.c   ****     ;
+  83:framework.c   **** }
+  84:framework.c   **** 
+  85:framework.c   **** /*****************************************************************************
+  86:framework.c   ****  *
+  87:framework.c   ****  * Description:
+  88:framework.c   ****  *    Default exception handler for software interrupt.
+  89:framework.c   ****  *    Prints information and halt. Observe that code execture in exception
+  90:framework.c   ****  *    mode (as opposed to supervisor mode, which is the normal execution mode).
+  91:framework.c   ****  *
+  92:framework.c   ****  ****************************************************************************/
+  93:framework.c   **** #ifdef __IAR_SYSTEMS_ICC__
+  94:framework.c   **** __arm
+  95:framework.c   **** #endif
+  96:framework.c   **** static void
+  97:framework.c   **** exceptionHandlerSwi(void)
+  98:framework.c   **** {
+  99:framework.c   **** #ifdef __IAR_SYSTEMS_ICC__
+ 100:framework.c   ****   register unsigned int programCounter;
+ 101:framework.c   ****   asm("  mov r0, lr");
+ 102:framework.c   **** #else
+ 103:framework.c   ****   register unsigned int programCounter asm ("lr");
+ 104:framework.c   **** #endif
+ 105:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x04;
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 3
+
+
+ 106:framework.c   **** 
+ 107:framework.c   ****   consolSendString("SWI exception !!!\nAddress: 0x");
+ 108:framework.c   ****   consolSendNumber(16, 8, 0, '0', value); 
+ 109:framework.c   ****   while(1)
+ 110:framework.c   ****     ;
+ 111:framework.c   **** }
+ 112:framework.c   **** 
+ 113:framework.c   **** /*****************************************************************************
+ 114:framework.c   ****  *
+ 115:framework.c   ****  * Description:
+ 116:framework.c   ****  *    Default exception handler for invalid program fetch.
+ 117:framework.c   ****  *    Prints information and halt. Observe that code execture in exception
+ 118:framework.c   ****  *    mode (as opposed to supervisor mode, which is the normal execution mode).
+ 119:framework.c   ****  *
+ 120:framework.c   ****  ****************************************************************************/
+ 121:framework.c   **** #ifdef __IAR_SYSTEMS_ICC__
+ 122:framework.c   **** __arm
+ 123:framework.c   **** #endif
+ 124:framework.c   **** static void
+ 125:framework.c   **** exceptionHandlerPabort()
+ 126:framework.c   **** {
+ 127:framework.c   **** #ifdef __IAR_SYSTEMS_ICC__
+ 128:framework.c   ****   register unsigned int programCounter;
+ 129:framework.c   ****   asm("  mov r0, lr");
+ 130:framework.c   **** #else
+ 131:framework.c   ****   register unsigned int programCounter asm ("lr");
+ 132:framework.c   **** #endif
+ 133:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x04;
+ 134:framework.c   **** 
+ 135:framework.c   ****   consolSendString("Pabort exception !!!\nAddress: 0x");
+ 136:framework.c   ****   consolSendNumber(16, 8, 0, '0', value); 
+ 137:framework.c   ****   while(1)
+ 138:framework.c   ****     ;
+ 139:framework.c   **** }
+ 140:framework.c   **** 
+ 141:framework.c   **** /*****************************************************************************
+ 142:framework.c   ****  *
+ 143:framework.c   ****  * Description:
+ 144:framework.c   ****  *    Default exception handler for invalid data access.
+ 145:framework.c   ****  *    Prints information and halt. Observe that code execture in exception
+ 146:framework.c   ****  *    mode (as opposed to supervisor mode, which is the normal execution mode).
+ 147:framework.c   ****  *
+ 148:framework.c   ****  ****************************************************************************/
+ 149:framework.c   **** #ifdef __IAR_SYSTEMS_ICC__
+ 150:framework.c   **** __arm
+ 151:framework.c   **** #endif
+ 152:framework.c   **** static void
+ 153:framework.c   **** exceptionHandlerDabort(void)
+ 154:framework.c   **** {
+ 155:framework.c   **** #ifdef __IAR_SYSTEMS_ICC__
+ 156:framework.c   ****   register unsigned int programCounter;
+ 157:framework.c   ****   asm("  mov r0, lr");
+ 158:framework.c   **** #else
+ 159:framework.c   ****   register unsigned int programCounter asm ("lr");
+ 160:framework.c   **** #endif
+ 161:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x08;
+ 162:framework.c   **** 
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 4
+
+
+ 163:framework.c   ****   consolSendString("Dabort exception !!!\nAddress: 0x");
+ 164:framework.c   ****   consolSendNumber(16, 8, 0, '0', value); 
+ 165:framework.c   ****   while(1)
+ 166:framework.c   ****     ;
+ 167:framework.c   **** }
+ 168:framework.c   **** 
+ 169:framework.c   **** /*****************************************************************************
+ 170:framework.c   ****  *
+ 171:framework.c   ****  * Description:
+ 172:framework.c   ****  *    Default exception handler for fast interrupts.
+ 173:framework.c   ****  *    Prints information and halt. Observe that code execture in exception
+ 174:framework.c   ****  *    mode (as opposed to supervisor mode, which is the normal execution mode).
+ 175:framework.c   ****  *
+ 176:framework.c   ****  ****************************************************************************/
+ 177:framework.c   **** #ifdef __IAR_SYSTEMS_ICC__
+ 178:framework.c   **** __arm
+ 179:framework.c   **** #endif
+ 180:framework.c   **** static void
+ 181:framework.c   **** exceptionHandlerFiq(void)
+ 182:framework.c   **** {
+ 183:framework.c   **** #ifdef __IAR_SYSTEMS_ICC__
+ 184:framework.c   ****   register unsigned int programCounter;
+ 185:framework.c   ****   asm("  mov r0, lr");
+ 186:framework.c   **** #else
+ 187:framework.c   ****   register unsigned int programCounter asm ("lr");
+ 188:framework.c   **** #endif
+ 189:framework.c   **** 
+ 190:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x04;
+ 191:framework.c   **** 
+ 192:framework.c   ****   consolSendString("FIQ exception !!!\nAddress: 0x");
+ 193:framework.c   ****   consolSendNumber(16, 8, 0, '0', value); 
+ 194:framework.c   ****   while(1)
+ 195:framework.c   ****     ;
+ 196:framework.c   **** }
+ 197:framework.c   **** 
+ 198:framework.c   **** #if (IRQ_HANDLER == 0)
+ 199:framework.c   **** /*****************************************************************************
+ 200:framework.c   ****  *
+ 201:framework.c   ****  * Description:
+ 202:framework.c   ****  *    Default exception handler for normal interrupts. This handler should
+ 203:framework.c   ****  *    normally never be used.
+ 204:framework.c   ****  *    Prints information and halt. Observe that code execture in exception
+ 205:framework.c   ****  *    mode (as opposed to supervisor mode, which is the normal execution mode).
+ 206:framework.c   ****  *
+ 207:framework.c   ****  ****************************************************************************/
+ 208:framework.c   **** #ifdef __IAR_SYSTEMS_ICC__
+ 209:framework.c   **** __arm
+ 210:framework.c   **** #endif
+ 211:framework.c   **** static void
+ 212:framework.c   **** exceptionHandlerIrq(void)
+ 213:framework.c   **** {
+  10              		.loc 1 213 0
+  11              		.cfi_startproc
+  12              		@ Function supports interworking.
+  13              		@ args = 0, pretend = 0, frame = 0
+  14              		@ frame_needed = 0, uses_anonymous_args = 0
+  15 0000 11402DE9 		stmfd	sp!, {r0, r4, lr}
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 5
+
+
+  16              	.LCFI0:
+  17              		.cfi_def_cfa_offset 12
+  18              		.cfi_offset 14, -4
+  19              		.cfi_offset 4, -8
+  20              		.cfi_offset 0, -12
+  21              	.LVL0:
+ 214:framework.c   **** #ifdef __IAR_SYSTEMS_ICC__
+ 215:framework.c   ****   register unsigned int programCounter;
+ 216:framework.c   ****   asm("  mov r0, lr");
+ 217:framework.c   **** #else
+ 218:framework.c   ****   register unsigned int programCounter asm ("lr");
+ 219:framework.c   **** #endif
+ 220:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x04;
+  22              		.loc 1 220 0
+  23 0004 0E40A0E1 		mov	r4, lr
+  24              	.LVL1:
+ 221:framework.c   **** 
+ 222:framework.c   ****   consolSendString("IRQ exception !!!\nAddress: 0x");
+  25              		.loc 1 222 0
+  26 0008 20009FE5 		ldr	r0, .L3
+  27 000c FEFFFFEB 		bl	consolSendString
+  28              	.LVL2:
+ 220:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x04;
+  29              		.loc 1 220 0
+  30 0010 044044E2 		sub	r4, r4, #4
+  31              	.LVL3:
+ 223:framework.c   ****   consolSendNumber(16, 8, 0, '0', value); 
+  32              		.loc 1 223 0
+  33 0014 1000A0E3 		mov	r0, #16
+  34 0018 0810A0E3 		mov	r1, #8
+  35 001c 0020A0E3 		mov	r2, #0
+  36 0020 3030A0E3 		mov	r3, #48
+  37 0024 00408DE5 		str	r4, [sp, #0]
+  38 0028 FEFFFFEB 		bl	consolSendNumber
+  39              	.L2:
+  40 002c FEFFFFEA 		b	.L2
+  41              	.L4:
+  42              		.align	2
+  43              	.L3:
+  44 0030 00000000 		.word	.LC0
+  45              		.cfi_endproc
+  46              	.LFE5:
+  47              		.size	exceptionHandlerIrq, .-exceptionHandlerIrq
+  48              		.align	2
+  49              		.type	exceptionHandlerFiq, %function
+  50              	exceptionHandlerFiq:
+  51              	.LFB4:
+ 182:framework.c   **** {
+  52              		.loc 1 182 0
+  53              		.cfi_startproc
+  54              		@ Function supports interworking.
+  55              		@ args = 0, pretend = 0, frame = 0
+  56              		@ frame_needed = 0, uses_anonymous_args = 0
+  57 0034 11402DE9 		stmfd	sp!, {r0, r4, lr}
+  58              	.LCFI1:
+  59              		.cfi_def_cfa_offset 12
+  60              		.cfi_offset 14, -4
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 6
+
+
+  61              		.cfi_offset 4, -8
+  62              		.cfi_offset 0, -12
+  63              	.LVL4:
+ 190:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x04;
+  64              		.loc 1 190 0
+  65 0038 0E40A0E1 		mov	r4, lr
+  66              	.LVL5:
+ 192:framework.c   ****   consolSendString("FIQ exception !!!\nAddress: 0x");
+  67              		.loc 1 192 0
+  68 003c 20009FE5 		ldr	r0, .L7
+  69 0040 FEFFFFEB 		bl	consolSendString
+  70              	.LVL6:
+ 190:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x04;
+  71              		.loc 1 190 0
+  72 0044 044044E2 		sub	r4, r4, #4
+  73              	.LVL7:
+ 193:framework.c   ****   consolSendNumber(16, 8, 0, '0', value); 
+  74              		.loc 1 193 0
+  75 0048 1000A0E3 		mov	r0, #16
+  76 004c 0810A0E3 		mov	r1, #8
+  77 0050 0020A0E3 		mov	r2, #0
+  78 0054 3030A0E3 		mov	r3, #48
+  79 0058 00408DE5 		str	r4, [sp, #0]
+  80 005c FEFFFFEB 		bl	consolSendNumber
+  81              	.L6:
+  82 0060 FEFFFFEA 		b	.L6
+  83              	.L8:
+  84              		.align	2
+  85              	.L7:
+  86 0064 1E000000 		.word	.LC1
+  87              		.cfi_endproc
+  88              	.LFE4:
+  89              		.size	exceptionHandlerFiq, .-exceptionHandlerFiq
+  90              		.align	2
+  91              		.type	exceptionHandlerDabort, %function
+  92              	exceptionHandlerDabort:
+  93              	.LFB3:
+ 154:framework.c   **** {
+  94              		.loc 1 154 0
+  95              		.cfi_startproc
+  96              		@ Function supports interworking.
+  97              		@ args = 0, pretend = 0, frame = 0
+  98              		@ frame_needed = 0, uses_anonymous_args = 0
+  99 0068 11402DE9 		stmfd	sp!, {r0, r4, lr}
+ 100              	.LCFI2:
+ 101              		.cfi_def_cfa_offset 12
+ 102              		.cfi_offset 14, -4
+ 103              		.cfi_offset 4, -8
+ 104              		.cfi_offset 0, -12
+ 105              	.LVL8:
+ 161:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x08;
+ 106              		.loc 1 161 0
+ 107 006c 0E40A0E1 		mov	r4, lr
+ 108              	.LVL9:
+ 163:framework.c   ****   consolSendString("Dabort exception !!!\nAddress: 0x");
+ 109              		.loc 1 163 0
+ 110 0070 20009FE5 		ldr	r0, .L11
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 7
+
+
+ 111 0074 FEFFFFEB 		bl	consolSendString
+ 112              	.LVL10:
+ 161:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x08;
+ 113              		.loc 1 161 0
+ 114 0078 084044E2 		sub	r4, r4, #8
+ 115              	.LVL11:
+ 164:framework.c   ****   consolSendNumber(16, 8, 0, '0', value); 
+ 116              		.loc 1 164 0
+ 117 007c 1000A0E3 		mov	r0, #16
+ 118 0080 0810A0E3 		mov	r1, #8
+ 119 0084 0020A0E3 		mov	r2, #0
+ 120 0088 3030A0E3 		mov	r3, #48
+ 121 008c 00408DE5 		str	r4, [sp, #0]
+ 122 0090 FEFFFFEB 		bl	consolSendNumber
+ 123              	.L10:
+ 124 0094 FEFFFFEA 		b	.L10
+ 125              	.L12:
+ 126              		.align	2
+ 127              	.L11:
+ 128 0098 3C000000 		.word	.LC2
+ 129              		.cfi_endproc
+ 130              	.LFE3:
+ 131              		.size	exceptionHandlerDabort, .-exceptionHandlerDabort
+ 132              		.align	2
+ 133              		.type	exceptionHandlerPabort, %function
+ 134              	exceptionHandlerPabort:
+ 135              	.LFB2:
+ 126:framework.c   **** {
+ 136              		.loc 1 126 0
+ 137              		.cfi_startproc
+ 138              		@ Function supports interworking.
+ 139              		@ args = 0, pretend = 0, frame = 0
+ 140              		@ frame_needed = 0, uses_anonymous_args = 0
+ 141 009c 11402DE9 		stmfd	sp!, {r0, r4, lr}
+ 142              	.LCFI3:
+ 143              		.cfi_def_cfa_offset 12
+ 144              		.cfi_offset 14, -4
+ 145              		.cfi_offset 4, -8
+ 146              		.cfi_offset 0, -12
+ 147              	.LVL12:
+ 133:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x04;
+ 148              		.loc 1 133 0
+ 149 00a0 0E40A0E1 		mov	r4, lr
+ 150              	.LVL13:
+ 135:framework.c   ****   consolSendString("Pabort exception !!!\nAddress: 0x");
+ 151              		.loc 1 135 0
+ 152 00a4 20009FE5 		ldr	r0, .L15
+ 153 00a8 FEFFFFEB 		bl	consolSendString
+ 154              	.LVL14:
+ 133:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x04;
+ 155              		.loc 1 133 0
+ 156 00ac 044044E2 		sub	r4, r4, #4
+ 157              	.LVL15:
+ 136:framework.c   ****   consolSendNumber(16, 8, 0, '0', value); 
+ 158              		.loc 1 136 0
+ 159 00b0 1000A0E3 		mov	r0, #16
+ 160 00b4 0810A0E3 		mov	r1, #8
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 8
+
+
+ 161 00b8 0020A0E3 		mov	r2, #0
+ 162 00bc 3030A0E3 		mov	r3, #48
+ 163 00c0 00408DE5 		str	r4, [sp, #0]
+ 164 00c4 FEFFFFEB 		bl	consolSendNumber
+ 165              	.L14:
+ 166 00c8 FEFFFFEA 		b	.L14
+ 167              	.L16:
+ 168              		.align	2
+ 169              	.L15:
+ 170 00cc 5D000000 		.word	.LC3
+ 171              		.cfi_endproc
+ 172              	.LFE2:
+ 173              		.size	exceptionHandlerPabort, .-exceptionHandlerPabort
+ 174              		.align	2
+ 175              		.type	exceptionHandlerSwi, %function
+ 176              	exceptionHandlerSwi:
+ 177              	.LFB1:
+  98:framework.c   **** {
+ 178              		.loc 1 98 0
+ 179              		.cfi_startproc
+ 180              		@ Function supports interworking.
+ 181              		@ args = 0, pretend = 0, frame = 0
+ 182              		@ frame_needed = 0, uses_anonymous_args = 0
+ 183 00d0 11402DE9 		stmfd	sp!, {r0, r4, lr}
+ 184              	.LCFI4:
+ 185              		.cfi_def_cfa_offset 12
+ 186              		.cfi_offset 14, -4
+ 187              		.cfi_offset 4, -8
+ 188              		.cfi_offset 0, -12
+ 189              	.LVL16:
+ 105:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x04;
+ 190              		.loc 1 105 0
+ 191 00d4 0E40A0E1 		mov	r4, lr
+ 192              	.LVL17:
+ 107:framework.c   ****   consolSendString("SWI exception !!!\nAddress: 0x");
+ 193              		.loc 1 107 0
+ 194 00d8 20009FE5 		ldr	r0, .L19
+ 195 00dc FEFFFFEB 		bl	consolSendString
+ 196              	.LVL18:
+ 105:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x04;
+ 197              		.loc 1 105 0
+ 198 00e0 044044E2 		sub	r4, r4, #4
+ 199              	.LVL19:
+ 108:framework.c   ****   consolSendNumber(16, 8, 0, '0', value); 
+ 200              		.loc 1 108 0
+ 201 00e4 1000A0E3 		mov	r0, #16
+ 202 00e8 0810A0E3 		mov	r1, #8
+ 203 00ec 0020A0E3 		mov	r2, #0
+ 204 00f0 3030A0E3 		mov	r3, #48
+ 205 00f4 00408DE5 		str	r4, [sp, #0]
+ 206 00f8 FEFFFFEB 		bl	consolSendNumber
+ 207              	.L18:
+ 208 00fc FEFFFFEA 		b	.L18
+ 209              	.L20:
+ 210              		.align	2
+ 211              	.L19:
+ 212 0100 7E000000 		.word	.LC4
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 9
+
+
+ 213              		.cfi_endproc
+ 214              	.LFE1:
+ 215              		.size	exceptionHandlerSwi, .-exceptionHandlerSwi
+ 216              		.align	2
+ 217              		.type	exceptionHandlerUndef, %function
+ 218              	exceptionHandlerUndef:
+ 219              	.LFB0:
+  70:framework.c   **** {
+ 220              		.loc 1 70 0
+ 221              		.cfi_startproc
+ 222              		@ Function supports interworking.
+ 223              		@ args = 0, pretend = 0, frame = 0
+ 224              		@ frame_needed = 0, uses_anonymous_args = 0
+ 225 0104 11402DE9 		stmfd	sp!, {r0, r4, lr}
+ 226              	.LCFI5:
+ 227              		.cfi_def_cfa_offset 12
+ 228              		.cfi_offset 14, -4
+ 229              		.cfi_offset 4, -8
+ 230              		.cfi_offset 0, -12
+ 231              	.LVL20:
+  77:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x04;
+ 232              		.loc 1 77 0
+ 233 0108 0E40A0E1 		mov	r4, lr
+ 234              	.LVL21:
+  79:framework.c   ****   consolSendString("Undefined instruction exception !!!\nAddress: 0x");
+ 235              		.loc 1 79 0
+ 236 010c 20009FE5 		ldr	r0, .L23
+ 237 0110 FEFFFFEB 		bl	consolSendString
+ 238              	.LVL22:
+  77:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x04;
+ 239              		.loc 1 77 0
+ 240 0114 044044E2 		sub	r4, r4, #4
+ 241              	.LVL23:
+  80:framework.c   ****   consolSendNumber(16, 8, 0, '0', value); 
+ 242              		.loc 1 80 0
+ 243 0118 1000A0E3 		mov	r0, #16
+ 244 011c 0810A0E3 		mov	r1, #8
+ 245 0120 0020A0E3 		mov	r2, #0
+ 246 0124 3030A0E3 		mov	r3, #48
+ 247 0128 00408DE5 		str	r4, [sp, #0]
+ 248 012c FEFFFFEB 		bl	consolSendNumber
+ 249              	.L22:
+ 250 0130 FEFFFFEA 		b	.L22
+ 251              	.L24:
+ 252              		.align	2
+ 253              	.L23:
+ 254 0134 9C000000 		.word	.LC5
+ 255              		.cfi_endproc
+ 256              	.LFE0:
+ 257              		.size	exceptionHandlerUndef, .-exceptionHandlerUndef
+ 258              		.align	2
+ 259              		.global	exceptionHandlerInit
+ 260              		.type	exceptionHandlerInit, %function
+ 261              	exceptionHandlerInit:
+ 262              	.LFB6:
+ 224:framework.c   ****   while(1)
+ 225:framework.c   ****     ;
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 10
+
+
+ 226:framework.c   **** }
+ 227:framework.c   **** #endif
+ 228:framework.c   **** 
+ 229:framework.c   **** /******************************************************************************
+ 230:framework.c   ****  * Implementation of public functions
+ 231:framework.c   ****  *****************************************************************************/
+ 232:framework.c   **** 
+ 233:framework.c   **** /*****************************************************************************
+ 234:framework.c   ****  *
+ 235:framework.c   ****  * Description:
+ 236:framework.c   ****  *    Connect all default exception handlers.
+ 237:framework.c   ****  *    The application can overwrite these handlers with new ones.
+ 238:framework.c   ****  *
+ 239:framework.c   ****  ****************************************************************************/
+ 240:framework.c   **** void
+ 241:framework.c   **** exceptionHandlerInit(void)
+ 242:framework.c   **** {
+ 263              		.loc 1 242 0
+ 264              		.cfi_startproc
+ 265              		@ Function supports interworking.
+ 266              		@ args = 0, pretend = 0, frame = 0
+ 267              		@ frame_needed = 0, uses_anonymous_args = 0
+ 268              		@ link register save eliminated.
+ 243:framework.c   ****   pISR_UNDEF  = (unsigned int)exceptionHandlerUndef;
+ 269              		.loc 1 243 0
+ 270 0138 48209FE5 		ldr	r2, .L26
+ 271 013c 0131A0E3 		mov	r3, #1073741824
+ 272 0140 242083E5 		str	r2, [r3, #36]
+ 244:framework.c   ****   pISR_SWI    = (unsigned int)exceptionHandlerSwi;
+ 273              		.loc 1 244 0
+ 274 0144 40209FE5 		ldr	r2, .L26+4
+ 275 0148 282083E5 		str	r2, [r3, #40]
+ 245:framework.c   ****   pISR_PABORT = (unsigned int)exceptionHandlerPabort;
+ 276              		.loc 1 245 0
+ 277 014c 3C209FE5 		ldr	r2, .L26+8
+ 278 0150 2C2083E5 		str	r2, [r3, #44]
+ 246:framework.c   ****   pISR_DABORT = (unsigned int)exceptionHandlerDabort;
+ 279              		.loc 1 246 0
+ 280 0154 38209FE5 		ldr	r2, .L26+12
+ 281 0158 302083E5 		str	r2, [r3, #48]
+ 247:framework.c   ****   pISR_FIQ    = (unsigned int)exceptionHandlerFiq;
+ 282              		.loc 1 247 0
+ 283 015c 34209FE5 		ldr	r2, .L26+16
+ 284 0160 382083E5 		str	r2, [r3, #56]
+ 248:framework.c   **** 
+ 249:framework.c   **** #if (IRQ_HANDLER == 0)
+ 250:framework.c   ****   pISR_IRQ    = (unsigned int)exceptionHandlerIrq;
+ 285              		.loc 1 250 0
+ 286 0164 30209FE5 		ldr	r2, .L26+20
+ 287 0168 342083E5 		str	r2, [r3, #52]
+ 251:framework.c   **** #endif
+ 252:framework.c   **** 
+ 253:framework.c   **** #ifndef __IAR_SYSTEMS_ICC__
+ 254:framework.c   ****   //set heap limits
+ 255:framework.c   ****   pHeapStart = &end;
+ 288              		.loc 1 255 0
+ 289 016c 2C209FE5 		ldr	r2, .L26+24
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 11
+
+
+ 290 0170 2C309FE5 		ldr	r3, .L26+28
+ 291 0174 002083E5 		str	r2, [r3, #0]
+ 256:framework.c   ****   pHeapEnd   = (unsigned char*)((STK_SADDR - 1) & 0xfffffffc);
+ 292              		.loc 1 256 0
+ 293 0178 28209FE5 		ldr	r2, .L26+32
+ 294 017c 28309FE5 		ldr	r3, .L26+36
+ 295 0180 002083E5 		str	r2, [r3, #0]
+ 257:framework.c   **** #endif
+ 258:framework.c   **** }
+ 296              		.loc 1 258 0
+ 297 0184 1EFF2FE1 		bx	lr
+ 298              	.L27:
+ 299              		.align	2
+ 300              	.L26:
+ 301 0188 00000000 		.word	exceptionHandlerUndef
+ 302 018c 00000000 		.word	exceptionHandlerSwi
+ 303 0190 00000000 		.word	exceptionHandlerPabort
+ 304 0194 00000000 		.word	exceptionHandlerDabort
+ 305 0198 00000000 		.word	exceptionHandlerFiq
+ 306 019c 00000000 		.word	exceptionHandlerIrq
+ 307 01a0 00000000 		.word	end
+ 308 01a4 00000000 		.word	pHeapStart
+ 309 01a8 A4340040 		.word	1073755300
+ 310 01ac 00000000 		.word	pHeapEnd
+ 311              		.cfi_endproc
+ 312              	.LFE6:
+ 313              		.size	exceptionHandlerInit, .-exceptionHandlerInit
+ 314              		.align	2
+ 315              		.global	lowLevelInit
+ 316              		.type	lowLevelInit, %function
+ 317              	lowLevelInit:
+ 318              	.LFB7:
+ 259:framework.c   **** 
+ 260:framework.c   **** /*****************************************************************************
+ 261:framework.c   ****  *
+ 262:framework.c   ****  * Description:
+ 263:framework.c   ****  *    Initialize system functions and GPIO
+ 264:framework.c   ****  *
+ 265:framework.c   ****  ****************************************************************************/
+ 266:framework.c   **** void
+ 267:framework.c   **** lowLevelInit(void)
+ 268:framework.c   **** {
+ 319              		.loc 1 268 0
+ 320              		.cfi_startproc
+ 321              		@ Function supports interworking.
+ 322              		@ args = 0, pretend = 0, frame = 0
+ 323              		@ frame_needed = 0, uses_anonymous_args = 0
+ 324              		@ link register save eliminated.
+ 269:framework.c   ****   PINSEL0 = 0x00000000;  
+ 325              		.loc 1 269 0
+ 326 01b0 9C209FE5 		ldr	r2, .L29
+ 327 01b4 0030A0E3 		mov	r3, #0
+ 270:framework.c   ****   PINSEL1 = 0x00000000;  
+ 271:framework.c   **** 
+ 272:framework.c   ****   IOSET = 0x00000000;       //Initialize pins to high level
+ 328              		.loc 1 272 0
+ 329 01b8 98109FE5 		ldr	r1, .L29+4
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 12
+
+
+ 269:framework.c   ****   PINSEL0 = 0x00000000;  
+ 330              		.loc 1 269 0
+ 331 01bc 003082E5 		str	r3, [r2, #0]
+ 270:framework.c   ****   PINSEL1 = 0x00000000;  
+ 332              		.loc 1 270 0
+ 333 01c0 043082E5 		str	r3, [r2, #4]
+ 273:framework.c   ****   IOCLR = 0xffffffff;       //Initialize pins to low level
+ 334              		.loc 1 273 0
+ 335 01c4 0020E0E3 		mvn	r2, #0
+ 272:framework.c   ****   IOSET = 0x00000000;       //Initialize pins to high level
+ 336              		.loc 1 272 0
+ 337 01c8 043081E5 		str	r3, [r1, #4]
+ 274:framework.c   ****   IODIR = 0x00000000;       //Set pin direction
+ 275:framework.c   **** 
+ 276:framework.c   ****   //initialize the MAM (Memory Accelerator Module)
+ 277:framework.c   ****   MAMTIM = MAM_TIMING;       //number of CCLK to read from the FLASH
+ 338              		.loc 1 277 0
+ 339 01cc 0300A0E3 		mov	r0, #3
+ 273:framework.c   ****   IOCLR = 0xffffffff;       //Initialize pins to low level
+ 340              		.loc 1 273 0
+ 341 01d0 0C2081E5 		str	r2, [r1, #12]
+ 274:framework.c   ****   IODIR = 0x00000000;       //Set pin direction
+ 342              		.loc 1 274 0
+ 343 01d4 083081E5 		str	r3, [r1, #8]
+ 344              		.loc 1 277 0
+ 345 01d8 751981E2 		add	r1, r1, #1916928
+ 346 01dc 040081E5 		str	r0, [r1, #4]
+ 278:framework.c   ****   MAMCR  = MAM_SETTING;      //0=disabled, 1=partly enabled (enabled for code prefetch, but not for
+ 347              		.loc 1 278 0
+ 348 01e0 0200A0E3 		mov	r0, #2
+ 349 01e4 000081E5 		str	r0, [r1, #0]
+ 279:framework.c   **** 
+ 280:framework.c   ****   //initialize the exception vector mapping
+ 281:framework.c   ****   MAMMAP = MAM_MAP;
+ 350              		.loc 1 281 0
+ 351 01e8 0100A0E3 		mov	r0, #1
+ 352 01ec 400081E5 		str	r0, [r1, #64]
+ 282:framework.c   **** 
+ 283:framework.c   ****   //set the peripheral bus speed, PCLK = CCLK / PBSD
+ 284:framework.c   **** 	VPBDIV = PBSD;
+ 353              		.loc 1 284 0
+ 354 01f0 0400A0E3 		mov	r0, #4
+ 355 01f4 000181E5 		str	r0, [r1, #256]
+ 285:framework.c   **** 	
+ 286:framework.c   **** 	//initialize VIC
+ 287:framework.c   ****   VICIntEnClr    = 0xFFFFFFFF;           /* Disable ALL interrupts                             */
+ 356              		.loc 1 287 0
+ 357 01f8 EB2F02E5 		str	r2, [r2, #-4075]
+ 288:framework.c   ****   VICProtection  = 0;                    /* Setup interrupt controller                         */
+ 358              		.loc 1 288 0
+ 359 01fc DF3F02E5 		str	r3, [r2, #-4063]
+ 289:framework.c   ****   VICDefVectAddr = (unsigned int)0;      /* Direct unvectored IRQs to reset, i.e., address 0x0 */
+ 360              		.loc 1 289 0
+ 361 0200 CB3F02E5 		str	r3, [r2, #-4043]
+ 290:framework.c   **** 
+ 291:framework.c   ****   VICVectAddr0   = (unsigned int)0;      /* Set the vector address                             */
+ 362              		.loc 1 291 0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 13
+
+
+ 363 0204 FF3E02E5 		str	r3, [r2, #-3839]
+ 292:framework.c   ****   VICVectAddr1   = (unsigned int)0;      /* Set the vector address                             */
+ 364              		.loc 1 292 0
+ 365 0208 FB3E02E5 		str	r3, [r2, #-3835]
+ 293:framework.c   ****   VICVectAddr2   = (unsigned int)0;      /* Set the vector address                             */
+ 366              		.loc 1 293 0
+ 367 020c F73E02E5 		str	r3, [r2, #-3831]
+ 294:framework.c   ****   VICVectAddr3   = (unsigned int)0;      /* Set the vector address                             */
+ 368              		.loc 1 294 0
+ 369 0210 F33E02E5 		str	r3, [r2, #-3827]
+ 295:framework.c   ****   VICVectAddr4   = (unsigned int)0;      /* Set the vector address                             */
+ 370              		.loc 1 295 0
+ 371 0214 EF3E02E5 		str	r3, [r2, #-3823]
+ 296:framework.c   ****   VICVectAddr5   = (unsigned int)0;      /* Set the vector address                             */
+ 372              		.loc 1 296 0
+ 373 0218 EB3E02E5 		str	r3, [r2, #-3819]
+ 297:framework.c   ****   VICVectAddr6   = (unsigned int)0;      /* Set the vector address                             */
+ 374              		.loc 1 297 0
+ 375 021c E73E02E5 		str	r3, [r2, #-3815]
+ 298:framework.c   ****   VICVectAddr7   = (unsigned int)0;      /* Set the vector address                             */
+ 376              		.loc 1 298 0
+ 377 0220 E33E02E5 		str	r3, [r2, #-3811]
+ 299:framework.c   ****   VICVectAddr8   = (unsigned int)0;      /* Set the vector address                             */
+ 378              		.loc 1 299 0
+ 379 0224 DF3E02E5 		str	r3, [r2, #-3807]
+ 300:framework.c   ****   VICVectAddr9   = (unsigned int)0;      /* Set the vector address                             */
+ 380              		.loc 1 300 0
+ 381 0228 DB3E02E5 		str	r3, [r2, #-3803]
+ 301:framework.c   ****   VICVectAddr10  = (unsigned int)0;      /* Set the vector address                             */
+ 382              		.loc 1 301 0
+ 383 022c D73E02E5 		str	r3, [r2, #-3799]
+ 302:framework.c   ****   VICVectAddr11  = (unsigned int)0;      /* Set the vector address                             */
+ 384              		.loc 1 302 0
+ 385 0230 D33E02E5 		str	r3, [r2, #-3795]
+ 303:framework.c   ****   VICVectAddr12  = (unsigned int)0;      /* Set the vector address                             */
+ 386              		.loc 1 303 0
+ 387 0234 CF3E02E5 		str	r3, [r2, #-3791]
+ 304:framework.c   ****   VICVectAddr13  = (unsigned int)0;      /* Set the vector address                             */
+ 388              		.loc 1 304 0
+ 389 0238 CB3E02E5 		str	r3, [r2, #-3787]
+ 305:framework.c   ****   VICVectAddr14  = (unsigned int)0;      /* Set the vector address                             */
+ 390              		.loc 1 305 0
+ 391 023c C73E02E5 		str	r3, [r2, #-3783]
+ 306:framework.c   ****   VICVectAddr15  = (unsigned int)0;      /* Set the vector address                             */
+ 392              		.loc 1 306 0
+ 393 0240 C33E02E5 		str	r3, [r2, #-3779]
+ 307:framework.c   **** 	
+ 308:framework.c   ****   //enable interrupts (both IRQ and FIQ) 
+ 309:framework.c   **** #ifdef __IAR_SYSTEMS_ICC__
+ 310:framework.c   ****   __enable_interrupt();
+ 311:framework.c   **** #else
+ 312:framework.c   ****   asm volatile ("mrs r3, cpsr       \n\t"                          
+ 394              		.loc 1 312 0
+ 395              	@ 312 "framework.c" 1
+ 396 0244 00300FE1 		mrs r3, cpsr       
+ 397 0248 C030C3E3 		bic r3, r3, #0xC0  
+ 398 024c 03F029E1 		msr cpsr, r3       
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 14
+
+
+ 399              		
+ 400              	@ 0 "" 2
+ 313:framework.c   ****                 "bic r3, r3, #0xC0  \n\t"                      
+ 314:framework.c   ****                 "msr cpsr, r3       \n\t"                          
+ 315:framework.c   ****                 :                                       
+ 316:framework.c   ****                 :                                       
+ 317:framework.c   ****                 : "r3" );
+ 318:framework.c   **** #endif
+ 319:framework.c   **** }
+ 401              		.loc 1 319 0
+ 402 0250 1EFF2FE1 		bx	lr
+ 403              	.L30:
+ 404              		.align	2
+ 405              	.L29:
+ 406 0254 00C002E0 		.word	-536690688
+ 407 0258 008002E0 		.word	-536707072
+ 408              		.cfi_endproc
+ 409              	.LFE7:
+ 410              		.size	lowLevelInit, .-lowLevelInit
+ 411              		.align	2
+ 412              		.global	eaInit
+ 413              		.type	eaInit, %function
+ 414              	eaInit:
+ 415              	.LFB8:
+ 320:framework.c   **** 
+ 321:framework.c   **** /*****************************************************************************
+ 322:framework.c   ****  *
+ 323:framework.c   ****  * Description:
+ 324:framework.c   ****  *    Initialize the consol
+ 325:framework.c   ****  *
+ 326:framework.c   ****  ****************************************************************************/
+ 327:framework.c   **** void
+ 328:framework.c   **** eaInit(void)
+ 329:framework.c   **** {
+ 416              		.loc 1 329 0
+ 417              		.cfi_startproc
+ 418              		@ Function supports interworking.
+ 419              		@ args = 0, pretend = 0, frame = 0
+ 420              		@ frame_needed = 0, uses_anonymous_args = 0
+ 421 025c 04E02DE5 		str	lr, [sp, #-4]!
+ 422              	.LCFI6:
+ 423              		.cfi_def_cfa_offset 4
+ 424              		.cfi_offset 14, -4
+ 330:framework.c   ****   //initialize the consol
+ 331:framework.c   ****   consolInit();
+ 425              		.loc 1 331 0
+ 426 0260 FEFFFFEB 		bl	consolInit
+ 332:framework.c   ****   
+ 333:framework.c   **** #ifdef CONSOL_STARTUP_DELAY
+ 334:framework.c   ****   /*
+ 335:framework.c   ****    * setup timer #1 for a short delay
+ 336:framework.c   ****    */
+ 337:framework.c   ****   TIMER1_TCR = 0x02;          //stop and reset timer
+ 427              		.loc 1 337 0
+ 428 0264 40309FE5 		ldr	r3, .L34
+ 429 0268 0220A0E3 		mov	r2, #2
+ 430 026c 042083E5 		str	r2, [r3, #4]
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 15
+
+
+ 338:framework.c   ****   TIMER1_PR  = 0x00;          //set prescaler to zero
+ 431              		.loc 1 338 0
+ 432 0270 0020A0E3 		mov	r2, #0
+ 433 0274 0C2083E5 		str	r2, [r3, #12]
+ 339:framework.c   ****   TIMER1_MR0 = CONSOL_STARTUP_DELAY_LENGTH * ((FOSC * PLL_MUL)/ (1000000 * PBSD));
+ 434              		.loc 1 339 0
+ 435 0278 30209FE5 		ldr	r2, .L34+4
+ 436 027c 182083E5 		str	r2, [r3, #24]
+ 340:framework.c   ****   TIMER1_IR  = 0xff;          //reset all interrrupt flags
+ 437              		.loc 1 340 0
+ 438 0280 FF20A0E3 		mov	r2, #255
+ 439 0284 002083E5 		str	r2, [r3, #0]
+ 341:framework.c   ****   TIMER1_MCR = 0x04;          //stop timer on match
+ 440              		.loc 1 341 0
+ 441 0288 0420A0E3 		mov	r2, #4
+ 442 028c 142083E5 		str	r2, [r3, #20]
+ 342:framework.c   ****   TIMER1_TCR = 0x01;          //start timer
+ 443              		.loc 1 342 0
+ 444 0290 0120A0E3 		mov	r2, #1
+ 445 0294 042083E5 		str	r2, [r3, #4]
+ 446              	.L32:
+ 343:framework.c   ****   
+ 344:framework.c   ****   //wait until delay time has elapsed
+ 345:framework.c   ****   while (TIMER1_TCR & 0x01)
+ 447              		.loc 1 345 0 discriminator 1
+ 448 0298 042093E5 		ldr	r2, [r3, #4]
+ 449 029c 010012E3 		tst	r2, #1
+ 450 02a0 FCFFFF1A 		bne	.L32
+ 346:framework.c   ****     ;
+ 347:framework.c   **** #endif
+ 348:framework.c   **** }
+ 451              		.loc 1 348 0
+ 452 02a4 04E09DE4 		ldr	lr, [sp], #4
+ 453 02a8 1EFF2FE1 		bx	lr
+ 454              	.L35:
+ 455              		.align	2
+ 456              	.L34:
+ 457 02ac 008000E0 		.word	-536838144
+ 458 02b0 78050000 		.word	1400
+ 459              		.cfi_endproc
+ 460              	.LFE8:
+ 461              		.size	eaInit, .-eaInit
+ 462              		.comm	pHeapEnd,4,4
+ 463              		.comm	pHeapStart,4,4
+ 464              		.section	.rodata.str1.1,"aMS",%progbits,1
+ 465              	.LC0:
+ 466 0000 49525120 		.ascii	"IRQ exception !!!\012Address: 0x\000"
+ 466      65786365 
+ 466      7074696F 
+ 466      6E202121 
+ 466      210A4164 
+ 467              	.LC1:
+ 468 001e 46495120 		.ascii	"FIQ exception !!!\012Address: 0x\000"
+ 468      65786365 
+ 468      7074696F 
+ 468      6E202121 
+ 468      210A4164 
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 16
+
+
+ 469              	.LC2:
+ 470 003c 4461626F 		.ascii	"Dabort exception !!!\012Address: 0x\000"
+ 470      72742065 
+ 470      78636570 
+ 470      74696F6E 
+ 470      20212121 
+ 471              	.LC3:
+ 472 005d 5061626F 		.ascii	"Pabort exception !!!\012Address: 0x\000"
+ 472      72742065 
+ 472      78636570 
+ 472      74696F6E 
+ 472      20212121 
+ 473              	.LC4:
+ 474 007e 53574920 		.ascii	"SWI exception !!!\012Address: 0x\000"
+ 474      65786365 
+ 474      7074696F 
+ 474      6E202121 
+ 474      210A4164 
+ 475              	.LC5:
+ 476 009c 556E6465 		.ascii	"Undefined instruction exception !!!\012Address: 0x\000"
+ 476      66696E65 
+ 476      6420696E 
+ 476      73747275 
+ 476      6374696F 
+ 477              		.text
+ 478              	.Letext0:
+ 479              		.section	.debug_info,"",%progbits
+ 480              	.Ldebug_info0:
+ 481 0000 FA010000 		.4byte	0x1fa
+ 482 0004 0200     		.2byte	0x2
+ 483 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 484 000a 04       		.byte	0x4
+ 485 000b 01       		.uleb128 0x1
+ 486 000c 95000000 		.4byte	.LASF15
+ 487 0010 01       		.byte	0x1
+ 488 0011 07010000 		.4byte	.LASF16
+ 489 0015 C6000000 		.4byte	.LASF17
+ 490 0019 00000000 		.4byte	.Ltext0
+ 491 001d B4020000 		.4byte	.Letext0
+ 492 0021 00000000 		.4byte	.Ldebug_line0
+ 493 0025 02       		.uleb128 0x2
+ 494 0026 49000000 		.4byte	.LASF2
+ 495 002a 01       		.byte	0x1
+ 496 002b D4       		.byte	0xd4
+ 497 002c 01       		.byte	0x1
+ 498 002d 00000000 		.4byte	.LFB5
+ 499 0031 34000000 		.4byte	.LFE5
+ 500 0035 00000000 		.4byte	.LLST0
+ 501 0039 5C000000 		.4byte	0x5c
+ 502 003d 03       		.uleb128 0x3
+ 503 003e 18000000 		.4byte	.LASF0
+ 504 0042 01       		.byte	0x1
+ 505 0043 DA       		.byte	0xda
+ 506 0044 5C000000 		.4byte	0x5c
+ 507 0048 20000000 		.4byte	.LLST1
+ 508 004c 03       		.uleb128 0x3
+ 509 004d 8F000000 		.4byte	.LASF1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 17
+
+
+ 510 0051 01       		.byte	0x1
+ 511 0052 DC       		.byte	0xdc
+ 512 0053 5C000000 		.4byte	0x5c
+ 513 0057 33000000 		.4byte	.LLST2
+ 514 005b 00       		.byte	0
+ 515 005c 04       		.uleb128 0x4
+ 516 005d 04       		.byte	0x4
+ 517 005e 07       		.byte	0x7
+ 518 005f 00000000 		.4byte	.LASF10
+ 519 0063 02       		.uleb128 0x2
+ 520 0064 7B000000 		.4byte	.LASF3
+ 521 0068 01       		.byte	0x1
+ 522 0069 B5       		.byte	0xb5
+ 523 006a 01       		.byte	0x1
+ 524 006b 34000000 		.4byte	.LFB4
+ 525 006f 68000000 		.4byte	.LFE4
+ 526 0073 60000000 		.4byte	.LLST3
+ 527 0077 9A000000 		.4byte	0x9a
+ 528 007b 03       		.uleb128 0x3
+ 529 007c 18000000 		.4byte	.LASF0
+ 530 0080 01       		.byte	0x1
+ 531 0081 BB       		.byte	0xbb
+ 532 0082 5C000000 		.4byte	0x5c
+ 533 0086 80000000 		.4byte	.LLST4
+ 534 008a 03       		.uleb128 0x3
+ 535 008b 8F000000 		.4byte	.LASF1
+ 536 008f 01       		.byte	0x1
+ 537 0090 BE       		.byte	0xbe
+ 538 0091 5C000000 		.4byte	0x5c
+ 539 0095 93000000 		.4byte	.LLST5
+ 540 0099 00       		.byte	0
+ 541 009a 02       		.uleb128 0x2
+ 542 009b 64000000 		.4byte	.LASF4
+ 543 009f 01       		.byte	0x1
+ 544 00a0 99       		.byte	0x99
+ 545 00a1 01       		.byte	0x1
+ 546 00a2 68000000 		.4byte	.LFB3
+ 547 00a6 9C000000 		.4byte	.LFE3
+ 548 00aa C0000000 		.4byte	.LLST6
+ 549 00ae D1000000 		.4byte	0xd1
+ 550 00b2 03       		.uleb128 0x3
+ 551 00b3 18000000 		.4byte	.LASF0
+ 552 00b7 01       		.byte	0x1
+ 553 00b8 9F       		.byte	0x9f
+ 554 00b9 5C000000 		.4byte	0x5c
+ 555 00bd E0000000 		.4byte	.LLST7
+ 556 00c1 03       		.uleb128 0x3
+ 557 00c2 8F000000 		.4byte	.LASF1
+ 558 00c6 01       		.byte	0x1
+ 559 00c7 A1       		.byte	0xa1
+ 560 00c8 5C000000 		.4byte	0x5c
+ 561 00cc F3000000 		.4byte	.LLST8
+ 562 00d0 00       		.byte	0
+ 563 00d1 05       		.uleb128 0x5
+ 564 00d2 A1000000 		.4byte	.LASF18
+ 565 00d6 01       		.byte	0x1
+ 566 00d7 7D       		.byte	0x7d
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 18
+
+
+ 567 00d8 9C000000 		.4byte	.LFB2
+ 568 00dc D0000000 		.4byte	.LFE2
+ 569 00e0 20010000 		.4byte	.LLST9
+ 570 00e4 07010000 		.4byte	0x107
+ 571 00e8 03       		.uleb128 0x3
+ 572 00e9 18000000 		.4byte	.LASF0
+ 573 00ed 01       		.byte	0x1
+ 574 00ee 83       		.byte	0x83
+ 575 00ef 5C000000 		.4byte	0x5c
+ 576 00f3 40010000 		.4byte	.LLST10
+ 577 00f7 03       		.uleb128 0x3
+ 578 00f8 8F000000 		.4byte	.LASF1
+ 579 00fc 01       		.byte	0x1
+ 580 00fd 85       		.byte	0x85
+ 581 00fe 5C000000 		.4byte	0x5c
+ 582 0102 53010000 		.4byte	.LLST11
+ 583 0106 00       		.byte	0
+ 584 0107 02       		.uleb128 0x2
+ 585 0108 29010000 		.4byte	.LASF5
+ 586 010c 01       		.byte	0x1
+ 587 010d 61       		.byte	0x61
+ 588 010e 01       		.byte	0x1
+ 589 010f D0000000 		.4byte	.LFB1
+ 590 0113 04010000 		.4byte	.LFE1
+ 591 0117 80010000 		.4byte	.LLST12
+ 592 011b 3E010000 		.4byte	0x13e
+ 593 011f 03       		.uleb128 0x3
+ 594 0120 18000000 		.4byte	.LASF0
+ 595 0124 01       		.byte	0x1
+ 596 0125 67       		.byte	0x67
+ 597 0126 5C000000 		.4byte	0x5c
+ 598 012a A0010000 		.4byte	.LLST13
+ 599 012e 03       		.uleb128 0x3
+ 600 012f 8F000000 		.4byte	.LASF1
+ 601 0133 01       		.byte	0x1
+ 602 0134 69       		.byte	0x69
+ 603 0135 5C000000 		.4byte	0x5c
+ 604 0139 B3010000 		.4byte	.LLST14
+ 605 013d 00       		.byte	0
+ 606 013e 02       		.uleb128 0x2
+ 607 013f 13010000 		.4byte	.LASF6
+ 608 0143 01       		.byte	0x1
+ 609 0144 45       		.byte	0x45
+ 610 0145 01       		.byte	0x1
+ 611 0146 04010000 		.4byte	.LFB0
+ 612 014a 38010000 		.4byte	.LFE0
+ 613 014e E0010000 		.4byte	.LLST15
+ 614 0152 75010000 		.4byte	0x175
+ 615 0156 03       		.uleb128 0x3
+ 616 0157 18000000 		.4byte	.LASF0
+ 617 015b 01       		.byte	0x1
+ 618 015c 4B       		.byte	0x4b
+ 619 015d 5C000000 		.4byte	0x5c
+ 620 0161 00020000 		.4byte	.LLST16
+ 621 0165 03       		.uleb128 0x3
+ 622 0166 8F000000 		.4byte	.LASF1
+ 623 016a 01       		.byte	0x1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 19
+
+
+ 624 016b 4D       		.byte	0x4d
+ 625 016c 5C000000 		.4byte	0x5c
+ 626 0170 13020000 		.4byte	.LLST17
+ 627 0174 00       		.byte	0
+ 628 0175 06       		.uleb128 0x6
+ 629 0176 01       		.byte	0x1
+ 630 0177 34000000 		.4byte	.LASF7
+ 631 017b 01       		.byte	0x1
+ 632 017c F1       		.byte	0xf1
+ 633 017d 01       		.byte	0x1
+ 634 017e 38010000 		.4byte	.LFB6
+ 635 0182 B0010000 		.4byte	.LFE6
+ 636 0186 02       		.byte	0x2
+ 637 0187 7D       		.byte	0x7d
+ 638 0188 00       		.sleb128 0
+ 639 0189 07       		.uleb128 0x7
+ 640 018a 01       		.byte	0x1
+ 641 018b 27000000 		.4byte	.LASF8
+ 642 018f 01       		.byte	0x1
+ 643 0190 0B01     		.2byte	0x10b
+ 644 0192 01       		.byte	0x1
+ 645 0193 B0010000 		.4byte	.LFB7
+ 646 0197 5C020000 		.4byte	.LFE7
+ 647 019b 02       		.byte	0x2
+ 648 019c 7D       		.byte	0x7d
+ 649 019d 00       		.sleb128 0
+ 650 019e 08       		.uleb128 0x8
+ 651 019f 01       		.byte	0x1
+ 652 01a0 5D000000 		.4byte	.LASF9
+ 653 01a4 01       		.byte	0x1
+ 654 01a5 4801     		.2byte	0x148
+ 655 01a7 01       		.byte	0x1
+ 656 01a8 5C020000 		.4byte	.LFB8
+ 657 01ac B4020000 		.4byte	.LFE8
+ 658 01b0 40020000 		.4byte	.LLST18
+ 659 01b4 09       		.uleb128 0x9
+ 660 01b5 0D000000 		.4byte	.LASF12
+ 661 01b9 01       		.byte	0x1
+ 662 01ba 24       		.byte	0x24
+ 663 01bb C6010000 		.4byte	0x1c6
+ 664 01bf 01       		.byte	0x1
+ 665 01c0 05       		.byte	0x5
+ 666 01c1 03       		.byte	0x3
+ 667 01c2 00000000 		.4byte	pHeapStart
+ 668 01c6 0A       		.uleb128 0xa
+ 669 01c7 04       		.byte	0x4
+ 670 01c8 CC010000 		.4byte	0x1cc
+ 671 01cc 04       		.uleb128 0x4
+ 672 01cd 01       		.byte	0x1
+ 673 01ce 08       		.byte	0x8
+ 674 01cf B8000000 		.4byte	.LASF11
+ 675 01d3 09       		.uleb128 0x9
+ 676 01d4 F9000000 		.4byte	.LASF13
+ 677 01d8 01       		.byte	0x1
+ 678 01d9 25       		.byte	0x25
+ 679 01da C6010000 		.4byte	0x1c6
+ 680 01de 01       		.byte	0x1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 20
+
+
+ 681 01df 05       		.byte	0x5
+ 682 01e0 03       		.byte	0x3
+ 683 01e1 00000000 		.4byte	pHeapEnd
+ 684 01e5 0B       		.uleb128 0xb
+ 685 01e6 656E6400 		.ascii	"end\000"
+ 686 01ea 01       		.byte	0x1
+ 687 01eb 1F       		.byte	0x1f
+ 688 01ec 656E6400 		.ascii	"end\000"
+ 689 01f0 F6010000 		.4byte	0x1f6
+ 690 01f4 01       		.byte	0x1
+ 691 01f5 01       		.byte	0x1
+ 692 01f6 04       		.uleb128 0x4
+ 693 01f7 01       		.byte	0x1
+ 694 01f8 08       		.byte	0x8
+ 695 01f9 02010000 		.4byte	.LASF14
+ 696 01fd 00       		.byte	0
+ 697              		.section	.debug_abbrev,"",%progbits
+ 698              	.Ldebug_abbrev0:
+ 699 0000 01       		.uleb128 0x1
+ 700 0001 11       		.uleb128 0x11
+ 701 0002 01       		.byte	0x1
+ 702 0003 25       		.uleb128 0x25
+ 703 0004 0E       		.uleb128 0xe
+ 704 0005 13       		.uleb128 0x13
+ 705 0006 0B       		.uleb128 0xb
+ 706 0007 03       		.uleb128 0x3
+ 707 0008 0E       		.uleb128 0xe
+ 708 0009 1B       		.uleb128 0x1b
+ 709 000a 0E       		.uleb128 0xe
+ 710 000b 11       		.uleb128 0x11
+ 711 000c 01       		.uleb128 0x1
+ 712 000d 12       		.uleb128 0x12
+ 713 000e 01       		.uleb128 0x1
+ 714 000f 10       		.uleb128 0x10
+ 715 0010 06       		.uleb128 0x6
+ 716 0011 00       		.byte	0
+ 717 0012 00       		.byte	0
+ 718 0013 02       		.uleb128 0x2
+ 719 0014 2E       		.uleb128 0x2e
+ 720 0015 01       		.byte	0x1
+ 721 0016 03       		.uleb128 0x3
+ 722 0017 0E       		.uleb128 0xe
+ 723 0018 3A       		.uleb128 0x3a
+ 724 0019 0B       		.uleb128 0xb
+ 725 001a 3B       		.uleb128 0x3b
+ 726 001b 0B       		.uleb128 0xb
+ 727 001c 27       		.uleb128 0x27
+ 728 001d 0C       		.uleb128 0xc
+ 729 001e 11       		.uleb128 0x11
+ 730 001f 01       		.uleb128 0x1
+ 731 0020 12       		.uleb128 0x12
+ 732 0021 01       		.uleb128 0x1
+ 733 0022 40       		.uleb128 0x40
+ 734 0023 06       		.uleb128 0x6
+ 735 0024 01       		.uleb128 0x1
+ 736 0025 13       		.uleb128 0x13
+ 737 0026 00       		.byte	0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 21
+
+
+ 738 0027 00       		.byte	0
+ 739 0028 03       		.uleb128 0x3
+ 740 0029 34       		.uleb128 0x34
+ 741 002a 00       		.byte	0
+ 742 002b 03       		.uleb128 0x3
+ 743 002c 0E       		.uleb128 0xe
+ 744 002d 3A       		.uleb128 0x3a
+ 745 002e 0B       		.uleb128 0xb
+ 746 002f 3B       		.uleb128 0x3b
+ 747 0030 0B       		.uleb128 0xb
+ 748 0031 49       		.uleb128 0x49
+ 749 0032 13       		.uleb128 0x13
+ 750 0033 02       		.uleb128 0x2
+ 751 0034 06       		.uleb128 0x6
+ 752 0035 00       		.byte	0
+ 753 0036 00       		.byte	0
+ 754 0037 04       		.uleb128 0x4
+ 755 0038 24       		.uleb128 0x24
+ 756 0039 00       		.byte	0
+ 757 003a 0B       		.uleb128 0xb
+ 758 003b 0B       		.uleb128 0xb
+ 759 003c 3E       		.uleb128 0x3e
+ 760 003d 0B       		.uleb128 0xb
+ 761 003e 03       		.uleb128 0x3
+ 762 003f 0E       		.uleb128 0xe
+ 763 0040 00       		.byte	0
+ 764 0041 00       		.byte	0
+ 765 0042 05       		.uleb128 0x5
+ 766 0043 2E       		.uleb128 0x2e
+ 767 0044 01       		.byte	0x1
+ 768 0045 03       		.uleb128 0x3
+ 769 0046 0E       		.uleb128 0xe
+ 770 0047 3A       		.uleb128 0x3a
+ 771 0048 0B       		.uleb128 0xb
+ 772 0049 3B       		.uleb128 0x3b
+ 773 004a 0B       		.uleb128 0xb
+ 774 004b 11       		.uleb128 0x11
+ 775 004c 01       		.uleb128 0x1
+ 776 004d 12       		.uleb128 0x12
+ 777 004e 01       		.uleb128 0x1
+ 778 004f 40       		.uleb128 0x40
+ 779 0050 06       		.uleb128 0x6
+ 780 0051 01       		.uleb128 0x1
+ 781 0052 13       		.uleb128 0x13
+ 782 0053 00       		.byte	0
+ 783 0054 00       		.byte	0
+ 784 0055 06       		.uleb128 0x6
+ 785 0056 2E       		.uleb128 0x2e
+ 786 0057 00       		.byte	0
+ 787 0058 3F       		.uleb128 0x3f
+ 788 0059 0C       		.uleb128 0xc
+ 789 005a 03       		.uleb128 0x3
+ 790 005b 0E       		.uleb128 0xe
+ 791 005c 3A       		.uleb128 0x3a
+ 792 005d 0B       		.uleb128 0xb
+ 793 005e 3B       		.uleb128 0x3b
+ 794 005f 0B       		.uleb128 0xb
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 22
+
+
+ 795 0060 27       		.uleb128 0x27
+ 796 0061 0C       		.uleb128 0xc
+ 797 0062 11       		.uleb128 0x11
+ 798 0063 01       		.uleb128 0x1
+ 799 0064 12       		.uleb128 0x12
+ 800 0065 01       		.uleb128 0x1
+ 801 0066 40       		.uleb128 0x40
+ 802 0067 0A       		.uleb128 0xa
+ 803 0068 00       		.byte	0
+ 804 0069 00       		.byte	0
+ 805 006a 07       		.uleb128 0x7
+ 806 006b 2E       		.uleb128 0x2e
+ 807 006c 00       		.byte	0
+ 808 006d 3F       		.uleb128 0x3f
+ 809 006e 0C       		.uleb128 0xc
+ 810 006f 03       		.uleb128 0x3
+ 811 0070 0E       		.uleb128 0xe
+ 812 0071 3A       		.uleb128 0x3a
+ 813 0072 0B       		.uleb128 0xb
+ 814 0073 3B       		.uleb128 0x3b
+ 815 0074 05       		.uleb128 0x5
+ 816 0075 27       		.uleb128 0x27
+ 817 0076 0C       		.uleb128 0xc
+ 818 0077 11       		.uleb128 0x11
+ 819 0078 01       		.uleb128 0x1
+ 820 0079 12       		.uleb128 0x12
+ 821 007a 01       		.uleb128 0x1
+ 822 007b 40       		.uleb128 0x40
+ 823 007c 0A       		.uleb128 0xa
+ 824 007d 00       		.byte	0
+ 825 007e 00       		.byte	0
+ 826 007f 08       		.uleb128 0x8
+ 827 0080 2E       		.uleb128 0x2e
+ 828 0081 00       		.byte	0
+ 829 0082 3F       		.uleb128 0x3f
+ 830 0083 0C       		.uleb128 0xc
+ 831 0084 03       		.uleb128 0x3
+ 832 0085 0E       		.uleb128 0xe
+ 833 0086 3A       		.uleb128 0x3a
+ 834 0087 0B       		.uleb128 0xb
+ 835 0088 3B       		.uleb128 0x3b
+ 836 0089 05       		.uleb128 0x5
+ 837 008a 27       		.uleb128 0x27
+ 838 008b 0C       		.uleb128 0xc
+ 839 008c 11       		.uleb128 0x11
+ 840 008d 01       		.uleb128 0x1
+ 841 008e 12       		.uleb128 0x12
+ 842 008f 01       		.uleb128 0x1
+ 843 0090 40       		.uleb128 0x40
+ 844 0091 06       		.uleb128 0x6
+ 845 0092 00       		.byte	0
+ 846 0093 00       		.byte	0
+ 847 0094 09       		.uleb128 0x9
+ 848 0095 34       		.uleb128 0x34
+ 849 0096 00       		.byte	0
+ 850 0097 03       		.uleb128 0x3
+ 851 0098 0E       		.uleb128 0xe
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 23
+
+
+ 852 0099 3A       		.uleb128 0x3a
+ 853 009a 0B       		.uleb128 0xb
+ 854 009b 3B       		.uleb128 0x3b
+ 855 009c 0B       		.uleb128 0xb
+ 856 009d 49       		.uleb128 0x49
+ 857 009e 13       		.uleb128 0x13
+ 858 009f 3F       		.uleb128 0x3f
+ 859 00a0 0C       		.uleb128 0xc
+ 860 00a1 02       		.uleb128 0x2
+ 861 00a2 0A       		.uleb128 0xa
+ 862 00a3 00       		.byte	0
+ 863 00a4 00       		.byte	0
+ 864 00a5 0A       		.uleb128 0xa
+ 865 00a6 0F       		.uleb128 0xf
+ 866 00a7 00       		.byte	0
+ 867 00a8 0B       		.uleb128 0xb
+ 868 00a9 0B       		.uleb128 0xb
+ 869 00aa 49       		.uleb128 0x49
+ 870 00ab 13       		.uleb128 0x13
+ 871 00ac 00       		.byte	0
+ 872 00ad 00       		.byte	0
+ 873 00ae 0B       		.uleb128 0xb
+ 874 00af 34       		.uleb128 0x34
+ 875 00b0 00       		.byte	0
+ 876 00b1 03       		.uleb128 0x3
+ 877 00b2 08       		.uleb128 0x8
+ 878 00b3 3A       		.uleb128 0x3a
+ 879 00b4 0B       		.uleb128 0xb
+ 880 00b5 3B       		.uleb128 0x3b
+ 881 00b6 0B       		.uleb128 0xb
+ 882 00b7 8740     		.uleb128 0x2007
+ 883 00b9 08       		.uleb128 0x8
+ 884 00ba 49       		.uleb128 0x49
+ 885 00bb 13       		.uleb128 0x13
+ 886 00bc 3F       		.uleb128 0x3f
+ 887 00bd 0C       		.uleb128 0xc
+ 888 00be 3C       		.uleb128 0x3c
+ 889 00bf 0C       		.uleb128 0xc
+ 890 00c0 00       		.byte	0
+ 891 00c1 00       		.byte	0
+ 892 00c2 00       		.byte	0
+ 893              		.section	.debug_loc,"",%progbits
+ 894              	.Ldebug_loc0:
+ 895              	.LLST0:
+ 896 0000 00000000 		.4byte	.LFB5-.Ltext0
+ 897 0004 04000000 		.4byte	.LCFI0-.Ltext0
+ 898 0008 0200     		.2byte	0x2
+ 899 000a 7D       		.byte	0x7d
+ 900 000b 00       		.sleb128 0
+ 901 000c 04000000 		.4byte	.LCFI0-.Ltext0
+ 902 0010 34000000 		.4byte	.LFE5-.Ltext0
+ 903 0014 0200     		.2byte	0x2
+ 904 0016 7D       		.byte	0x7d
+ 905 0017 0C       		.sleb128 12
+ 906 0018 00000000 		.4byte	0
+ 907 001c 00000000 		.4byte	0
+ 908              	.LLST1:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 24
+
+
+ 909 0020 04000000 		.4byte	.LVL0-.Ltext0
+ 910 0024 0F000000 		.4byte	.LVL2-1-.Ltext0
+ 911 0028 0100     		.2byte	0x1
+ 912 002a 5E       		.byte	0x5e
+ 913 002b 00000000 		.4byte	0
+ 914 002f 00000000 		.4byte	0
+ 915              	.LLST2:
+ 916 0033 08000000 		.4byte	.LVL1-.Ltext0
+ 917 0037 0F000000 		.4byte	.LVL2-1-.Ltext0
+ 918 003b 0300     		.2byte	0x3
+ 919 003d 7E       		.byte	0x7e
+ 920 003e 7C       		.sleb128 -4
+ 921 003f 9F       		.byte	0x9f
+ 922 0040 0F000000 		.4byte	.LVL2-1-.Ltext0
+ 923 0044 14000000 		.4byte	.LVL3-.Ltext0
+ 924 0048 0300     		.2byte	0x3
+ 925 004a 74       		.byte	0x74
+ 926 004b 7C       		.sleb128 -4
+ 927 004c 9F       		.byte	0x9f
+ 928 004d 14000000 		.4byte	.LVL3-.Ltext0
+ 929 0051 34000000 		.4byte	.LFE5-.Ltext0
+ 930 0055 0100     		.2byte	0x1
+ 931 0057 54       		.byte	0x54
+ 932 0058 00000000 		.4byte	0
+ 933 005c 00000000 		.4byte	0
+ 934              	.LLST3:
+ 935 0060 34000000 		.4byte	.LFB4-.Ltext0
+ 936 0064 38000000 		.4byte	.LCFI1-.Ltext0
+ 937 0068 0200     		.2byte	0x2
+ 938 006a 7D       		.byte	0x7d
+ 939 006b 00       		.sleb128 0
+ 940 006c 38000000 		.4byte	.LCFI1-.Ltext0
+ 941 0070 68000000 		.4byte	.LFE4-.Ltext0
+ 942 0074 0200     		.2byte	0x2
+ 943 0076 7D       		.byte	0x7d
+ 944 0077 0C       		.sleb128 12
+ 945 0078 00000000 		.4byte	0
+ 946 007c 00000000 		.4byte	0
+ 947              	.LLST4:
+ 948 0080 38000000 		.4byte	.LVL4-.Ltext0
+ 949 0084 43000000 		.4byte	.LVL6-1-.Ltext0
+ 950 0088 0100     		.2byte	0x1
+ 951 008a 5E       		.byte	0x5e
+ 952 008b 00000000 		.4byte	0
+ 953 008f 00000000 		.4byte	0
+ 954              	.LLST5:
+ 955 0093 3C000000 		.4byte	.LVL5-.Ltext0
+ 956 0097 43000000 		.4byte	.LVL6-1-.Ltext0
+ 957 009b 0300     		.2byte	0x3
+ 958 009d 7E       		.byte	0x7e
+ 959 009e 7C       		.sleb128 -4
+ 960 009f 9F       		.byte	0x9f
+ 961 00a0 43000000 		.4byte	.LVL6-1-.Ltext0
+ 962 00a4 48000000 		.4byte	.LVL7-.Ltext0
+ 963 00a8 0300     		.2byte	0x3
+ 964 00aa 74       		.byte	0x74
+ 965 00ab 7C       		.sleb128 -4
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 25
+
+
+ 966 00ac 9F       		.byte	0x9f
+ 967 00ad 48000000 		.4byte	.LVL7-.Ltext0
+ 968 00b1 68000000 		.4byte	.LFE4-.Ltext0
+ 969 00b5 0100     		.2byte	0x1
+ 970 00b7 54       		.byte	0x54
+ 971 00b8 00000000 		.4byte	0
+ 972 00bc 00000000 		.4byte	0
+ 973              	.LLST6:
+ 974 00c0 68000000 		.4byte	.LFB3-.Ltext0
+ 975 00c4 6C000000 		.4byte	.LCFI2-.Ltext0
+ 976 00c8 0200     		.2byte	0x2
+ 977 00ca 7D       		.byte	0x7d
+ 978 00cb 00       		.sleb128 0
+ 979 00cc 6C000000 		.4byte	.LCFI2-.Ltext0
+ 980 00d0 9C000000 		.4byte	.LFE3-.Ltext0
+ 981 00d4 0200     		.2byte	0x2
+ 982 00d6 7D       		.byte	0x7d
+ 983 00d7 0C       		.sleb128 12
+ 984 00d8 00000000 		.4byte	0
+ 985 00dc 00000000 		.4byte	0
+ 986              	.LLST7:
+ 987 00e0 6C000000 		.4byte	.LVL8-.Ltext0
+ 988 00e4 77000000 		.4byte	.LVL10-1-.Ltext0
+ 989 00e8 0100     		.2byte	0x1
+ 990 00ea 5E       		.byte	0x5e
+ 991 00eb 00000000 		.4byte	0
+ 992 00ef 00000000 		.4byte	0
+ 993              	.LLST8:
+ 994 00f3 70000000 		.4byte	.LVL9-.Ltext0
+ 995 00f7 77000000 		.4byte	.LVL10-1-.Ltext0
+ 996 00fb 0300     		.2byte	0x3
+ 997 00fd 7E       		.byte	0x7e
+ 998 00fe 78       		.sleb128 -8
+ 999 00ff 9F       		.byte	0x9f
+ 1000 0100 77000000 		.4byte	.LVL10-1-.Ltext0
+ 1001 0104 7C000000 		.4byte	.LVL11-.Ltext0
+ 1002 0108 0300     		.2byte	0x3
+ 1003 010a 74       		.byte	0x74
+ 1004 010b 78       		.sleb128 -8
+ 1005 010c 9F       		.byte	0x9f
+ 1006 010d 7C000000 		.4byte	.LVL11-.Ltext0
+ 1007 0111 9C000000 		.4byte	.LFE3-.Ltext0
+ 1008 0115 0100     		.2byte	0x1
+ 1009 0117 54       		.byte	0x54
+ 1010 0118 00000000 		.4byte	0
+ 1011 011c 00000000 		.4byte	0
+ 1012              	.LLST9:
+ 1013 0120 9C000000 		.4byte	.LFB2-.Ltext0
+ 1014 0124 A0000000 		.4byte	.LCFI3-.Ltext0
+ 1015 0128 0200     		.2byte	0x2
+ 1016 012a 7D       		.byte	0x7d
+ 1017 012b 00       		.sleb128 0
+ 1018 012c A0000000 		.4byte	.LCFI3-.Ltext0
+ 1019 0130 D0000000 		.4byte	.LFE2-.Ltext0
+ 1020 0134 0200     		.2byte	0x2
+ 1021 0136 7D       		.byte	0x7d
+ 1022 0137 0C       		.sleb128 12
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 26
+
+
+ 1023 0138 00000000 		.4byte	0
+ 1024 013c 00000000 		.4byte	0
+ 1025              	.LLST10:
+ 1026 0140 A0000000 		.4byte	.LVL12-.Ltext0
+ 1027 0144 AB000000 		.4byte	.LVL14-1-.Ltext0
+ 1028 0148 0100     		.2byte	0x1
+ 1029 014a 5E       		.byte	0x5e
+ 1030 014b 00000000 		.4byte	0
+ 1031 014f 00000000 		.4byte	0
+ 1032              	.LLST11:
+ 1033 0153 A4000000 		.4byte	.LVL13-.Ltext0
+ 1034 0157 AB000000 		.4byte	.LVL14-1-.Ltext0
+ 1035 015b 0300     		.2byte	0x3
+ 1036 015d 7E       		.byte	0x7e
+ 1037 015e 7C       		.sleb128 -4
+ 1038 015f 9F       		.byte	0x9f
+ 1039 0160 AB000000 		.4byte	.LVL14-1-.Ltext0
+ 1040 0164 B0000000 		.4byte	.LVL15-.Ltext0
+ 1041 0168 0300     		.2byte	0x3
+ 1042 016a 74       		.byte	0x74
+ 1043 016b 7C       		.sleb128 -4
+ 1044 016c 9F       		.byte	0x9f
+ 1045 016d B0000000 		.4byte	.LVL15-.Ltext0
+ 1046 0171 D0000000 		.4byte	.LFE2-.Ltext0
+ 1047 0175 0100     		.2byte	0x1
+ 1048 0177 54       		.byte	0x54
+ 1049 0178 00000000 		.4byte	0
+ 1050 017c 00000000 		.4byte	0
+ 1051              	.LLST12:
+ 1052 0180 D0000000 		.4byte	.LFB1-.Ltext0
+ 1053 0184 D4000000 		.4byte	.LCFI4-.Ltext0
+ 1054 0188 0200     		.2byte	0x2
+ 1055 018a 7D       		.byte	0x7d
+ 1056 018b 00       		.sleb128 0
+ 1057 018c D4000000 		.4byte	.LCFI4-.Ltext0
+ 1058 0190 04010000 		.4byte	.LFE1-.Ltext0
+ 1059 0194 0200     		.2byte	0x2
+ 1060 0196 7D       		.byte	0x7d
+ 1061 0197 0C       		.sleb128 12
+ 1062 0198 00000000 		.4byte	0
+ 1063 019c 00000000 		.4byte	0
+ 1064              	.LLST13:
+ 1065 01a0 D4000000 		.4byte	.LVL16-.Ltext0
+ 1066 01a4 DF000000 		.4byte	.LVL18-1-.Ltext0
+ 1067 01a8 0100     		.2byte	0x1
+ 1068 01aa 5E       		.byte	0x5e
+ 1069 01ab 00000000 		.4byte	0
+ 1070 01af 00000000 		.4byte	0
+ 1071              	.LLST14:
+ 1072 01b3 D8000000 		.4byte	.LVL17-.Ltext0
+ 1073 01b7 DF000000 		.4byte	.LVL18-1-.Ltext0
+ 1074 01bb 0300     		.2byte	0x3
+ 1075 01bd 7E       		.byte	0x7e
+ 1076 01be 7C       		.sleb128 -4
+ 1077 01bf 9F       		.byte	0x9f
+ 1078 01c0 DF000000 		.4byte	.LVL18-1-.Ltext0
+ 1079 01c4 E4000000 		.4byte	.LVL19-.Ltext0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 27
+
+
+ 1080 01c8 0300     		.2byte	0x3
+ 1081 01ca 74       		.byte	0x74
+ 1082 01cb 7C       		.sleb128 -4
+ 1083 01cc 9F       		.byte	0x9f
+ 1084 01cd E4000000 		.4byte	.LVL19-.Ltext0
+ 1085 01d1 04010000 		.4byte	.LFE1-.Ltext0
+ 1086 01d5 0100     		.2byte	0x1
+ 1087 01d7 54       		.byte	0x54
+ 1088 01d8 00000000 		.4byte	0
+ 1089 01dc 00000000 		.4byte	0
+ 1090              	.LLST15:
+ 1091 01e0 04010000 		.4byte	.LFB0-.Ltext0
+ 1092 01e4 08010000 		.4byte	.LCFI5-.Ltext0
+ 1093 01e8 0200     		.2byte	0x2
+ 1094 01ea 7D       		.byte	0x7d
+ 1095 01eb 00       		.sleb128 0
+ 1096 01ec 08010000 		.4byte	.LCFI5-.Ltext0
+ 1097 01f0 38010000 		.4byte	.LFE0-.Ltext0
+ 1098 01f4 0200     		.2byte	0x2
+ 1099 01f6 7D       		.byte	0x7d
+ 1100 01f7 0C       		.sleb128 12
+ 1101 01f8 00000000 		.4byte	0
+ 1102 01fc 00000000 		.4byte	0
+ 1103              	.LLST16:
+ 1104 0200 08010000 		.4byte	.LVL20-.Ltext0
+ 1105 0204 13010000 		.4byte	.LVL22-1-.Ltext0
+ 1106 0208 0100     		.2byte	0x1
+ 1107 020a 5E       		.byte	0x5e
+ 1108 020b 00000000 		.4byte	0
+ 1109 020f 00000000 		.4byte	0
+ 1110              	.LLST17:
+ 1111 0213 0C010000 		.4byte	.LVL21-.Ltext0
+ 1112 0217 13010000 		.4byte	.LVL22-1-.Ltext0
+ 1113 021b 0300     		.2byte	0x3
+ 1114 021d 7E       		.byte	0x7e
+ 1115 021e 7C       		.sleb128 -4
+ 1116 021f 9F       		.byte	0x9f
+ 1117 0220 13010000 		.4byte	.LVL22-1-.Ltext0
+ 1118 0224 18010000 		.4byte	.LVL23-.Ltext0
+ 1119 0228 0300     		.2byte	0x3
+ 1120 022a 74       		.byte	0x74
+ 1121 022b 7C       		.sleb128 -4
+ 1122 022c 9F       		.byte	0x9f
+ 1123 022d 18010000 		.4byte	.LVL23-.Ltext0
+ 1124 0231 38010000 		.4byte	.LFE0-.Ltext0
+ 1125 0235 0100     		.2byte	0x1
+ 1126 0237 54       		.byte	0x54
+ 1127 0238 00000000 		.4byte	0
+ 1128 023c 00000000 		.4byte	0
+ 1129              	.LLST18:
+ 1130 0240 5C020000 		.4byte	.LFB8-.Ltext0
+ 1131 0244 60020000 		.4byte	.LCFI6-.Ltext0
+ 1132 0248 0200     		.2byte	0x2
+ 1133 024a 7D       		.byte	0x7d
+ 1134 024b 00       		.sleb128 0
+ 1135 024c 60020000 		.4byte	.LCFI6-.Ltext0
+ 1136 0250 B4020000 		.4byte	.LFE8-.Ltext0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 28
+
+
+ 1137 0254 0200     		.2byte	0x2
+ 1138 0256 7D       		.byte	0x7d
+ 1139 0257 04       		.sleb128 4
+ 1140 0258 00000000 		.4byte	0
+ 1141 025c 00000000 		.4byte	0
+ 1142              		.section	.debug_aranges,"",%progbits
+ 1143 0000 1C000000 		.4byte	0x1c
+ 1144 0004 0200     		.2byte	0x2
+ 1145 0006 00000000 		.4byte	.Ldebug_info0
+ 1146 000a 04       		.byte	0x4
+ 1147 000b 00       		.byte	0
+ 1148 000c 0000     		.2byte	0
+ 1149 000e 0000     		.2byte	0
+ 1150 0010 00000000 		.4byte	.Ltext0
+ 1151 0014 B4020000 		.4byte	.Letext0-.Ltext0
+ 1152 0018 00000000 		.4byte	0
+ 1153 001c 00000000 		.4byte	0
+ 1154              		.section	.debug_line,"",%progbits
+ 1155              	.Ldebug_line0:
+ 1156 0000 A2000000 		.section	.debug_str,"MS",%progbits,1
+ 1156      02002200 
+ 1156      00000201 
+ 1156      FB0E0D00 
+ 1156      01010101 
+ 1157              	.LASF10:
+ 1158 0000 756E7369 		.ascii	"unsigned int\000"
+ 1158      676E6564 
+ 1158      20696E74 
+ 1158      00
+ 1159              	.LASF12:
+ 1160 000d 70486561 		.ascii	"pHeapStart\000"
+ 1160      70537461 
+ 1160      727400
+ 1161              	.LASF0:
+ 1162 0018 70726F67 		.ascii	"programCounter\000"
+ 1162      72616D43 
+ 1162      6F756E74 
+ 1162      657200
+ 1163              	.LASF8:
+ 1164 0027 6C6F774C 		.ascii	"lowLevelInit\000"
+ 1164      6576656C 
+ 1164      496E6974 
+ 1164      00
+ 1165              	.LASF7:
+ 1166 0034 65786365 		.ascii	"exceptionHandlerInit\000"
+ 1166      7074696F 
+ 1166      6E48616E 
+ 1166      646C6572 
+ 1166      496E6974 
+ 1167              	.LASF2:
+ 1168 0049 65786365 		.ascii	"exceptionHandlerIrq\000"
+ 1168      7074696F 
+ 1168      6E48616E 
+ 1168      646C6572 
+ 1168      49727100 
+ 1169              	.LASF9:
+ 1170 005d 6561496E 		.ascii	"eaInit\000"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 29
+
+
+ 1170      697400
+ 1171              	.LASF4:
+ 1172 0064 65786365 		.ascii	"exceptionHandlerDabort\000"
+ 1172      7074696F 
+ 1172      6E48616E 
+ 1172      646C6572 
+ 1172      4461626F 
+ 1173              	.LASF3:
+ 1174 007b 65786365 		.ascii	"exceptionHandlerFiq\000"
+ 1174      7074696F 
+ 1174      6E48616E 
+ 1174      646C6572 
+ 1174      46697100 
+ 1175              	.LASF1:
+ 1176 008f 76616C75 		.ascii	"value\000"
+ 1176      6500
+ 1177              	.LASF15:
+ 1178 0095 474E5520 		.ascii	"GNU C 4.6.3\000"
+ 1178      4320342E 
+ 1178      362E3300 
+ 1179              	.LASF18:
+ 1180 00a1 65786365 		.ascii	"exceptionHandlerPabort\000"
+ 1180      7074696F 
+ 1180      6E48616E 
+ 1180      646C6572 
+ 1180      5061626F 
+ 1181              	.LASF11:
+ 1182 00b8 756E7369 		.ascii	"unsigned char\000"
+ 1182      676E6564 
+ 1182      20636861 
+ 1182      7200
+ 1183              	.LASF17:
+ 1184 00c6 633A5C55 		.ascii	"c:\\Users\\kozlovsky\\Downloads\\TicTac\\TicTac\\st"
+ 1184      73657273 
+ 1184      5C6B6F7A 
+ 1184      6C6F7673 
+ 1184      6B795C44 
+ 1185 00f3 61727475 		.ascii	"artup\000"
+ 1185      7000
+ 1186              	.LASF13:
+ 1187 00f9 70486561 		.ascii	"pHeapEnd\000"
+ 1187      70456E64 
+ 1187      00
+ 1188              	.LASF14:
+ 1189 0102 63686172 		.ascii	"char\000"
+ 1189      00
+ 1190              	.LASF16:
+ 1191 0107 6672616D 		.ascii	"framework.c\000"
+ 1191      65776F72 
+ 1191      6B2E6300 
+ 1192              	.LASF6:
+ 1193 0113 65786365 		.ascii	"exceptionHandlerUndef\000"
+ 1193      7074696F 
+ 1193      6E48616E 
+ 1193      646C6572 
+ 1193      556E6465 
+ 1194              	.LASF5:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 30
+
+
+ 1195 0129 65786365 		.ascii	"exceptionHandlerSwi\000"
+ 1195      7074696F 
+ 1195      6E48616E 
+ 1195      646C6572 
+ 1195      53776900 
+ 1196              		.ident	"GCC: (GNU) 4.6.3"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s 			page 31
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 framework.c
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:5      .text:00000000 $a
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:7      .text:00000000 exceptionHandlerIrq
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:44     .text:00000030 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:48     .text:00000034 $a
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:50     .text:00000034 exceptionHandlerFiq
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:86     .text:00000064 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:90     .text:00000068 $a
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:92     .text:00000068 exceptionHandlerDabort
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:128    .text:00000098 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:132    .text:0000009c $a
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:134    .text:0000009c exceptionHandlerPabort
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:170    .text:000000cc $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:174    .text:000000d0 $a
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:176    .text:000000d0 exceptionHandlerSwi
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:212    .text:00000100 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:216    .text:00000104 $a
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:218    .text:00000104 exceptionHandlerUndef
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:254    .text:00000134 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:258    .text:00000138 $a
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:261    .text:00000138 exceptionHandlerInit
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:301    .text:00000188 $d
+                            *COM*:00000004 pHeapStart
+                            *COM*:00000004 pHeapEnd
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:314    .text:000001b0 $a
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:317    .text:000001b0 lowLevelInit
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:406    .text:00000254 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:411    .text:0000025c $a
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:414    .text:0000025c eaInit
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccBbgZxi.s:457    .text:000002ac $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+consolSendString
+consolSendNumber
+end
+consolInit

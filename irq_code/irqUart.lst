@@ -1,0 +1,1831 @@
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 1
+
+
+   1              		.file	"irqUart.c"
+   2              		.text
+   3              	.Ltext0:
+   4              		.cfi_sections	.debug_frame
+   5              		.align	2
+   6              		.global	uart1ISR
+   7              		.type	uart1ISR, %function
+   8              	uart1ISR:
+   9              	.LFB0:
+  10              		.file 1 "irqUart.c"
+   1:irqUart.c     **** /******************************************************************************
+   2:irqUart.c     ****  *
+   3:irqUart.c     ****  * File:
+   4:irqUart.c     ****  *    irqUart.c
+   5:irqUart.c     ****  *
+   6:irqUart.c     ****  * Description:
+   7:irqUart.c     ****  *    Sample irq code, that must be compiled in ARM code.
+   8:irqUart.c     ****  *
+   9:irqUart.c     ****  *****************************************************************************/
+  10:irqUart.c     **** 
+  11:irqUart.c     **** /******************************************************************************
+  12:irqUart.c     ****  * Includes
+  13:irqUart.c     ****  *****************************************************************************/
+  14:irqUart.c     **** #include "../pre_emptive_os/api/osapi.h"
+  15:irqUart.c     **** #include <lpc2xxx.h>
+  16:irqUart.c     **** #include "irqUart.h"
+  17:irqUart.c     **** #include "../uart.h"
+  18:irqUart.c     **** 
+  19:irqUart.c     **** extern tCntSem receiveSem;
+  20:irqUart.c     **** 
+  21:irqUart.c     **** /*****************************************************************************
+  22:irqUart.c     ****  * Public function prototypes
+  23:irqUart.c     ****  ****************************************************************************/
+  24:irqUart.c     **** 
+  25:irqUart.c     **** /*****************************************************************************
+  26:irqUart.c     ****  * Implementation of public functions
+  27:irqUart.c     ****  ****************************************************************************/
+  28:irqUart.c     **** 
+  29:irqUart.c     **** /*****************************************************************************
+  30:irqUart.c     ****  *
+  31:irqUart.c     ****  * Description:
+  32:irqUart.c     ****  *    Actual uart #1 ISR that is called whenever the uart generated an interrupt.
+  33:irqUart.c     ****  *
+  34:irqUart.c     ****  ****************************************************************************/
+  35:irqUart.c     **** #ifdef __IAR_SYSTEMS_ICC__
+  36:irqUart.c     **** __arm void
+  37:irqUart.c     **** uart1ISR(void)
+  38:irqUart.c     **** #else
+  39:irqUart.c     **** void
+  40:irqUart.c     **** uart1ISR(void)
+  41:irqUart.c     **** #endif
+  42:irqUart.c     **** {
+  11              		.loc 1 42 0
+  12              		.cfi_startproc
+  13              		@ Function supports interworking.
+  14              		@ args = 0, pretend = 0, frame = 12
+  15              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 2
+
+
+  16 0000 F7402DE9 		stmfd	sp!, {r0, r1, r2, r4, r5, r6, r7, lr}
+  17              	.LCFI0:
+  18              		.cfi_def_cfa_offset 32
+  19              		.cfi_offset 14, -4
+  20              		.cfi_offset 7, -8
+  21              		.cfi_offset 6, -12
+  22              		.cfi_offset 5, -16
+  23              		.cfi_offset 4, -20
+  24              		.cfi_offset 2, -24
+  25              		.cfi_offset 1, -28
+  26              		.cfi_offset 0, -32
+  43:irqUart.c     ****   volatile tU8  statusReg;
+  44:irqUart.c     ****   volatile tU8  dummy;
+  45:irqUart.c     ****   volatile tU32 tmpHead;
+  46:irqUart.c     ****   volatile tU32 tmpTail;
+  47:irqUart.c     ****            tU8  error;
+  48:irqUart.c     **** 
+  49:irqUart.c     ****   //loop until not more interrupt sources
+  50:irqUart.c     ****   while (((statusReg = U1IIR) & 0x01) == 0)
+  27              		.loc 1 50 0
+  28 0004 24429FE5 		ldr	r4, .L28
+  51:irqUart.c     ****   {
+  52:irqUart.c     ****     //identify and process the highest priority interrupt
+  53:irqUart.c     ****     switch (statusReg & 0x0E)
+  54:irqUart.c     ****     {
+  55:irqUart.c     ****       case 0x06:  //Receive Line Status
+  56:irqUart.c     ****       dummy = U1LSR;  //read LSR to clear bits
+  57:irqUart.c     ****       break;
+  58:irqUart.c     **** 
+  59:irqUart.c     ****       case 0x0c:  //Character Timeout Indicator
+  60:irqUart.c     ****       case 0x04:  //Receive Data Available
+  61:irqUart.c     ****       do
+  62:irqUart.c     ****       {
+  63:irqUart.c     ****         tmpHead     = (uart1RxHead + 1) & RX_BUFFER_MASK;
+  29              		.loc 1 63 0
+  30 0008 24629FE5 		ldr	r6, .L28+4
+  31 000c 0450A0E1 		mov	r5, r4
+  50:irqUart.c     ****   while (((statusReg = U1IIR) & 0x01) == 0)
+  32              		.loc 1 50 0
+  33 0010 7C0000EA 		b	.L24
+  34              	.LVL0:
+  35              	.L17:
+  53:irqUart.c     ****     switch (statusReg & 0x0E)
+  36              		.loc 1 53 0
+  37 0014 0930DDE5 		ldrb	r3, [sp, #9]	@ zero_extendqisi2
+  38              	.LVL1:
+  39 0018 0E3003E2 		and	r3, r3, #14
+  40              	.LVL2:
+  41 001c 0C0053E3 		cmp	r3, #12
+  42 0020 03F19F97 		ldrls	pc, [pc, r3, asl #2]
+  43 0024 710000EA 		b	.L3
+  44              	.L8:
+  45 0028 64010000 		.word	.L4
+  46 002c F0010000 		.word	.L3
+  47 0030 E8000000 		.word	.L5
+  48 0034 F0010000 		.word	.L3
+  49 0038 64000000 		.word	.L6
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 3
+
+
+  50 003c F0010000 		.word	.L3
+  51 0040 5C000000 		.word	.L7
+  52 0044 F0010000 		.word	.L3
+  53 0048 F0010000 		.word	.L3
+  54 004c F0010000 		.word	.L3
+  55 0050 F0010000 		.word	.L3
+  56 0054 F0010000 		.word	.L3
+  57 0058 64000000 		.word	.L6
+  58              	.L7:
+  56:irqUart.c     ****       dummy = U1LSR;  //read LSR to clear bits
+  59              		.loc 1 56 0
+  60 005c 143095E5 		ldr	r3, [r5, #20]
+  61 0060 660000EA 		b	.L26
+  62              	.L6:
+  64:irqUart.c     ****         uart1RxHead = tmpHead;
+  65:irqUart.c     **** 
+  66:irqUart.c     ****         if(tmpHead == uart1RxTail)
+  63              		.loc 1 66 0
+  64 0064 CC719FE5 		ldr	r7, .L28+8
+  65              	.L20:
+  63:irqUart.c     ****         tmpHead     = (uart1RxHead + 1) & RX_BUFFER_MASK;
+  66              		.loc 1 63 0
+  67 0068 003096E5 		ldr	r3, [r6, #0]
+  68 006c 013083E2 		add	r3, r3, #1
+  69 0070 033BA0E1 		mov	r3, r3, asl #22
+  70 0074 233BA0E1 		mov	r3, r3, lsr #22
+  71              	.LVL3:
+  72 0078 00308DE5 		str	r3, [sp, #0]
+  73              	.LVL4:
+  64:irqUart.c     ****         uart1RxHead = tmpHead;
+  74              		.loc 1 64 0
+  75 007c 00309DE5 		ldr	r3, [sp, #0]
+  76              	.LVL5:
+  77 0080 003086E5 		str	r3, [r6, #0]
+  78              		.loc 1 66 0
+  79 0084 00209DE5 		ldr	r2, [sp, #0]
+  80 0088 003097E5 		ldr	r3, [r7, #0]
+  81              	.LVL6:
+  82 008c 030052E1 		cmp	r2, r3
+  67:irqUart.c     ****           tmpHead = U1RBR;              //dummy read to reset IRQ flag
+  83              		.loc 1 67 0
+  84 0090 00309405 		ldreq	r3, [r4, #0]
+  85              	.LVL7:
+  86 0094 00308D05 		streq	r3, [sp, #0]
+  66:irqUart.c     ****         if(tmpHead == uart1RxTail)
+  87              		.loc 1 66 0
+  88 0098 0E00000A 		beq	.L11
+  68:irqUart.c     ****         else
+  69:irqUart.c     ****         {
+  70:irqUart.c     ****           uart1RxBuf[tmpHead] = U1RBR;  //will reset IRQ flag
+  89              		.loc 1 70 0
+  90 009c 00309DE5 		ldr	r3, [sp, #0]
+  91              	.LVL8:
+  92 00a0 94219FE5 		ldr	r2, .L28+12
+  93 00a4 001094E5 		ldr	r1, [r4, #0]
+  94 00a8 0310C2E7 		strb	r1, [r2, r3]
+  71:irqUart.c     **** 
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 4
+
+
+  72:irqUart.c     **** uart1RxInBuff++;
+  95              		.loc 1 72 0
+  96 00ac 8C319FE5 		ldr	r3, .L28+16
+  97 00b0 002093E5 		ldr	r2, [r3, #0]
+  98 00b4 012082E2 		add	r2, r2, #1
+  99              	.LVL9:
+ 100 00b8 002083E5 		str	r2, [r3, #0]
+ 101              	.LVL10:
+  73:irqUart.c     **** if(uart1RxInBuff > (RX_BUFFER_SIZE - RX_BUFFER_LIMIT))
+ 102              		.loc 1 73 0
+ 103 00bc 003093E5 		ldr	r3, [r3, #0]
+ 104 00c0 0F0D53E3 		cmp	r3, #960
+  74:irqUart.c     **** {
+  75:irqUart.c     ****   //pull RTS low = other side should stop sending
+  76:irqUart.c     ****   UART1_MCR = 0x00;
+ 105              		.loc 1 76 0
+ 106 00c4 0030A083 		movhi	r3, #0
+ 107 00c8 10308485 		strhi	r3, [r4, #16]
+  77:irqUart.c     **** //  RTSlow = TRUE;
+  78:irqUart.c     **** }
+  79:irqUart.c     **** 
+  80:irqUart.c     **** osSemGive(&receiveSem, &error);
+ 108              		.loc 1 80 0
+ 109 00cc 70019FE5 		ldr	r0, .L28+20
+ 110 00d0 0B108DE2 		add	r1, sp, #11
+ 111 00d4 FEFFFFEB 		bl	osSemGive
+ 112              	.LVL11:
+ 113              	.L11:
+  81:irqUart.c     **** 
+  82:irqUart.c     ****         }
+  83:irqUart.c     **** 
+  84:irqUart.c     ****       } while (U1LSR & 0x01);
+ 114              		.loc 1 84 0
+ 115 00d8 143094E5 		ldr	r3, [r4, #20]
+ 116 00dc 010013E3 		tst	r3, #1
+ 117 00e0 E0FFFF1A 		bne	.L20
+ 118 00e4 470000EA 		b	.L24
+ 119              	.L5:
+  85:irqUart.c     ****       break;
+  86:irqUart.c     **** 
+  87:irqUart.c     ****       case 0x02:  //Transmit Holding Register Empty
+  88:irqUart.c     ****       //check if all data is transmitted
+  89:irqUart.c     ****       if (uart1TxHead != uart1TxTail)
+ 120              		.loc 1 89 0
+ 121 00e8 58119FE5 		ldr	r1, .L28+24
+ 122 00ec 58319FE5 		ldr	r3, .L28+28
+ 123 00f0 000091E5 		ldr	r0, [r1, #0]
+ 124 00f4 002093E5 		ldr	r2, [r3, #0]
+ 125 00f8 020050E1 		cmp	r0, r2
+ 126 00fc 1400000A 		beq	.L13
+ 127              	.LBB2:
+  90:irqUart.c     ****       {
+  91:irqUart.c     ****       	tU32 bytesToSend;
+  92:irqUart.c     ****       	
+  93:irqUart.c     ****       	if (statusReg & 0xc0)
+ 128              		.loc 1 93 0
+ 129 0100 0920DDE5 		ldrb	r2, [sp, #9]	@ zero_extendqisi2
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 5
+
+
+ 130              	.LVL12:
+  94:irqUart.c     ****       	  bytesToSend = 16;    //FIFO enabled
+  95:irqUart.c     ****       	else
+  96:irqUart.c     ****       	  bytesToSend = 1;     //no FIFO enabled
+  97:irqUart.c     **** 
+  98:irqUart.c     ****       	do
+  99:irqUart.c     ****       	{
+ 100:irqUart.c     ****           //calculate buffer index
+ 101:irqUart.c     ****           tmpTail = (uart1TxTail + 1) & TX_BUFFER_MASK;
+ 102:irqUart.c     **** 
+ 103:irqUart.c     ****           uart1TxTail = tmpTail;
+ 104:irqUart.c     ****           U1THR = uart1TxBuf[tmpTail]; 
+ 131              		.loc 1 104 0
+ 132 0104 44019FE5 		ldr	r0, .L28+32
+  94:irqUart.c     ****       	  bytesToSend = 16;    //FIFO enabled
+ 133              		.loc 1 94 0
+ 134 0108 C00012E3 		tst	r2, #192
+ 135 010c 0120A003 		moveq	r2, #1
+ 136 0110 1020A013 		movne	r2, #16
+ 137              	.LVL13:
+ 138              	.L15:
+ 101:irqUart.c     ****           tmpTail = (uart1TxTail + 1) & TX_BUFFER_MASK;
+ 139              		.loc 1 101 0 discriminator 1
+ 140 0114 00C093E5 		ldr	ip, [r3, #0]
+ 141 0118 01C08CE2 		add	ip, ip, #1
+ 142 011c FFC00CE2 		and	ip, ip, #255
+ 143              	.LVL14:
+ 144 0120 04C08DE5 		str	ip, [sp, #4]
+ 145              	.LVL15:
+ 103:irqUart.c     ****           uart1TxTail = tmpTail;
+ 146              		.loc 1 103 0 discriminator 1
+ 147 0124 04C09DE5 		ldr	ip, [sp, #4]
+ 148              	.LVL16:
+ 149 0128 00C083E5 		str	ip, [r3, #0]
+ 150              		.loc 1 104 0 discriminator 1
+ 151 012c 04C09DE5 		ldr	ip, [sp, #4]
+ 152              	.LVL17:
+ 153 0130 0CC0D0E7 		ldrb	ip, [r0, ip]	@ zero_extendqisi2
+ 154 0134 00C084E5 		str	ip, [r4, #0]
+ 105:irqUart.c     ****         } while((uart1TxHead != uart1TxTail) && --bytesToSend);
+ 155              		.loc 1 105 0 discriminator 1
+ 156 0138 007091E5 		ldr	r7, [r1, #0]
+ 157 013c 00C093E5 		ldr	ip, [r3, #0]
+ 158 0140 0C0057E1 		cmp	r7, ip
+ 159 0144 2F00000A 		beq	.L24
+ 160              	.LVL18:
+ 161 0148 012052E2 		subs	r2, r2, #1
+ 162              	.LVL19:
+ 163 014c F0FFFF1A 		bne	.L15
+ 164 0150 2C0000EA 		b	.L24
+ 165              	.LVL20:
+ 166              	.L13:
+ 167              	.LBE2:
+ 106:irqUart.c     ****       }
+ 107:irqUart.c     **** 
+ 108:irqUart.c     ****       //all data has been transmitted
+ 109:irqUart.c     ****       else
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 6
+
+
+ 110:irqUart.c     ****       {
+ 111:irqUart.c     ****         uart1TxRunning = FALSE;
+ 168              		.loc 1 111 0
+ 169 0154 F8309FE5 		ldr	r3, .L28+36
+ 170 0158 0020A0E3 		mov	r2, #0
+ 171 015c 0020C3E5 		strb	r2, [r3, #0]
+ 172 0160 1E0000EA 		b	.L27
+ 173              	.L4:
+ 174              	.LBB3:
+ 112:irqUart.c     ****         U1IER &= ~0x02;        //disable TX IRQ
+ 113:irqUart.c     ****       }
+ 114:irqUart.c     ****       break;
+ 115:irqUart.c     **** 
+ 116:irqUart.c     ****       case 0x00:  //Modem signal IRQ
+ 117:irqUart.c     ****       {
+ 118:irqUart.c     ****       tU8 cause = UART1_MSR;
+ 175              		.loc 1 118 0
+ 176 0164 183095E5 		ldr	r3, [r5, #24]
+ 177              	.LVL21:
+ 119:irqUart.c     ****       
+ 120:irqUart.c     ****       //check if change on CTS
+ 121:irqUart.c     ****       if((cause & 0x01) == 0x01)
+ 178              		.loc 1 121 0
+ 179 0168 010013E3 		tst	r3, #1
+ 180 016c 2500000A 		beq	.L24
+ 122:irqUart.c     ****       {
+ 123:irqUart.c     ****         //check if CTS is low = allowed to send (register value is inverse of signal at pin)
+ 124:irqUart.c     ****         if((cause & 0x10) == 0x10)
+ 181              		.loc 1 124 0
+ 182 0170 103013E2 		ands	r3, r3, #16
+ 183              	.LVL22:
+ 125:irqUart.c     ****         {
+ 126:irqUart.c     **** //CTShigh = TRUE;
+ 127:irqUart.c     ****           /* check if data to be transmitted */
+ 128:irqUart.c     ****           if((uart1TxHead != uart1TxTail) && (uart1TxRunning == FALSE))
+ 129:irqUart.c     ****           {
+ 130:irqUart.c     ****             /* calculate buffer index */
+ 131:irqUart.c     ****             tmpTail = (uart1TxTail + 1) & TX_BUFFER_MASK;
+ 132:irqUart.c     **** 
+ 133:irqUart.c     ****             uart1TxTail = tmpTail;
+ 134:irqUart.c     ****             U1THR = uart1TxBuf[tmpTail]; 
+ 135:irqUart.c     ****             uart1TxRunning = TRUE;
+ 136:irqUart.c     ****             U1IER = 0x0f;          /* enable TX IRQ, and RX IRQ still enabled (and modem) */
+ 137:irqUart.c     ****           }
+ 138:irqUart.c     ****         }
+ 139:irqUart.c     **** 
+ 140:irqUart.c     ****         //CTS is high = NOT allowed to send
+ 141:irqUart.c     ****         else
+ 142:irqUart.c     ****         {
+ 143:irqUart.c     **** //CTSlow = TRUE;
+ 144:irqUart.c     ****           uart1TxRunning = FALSE;
+ 184              		.loc 1 144 0
+ 185 0174 D8209F05 		ldreq	r2, .L28+36
+ 186 0178 0030C205 		streqb	r3, [r2, #0]
+ 124:irqUart.c     ****         if((cause & 0x10) == 0x10)
+ 187              		.loc 1 124 0
+ 188 017c 1700000A 		beq	.L27
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 7
+
+
+ 128:irqUart.c     ****           if((uart1TxHead != uart1TxTail) && (uart1TxRunning == FALSE))
+ 189              		.loc 1 128 0
+ 190 0180 C0309FE5 		ldr	r3, .L28+24
+ 191 0184 001093E5 		ldr	r1, [r3, #0]
+ 192 0188 BC309FE5 		ldr	r3, .L28+28
+ 193 018c 002093E5 		ldr	r2, [r3, #0]
+ 194 0190 020051E1 		cmp	r1, r2
+ 195 0194 1B00000A 		beq	.L24
+ 128:irqUart.c     ****           if((uart1TxHead != uart1TxTail) && (uart1TxRunning == FALSE))
+ 196              		.loc 1 128 0 is_stmt 0 discriminator 1
+ 197 0198 B4209FE5 		ldr	r2, .L28+36
+ 198 019c 0010D2E5 		ldrb	r1, [r2, #0]	@ zero_extendqisi2
+ 199 01a0 000051E3 		cmp	r1, #0
+ 200 01a4 1700001A 		bne	.L24
+ 131:irqUart.c     ****             tmpTail = (uart1TxTail + 1) & TX_BUFFER_MASK;
+ 201              		.loc 1 131 0 is_stmt 1
+ 202 01a8 001093E5 		ldr	r1, [r3, #0]
+ 203 01ac 011081E2 		add	r1, r1, #1
+ 204 01b0 FF1001E2 		and	r1, r1, #255
+ 205              	.LVL23:
+ 206 01b4 04108DE5 		str	r1, [sp, #4]
+ 207              	.LVL24:
+ 133:irqUart.c     ****             uart1TxTail = tmpTail;
+ 208              		.loc 1 133 0
+ 209 01b8 04109DE5 		ldr	r1, [sp, #4]
+ 210              	.LVL25:
+ 211 01bc 001083E5 		str	r1, [r3, #0]
+ 134:irqUart.c     ****             U1THR = uart1TxBuf[tmpTail]; 
+ 212              		.loc 1 134 0
+ 213 01c0 04309DE5 		ldr	r3, [sp, #4]
+ 214 01c4 84109FE5 		ldr	r1, .L28+32
+ 215              	.LVL26:
+ 216 01c8 0330D1E7 		ldrb	r3, [r1, r3]	@ zero_extendqisi2
+ 217 01cc 003084E5 		str	r3, [r4, #0]
+ 135:irqUart.c     ****             uart1TxRunning = TRUE;
+ 218              		.loc 1 135 0
+ 219 01d0 0130A0E3 		mov	r3, #1
+ 220 01d4 0030C2E5 		strb	r3, [r2, #0]
+ 136:irqUart.c     ****             U1IER = 0x0f;          /* enable TX IRQ, and RX IRQ still enabled (and modem) */
+ 221              		.loc 1 136 0
+ 222 01d8 0F30A0E3 		mov	r3, #15
+ 223 01dc 010000EA 		b	.L25
+ 224              	.L27:
+ 145:irqUart.c     ****           U1IER &= ~0x02;        //disable TX IRQ
+ 225              		.loc 1 145 0
+ 226 01e0 043094E5 		ldr	r3, [r4, #4]
+ 227 01e4 0230C3E3 		bic	r3, r3, #2
+ 228              	.L25:
+ 229 01e8 043084E5 		str	r3, [r4, #4]
+ 230 01ec 050000EA 		b	.L24
+ 231              	.L3:
+ 232              	.LBE3:
+ 146:irqUart.c     ****         }
+ 147:irqUart.c     ****       }
+ 148:irqUart.c     ****       }
+ 149:irqUart.c     ****       break;
+ 150:irqUart.c     **** 
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 8
+
+
+ 151:irqUart.c     ****       default:  //unknown
+ 152:irqUart.c     ****       dummy = U1LSR;
+ 233              		.loc 1 152 0
+ 234 01f0 143095E5 		ldr	r3, [r5, #20]
+ 235 01f4 FF3003E2 		and	r3, r3, #255
+ 236              	.LVL27:
+ 237 01f8 0A30CDE5 		strb	r3, [sp, #10]
+ 153:irqUart.c     ****       dummy = U1RBR;
+ 238              		.loc 1 153 0
+ 239 01fc 003095E5 		ldr	r3, [r5, #0]
+ 240              	.LVL28:
+ 241              	.L26:
+ 242 0200 FF3003E2 		and	r3, r3, #255
+ 243              	.LVL29:
+ 244 0204 0A30CDE5 		strb	r3, [sp, #10]
+ 245              	.L24:
+  50:irqUart.c     ****   while (((statusReg = U1IIR) & 0x01) == 0)
+ 246              		.loc 1 50 0 discriminator 1
+ 247 0208 083094E5 		ldr	r3, [r4, #8]
+ 248              	.LVL30:
+ 249 020c FF2003E2 		and	r2, r3, #255
+ 250 0210 010013E3 		tst	r3, #1
+ 251 0214 0920CDE5 		strb	r2, [sp, #9]
+ 252              	.LVL31:
+ 253 0218 7DFFFF0A 		beq	.L17
+ 154:irqUart.c     ****       break;
+ 155:irqUart.c     ****     }
+ 156:irqUart.c     ****   }
+ 157:irqUart.c     **** 
+ 158:irqUart.c     ****   VICVectAddr = 0x00000000;    //dummy write to VIC to signal end of interrupt
+ 254              		.loc 1 158 0
+ 255 021c 0020A0E3 		mov	r2, #0
+ 256 0220 0030E0E3 		mvn	r3, #0
+ 257 0224 CF2F03E5 		str	r2, [r3, #-4047]
+ 159:irqUart.c     **** }
+ 258              		.loc 1 159 0
+ 259 0228 FE40BDE8 		ldmfd	sp!, {r1, r2, r3, r4, r5, r6, r7, lr}
+ 260 022c 1EFF2FE1 		bx	lr
+ 261              	.L29:
+ 262              		.align	2
+ 263              	.L28:
+ 264 0230 000001E0 		.word	-536805376
+ 265 0234 00000000 		.word	uart1RxHead
+ 266 0238 00000000 		.word	uart1RxTail
+ 267 023c 00000000 		.word	uart1RxBuf
+ 268 0240 00000000 		.word	uart1RxInBuff
+ 269 0244 00000000 		.word	receiveSem
+ 270 0248 00000000 		.word	uart1TxHead
+ 271 024c 00000000 		.word	uart1TxTail
+ 272 0250 00000000 		.word	uart1TxBuf
+ 273 0254 00000000 		.word	uart1TxRunning
+ 274              		.cfi_endproc
+ 275              	.LFE0:
+ 276              		.size	uart1ISR, .-uart1ISR
+ 277              		.align	2
+ 278              		.global	disIrq
+ 279              		.type	disIrq, %function
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 9
+
+
+ 280              	disIrq:
+ 281              	.LFB1:
+ 160:irqUart.c     **** 
+ 161:irqUart.c     **** /*****************************************************************************
+ 162:irqUart.c     ****  *
+ 163:irqUart.c     ****  * Description:
+ 164:irqUart.c     ****  *    Disable interrupts 
+ 165:irqUart.c     ****  *
+ 166:irqUart.c     ****  * Returns:
+ 167:irqUart.c     ****  *    The current status register, before disabling interrupts. 
+ 168:irqUart.c     ****  *
+ 169:irqUart.c     ****  ****************************************************************************/
+ 170:irqUart.c     **** #ifdef __IAR_SYSTEMS_ICC__
+ 171:irqUart.c     **** #include <intrinsic.h>
+ 172:irqUart.c     **** __arm tU32
+ 173:irqUart.c     **** disIrq(void)
+ 174:irqUart.c     **** {
+ 175:irqUart.c     ****   asm("disIrq1: mrs r0, cpsr  ");
+ 176:irqUart.c     ****   asm("  orr r1, r0, #0xC0    ");
+ 177:irqUart.c     ****   asm("  msr cpsr_c, r1       ");
+ 178:irqUart.c     ****   asm("  mrs r1, cpsr         ");
+ 179:irqUart.c     ****   asm("  and r1, r1, #0xC0    ");
+ 180:irqUart.c     ****   asm("  cmp r1, #0xC0        ");
+ 181:irqUart.c     ****   asm("  bne disIrq1          ");
+ 182:irqUart.c     **** }
+ 183:irqUart.c     **** 
+ 184:irqUart.c     **** #else
+ 185:irqUart.c     **** 
+ 186:irqUart.c     **** tU32
+ 187:irqUart.c     **** disIrq(void)
+ 188:irqUart.c     **** {
+ 282              		.loc 1 188 0
+ 283              		.cfi_startproc
+ 284              		@ Function supports interworking.
+ 285              		@ args = 0, pretend = 0, frame = 0
+ 286              		@ frame_needed = 0, uses_anonymous_args = 0
+ 287              		@ link register save eliminated.
+ 189:irqUart.c     ****   tU32 returnReg;
+ 190:irqUart.c     ****   asm volatile ("disIrq1: mrs %0, cpsr  \n\t"
+ 191:irqUart.c     ****                 "orr r1, %0, #0xC0      \n\t"
+ 192:irqUart.c     ****                 "msr cpsr_c, r1         \n\t"
+ 193:irqUart.c     ****                 "mrs r1, cpsr           \n\t"
+ 194:irqUart.c     ****                 "and r1, r1, #0xC0      \n\t"
+ 195:irqUart.c     ****                 "cmp r1, #0xC0          \n\t"
+ 196:irqUart.c     ****                 "bne disIrq1            \n\t"
+ 197:irqUart.c     ****                 : "=r"(returnReg)
+ 198:irqUart.c     ****                 :
+ 199:irqUart.c     ****                 : "r1"
+ 200:irqUart.c     ****                );
+ 201:irqUart.c     ****   return returnReg;
+ 202:irqUart.c     **** }
+ 288              		.loc 1 202 0
+ 289              	@ 190 "irqUart.c" 1
+ 290 0258 00000FE1 		disIrq1: mrs r0, cpsr  
+ 291 025c C01080E3 		orr r1, r0, #0xC0      
+ 292 0260 01F021E1 		msr cpsr_c, r1         
+ 293 0264 00100FE1 		mrs r1, cpsr           
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 10
+
+
+ 294 0268 C01001E2 		and r1, r1, #0xC0      
+ 295 026c C00051E3 		cmp r1, #0xC0          
+ 296 0270 F8FFFF1A 		bne disIrq1            
+ 297              		
+ 298              	@ 0 "" 2
+ 299 0274 1EFF2FE1 		bx	lr
+ 300              		.cfi_endproc
+ 301              	.LFE1:
+ 302              		.size	disIrq, .-disIrq
+ 303              		.align	2
+ 304              		.global	restoreIrq
+ 305              		.type	restoreIrq, %function
+ 306              	restoreIrq:
+ 307              	.LFB2:
+ 203:irqUart.c     **** #endif
+ 204:irqUart.c     **** 
+ 205:irqUart.c     **** /*****************************************************************************
+ 206:irqUart.c     ****  *
+ 207:irqUart.c     ****  * Description:
+ 208:irqUart.c     ****  *    Restore interrupt state. 
+ 209:irqUart.c     ****  *
+ 210:irqUart.c     ****  * Params:
+ 211:irqUart.c     ****  *    [in] restoreValue - The value of the new status register. 
+ 212:irqUart.c     ****  *
+ 213:irqUart.c     ****  ****************************************************************************/
+ 214:irqUart.c     **** #ifdef __IAR_SYSTEMS_ICC__
+ 215:irqUart.c     **** __arm void
+ 216:irqUart.c     **** restoreIrq(tU32 restoreValue)
+ 217:irqUart.c     **** {
+ 218:irqUart.c     ****   asm("  msr cpsr_c, r0");
+ 219:irqUart.c     **** }
+ 220:irqUart.c     **** 
+ 221:irqUart.c     **** #else
+ 222:irqUart.c     **** 
+ 223:irqUart.c     **** void
+ 224:irqUart.c     **** restoreIrq(tU32 restoreValue)
+ 225:irqUart.c     **** {
+ 308              		.loc 1 225 0
+ 309              		.cfi_startproc
+ 310              		@ Function supports interworking.
+ 311              		@ args = 0, pretend = 0, frame = 0
+ 312              		@ frame_needed = 0, uses_anonymous_args = 0
+ 313              		@ link register save eliminated.
+ 314              	.LVL32:
+ 226:irqUart.c     ****   asm volatile ("msr cpsr_c, %0  \n\t"
+ 315              		.loc 1 226 0
+ 316              	@ 226 "irqUart.c" 1
+ 317 0278 00F021E1 		msr cpsr_c, r0  
+ 318              		
+ 319              	@ 0 "" 2
+ 227:irqUart.c     ****                 :
+ 228:irqUart.c     ****                 : "r" (restoreValue)
+ 229:irqUart.c     ****                 : "r1"
+ 230:irqUart.c     ****                );
+ 231:irqUart.c     **** }
+ 320              		.loc 1 231 0
+ 321 027c 1EFF2FE1 		bx	lr
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 11
+
+
+ 322              		.cfi_endproc
+ 323              	.LFE2:
+ 324              		.size	restoreIrq, .-restoreIrq
+ 325              	.Letext0:
+ 326              		.file 2 "../pre_emptive_os/api/../api/general.h"
+ 327              		.file 3 "../pre_emptive_os/api/osapi.h"
+ 328              		.file 4 "irqUart.h"
+ 329              		.section	.debug_info,"",%progbits
+ 330              	.Ldebug_info0:
+ 331 0000 55030000 		.4byte	0x355
+ 332 0004 0200     		.2byte	0x2
+ 333 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 334 000a 04       		.byte	0x4
+ 335 000b 01       		.uleb128 0x1
+ 336 000c 25010000 		.4byte	.LASF48
+ 337 0010 01       		.byte	0x1
+ 338 0011 12020000 		.4byte	.LASF49
+ 339 0015 7F000000 		.4byte	.LASF50
+ 340 0019 00000000 		.4byte	.Ltext0
+ 341 001d 80020000 		.4byte	.Letext0
+ 342 0021 00000000 		.4byte	.Ldebug_line0
+ 343 0025 02       		.uleb128 0x2
+ 344 0026 74553800 		.ascii	"tU8\000"
+ 345 002a 02       		.byte	0x2
+ 346 002b 47       		.byte	0x47
+ 347 002c 30000000 		.4byte	0x30
+ 348 0030 03       		.uleb128 0x3
+ 349 0031 01       		.byte	0x1
+ 350 0032 08       		.byte	0x8
+ 351 0033 B3000000 		.4byte	.LASF1
+ 352 0037 04       		.uleb128 0x4
+ 353 0038 C7010000 		.4byte	.LASF0
+ 354 003c 02       		.byte	0x2
+ 355 003d 48       		.byte	0x48
+ 356 003e 42000000 		.4byte	0x42
+ 357 0042 03       		.uleb128 0x3
+ 358 0043 02       		.byte	0x2
+ 359 0044 07       		.byte	0x7
+ 360 0045 EF000000 		.4byte	.LASF2
+ 361 0049 04       		.uleb128 0x4
+ 362 004a CC010000 		.4byte	.LASF3
+ 363 004e 02       		.byte	0x2
+ 364 004f 49       		.byte	0x49
+ 365 0050 54000000 		.4byte	0x54
+ 366 0054 03       		.uleb128 0x3
+ 367 0055 04       		.byte	0x4
+ 368 0056 07       		.byte	0x7
+ 369 0057 91010000 		.4byte	.LASF4
+ 370 005b 03       		.uleb128 0x3
+ 371 005c 01       		.byte	0x1
+ 372 005d 06       		.byte	0x6
+ 373 005e 2B020000 		.4byte	.LASF5
+ 374 0062 03       		.uleb128 0x3
+ 375 0063 02       		.byte	0x2
+ 376 0064 05       		.byte	0x5
+ 377 0065 F7010000 		.4byte	.LASF6
+ 378 0069 05       		.uleb128 0x5
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 12
+
+
+ 379 006a 04       		.byte	0x4
+ 380 006b 05       		.byte	0x5
+ 381 006c 696E7400 		.ascii	"int\000"
+ 382 0070 06       		.uleb128 0x6
+ 383 0071 31010000 		.4byte	.LASF19
+ 384 0075 28       		.byte	0x28
+ 385 0076 03       		.byte	0x3
+ 386 0077 57       		.byte	0x57
+ 387 0078 25010000 		.4byte	0x125
+ 388 007c 07       		.uleb128 0x7
+ 389 007d 05000000 		.4byte	.LASF7
+ 390 0081 03       		.byte	0x3
+ 391 0082 59       		.byte	0x59
+ 392 0083 25010000 		.4byte	0x125
+ 393 0087 02       		.byte	0x2
+ 394 0088 23       		.byte	0x23
+ 395 0089 00       		.uleb128 0
+ 396 008a 07       		.uleb128 0x7
+ 397 008b 4F010000 		.4byte	.LASF8
+ 398 008f 03       		.byte	0x3
+ 399 0090 5A       		.byte	0x5a
+ 400 0091 2B010000 		.4byte	0x12b
+ 401 0095 02       		.byte	0x2
+ 402 0096 23       		.byte	0x23
+ 403 0097 04       		.uleb128 0x4
+ 404 0098 07       		.uleb128 0x7
+ 405 0099 11010000 		.4byte	.LASF9
+ 406 009d 03       		.byte	0x3
+ 407 009e 5B       		.byte	0x5b
+ 408 009f 2B010000 		.4byte	0x12b
+ 409 00a3 02       		.byte	0x2
+ 410 00a4 23       		.byte	0x23
+ 411 00a5 08       		.uleb128 0x8
+ 412 00a6 07       		.uleb128 0x7
+ 413 00a7 7D010000 		.4byte	.LASF10
+ 414 00ab 03       		.byte	0x3
+ 415 00ac 5C       		.byte	0x5c
+ 416 00ad 2B010000 		.4byte	0x12b
+ 417 00b1 02       		.byte	0x2
+ 418 00b2 23       		.byte	0x23
+ 419 00b3 0C       		.uleb128 0xc
+ 420 00b4 07       		.uleb128 0x7
+ 421 00b5 3B010000 		.4byte	.LASF11
+ 422 00b9 03       		.byte	0x3
+ 423 00ba 5D       		.byte	0x5d
+ 424 00bb 2B010000 		.4byte	0x12b
+ 425 00bf 02       		.byte	0x2
+ 426 00c0 23       		.byte	0x23
+ 427 00c1 10       		.uleb128 0x10
+ 428 00c2 07       		.uleb128 0x7
+ 429 00c3 1C020000 		.4byte	.LASF12
+ 430 00c7 03       		.byte	0x3
+ 431 00c8 5E       		.byte	0x5e
+ 432 00c9 2B010000 		.4byte	0x12b
+ 433 00cd 02       		.byte	0x2
+ 434 00ce 23       		.byte	0x23
+ 435 00cf 14       		.uleb128 0x14
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 13
+
+
+ 436 00d0 08       		.uleb128 0x8
+ 437 00d1 70696400 		.ascii	"pid\000"
+ 438 00d5 03       		.byte	0x3
+ 439 00d6 5F       		.byte	0x5f
+ 440 00d7 25000000 		.4byte	0x25
+ 441 00db 02       		.byte	0x2
+ 442 00dc 23       		.byte	0x23
+ 443 00dd 18       		.uleb128 0x18
+ 444 00de 07       		.uleb128 0x7
+ 445 00df 00000000 		.4byte	.LASF13
+ 446 00e3 03       		.byte	0x3
+ 447 00e4 60       		.byte	0x60
+ 448 00e5 25000000 		.4byte	0x25
+ 449 00e9 02       		.byte	0x2
+ 450 00ea 23       		.byte	0x23
+ 451 00eb 19       		.uleb128 0x19
+ 452 00ec 07       		.uleb128 0x7
+ 453 00ed 6C010000 		.4byte	.LASF14
+ 454 00f1 03       		.byte	0x3
+ 455 00f2 61       		.byte	0x61
+ 456 00f3 25000000 		.4byte	0x25
+ 457 00f7 02       		.byte	0x2
+ 458 00f8 23       		.byte	0x23
+ 459 00f9 1A       		.uleb128 0x1a
+ 460 00fa 07       		.uleb128 0x7
+ 461 00fb 37020000 		.4byte	.LASF15
+ 462 00ff 03       		.byte	0x3
+ 463 0100 62       		.byte	0x62
+ 464 0101 49000000 		.4byte	0x49
+ 465 0105 02       		.byte	0x2
+ 466 0106 23       		.byte	0x23
+ 467 0107 1C       		.uleb128 0x1c
+ 468 0108 07       		.uleb128 0x7
+ 469 0109 BF010000 		.4byte	.LASF16
+ 470 010d 03       		.byte	0x3
+ 471 010e 65       		.byte	0x65
+ 472 010f 25010000 		.4byte	0x125
+ 473 0113 02       		.byte	0x2
+ 474 0114 23       		.byte	0x23
+ 475 0115 20       		.uleb128 0x20
+ 476 0116 07       		.uleb128 0x7
+ 477 0117 9E010000 		.4byte	.LASF17
+ 478 011b 03       		.byte	0x3
+ 479 011c 66       		.byte	0x66
+ 480 011d 37000000 		.4byte	0x37
+ 481 0121 02       		.byte	0x2
+ 482 0122 23       		.byte	0x23
+ 483 0123 24       		.uleb128 0x24
+ 484 0124 00       		.byte	0
+ 485 0125 09       		.uleb128 0x9
+ 486 0126 04       		.byte	0x4
+ 487 0127 25000000 		.4byte	0x25
+ 488 012b 09       		.uleb128 0x9
+ 489 012c 04       		.byte	0x4
+ 490 012d 70000000 		.4byte	0x70
+ 491 0131 04       		.uleb128 0x4
+ 492 0132 C1000000 		.4byte	.LASF18
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 14
+
+
+ 493 0136 03       		.byte	0x3
+ 494 0137 68       		.byte	0x68
+ 495 0138 70000000 		.4byte	0x70
+ 496 013c 06       		.uleb128 0x6
+ 497 013d 66000000 		.4byte	.LASF20
+ 498 0141 18       		.byte	0x18
+ 499 0142 03       		.byte	0x3
+ 500 0143 6F       		.byte	0x6f
+ 501 0144 65010000 		.4byte	0x165
+ 502 0148 07       		.uleb128 0x7
+ 503 0149 33000000 		.4byte	.LASF21
+ 504 014d 03       		.byte	0x3
+ 505 014e 71       		.byte	0x71
+ 506 014f 65010000 		.4byte	0x165
+ 507 0153 02       		.byte	0x2
+ 508 0154 23       		.byte	0x23
+ 509 0155 00       		.uleb128 0
+ 510 0156 07       		.uleb128 0x7
+ 511 0157 3D000000 		.4byte	.LASF22
+ 512 015b 03       		.byte	0x3
+ 513 015c 72       		.byte	0x72
+ 514 015d 7C010000 		.4byte	0x17c
+ 515 0161 02       		.byte	0x2
+ 516 0162 23       		.byte	0x23
+ 517 0163 14       		.uleb128 0x14
+ 518 0164 00       		.byte	0
+ 519 0165 0A       		.uleb128 0xa
+ 520 0166 7C010000 		.4byte	0x17c
+ 521 016a 75010000 		.4byte	0x175
+ 522 016e 0B       		.uleb128 0xb
+ 523 016f 75010000 		.4byte	0x175
+ 524 0173 04       		.byte	0x4
+ 525 0174 00       		.byte	0
+ 526 0175 03       		.uleb128 0x3
+ 527 0176 04       		.byte	0x4
+ 528 0177 07       		.byte	0x7
+ 529 0178 DD000000 		.4byte	.LASF23
+ 530 017c 09       		.uleb128 0x9
+ 531 017d 04       		.byte	0x4
+ 532 017e 31010000 		.4byte	0x131
+ 533 0182 04       		.uleb128 0x4
+ 534 0183 D2000000 		.4byte	.LASF24
+ 535 0187 03       		.byte	0x3
+ 536 0188 73       		.byte	0x73
+ 537 0189 3C010000 		.4byte	0x13c
+ 538 018d 06       		.uleb128 0x6
+ 539 018e E6010000 		.4byte	.LASF25
+ 540 0192 18       		.byte	0x18
+ 541 0193 03       		.byte	0x3
+ 542 0194 75       		.byte	0x75
+ 543 0195 A8010000 		.4byte	0x1a8
+ 544 0199 07       		.uleb128 0x7
+ 545 019a B3010000 		.4byte	.LASF26
+ 546 019e 03       		.byte	0x3
+ 547 019f 77       		.byte	0x77
+ 548 01a0 82010000 		.4byte	0x182
+ 549 01a4 02       		.byte	0x2
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 15
+
+
+ 550 01a5 23       		.byte	0x23
+ 551 01a6 00       		.uleb128 0
+ 552 01a7 00       		.byte	0
+ 553 01a8 04       		.uleb128 0x4
+ 554 01a9 D1010000 		.4byte	.LASF27
+ 555 01ad 03       		.byte	0x3
+ 556 01ae 78       		.byte	0x78
+ 557 01af 8D010000 		.4byte	0x18d
+ 558 01b3 06       		.uleb128 0x6
+ 559 01b4 21000000 		.4byte	.LASF28
+ 560 01b8 1C       		.byte	0x1c
+ 561 01b9 03       		.byte	0x3
+ 562 01ba 7A       		.byte	0x7a
+ 563 01bb DB010000 		.4byte	0x1db
+ 564 01bf 08       		.uleb128 0x8
+ 565 01c0 657600   		.ascii	"ev\000"
+ 566 01c3 03       		.byte	0x3
+ 567 01c4 7C       		.byte	0x7c
+ 568 01c5 A8010000 		.4byte	0x1a8
+ 569 01c9 02       		.byte	0x2
+ 570 01ca 23       		.byte	0x23
+ 571 01cb 00       		.uleb128 0
+ 572 01cc 08       		.uleb128 0x8
+ 573 01cd 636E7400 		.ascii	"cnt\000"
+ 574 01d1 03       		.byte	0x3
+ 575 01d2 7D       		.byte	0x7d
+ 576 01d3 37000000 		.4byte	0x37
+ 577 01d7 02       		.byte	0x2
+ 578 01d8 23       		.byte	0x23
+ 579 01d9 18       		.uleb128 0x18
+ 580 01da 00       		.byte	0
+ 581 01db 04       		.uleb128 0x4
+ 582 01dc 5E000000 		.4byte	.LASF29
+ 583 01e0 03       		.byte	0x3
+ 584 01e1 7F       		.byte	0x7f
+ 585 01e2 B3010000 		.4byte	0x1b3
+ 586 01e6 0C       		.uleb128 0xc
+ 587 01e7 01       		.byte	0x1
+ 588 01e8 63010000 		.4byte	.LASF37
+ 589 01ec 01       		.byte	0x1
+ 590 01ed 28       		.byte	0x28
+ 591 01ee 01       		.byte	0x1
+ 592 01ef 00000000 		.4byte	.LFB0
+ 593 01f3 58020000 		.4byte	.LFE0
+ 594 01f7 00000000 		.4byte	.LLST0
+ 595 01fb 80020000 		.4byte	0x280
+ 596 01ff 0D       		.uleb128 0xd
+ 597 0200 0A000000 		.4byte	.LASF30
+ 598 0204 01       		.byte	0x1
+ 599 0205 2B       		.byte	0x2b
+ 600 0206 80020000 		.4byte	0x280
+ 601 020a 20000000 		.4byte	.LLST1
+ 602 020e 0D       		.uleb128 0xd
+ 603 020f F1010000 		.4byte	.LASF31
+ 604 0213 01       		.byte	0x1
+ 605 0214 2C       		.byte	0x2c
+ 606 0215 80020000 		.4byte	0x280
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 16
+
+
+ 607 0219 57000000 		.4byte	.LLST2
+ 608 021d 0D       		.uleb128 0xd
+ 609 021e 2B000000 		.4byte	.LASF32
+ 610 0222 01       		.byte	0x1
+ 611 0223 2D       		.byte	0x2d
+ 612 0224 85020000 		.4byte	0x285
+ 613 0228 99000000 		.4byte	.LLST3
+ 614 022c 0D       		.uleb128 0xd
+ 615 022d 4A000000 		.4byte	.LASF33
+ 616 0231 01       		.byte	0x1
+ 617 0232 2E       		.byte	0x2e
+ 618 0233 85020000 		.4byte	0x285
+ 619 0237 DB000000 		.4byte	.LLST4
+ 620 023b 0E       		.uleb128 0xe
+ 621 023c 01020000 		.4byte	.LASF34
+ 622 0240 01       		.byte	0x1
+ 623 0241 2F       		.byte	0x2f
+ 624 0242 25000000 		.4byte	0x25
+ 625 0246 02       		.byte	0x2
+ 626 0247 91       		.byte	0x91
+ 627 0248 6B       		.sleb128 -21
+ 628 0249 0F       		.uleb128 0xf
+ 629 024a 00010000 		.4byte	.LBB2
+ 630 024e 54010000 		.4byte	.LBE2
+ 631 0252 66020000 		.4byte	0x266
+ 632 0256 0D       		.uleb128 0xd
+ 633 0257 73000000 		.4byte	.LASF35
+ 634 025b 01       		.byte	0x1
+ 635 025c 5B       		.byte	0x5b
+ 636 025d 49000000 		.4byte	0x49
+ 637 0261 1D010000 		.4byte	.LLST5
+ 638 0265 00       		.byte	0
+ 639 0266 10       		.uleb128 0x10
+ 640 0267 64010000 		.4byte	.LBB3
+ 641 026b F0010000 		.4byte	.LBE3
+ 642 026f 0D       		.uleb128 0xd
+ 643 0270 B9010000 		.4byte	.LASF36
+ 644 0274 01       		.byte	0x1
+ 645 0275 76       		.byte	0x76
+ 646 0276 25000000 		.4byte	0x25
+ 647 027a 48010000 		.4byte	.LLST6
+ 648 027e 00       		.byte	0
+ 649 027f 00       		.byte	0
+ 650 0280 11       		.uleb128 0x11
+ 651 0281 25000000 		.4byte	0x25
+ 652 0285 11       		.uleb128 0x11
+ 653 0286 49000000 		.4byte	0x49
+ 654 028a 12       		.uleb128 0x12
+ 655 028b 01       		.byte	0x1
+ 656 028c 43000000 		.4byte	.LASF51
+ 657 0290 01       		.byte	0x1
+ 658 0291 BB       		.byte	0xbb
+ 659 0292 01       		.byte	0x1
+ 660 0293 49000000 		.4byte	0x49
+ 661 0297 58020000 		.4byte	.LFB1
+ 662 029b 78020000 		.4byte	.LFE1
+ 663 029f 02       		.byte	0x2
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 17
+
+
+ 664 02a0 7D       		.byte	0x7d
+ 665 02a1 00       		.sleb128 0
+ 666 02a2 B2020000 		.4byte	0x2b2
+ 667 02a6 13       		.uleb128 0x13
+ 668 02a7 C8000000 		.4byte	.LASF52
+ 669 02ab 01       		.byte	0x1
+ 670 02ac BD       		.byte	0xbd
+ 671 02ad 49000000 		.4byte	0x49
+ 672 02b1 00       		.byte	0
+ 673 02b2 14       		.uleb128 0x14
+ 674 02b3 01       		.byte	0x1
+ 675 02b4 3D020000 		.4byte	.LASF38
+ 676 02b8 01       		.byte	0x1
+ 677 02b9 E0       		.byte	0xe0
+ 678 02ba 01       		.byte	0x1
+ 679 02bb 78020000 		.4byte	.LFB2
+ 680 02bf 80020000 		.4byte	.LFE2
+ 681 02c3 02       		.byte	0x2
+ 682 02c4 7D       		.byte	0x7d
+ 683 02c5 00       		.sleb128 0
+ 684 02c6 D8020000 		.4byte	0x2d8
+ 685 02ca 15       		.uleb128 0x15
+ 686 02cb 14000000 		.4byte	.LASF53
+ 687 02cf 01       		.byte	0x1
+ 688 02d0 E0       		.byte	0xe0
+ 689 02d1 49000000 		.4byte	0x49
+ 690 02d5 01       		.byte	0x1
+ 691 02d6 50       		.byte	0x50
+ 692 02d7 00       		.byte	0
+ 693 02d8 0A       		.uleb128 0xa
+ 694 02d9 25000000 		.4byte	0x25
+ 695 02dd E3020000 		.4byte	0x2e3
+ 696 02e1 16       		.uleb128 0x16
+ 697 02e2 00       		.byte	0
+ 698 02e3 17       		.uleb128 0x17
+ 699 02e4 A8010000 		.4byte	.LASF39
+ 700 02e8 04       		.byte	0x4
+ 701 02e9 10       		.byte	0x10
+ 702 02ea D8020000 		.4byte	0x2d8
+ 703 02ee 01       		.byte	0x1
+ 704 02ef 01       		.byte	0x1
+ 705 02f0 17       		.uleb128 0x17
+ 706 02f1 71010000 		.4byte	.LASF40
+ 707 02f5 04       		.byte	0x4
+ 708 02f6 11       		.byte	0x11
+ 709 02f7 85020000 		.4byte	0x285
+ 710 02fb 01       		.byte	0x1
+ 711 02fc 01       		.byte	0x1
+ 712 02fd 17       		.uleb128 0x17
+ 713 02fe 61020000 		.4byte	.LASF41
+ 714 0302 04       		.byte	0x4
+ 715 0303 12       		.byte	0x12
+ 716 0304 85020000 		.4byte	0x285
+ 717 0308 01       		.byte	0x1
+ 718 0309 01       		.byte	0x1
+ 719 030a 17       		.uleb128 0x17
+ 720 030b 02010000 		.4byte	.LASF42
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 18
+
+
+ 721 030f 04       		.byte	0x4
+ 722 0310 13       		.byte	0x13
+ 723 0311 80020000 		.4byte	0x280
+ 724 0315 01       		.byte	0x1
+ 725 0316 01       		.byte	0x1
+ 726 0317 17       		.uleb128 0x17
+ 727 0318 56020000 		.4byte	.LASF43
+ 728 031c 04       		.byte	0x4
+ 729 031d 15       		.byte	0x15
+ 730 031e D8020000 		.4byte	0x2d8
+ 731 0322 01       		.byte	0x1
+ 732 0323 01       		.byte	0x1
+ 733 0324 17       		.uleb128 0x17
+ 734 0325 DA010000 		.4byte	.LASF44
+ 735 0329 04       		.byte	0x4
+ 736 032a 16       		.byte	0x16
+ 737 032b 85020000 		.4byte	0x285
+ 738 032f 01       		.byte	0x1
+ 739 0330 01       		.byte	0x1
+ 740 0331 17       		.uleb128 0x17
+ 741 0332 52000000 		.4byte	.LASF45
+ 742 0336 04       		.byte	0x4
+ 743 0337 17       		.byte	0x17
+ 744 0338 85020000 		.4byte	0x285
+ 745 033c 01       		.byte	0x1
+ 746 033d 01       		.byte	0x1
+ 747 033e 17       		.uleb128 0x17
+ 748 033f 48020000 		.4byte	.LASF46
+ 749 0343 04       		.byte	0x4
+ 750 0344 18       		.byte	0x18
+ 751 0345 85020000 		.4byte	0x285
+ 752 0349 01       		.byte	0x1
+ 753 034a 01       		.byte	0x1
+ 754 034b 17       		.uleb128 0x17
+ 755 034c 07020000 		.4byte	.LASF47
+ 756 0350 01       		.byte	0x1
+ 757 0351 13       		.byte	0x13
+ 758 0352 DB010000 		.4byte	0x1db
+ 759 0356 01       		.byte	0x1
+ 760 0357 01       		.byte	0x1
+ 761 0358 00       		.byte	0
+ 762              		.section	.debug_abbrev,"",%progbits
+ 763              	.Ldebug_abbrev0:
+ 764 0000 01       		.uleb128 0x1
+ 765 0001 11       		.uleb128 0x11
+ 766 0002 01       		.byte	0x1
+ 767 0003 25       		.uleb128 0x25
+ 768 0004 0E       		.uleb128 0xe
+ 769 0005 13       		.uleb128 0x13
+ 770 0006 0B       		.uleb128 0xb
+ 771 0007 03       		.uleb128 0x3
+ 772 0008 0E       		.uleb128 0xe
+ 773 0009 1B       		.uleb128 0x1b
+ 774 000a 0E       		.uleb128 0xe
+ 775 000b 11       		.uleb128 0x11
+ 776 000c 01       		.uleb128 0x1
+ 777 000d 12       		.uleb128 0x12
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 19
+
+
+ 778 000e 01       		.uleb128 0x1
+ 779 000f 10       		.uleb128 0x10
+ 780 0010 06       		.uleb128 0x6
+ 781 0011 00       		.byte	0
+ 782 0012 00       		.byte	0
+ 783 0013 02       		.uleb128 0x2
+ 784 0014 16       		.uleb128 0x16
+ 785 0015 00       		.byte	0
+ 786 0016 03       		.uleb128 0x3
+ 787 0017 08       		.uleb128 0x8
+ 788 0018 3A       		.uleb128 0x3a
+ 789 0019 0B       		.uleb128 0xb
+ 790 001a 3B       		.uleb128 0x3b
+ 791 001b 0B       		.uleb128 0xb
+ 792 001c 49       		.uleb128 0x49
+ 793 001d 13       		.uleb128 0x13
+ 794 001e 00       		.byte	0
+ 795 001f 00       		.byte	0
+ 796 0020 03       		.uleb128 0x3
+ 797 0021 24       		.uleb128 0x24
+ 798 0022 00       		.byte	0
+ 799 0023 0B       		.uleb128 0xb
+ 800 0024 0B       		.uleb128 0xb
+ 801 0025 3E       		.uleb128 0x3e
+ 802 0026 0B       		.uleb128 0xb
+ 803 0027 03       		.uleb128 0x3
+ 804 0028 0E       		.uleb128 0xe
+ 805 0029 00       		.byte	0
+ 806 002a 00       		.byte	0
+ 807 002b 04       		.uleb128 0x4
+ 808 002c 16       		.uleb128 0x16
+ 809 002d 00       		.byte	0
+ 810 002e 03       		.uleb128 0x3
+ 811 002f 0E       		.uleb128 0xe
+ 812 0030 3A       		.uleb128 0x3a
+ 813 0031 0B       		.uleb128 0xb
+ 814 0032 3B       		.uleb128 0x3b
+ 815 0033 0B       		.uleb128 0xb
+ 816 0034 49       		.uleb128 0x49
+ 817 0035 13       		.uleb128 0x13
+ 818 0036 00       		.byte	0
+ 819 0037 00       		.byte	0
+ 820 0038 05       		.uleb128 0x5
+ 821 0039 24       		.uleb128 0x24
+ 822 003a 00       		.byte	0
+ 823 003b 0B       		.uleb128 0xb
+ 824 003c 0B       		.uleb128 0xb
+ 825 003d 3E       		.uleb128 0x3e
+ 826 003e 0B       		.uleb128 0xb
+ 827 003f 03       		.uleb128 0x3
+ 828 0040 08       		.uleb128 0x8
+ 829 0041 00       		.byte	0
+ 830 0042 00       		.byte	0
+ 831 0043 06       		.uleb128 0x6
+ 832 0044 13       		.uleb128 0x13
+ 833 0045 01       		.byte	0x1
+ 834 0046 03       		.uleb128 0x3
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 20
+
+
+ 835 0047 0E       		.uleb128 0xe
+ 836 0048 0B       		.uleb128 0xb
+ 837 0049 0B       		.uleb128 0xb
+ 838 004a 3A       		.uleb128 0x3a
+ 839 004b 0B       		.uleb128 0xb
+ 840 004c 3B       		.uleb128 0x3b
+ 841 004d 0B       		.uleb128 0xb
+ 842 004e 01       		.uleb128 0x1
+ 843 004f 13       		.uleb128 0x13
+ 844 0050 00       		.byte	0
+ 845 0051 00       		.byte	0
+ 846 0052 07       		.uleb128 0x7
+ 847 0053 0D       		.uleb128 0xd
+ 848 0054 00       		.byte	0
+ 849 0055 03       		.uleb128 0x3
+ 850 0056 0E       		.uleb128 0xe
+ 851 0057 3A       		.uleb128 0x3a
+ 852 0058 0B       		.uleb128 0xb
+ 853 0059 3B       		.uleb128 0x3b
+ 854 005a 0B       		.uleb128 0xb
+ 855 005b 49       		.uleb128 0x49
+ 856 005c 13       		.uleb128 0x13
+ 857 005d 38       		.uleb128 0x38
+ 858 005e 0A       		.uleb128 0xa
+ 859 005f 00       		.byte	0
+ 860 0060 00       		.byte	0
+ 861 0061 08       		.uleb128 0x8
+ 862 0062 0D       		.uleb128 0xd
+ 863 0063 00       		.byte	0
+ 864 0064 03       		.uleb128 0x3
+ 865 0065 08       		.uleb128 0x8
+ 866 0066 3A       		.uleb128 0x3a
+ 867 0067 0B       		.uleb128 0xb
+ 868 0068 3B       		.uleb128 0x3b
+ 869 0069 0B       		.uleb128 0xb
+ 870 006a 49       		.uleb128 0x49
+ 871 006b 13       		.uleb128 0x13
+ 872 006c 38       		.uleb128 0x38
+ 873 006d 0A       		.uleb128 0xa
+ 874 006e 00       		.byte	0
+ 875 006f 00       		.byte	0
+ 876 0070 09       		.uleb128 0x9
+ 877 0071 0F       		.uleb128 0xf
+ 878 0072 00       		.byte	0
+ 879 0073 0B       		.uleb128 0xb
+ 880 0074 0B       		.uleb128 0xb
+ 881 0075 49       		.uleb128 0x49
+ 882 0076 13       		.uleb128 0x13
+ 883 0077 00       		.byte	0
+ 884 0078 00       		.byte	0
+ 885 0079 0A       		.uleb128 0xa
+ 886 007a 01       		.uleb128 0x1
+ 887 007b 01       		.byte	0x1
+ 888 007c 49       		.uleb128 0x49
+ 889 007d 13       		.uleb128 0x13
+ 890 007e 01       		.uleb128 0x1
+ 891 007f 13       		.uleb128 0x13
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 21
+
+
+ 892 0080 00       		.byte	0
+ 893 0081 00       		.byte	0
+ 894 0082 0B       		.uleb128 0xb
+ 895 0083 21       		.uleb128 0x21
+ 896 0084 00       		.byte	0
+ 897 0085 49       		.uleb128 0x49
+ 898 0086 13       		.uleb128 0x13
+ 899 0087 2F       		.uleb128 0x2f
+ 900 0088 0B       		.uleb128 0xb
+ 901 0089 00       		.byte	0
+ 902 008a 00       		.byte	0
+ 903 008b 0C       		.uleb128 0xc
+ 904 008c 2E       		.uleb128 0x2e
+ 905 008d 01       		.byte	0x1
+ 906 008e 3F       		.uleb128 0x3f
+ 907 008f 0C       		.uleb128 0xc
+ 908 0090 03       		.uleb128 0x3
+ 909 0091 0E       		.uleb128 0xe
+ 910 0092 3A       		.uleb128 0x3a
+ 911 0093 0B       		.uleb128 0xb
+ 912 0094 3B       		.uleb128 0x3b
+ 913 0095 0B       		.uleb128 0xb
+ 914 0096 27       		.uleb128 0x27
+ 915 0097 0C       		.uleb128 0xc
+ 916 0098 11       		.uleb128 0x11
+ 917 0099 01       		.uleb128 0x1
+ 918 009a 12       		.uleb128 0x12
+ 919 009b 01       		.uleb128 0x1
+ 920 009c 40       		.uleb128 0x40
+ 921 009d 06       		.uleb128 0x6
+ 922 009e 01       		.uleb128 0x1
+ 923 009f 13       		.uleb128 0x13
+ 924 00a0 00       		.byte	0
+ 925 00a1 00       		.byte	0
+ 926 00a2 0D       		.uleb128 0xd
+ 927 00a3 34       		.uleb128 0x34
+ 928 00a4 00       		.byte	0
+ 929 00a5 03       		.uleb128 0x3
+ 930 00a6 0E       		.uleb128 0xe
+ 931 00a7 3A       		.uleb128 0x3a
+ 932 00a8 0B       		.uleb128 0xb
+ 933 00a9 3B       		.uleb128 0x3b
+ 934 00aa 0B       		.uleb128 0xb
+ 935 00ab 49       		.uleb128 0x49
+ 936 00ac 13       		.uleb128 0x13
+ 937 00ad 02       		.uleb128 0x2
+ 938 00ae 06       		.uleb128 0x6
+ 939 00af 00       		.byte	0
+ 940 00b0 00       		.byte	0
+ 941 00b1 0E       		.uleb128 0xe
+ 942 00b2 34       		.uleb128 0x34
+ 943 00b3 00       		.byte	0
+ 944 00b4 03       		.uleb128 0x3
+ 945 00b5 0E       		.uleb128 0xe
+ 946 00b6 3A       		.uleb128 0x3a
+ 947 00b7 0B       		.uleb128 0xb
+ 948 00b8 3B       		.uleb128 0x3b
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 22
+
+
+ 949 00b9 0B       		.uleb128 0xb
+ 950 00ba 49       		.uleb128 0x49
+ 951 00bb 13       		.uleb128 0x13
+ 952 00bc 02       		.uleb128 0x2
+ 953 00bd 0A       		.uleb128 0xa
+ 954 00be 00       		.byte	0
+ 955 00bf 00       		.byte	0
+ 956 00c0 0F       		.uleb128 0xf
+ 957 00c1 0B       		.uleb128 0xb
+ 958 00c2 01       		.byte	0x1
+ 959 00c3 11       		.uleb128 0x11
+ 960 00c4 01       		.uleb128 0x1
+ 961 00c5 12       		.uleb128 0x12
+ 962 00c6 01       		.uleb128 0x1
+ 963 00c7 01       		.uleb128 0x1
+ 964 00c8 13       		.uleb128 0x13
+ 965 00c9 00       		.byte	0
+ 966 00ca 00       		.byte	0
+ 967 00cb 10       		.uleb128 0x10
+ 968 00cc 0B       		.uleb128 0xb
+ 969 00cd 01       		.byte	0x1
+ 970 00ce 11       		.uleb128 0x11
+ 971 00cf 01       		.uleb128 0x1
+ 972 00d0 12       		.uleb128 0x12
+ 973 00d1 01       		.uleb128 0x1
+ 974 00d2 00       		.byte	0
+ 975 00d3 00       		.byte	0
+ 976 00d4 11       		.uleb128 0x11
+ 977 00d5 35       		.uleb128 0x35
+ 978 00d6 00       		.byte	0
+ 979 00d7 49       		.uleb128 0x49
+ 980 00d8 13       		.uleb128 0x13
+ 981 00d9 00       		.byte	0
+ 982 00da 00       		.byte	0
+ 983 00db 12       		.uleb128 0x12
+ 984 00dc 2E       		.uleb128 0x2e
+ 985 00dd 01       		.byte	0x1
+ 986 00de 3F       		.uleb128 0x3f
+ 987 00df 0C       		.uleb128 0xc
+ 988 00e0 03       		.uleb128 0x3
+ 989 00e1 0E       		.uleb128 0xe
+ 990 00e2 3A       		.uleb128 0x3a
+ 991 00e3 0B       		.uleb128 0xb
+ 992 00e4 3B       		.uleb128 0x3b
+ 993 00e5 0B       		.uleb128 0xb
+ 994 00e6 27       		.uleb128 0x27
+ 995 00e7 0C       		.uleb128 0xc
+ 996 00e8 49       		.uleb128 0x49
+ 997 00e9 13       		.uleb128 0x13
+ 998 00ea 11       		.uleb128 0x11
+ 999 00eb 01       		.uleb128 0x1
+ 1000 00ec 12       		.uleb128 0x12
+ 1001 00ed 01       		.uleb128 0x1
+ 1002 00ee 40       		.uleb128 0x40
+ 1003 00ef 0A       		.uleb128 0xa
+ 1004 00f0 01       		.uleb128 0x1
+ 1005 00f1 13       		.uleb128 0x13
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 23
+
+
+ 1006 00f2 00       		.byte	0
+ 1007 00f3 00       		.byte	0
+ 1008 00f4 13       		.uleb128 0x13
+ 1009 00f5 34       		.uleb128 0x34
+ 1010 00f6 00       		.byte	0
+ 1011 00f7 03       		.uleb128 0x3
+ 1012 00f8 0E       		.uleb128 0xe
+ 1013 00f9 3A       		.uleb128 0x3a
+ 1014 00fa 0B       		.uleb128 0xb
+ 1015 00fb 3B       		.uleb128 0x3b
+ 1016 00fc 0B       		.uleb128 0xb
+ 1017 00fd 49       		.uleb128 0x49
+ 1018 00fe 13       		.uleb128 0x13
+ 1019 00ff 00       		.byte	0
+ 1020 0100 00       		.byte	0
+ 1021 0101 14       		.uleb128 0x14
+ 1022 0102 2E       		.uleb128 0x2e
+ 1023 0103 01       		.byte	0x1
+ 1024 0104 3F       		.uleb128 0x3f
+ 1025 0105 0C       		.uleb128 0xc
+ 1026 0106 03       		.uleb128 0x3
+ 1027 0107 0E       		.uleb128 0xe
+ 1028 0108 3A       		.uleb128 0x3a
+ 1029 0109 0B       		.uleb128 0xb
+ 1030 010a 3B       		.uleb128 0x3b
+ 1031 010b 0B       		.uleb128 0xb
+ 1032 010c 27       		.uleb128 0x27
+ 1033 010d 0C       		.uleb128 0xc
+ 1034 010e 11       		.uleb128 0x11
+ 1035 010f 01       		.uleb128 0x1
+ 1036 0110 12       		.uleb128 0x12
+ 1037 0111 01       		.uleb128 0x1
+ 1038 0112 40       		.uleb128 0x40
+ 1039 0113 0A       		.uleb128 0xa
+ 1040 0114 01       		.uleb128 0x1
+ 1041 0115 13       		.uleb128 0x13
+ 1042 0116 00       		.byte	0
+ 1043 0117 00       		.byte	0
+ 1044 0118 15       		.uleb128 0x15
+ 1045 0119 05       		.uleb128 0x5
+ 1046 011a 00       		.byte	0
+ 1047 011b 03       		.uleb128 0x3
+ 1048 011c 0E       		.uleb128 0xe
+ 1049 011d 3A       		.uleb128 0x3a
+ 1050 011e 0B       		.uleb128 0xb
+ 1051 011f 3B       		.uleb128 0x3b
+ 1052 0120 0B       		.uleb128 0xb
+ 1053 0121 49       		.uleb128 0x49
+ 1054 0122 13       		.uleb128 0x13
+ 1055 0123 02       		.uleb128 0x2
+ 1056 0124 0A       		.uleb128 0xa
+ 1057 0125 00       		.byte	0
+ 1058 0126 00       		.byte	0
+ 1059 0127 16       		.uleb128 0x16
+ 1060 0128 21       		.uleb128 0x21
+ 1061 0129 00       		.byte	0
+ 1062 012a 00       		.byte	0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 24
+
+
+ 1063 012b 00       		.byte	0
+ 1064 012c 17       		.uleb128 0x17
+ 1065 012d 34       		.uleb128 0x34
+ 1066 012e 00       		.byte	0
+ 1067 012f 03       		.uleb128 0x3
+ 1068 0130 0E       		.uleb128 0xe
+ 1069 0131 3A       		.uleb128 0x3a
+ 1070 0132 0B       		.uleb128 0xb
+ 1071 0133 3B       		.uleb128 0x3b
+ 1072 0134 0B       		.uleb128 0xb
+ 1073 0135 49       		.uleb128 0x49
+ 1074 0136 13       		.uleb128 0x13
+ 1075 0137 3F       		.uleb128 0x3f
+ 1076 0138 0C       		.uleb128 0xc
+ 1077 0139 3C       		.uleb128 0x3c
+ 1078 013a 0C       		.uleb128 0xc
+ 1079 013b 00       		.byte	0
+ 1080 013c 00       		.byte	0
+ 1081 013d 00       		.byte	0
+ 1082              		.section	.debug_loc,"",%progbits
+ 1083              	.Ldebug_loc0:
+ 1084              	.LLST0:
+ 1085 0000 00000000 		.4byte	.LFB0-.Ltext0
+ 1086 0004 04000000 		.4byte	.LCFI0-.Ltext0
+ 1087 0008 0200     		.2byte	0x2
+ 1088 000a 7D       		.byte	0x7d
+ 1089 000b 00       		.sleb128 0
+ 1090 000c 04000000 		.4byte	.LCFI0-.Ltext0
+ 1091 0010 58020000 		.4byte	.LFE0-.Ltext0
+ 1092 0014 0200     		.2byte	0x2
+ 1093 0016 7D       		.byte	0x7d
+ 1094 0017 20       		.sleb128 32
+ 1095 0018 00000000 		.4byte	0
+ 1096 001c 00000000 		.4byte	0
+ 1097              	.LLST1:
+ 1098 0020 14000000 		.4byte	.LVL0-.Ltext0
+ 1099 0024 18000000 		.4byte	.LVL1-.Ltext0
+ 1100 0028 0200     		.2byte	0x2
+ 1101 002a 91       		.byte	0x91
+ 1102 002b 61       		.sleb128 -31
+ 1103 002c 18000000 		.4byte	.LVL1-.Ltext0
+ 1104 0030 1C000000 		.4byte	.LVL2-.Ltext0
+ 1105 0034 0100     		.2byte	0x1
+ 1106 0036 53       		.byte	0x53
+ 1107 0037 04010000 		.4byte	.LVL12-.Ltext0
+ 1108 003b 14010000 		.4byte	.LVL13-.Ltext0
+ 1109 003f 0200     		.2byte	0x2
+ 1110 0041 91       		.byte	0x91
+ 1111 0042 61       		.sleb128 -31
+ 1112 0043 18020000 		.4byte	.LVL31-.Ltext0
+ 1113 0047 58020000 		.4byte	.LFE0-.Ltext0
+ 1114 004b 0200     		.2byte	0x2
+ 1115 004d 91       		.byte	0x91
+ 1116 004e 61       		.sleb128 -31
+ 1117 004f 00000000 		.4byte	0
+ 1118 0053 00000000 		.4byte	0
+ 1119              	.LLST2:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 25
+
+
+ 1120 0057 14000000 		.4byte	.LVL0-.Ltext0
+ 1121 005b F8010000 		.4byte	.LVL27-.Ltext0
+ 1122 005f 0200     		.2byte	0x2
+ 1123 0061 91       		.byte	0x91
+ 1124 0062 62       		.sleb128 -30
+ 1125 0063 F8010000 		.4byte	.LVL27-.Ltext0
+ 1126 0067 00020000 		.4byte	.LVL28-.Ltext0
+ 1127 006b 0100     		.2byte	0x1
+ 1128 006d 53       		.byte	0x53
+ 1129 006e 00020000 		.4byte	.LVL28-.Ltext0
+ 1130 0072 04020000 		.4byte	.LVL29-.Ltext0
+ 1131 0076 0200     		.2byte	0x2
+ 1132 0078 91       		.byte	0x91
+ 1133 0079 62       		.sleb128 -30
+ 1134 007a 04020000 		.4byte	.LVL29-.Ltext0
+ 1135 007e 0C020000 		.4byte	.LVL30-.Ltext0
+ 1136 0082 0100     		.2byte	0x1
+ 1137 0084 53       		.byte	0x53
+ 1138 0085 0C020000 		.4byte	.LVL30-.Ltext0
+ 1139 0089 58020000 		.4byte	.LFE0-.Ltext0
+ 1140 008d 0200     		.2byte	0x2
+ 1141 008f 91       		.byte	0x91
+ 1142 0090 62       		.sleb128 -30
+ 1143 0091 00000000 		.4byte	0
+ 1144 0095 00000000 		.4byte	0
+ 1145              	.LLST3:
+ 1146 0099 14000000 		.4byte	.LVL0-.Ltext0
+ 1147 009d 78000000 		.4byte	.LVL3-.Ltext0
+ 1148 00a1 0200     		.2byte	0x2
+ 1149 00a3 91       		.byte	0x91
+ 1150 00a4 58       		.sleb128 -40
+ 1151 00a5 7C000000 		.4byte	.LVL4-.Ltext0
+ 1152 00a9 80000000 		.4byte	.LVL5-.Ltext0
+ 1153 00ad 0100     		.2byte	0x1
+ 1154 00af 53       		.byte	0x53
+ 1155 00b0 80000000 		.4byte	.LVL5-.Ltext0
+ 1156 00b4 94000000 		.4byte	.LVL7-.Ltext0
+ 1157 00b8 0200     		.2byte	0x2
+ 1158 00ba 91       		.byte	0x91
+ 1159 00bb 58       		.sleb128 -40
+ 1160 00bc 94000000 		.4byte	.LVL7-.Ltext0
+ 1161 00c0 A0000000 		.4byte	.LVL8-.Ltext0
+ 1162 00c4 0100     		.2byte	0x1
+ 1163 00c6 53       		.byte	0x53
+ 1164 00c7 A0000000 		.4byte	.LVL8-.Ltext0
+ 1165 00cb 58020000 		.4byte	.LFE0-.Ltext0
+ 1166 00cf 0200     		.2byte	0x2
+ 1167 00d1 91       		.byte	0x91
+ 1168 00d2 58       		.sleb128 -40
+ 1169 00d3 00000000 		.4byte	0
+ 1170 00d7 00000000 		.4byte	0
+ 1171              	.LLST4:
+ 1172 00db 14000000 		.4byte	.LVL0-.Ltext0
+ 1173 00df 20010000 		.4byte	.LVL14-.Ltext0
+ 1174 00e3 0200     		.2byte	0x2
+ 1175 00e5 91       		.byte	0x91
+ 1176 00e6 5C       		.sleb128 -36
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 26
+
+
+ 1177 00e7 24010000 		.4byte	.LVL15-.Ltext0
+ 1178 00eb 28010000 		.4byte	.LVL16-.Ltext0
+ 1179 00ef 0100     		.2byte	0x1
+ 1180 00f1 5C       		.byte	0x5c
+ 1181 00f2 28010000 		.4byte	.LVL16-.Ltext0
+ 1182 00f6 B4010000 		.4byte	.LVL23-.Ltext0
+ 1183 00fa 0200     		.2byte	0x2
+ 1184 00fc 91       		.byte	0x91
+ 1185 00fd 5C       		.sleb128 -36
+ 1186 00fe B8010000 		.4byte	.LVL24-.Ltext0
+ 1187 0102 BC010000 		.4byte	.LVL25-.Ltext0
+ 1188 0106 0100     		.2byte	0x1
+ 1189 0108 51       		.byte	0x51
+ 1190 0109 BC010000 		.4byte	.LVL25-.Ltext0
+ 1191 010d 58020000 		.4byte	.LFE0-.Ltext0
+ 1192 0111 0200     		.2byte	0x2
+ 1193 0113 91       		.byte	0x91
+ 1194 0114 5C       		.sleb128 -36
+ 1195 0115 00000000 		.4byte	0
+ 1196 0119 00000000 		.4byte	0
+ 1197              	.LLST5:
+ 1198 011d 14010000 		.4byte	.LVL13-.Ltext0
+ 1199 0121 48010000 		.4byte	.LVL18-.Ltext0
+ 1200 0125 0100     		.2byte	0x1
+ 1201 0127 52       		.byte	0x52
+ 1202 0128 48010000 		.4byte	.LVL18-.Ltext0
+ 1203 012c 4C010000 		.4byte	.LVL19-.Ltext0
+ 1204 0130 0300     		.2byte	0x3
+ 1205 0132 72       		.byte	0x72
+ 1206 0133 7F       		.sleb128 -1
+ 1207 0134 9F       		.byte	0x9f
+ 1208 0135 4C010000 		.4byte	.LVL19-.Ltext0
+ 1209 0139 54010000 		.4byte	.LVL20-.Ltext0
+ 1210 013d 0100     		.2byte	0x1
+ 1211 013f 52       		.byte	0x52
+ 1212 0140 00000000 		.4byte	0
+ 1213 0144 00000000 		.4byte	0
+ 1214              	.LLST6:
+ 1215 0148 68010000 		.4byte	.LVL21-.Ltext0
+ 1216 014c 74010000 		.4byte	.LVL22-.Ltext0
+ 1217 0150 0100     		.2byte	0x1
+ 1218 0152 53       		.byte	0x53
+ 1219 0153 00000000 		.4byte	0
+ 1220 0157 00000000 		.4byte	0
+ 1221              		.section	.debug_aranges,"",%progbits
+ 1222 0000 1C000000 		.4byte	0x1c
+ 1223 0004 0200     		.2byte	0x2
+ 1224 0006 00000000 		.4byte	.Ldebug_info0
+ 1225 000a 04       		.byte	0x4
+ 1226 000b 00       		.byte	0
+ 1227 000c 0000     		.2byte	0
+ 1228 000e 0000     		.2byte	0
+ 1229 0010 00000000 		.4byte	.Ltext0
+ 1230 0014 80020000 		.4byte	.Letext0-.Ltext0
+ 1231 0018 00000000 		.4byte	0
+ 1232 001c 00000000 		.4byte	0
+ 1233              		.section	.debug_line,"",%progbits
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 27
+
+
+ 1234              	.Ldebug_line0:
+ 1235 0000 F7000000 		.section	.debug_str,"MS",%progbits,1
+ 1235      02007800 
+ 1235      00000201 
+ 1235      FB0E0D00 
+ 1235      01010101 
+ 1236              	.LASF13:
+ 1237 0000 7072696F 		.ascii	"prio\000"
+ 1237      00
+ 1238              	.LASF7:
+ 1239 0005 7053746B 		.ascii	"pStk\000"
+ 1239      00
+ 1240              	.LASF30:
+ 1241 000a 73746174 		.ascii	"statusReg\000"
+ 1241      75735265 
+ 1241      6700
+ 1242              	.LASF53:
+ 1243 0014 72657374 		.ascii	"restoreValue\000"
+ 1243      6F726556 
+ 1243      616C7565 
+ 1243      00
+ 1244              	.LASF28:
+ 1245 0021 5F74436E 		.ascii	"_tCntSem_\000"
+ 1245      7453656D 
+ 1245      5F00
+ 1246              	.LASF32:
+ 1247 002b 746D7048 		.ascii	"tmpHead\000"
+ 1247      65616400 
+ 1248              	.LASF21:
+ 1249 0033 70507269 		.ascii	"pPrioList\000"
+ 1249      6F4C6973 
+ 1249      7400
+ 1250              	.LASF22:
+ 1251 003d 70504342 		.ascii	"pPCBs\000"
+ 1251      7300
+ 1252              	.LASF51:
+ 1253 0043 64697349 		.ascii	"disIrq\000"
+ 1253      727100
+ 1254              	.LASF33:
+ 1255 004a 746D7054 		.ascii	"tmpTail\000"
+ 1255      61696C00 
+ 1256              	.LASF45:
+ 1257 0052 75617274 		.ascii	"uart1RxTail\000"
+ 1257      31527854 
+ 1257      61696C00 
+ 1258              	.LASF29:
+ 1259 005e 74436E74 		.ascii	"tCntSem\000"
+ 1259      53656D00 
+ 1260              	.LASF20:
+ 1261 0066 5F745072 		.ascii	"_tPrioQueue_\000"
+ 1261      696F5175 
+ 1261      6575655F 
+ 1261      00
+ 1262              	.LASF35:
+ 1263 0073 62797465 		.ascii	"bytesToSend\000"
+ 1263      73546F53 
+ 1263      656E6400 
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 28
+
+
+ 1264              	.LASF50:
+ 1265 007f 633A5C55 		.ascii	"c:\\Users\\kozlovsky\\Downloads\\TicTac\\TicTac\\ir"
+ 1265      73657273 
+ 1265      5C6B6F7A 
+ 1265      6C6F7673 
+ 1265      6B795C44 
+ 1266 00ac 715F636F 		.ascii	"q_code\000"
+ 1266      646500
+ 1267              	.LASF1:
+ 1268 00b3 756E7369 		.ascii	"unsigned char\000"
+ 1268      676E6564 
+ 1268      20636861 
+ 1268      7200
+ 1269              	.LASF18:
+ 1270 00c1 744F5350 		.ascii	"tOSPCB\000"
+ 1270      434200
+ 1271              	.LASF52:
+ 1272 00c8 72657475 		.ascii	"returnReg\000"
+ 1272      726E5265 
+ 1272      6700
+ 1273              	.LASF24:
+ 1274 00d2 74507269 		.ascii	"tPrioQueue\000"
+ 1274      6F517565 
+ 1274      756500
+ 1275              	.LASF23:
+ 1276 00dd 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1276      20756E73 
+ 1276      69676E65 
+ 1276      6420696E 
+ 1276      7400
+ 1277              	.LASF2:
+ 1278 00ef 73686F72 		.ascii	"short unsigned int\000"
+ 1278      7420756E 
+ 1278      7369676E 
+ 1278      65642069 
+ 1278      6E7400
+ 1279              	.LASF42:
+ 1280 0102 75617274 		.ascii	"uart1TxRunning\000"
+ 1280      31547852 
+ 1280      756E6E69 
+ 1280      6E6700
+ 1281              	.LASF9:
+ 1282 0111 70507265 		.ascii	"pPrevPrioQueueReady\000"
+ 1282      76507269 
+ 1282      6F517565 
+ 1282      75655265 
+ 1282      61647900 
+ 1283              	.LASF48:
+ 1284 0125 474E5520 		.ascii	"GNU C 4.6.3\000"
+ 1284      4320342E 
+ 1284      362E3300 
+ 1285              	.LASF19:
+ 1286 0131 5F744F53 		.ascii	"_tOSPCB__\000"
+ 1286      5043425F 
+ 1286      5F00
+ 1287              	.LASF11:
+ 1288 013b 70507265 		.ascii	"pPrevPrioQueueEvent\000"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 29
+
+
+ 1288      76507269 
+ 1288      6F517565 
+ 1288      75654576 
+ 1288      656E7400 
+ 1289              	.LASF8:
+ 1290 014f 704E6578 		.ascii	"pNextPrioQueueReady\000"
+ 1290      74507269 
+ 1290      6F517565 
+ 1290      75655265 
+ 1290      61647900 
+ 1291              	.LASF37:
+ 1292 0163 75617274 		.ascii	"uart1ISR\000"
+ 1292      31495352 
+ 1292      00
+ 1293              	.LASF14:
+ 1294 016c 666C6167 		.ascii	"flag\000"
+ 1294      00
+ 1295              	.LASF40:
+ 1296 0171 75617274 		.ascii	"uart1TxHead\000"
+ 1296      31547848 
+ 1296      65616400 
+ 1297              	.LASF10:
+ 1298 017d 704E6578 		.ascii	"pNextPrioQueueEvent\000"
+ 1298      74507269 
+ 1298      6F517565 
+ 1298      75654576 
+ 1298      656E7400 
+ 1299              	.LASF4:
+ 1300 0191 756E7369 		.ascii	"unsigned int\000"
+ 1300      676E6564 
+ 1300      20696E74 
+ 1300      00
+ 1301              	.LASF17:
+ 1302 019e 73746163 		.ascii	"stackSize\000"
+ 1302      6B53697A 
+ 1302      6500
+ 1303              	.LASF39:
+ 1304 01a8 75617274 		.ascii	"uart1TxBuf\000"
+ 1304      31547842 
+ 1304      756600
+ 1305              	.LASF26:
+ 1306 01b3 77616974 		.ascii	"waitQ\000"
+ 1306      5100
+ 1307              	.LASF36:
+ 1308 01b9 63617573 		.ascii	"cause\000"
+ 1308      6500
+ 1309              	.LASF16:
+ 1310 01bf 7053746B 		.ascii	"pStkOrg\000"
+ 1310      4F726700 
+ 1311              	.LASF0:
+ 1312 01c7 74553136 		.ascii	"tU16\000"
+ 1312      00
+ 1313              	.LASF3:
+ 1314 01cc 74553332 		.ascii	"tU32\000"
+ 1314      00
+ 1315              	.LASF27:
+ 1316 01d1 744F5345 		.ascii	"tOSEvent\000"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 30
+
+
+ 1316      76656E74 
+ 1316      00
+ 1317              	.LASF44:
+ 1318 01da 75617274 		.ascii	"uart1RxHead\000"
+ 1318      31527848 
+ 1318      65616400 
+ 1319              	.LASF25:
+ 1320 01e6 5F744F53 		.ascii	"_tOSEvent_\000"
+ 1320      4576656E 
+ 1320      745F00
+ 1321              	.LASF31:
+ 1322 01f1 64756D6D 		.ascii	"dummy\000"
+ 1322      7900
+ 1323              	.LASF6:
+ 1324 01f7 73686F72 		.ascii	"short int\000"
+ 1324      7420696E 
+ 1324      7400
+ 1325              	.LASF34:
+ 1326 0201 6572726F 		.ascii	"error\000"
+ 1326      7200
+ 1327              	.LASF47:
+ 1328 0207 72656365 		.ascii	"receiveSem\000"
+ 1328      69766553 
+ 1328      656D00
+ 1329              	.LASF49:
+ 1330 0212 69727155 		.ascii	"irqUart.c\000"
+ 1330      6172742E 
+ 1330      6300
+ 1331              	.LASF12:
+ 1332 021c 704E6578 		.ascii	"pNextTimeQueue\000"
+ 1332      7454696D 
+ 1332      65517565 
+ 1332      756500
+ 1333              	.LASF5:
+ 1334 022b 7369676E 		.ascii	"signed char\000"
+ 1334      65642063 
+ 1334      68617200 
+ 1335              	.LASF15:
+ 1336 0237 736C6565 		.ascii	"sleep\000"
+ 1336      7000
+ 1337              	.LASF38:
+ 1338 023d 72657374 		.ascii	"restoreIrq\000"
+ 1338      6F726549 
+ 1338      727100
+ 1339              	.LASF46:
+ 1340 0248 75617274 		.ascii	"uart1RxInBuff\000"
+ 1340      31527849 
+ 1340      6E427566 
+ 1340      6600
+ 1341              	.LASF43:
+ 1342 0256 75617274 		.ascii	"uart1RxBuf\000"
+ 1342      31527842 
+ 1342      756600
+ 1343              	.LASF41:
+ 1344 0261 75617274 		.ascii	"uart1TxTail\000"
+ 1344      31547854 
+ 1344      61696C00 
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 31
+
+
+ 1345              		.ident	"GCC: (GNU) 4.6.3"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s 			page 32
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 irqUart.c
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s:5      .text:00000000 $a
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s:8      .text:00000000 uart1ISR
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s:45     .text:00000028 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s:60     .text:0000005c $a
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s:264    .text:00000230 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s:277    .text:00000258 $a
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s:280    .text:00000258 disIrq
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s:290    .text:00000258 disIrq1
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccf0DoP2.s:306    .text:00000278 restoreIrq
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+osSemGive
+uart1RxHead
+uart1RxTail
+uart1RxBuf
+uart1RxInBuff
+receiveSem
+uart1TxHead
+uart1TxTail
+uart1TxBuf
+uart1TxRunning

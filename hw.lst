@@ -1,0 +1,2378 @@
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 1
+
+
+   1              		.code	16
+   2              		.file	"hw.c"
+   3              		.text
+   4              	.Ltext0:
+   5              		.cfi_sections	.debug_frame
+   6              		.align	1
+   7              		.global	immediateIoInit
+   8              		.code	16
+   9              		.thumb_func
+  10              		.type	immediateIoInit, %function
+  11              	immediateIoInit:
+  12              	.LFB0:
+  13              		.file 1 "hw.c"
+   1:hw.c          **** /******************************************************************************
+   2:hw.c          ****  *
+   3:hw.c          ****  * Copyright:
+   4:hw.c          ****  *    (C) 2006 Embedded Artists AB
+   5:hw.c          ****  *
+   6:hw.c          ****  * File:
+   7:hw.c          ****  *    hw.c
+   8:hw.c          ****  *
+   9:hw.c          ****  * Description:
+  10:hw.c          ****  *    Implements hardware specific routines
+  11:hw.c          ****  *
+  12:hw.c          ****  *****************************************************************************/
+  13:hw.c          **** 
+  14:hw.c          **** /******************************************************************************
+  15:hw.c          ****  * Includes
+  16:hw.c          ****  *****************************************************************************/
+  17:hw.c          **** #include "../pre_emptive_os/api/osapi.h"
+  18:hw.c          **** #include "../pre_emptive_os/api/general.h"
+  19:hw.c          **** #include <lpc2xxx.h>
+  20:hw.c          **** 
+  21:hw.c          **** #include "hw.h"
+  22:hw.c          **** #include "key.h"
+  23:hw.c          **** #include "pins.h"
+  24:hw.c          **** #include "eeprom.h"
+  25:hw.c          **** 
+  26:hw.c          **** /******************************************************************************
+  27:hw.c          ****  * Typedefs and defines
+  28:hw.c          ****  *****************************************************************************/
+  29:hw.c          **** 
+  30:hw.c          **** 
+  31:hw.c          **** /*****************************************************************************
+  32:hw.c          ****  * Global variables
+  33:hw.c          ****  ****************************************************************************/
+  34:hw.c          **** tBool ver1_0;
+  35:hw.c          **** tBool ver1_1;
+  36:hw.c          **** 
+  37:hw.c          **** /*****************************************************************************
+  38:hw.c          ****  * Local variables
+  39:hw.c          ****  ****************************************************************************/
+  40:hw.c          **** static tU8 greenLedShadow;
+  41:hw.c          **** static tU8 btResetShadow;
+  42:hw.c          **** 
+  43:hw.c          **** /*****************************************************************************
+  44:hw.c          ****  * Local prototypes
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 2
+
+
+  45:hw.c          ****  ****************************************************************************/
+  46:hw.c          **** 
+  47:hw.c          **** 
+  48:hw.c          **** /*****************************************************************************
+  49:hw.c          ****  *
+  50:hw.c          ****  * Description:
+  51:hw.c          ****  *    Initialize the io-pins and find out if HW is ver 1.0 or ver 1.1
+  52:hw.c          ****  *
+  53:hw.c          ****  ****************************************************************************/
+  54:hw.c          **** void
+  55:hw.c          **** immediateIoInit(void)
+  56:hw.c          **** {
+  14              		.loc 1 56 0
+  15              		.cfi_startproc
+  16 0000 37B5     		push	{r0, r1, r2, r4, r5, lr}
+  17              	.LCFI0:
+  18              		.cfi_def_cfa_offset 24
+  19              		.cfi_offset 0, -24
+  20              		.cfi_offset 1, -20
+  21              		.cfi_offset 2, -16
+  22              		.cfi_offset 4, -12
+  23              		.cfi_offset 5, -8
+  24              		.cfi_offset 14, -4
+  57:hw.c          ****   tU8 initCommand[] = {0x12, 0x97, 0x80, 0x00, 0x40, 0x00, 0x14, 0x00, 0x00};
+  58:hw.c          ****   //                                                         04 = LCD_RST# low
+  59:hw.c          ****   //                                                         10 = BT_RST# low
+  60:hw.c          **** 
+  61:hw.c          ****   //make all key signals as inputs
+  62:hw.c          ****   IODIR &= ~(KEYPIN_CENTER | KEYPIN_UP | KEYPIN_DOWN | KEYPIN_LEFT | KEYPIN_RIGHT);
+  25              		.loc 1 62 0
+  26 0002 224C     		ldr	r4, .L4
+  57:hw.c          ****   tU8 initCommand[] = {0x12, 0x97, 0x80, 0x00, 0x40, 0x00, 0x14, 0x00, 0x00};
+  27              		.loc 1 57 0
+  28 0004 2249     		ldr	r1, .L4+4
+  29 0006 0922     		mov	r2, #9
+  30 0008 6846     		mov	r0, sp
+  31 000a FFF7FEFF 		bl	memcpy
+  32              		.loc 1 62 0
+  33 000e 2268     		ldr	r2, [r4]
+  34 0010 204B     		ldr	r3, .L4+8
+  35 0012 1340     		and	r3, r2
+  36 0014 2360     		str	r3, [r4]
+  63:hw.c          **** 
+  64:hw.c          ****   IODIR |= BUZZER_PIN;
+  37              		.loc 1 64 0
+  38 0016 8023     		mov	r3, #128
+  39 0018 2268     		ldr	r2, [r4]
+  40 001a 9B01     		lsl	r3, r3, #6
+  65:hw.c          ****   IOSET  = BUZZER_PIN;
+  41              		.loc 1 65 0
+  42 001c 1E4D     		ldr	r5, .L4+12
+  64:hw.c          ****   IODIR |= BUZZER_PIN;
+  43              		.loc 1 64 0
+  44 001e 1A43     		orr	r2, r3
+  45 0020 2260     		str	r2, [r4]
+  46              		.loc 1 65 0
+  47 0022 2B60     		str	r3, [r5]
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 3
+
+
+  66:hw.c          **** 
+  67:hw.c          ****   IODIR |= BACKLIGHT_PIN;
+  48              		.loc 1 67 0
+  49 0024 8023     		mov	r3, #128
+  50 0026 2268     		ldr	r2, [r4]
+  51 0028 5B01     		lsl	r3, r3, #5
+  52 002a 1A43     		orr	r2, r3
+  53 002c 2260     		str	r2, [r4]
+  68:hw.c          ****   IOSET  = BACKLIGHT_PIN;
+  54              		.loc 1 68 0
+  55 002e 2B60     		str	r3, [r5]
+  69:hw.c          **** 
+  70:hw.c          ****   //initialize PCA9532
+  71:hw.c          ****   i2cInit();
+  56              		.loc 1 71 0
+  57 0030 FFF7FEFF 		bl	i2cInit
+  72:hw.c          ****   if (I2C_CODE_OK == pca9532(initCommand, sizeof(initCommand), NULL, 0))
+  58              		.loc 1 72 0
+  59 0034 0022     		mov	r2, #0
+  60 0036 131C     		mov	r3, r2
+  61 0038 6846     		mov	r0, sp
+  62 003a 0921     		mov	r1, #9
+  63 003c FFF7FEFF 		bl	pca9532
+  64 0040 164A     		ldr	r2, .L4+16
+  65 0042 174B     		ldr	r3, .L4+20
+  66 0044 0128     		cmp	r0, #1
+  67 0046 06D1     		bne	.L2
+  73:hw.c          ****   {
+  74:hw.c          ****     ver1_0 = FALSE;
+  75:hw.c          ****     ver1_1 = TRUE;
+  68              		.loc 1 75 0
+  69 0048 1870     		strb	r0, [r3]
+  76:hw.c          ****     greenLedShadow = FALSE;
+  70              		.loc 1 76 0
+  71 004a 164B     		ldr	r3, .L4+24
+  74:hw.c          ****     ver1_0 = FALSE;
+  72              		.loc 1 74 0
+  73 004c 0021     		mov	r1, #0
+  74 004e 1170     		strb	r1, [r2]
+  75              		.loc 1 76 0
+  76 0050 1970     		strb	r1, [r3]
+  77:hw.c          ****     btResetShadow  = TRUE;
+  77              		.loc 1 77 0
+  78 0052 5870     		strb	r0, [r3, #1]
+  79 0054 16E0     		b	.L1
+  80              	.L2:
+  78:hw.c          ****   }
+  79:hw.c          **** 
+  80:hw.c          ****   else
+  81:hw.c          ****   {
+  82:hw.c          ****     ver1_0 = TRUE;
+  81              		.loc 1 82 0
+  82 0056 0121     		mov	r1, #1
+  83 0058 1170     		strb	r1, [r2]
+  83:hw.c          ****     ver1_1 = FALSE;
+  84              		.loc 1 83 0
+  85 005a 0022     		mov	r2, #0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 4
+
+
+  86 005c 1A70     		strb	r2, [r3]
+  84:hw.c          ****     
+  85:hw.c          ****     IODIR |= LCD_RST;
+  87              		.loc 1 85 0
+  88 005e 8022     		mov	r2, #128
+  89 0060 2368     		ldr	r3, [r4]
+  90 0062 9204     		lsl	r2, r2, #18
+  91 0064 1343     		orr	r3, r2
+  92 0066 2360     		str	r3, [r4]
+  86:hw.c          ****     IOCLR  = LCD_RST;
+  93              		.loc 1 86 0
+  94 0068 0F4B     		ldr	r3, .L4+28
+  95 006a 1A60     		str	r2, [r3]
+  87:hw.c          ****     
+  88:hw.c          ****     IODIR |= BT_RST;
+  96              		.loc 1 88 0
+  97 006c 8022     		mov	r2, #128
+  98 006e 2168     		ldr	r1, [r4]
+  99 0070 D204     		lsl	r2, r2, #19
+ 100 0072 1143     		orr	r1, r2
+ 101 0074 2160     		str	r1, [r4]
+  89:hw.c          ****     IOCLR  = BT_RST;
+ 102              		.loc 1 89 0
+ 103 0076 1A60     		str	r2, [r3]
+  90:hw.c          ****     
+  91:hw.c          ****     IODIR |= (LED_GREEN_PIN | LED_RED_PIN);
+ 104              		.loc 1 91 0
+ 105 0078 A023     		mov	r3, #160
+ 106 007a 2268     		ldr	r2, [r4]
+ 107 007c DB05     		lsl	r3, r3, #23
+ 108 007e 1A43     		orr	r2, r3
+ 109 0080 2260     		str	r2, [r4]
+  92:hw.c          ****     IOSET  = (LED_GREEN_PIN | LED_RED_PIN);
+ 110              		.loc 1 92 0
+ 111 0082 2B60     		str	r3, [r5]
+ 112              	.L1:
+  93:hw.c          ****   }
+  94:hw.c          **** }
+ 113              		.loc 1 94 0
+ 114              		@ sp needed for prologue
+ 115 0084 37BC     		pop	{r0, r1, r2, r4, r5}
+ 116 0086 01BC     		pop	{r0}
+ 117 0088 0047     		bx	r0
+ 118              	.L5:
+ 119 008a C046     		.align	2
+ 120              	.L4:
+ 121 008c 088002E0 		.word	-536707064
+ 122 0090 00000000 		.word	.LANCHOR0
+ 123 0094 FF3F3EFF 		.word	-12697601
+ 124 0098 048002E0 		.word	-536707068
+ 125 009c 00000000 		.word	ver1_0
+ 126 00a0 00000000 		.word	ver1_1
+ 127 00a4 00000000 		.word	.LANCHOR1
+ 128 00a8 0C8002E0 		.word	-536707060
+ 129              		.cfi_endproc
+ 130              	.LFE0:
+ 131              		.size	immediateIoInit, .-immediateIoInit
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 5
+
+
+ 132              		.align	1
+ 133              		.global	resetLCD
+ 134              		.code	16
+ 135              		.thumb_func
+ 136              		.type	resetLCD, %function
+ 137              	resetLCD:
+ 138              	.LFB1:
+  95:hw.c          **** 
+  96:hw.c          **** 
+  97:hw.c          **** /*****************************************************************************
+  98:hw.c          ****  *
+  99:hw.c          ****  * Description:
+ 100:hw.c          ****  *    Reset the LCD (by strobing the LCD reset pin)
+ 101:hw.c          ****  *
+ 102:hw.c          ****  ****************************************************************************/
+ 103:hw.c          **** void
+ 104:hw.c          **** resetLCD(void)
+ 105:hw.c          **** {
+ 139              		.loc 1 105 0
+ 140              		.cfi_startproc
+ 141 00ac 11B5     		push	{r0, r4, lr}
+ 142              	.LCFI1:
+ 143              		.cfi_def_cfa_offset 12
+ 144              		.cfi_offset 0, -12
+ 145              		.cfi_offset 4, -8
+ 146              		.cfi_offset 14, -4
+ 106:hw.c          ****   tU8 command[] = {0x07, 0x00};
+ 147              		.loc 1 106 0
+ 148 00ae 0723     		mov	r3, #7
+ 149 00b0 6A46     		mov	r2, sp
+ 150 00b2 1370     		strb	r3, [r2]
+ 107:hw.c          ****   //                       04 = LCD_RST# low
+ 108:hw.c          ****   //                       00 = LCD_RST# high
+ 109:hw.c          **** 
+ 110:hw.c          ****   //check if ver 1.0 of HW
+ 111:hw.c          ****   if (TRUE == ver1_0)
+ 151              		.loc 1 111 0
+ 152 00b4 144B     		ldr	r3, .L10
+ 153 00b6 1B78     		ldrb	r3, [r3]
+ 106:hw.c          ****   tU8 command[] = {0x07, 0x00};
+ 154              		.loc 1 106 0
+ 155 00b8 0024     		mov	r4, #0
+ 156 00ba 5470     		strb	r4, [r2, #1]
+ 157              		.loc 1 111 0
+ 158 00bc 012B     		cmp	r3, #1
+ 159 00be 09D1     		bne	.L7
+ 112:hw.c          ****   {
+ 113:hw.c          ****     IOCLR  = LCD_RST;
+ 160              		.loc 1 113 0
+ 161 00c0 124B     		ldr	r3, .L10+4
+ 162 00c2 8024     		mov	r4, #128
+ 163 00c4 A404     		lsl	r4, r4, #18
+ 164 00c6 1C60     		str	r4, [r3]
+ 114:hw.c          ****     osSleep(2);
+ 165              		.loc 1 114 0
+ 166 00c8 0220     		mov	r0, #2
+ 167 00ca FFF7FEFF 		bl	osSleep
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 6
+
+
+ 115:hw.c          ****     IOSET  = LCD_RST;
+ 168              		.loc 1 115 0
+ 169 00ce 104B     		ldr	r3, .L10+8
+ 170 00d0 1C60     		str	r4, [r3]
+ 171 00d2 13E0     		b	.L9
+ 172              	.L7:
+ 116:hw.c          ****     osSleep(5);
+ 117:hw.c          ****   }
+ 118:hw.c          ****   
+ 119:hw.c          ****   //HW is ver 1.1
+ 120:hw.c          ****   else
+ 121:hw.c          ****   {
+ 122:hw.c          ****     command[1] = 0x04;
+ 173              		.loc 1 122 0
+ 174 00d4 0423     		mov	r3, #4
+ 175 00d6 6A46     		mov	r2, sp
+ 176 00d8 5370     		strb	r3, [r2, #1]
+ 123:hw.c          ****     pca9532(command, sizeof(command), NULL, 0);
+ 177              		.loc 1 123 0
+ 178 00da 0221     		mov	r1, #2
+ 179 00dc 221C     		mov	r2, r4
+ 180 00de 231C     		mov	r3, r4
+ 181 00e0 6846     		mov	r0, sp
+ 182 00e2 FFF7FEFF 		bl	pca9532
+ 124:hw.c          ****     osSleep(2);
+ 183              		.loc 1 124 0
+ 184 00e6 0220     		mov	r0, #2
+ 185 00e8 FFF7FEFF 		bl	osSleep
+ 125:hw.c          ****     command[1] = 0x00;
+ 186              		.loc 1 125 0
+ 187 00ec 6B46     		mov	r3, sp
+ 188 00ee 5C70     		strb	r4, [r3, #1]
+ 126:hw.c          ****     pca9532(command, sizeof(command), NULL, 0);
+ 189              		.loc 1 126 0
+ 190 00f0 6846     		mov	r0, sp
+ 191 00f2 0221     		mov	r1, #2
+ 192 00f4 221C     		mov	r2, r4
+ 193 00f6 231C     		mov	r3, r4
+ 194 00f8 FFF7FEFF 		bl	pca9532
+ 195              	.L9:
+ 127:hw.c          ****     osSleep(5);
+ 196              		.loc 1 127 0
+ 197 00fc 0520     		mov	r0, #5
+ 198 00fe FFF7FEFF 		bl	osSleep
+ 128:hw.c          ****   }
+ 129:hw.c          **** }
+ 199              		.loc 1 129 0
+ 200              		@ sp needed for prologue
+ 201 0102 11BC     		pop	{r0, r4}
+ 202 0104 01BC     		pop	{r0}
+ 203 0106 0047     		bx	r0
+ 204              	.L11:
+ 205              		.align	2
+ 206              	.L10:
+ 207 0108 00000000 		.word	ver1_0
+ 208 010c 0C8002E0 		.word	-536707060
+ 209 0110 048002E0 		.word	-536707068
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 7
+
+
+ 210              		.cfi_endproc
+ 211              	.LFE1:
+ 212              		.size	resetLCD, .-resetLCD
+ 213              		.align	1
+ 214              		.global	resetBT
+ 215              		.code	16
+ 216              		.thumb_func
+ 217              		.type	resetBT, %function
+ 218              	resetBT:
+ 219              	.LFB2:
+ 130:hw.c          **** 
+ 131:hw.c          **** 
+ 132:hw.c          **** /*****************************************************************************
+ 133:hw.c          ****  *
+ 134:hw.c          ****  * Description:
+ 135:hw.c          ****  *    Controls the reset signal to the BGB203-S06 Bluetooth moduls
+ 136:hw.c          ****  *
+ 137:hw.c          ****  ****************************************************************************/
+ 138:hw.c          **** void
+ 139:hw.c          **** resetBT(tBool resetFlag)
+ 140:hw.c          **** {
+ 220              		.loc 1 140 0
+ 221              		.cfi_startproc
+ 222 0114 01B5     		push	{r0, lr}
+ 223              	.LCFI2:
+ 224              		.cfi_def_cfa_offset 8
+ 225              		.cfi_offset 0, -8
+ 226              		.cfi_offset 14, -4
+ 227              	.LVL0:
+ 141:hw.c          ****   tU8 command[] = {0x07, 0x00};
+ 228              		.loc 1 141 0
+ 229 0116 0723     		mov	r3, #7
+ 230 0118 6946     		mov	r1, sp
+ 231 011a 0B70     		strb	r3, [r1]
+ 232 011c 0023     		mov	r3, #0
+ 233 011e 4B70     		strb	r3, [r1, #1]
+ 142:hw.c          ****   //                       10 = BT_RST# low
+ 143:hw.c          ****   //                       00 = BT_RST# high
+ 144:hw.c          ****   //                       40 = Green LED on  (must handle this also)
+ 145:hw.c          **** 
+ 146:hw.c          ****   //check if ver 1.0 of HW
+ 147:hw.c          ****   if (TRUE == ver1_0)
+ 234              		.loc 1 147 0
+ 235 0120 134B     		ldr	r3, .L19
+ 236 0122 1B78     		ldrb	r3, [r3]
+ 140:hw.c          **** {
+ 237              		.loc 1 140 0
+ 238 0124 0006     		lsl	r0, r0, #24
+ 239              	.LVL1:
+ 240 0126 000E     		lsr	r0, r0, #24
+ 241              		.loc 1 147 0
+ 242 0128 012B     		cmp	r3, #1
+ 243 012a 08D1     		bne	.L13
+ 244 012c 8023     		mov	r3, #128
+ 245 012e DB04     		lsl	r3, r3, #19
+ 148:hw.c          ****   {
+ 149:hw.c          ****     if (TRUE == resetFlag)
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 8
+
+
+ 246              		.loc 1 149 0
+ 247 0130 0128     		cmp	r0, #1
+ 248 0132 01D1     		bne	.L14
+ 150:hw.c          ****       IOCLR  = BT_RST;
+ 249              		.loc 1 150 0
+ 250 0134 0F4A     		ldr	r2, .L19+4
+ 251 0136 00E0     		b	.L18
+ 252              	.L14:
+ 151:hw.c          ****     else
+ 152:hw.c          ****       IOSET  = BT_RST;
+ 253              		.loc 1 152 0
+ 254 0138 0F4A     		ldr	r2, .L19+8
+ 255              	.L18:
+ 256 013a 1360     		str	r3, [r2]
+ 257 013c 15E0     		b	.L12
+ 258              	.L13:
+ 153:hw.c          ****   }
+ 154:hw.c          ****   
+ 155:hw.c          ****   //HW is ver 1.1
+ 156:hw.c          ****   else
+ 157:hw.c          ****   {
+ 158:hw.c          ****     btResetShadow = resetFlag;
+ 259              		.loc 1 158 0
+ 260 013e 0F4B     		ldr	r3, .L19+12
+ 261 0140 5870     		strb	r0, [r3, #1]
+ 159:hw.c          ****     if (TRUE == resetFlag)
+ 262              		.loc 1 159 0
+ 263 0142 0128     		cmp	r0, #1
+ 264 0144 02D1     		bne	.L16
+ 160:hw.c          ****       command[1] = 0x10;
+ 265              		.loc 1 160 0
+ 266 0146 1022     		mov	r2, #16
+ 267 0148 6946     		mov	r1, sp
+ 268 014a 4A70     		strb	r2, [r1, #1]
+ 269              	.L16:
+ 161:hw.c          ****     if (TRUE == greenLedShadow)
+ 270              		.loc 1 161 0
+ 271 014c 1B78     		ldrb	r3, [r3]
+ 272 014e 012B     		cmp	r3, #1
+ 273 0150 05D1     		bne	.L17
+ 162:hw.c          ****       command[1] |= 0x40;
+ 274              		.loc 1 162 0
+ 275 0152 6A46     		mov	r2, sp
+ 276 0154 5378     		ldrb	r3, [r2, #1]
+ 277 0156 4022     		mov	r2, #64
+ 278 0158 1343     		orr	r3, r2
+ 279 015a 6946     		mov	r1, sp
+ 280 015c 4B70     		strb	r3, [r1, #1]
+ 281              	.L17:
+ 163:hw.c          ****     pca9532(command, sizeof(command), NULL, 0);
+ 282              		.loc 1 163 0
+ 283 015e 0022     		mov	r2, #0
+ 284 0160 6846     		mov	r0, sp
+ 285 0162 0221     		mov	r1, #2
+ 286 0164 131C     		mov	r3, r2
+ 287 0166 FFF7FEFF 		bl	pca9532
+ 288              	.L12:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 9
+
+
+ 164:hw.c          ****   }
+ 165:hw.c          **** }
+ 289              		.loc 1 165 0
+ 290 016a 01B0     		add	sp, sp, #4
+ 291              		@ sp needed for prologue
+ 292 016c 01BC     		pop	{r0}
+ 293 016e 0047     		bx	r0
+ 294              	.L20:
+ 295              		.align	2
+ 296              	.L19:
+ 297 0170 00000000 		.word	ver1_0
+ 298 0174 0C8002E0 		.word	-536707060
+ 299 0178 048002E0 		.word	-536707068
+ 300 017c 00000000 		.word	.LANCHOR1
+ 301              		.cfi_endproc
+ 302              	.LFE2:
+ 303              		.size	resetBT, .-resetBT
+ 304              		.align	1
+ 305              		.global	setBuzzer
+ 306              		.code	16
+ 307              		.thumb_func
+ 308              		.type	setBuzzer, %function
+ 309              	setBuzzer:
+ 310              	.LFB3:
+ 166:hw.c          **** 
+ 167:hw.c          **** 
+ 168:hw.c          **** /*****************************************************************************
+ 169:hw.c          ****  *
+ 170:hw.c          ****  * Description:
+ 171:hw.c          ****  *    Controls the buzzer (on or off)
+ 172:hw.c          ****  *
+ 173:hw.c          ****  ****************************************************************************/
+ 174:hw.c          **** void
+ 175:hw.c          **** setBuzzer(tBool on)
+ 176:hw.c          **** {
+ 311              		.loc 1 176 0
+ 312              		.cfi_startproc
+ 313              	.LVL2:
+ 314              		.loc 1 176 0
+ 315 0180 0006     		lsl	r0, r0, #24
+ 316              	.LVL3:
+ 317 0182 8023     		mov	r3, #128
+ 318 0184 000E     		lsr	r0, r0, #24
+ 319 0186 9B01     		lsl	r3, r3, #6
+ 177:hw.c          ****   if (TRUE == on)
+ 320              		.loc 1 177 0
+ 321 0188 0128     		cmp	r0, #1
+ 322 018a 01D1     		bne	.L22
+ 178:hw.c          ****     IOCLR = BUZZER_PIN;
+ 323              		.loc 1 178 0
+ 324 018c 024A     		ldr	r2, .L25
+ 325 018e 00E0     		b	.L24
+ 326              	.L22:
+ 179:hw.c          ****   else
+ 180:hw.c          ****     IOSET = BUZZER_PIN;
+ 327              		.loc 1 180 0
+ 328 0190 024A     		ldr	r2, .L25+4
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 10
+
+
+ 329              	.L24:
+ 330 0192 1360     		str	r3, [r2]
+ 181:hw.c          **** }
+ 331              		.loc 1 181 0
+ 332              		@ sp needed for prologue
+ 333 0194 7047     		bx	lr
+ 334              	.L26:
+ 335 0196 C046     		.align	2
+ 336              	.L25:
+ 337 0198 0C8002E0 		.word	-536707060
+ 338 019c 048002E0 		.word	-536707068
+ 339              		.cfi_endproc
+ 340              	.LFE3:
+ 341              		.size	setBuzzer, .-setBuzzer
+ 342              		.align	1
+ 343              		.global	setLED
+ 344              		.code	16
+ 345              		.thumb_func
+ 346              		.type	setLED, %function
+ 347              	setLED:
+ 348              	.LFB4:
+ 182:hw.c          **** 
+ 183:hw.c          **** 
+ 184:hw.c          **** /*****************************************************************************
+ 185:hw.c          ****  *
+ 186:hw.c          ****  * Description:
+ 187:hw.c          ****  *    Controls the two LEDs
+ 188:hw.c          ****  *
+ 189:hw.c          ****  ****************************************************************************/
+ 190:hw.c          **** void
+ 191:hw.c          **** setLED(tU8 ledSelect, tBool ledState)
+ 192:hw.c          **** {
+ 349              		.loc 1 192 0
+ 350              		.cfi_startproc
+ 351 01a0 13B5     		push	{r0, r1, r4, lr}
+ 352              	.LCFI3:
+ 353              		.cfi_def_cfa_offset 16
+ 354              		.cfi_offset 0, -16
+ 355              		.cfi_offset 1, -12
+ 356              		.cfi_offset 4, -8
+ 357              		.cfi_offset 14, -4
+ 358              	.LVL4:
+ 359              		.loc 1 192 0
+ 360 01a2 0306     		lsl	r3, r0, #24
+ 193:hw.c          ****   tU8 commandLedGreen[] = {0x07, 0x00};
+ 361              		.loc 1 193 0
+ 362 01a4 0722     		mov	r2, #7
+ 363 01a6 6846     		mov	r0, sp
+ 364              	.LVL5:
+ 365 01a8 0270     		strb	r2, [r0]
+ 366 01aa 0022     		mov	r2, #0
+ 367 01ac 4270     		strb	r2, [r0, #1]
+ 194:hw.c          ****   //                               40 = LED on
+ 195:hw.c          ****   //                               00 = LED off
+ 196:hw.c          ****   //                               10 = BT_RST# low   (must handle this also)
+ 197:hw.c          **** 
+ 198:hw.c          ****   tU8 commandLedRed[] =   {0x08, 0x00};
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 11
+
+
+ 368              		.loc 1 198 0
+ 369 01ae 01A8     		add	r0, sp, #4
+ 370 01b0 4270     		strb	r2, [r0, #1]
+ 199:hw.c          ****   //                               01 = LED on
+ 200:hw.c          ****   //                               00 = LED off
+ 201:hw.c          **** 
+ 202:hw.c          ****   //check if ver 1.0 of HW
+ 203:hw.c          ****   if (TRUE == ver1_0)
+ 371              		.loc 1 203 0
+ 372 01b2 1D4A     		ldr	r2, .L41
+ 373 01b4 1278     		ldrb	r2, [r2]
+ 192:hw.c          **** {
+ 374              		.loc 1 192 0
+ 375 01b6 0906     		lsl	r1, r1, #24
+ 376              	.LVL6:
+ 198:hw.c          ****   tU8 commandLedRed[] =   {0x08, 0x00};
+ 377              		.loc 1 198 0
+ 378 01b8 0824     		mov	r4, #8
+ 192:hw.c          **** {
+ 379              		.loc 1 192 0
+ 380 01ba 1B0E     		lsr	r3, r3, #24
+ 381 01bc 090E     		lsr	r1, r1, #24
+ 198:hw.c          ****   tU8 commandLedRed[] =   {0x08, 0x00};
+ 382              		.loc 1 198 0
+ 383 01be 0470     		strb	r4, [r0]
+ 384              		.loc 1 203 0
+ 385 01c0 012A     		cmp	r2, #1
+ 386 01c2 0FD1     		bne	.L28
+ 204:hw.c          ****   {
+ 205:hw.c          ****     if (LED_GREEN == ledSelect)
+ 387              		.loc 1 205 0
+ 388 01c4 012B     		cmp	r3, #1
+ 389 01c6 05D1     		bne	.L29
+ 390 01c8 8023     		mov	r3, #128
+ 391 01ca 5B05     		lsl	r3, r3, #21
+ 392 01cc 06E0     		b	.L40
+ 393              	.L30:
+ 206:hw.c          ****     {
+ 207:hw.c          ****       if (TRUE == ledState)
+ 208:hw.c          ****         IOCLR = LED_GREEN_PIN;
+ 209:hw.c          ****       else
+ 210:hw.c          ****         IOSET = LED_GREEN_PIN;
+ 394              		.loc 1 210 0
+ 395 01ce 174A     		ldr	r2, .L41+4
+ 396              	.L37:
+ 397 01d0 1360     		str	r3, [r2]
+ 398 01d2 25E0     		b	.L27
+ 399              	.L29:
+ 211:hw.c          ****     }
+ 212:hw.c          ****     else if (LED_RED == ledSelect)
+ 400              		.loc 1 212 0
+ 401 01d4 022B     		cmp	r3, #2
+ 402 01d6 23D1     		bne	.L27
+ 403 01d8 8023     		mov	r3, #128
+ 404 01da DB05     		lsl	r3, r3, #23
+ 405              	.L40:
+ 213:hw.c          ****     {
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 12
+
+
+ 214:hw.c          ****       if (TRUE == ledState)
+ 406              		.loc 1 214 0
+ 407 01dc 0129     		cmp	r1, #1
+ 408 01de F6D1     		bne	.L30
+ 215:hw.c          ****         IOCLR = LED_RED_PIN;
+ 409              		.loc 1 215 0
+ 410 01e0 134A     		ldr	r2, .L41+8
+ 411 01e2 F5E7     		b	.L37
+ 412              	.L28:
+ 216:hw.c          ****       else
+ 217:hw.c          ****         IOSET = LED_RED_PIN;
+ 218:hw.c          ****     }
+ 219:hw.c          ****   }
+ 220:hw.c          **** 
+ 221:hw.c          ****   //HW is ver 1.1
+ 222:hw.c          ****   else
+ 223:hw.c          ****   {
+ 224:hw.c          ****     if (LED_GREEN == ledSelect)
+ 413              		.loc 1 224 0
+ 414 01e4 012B     		cmp	r3, #1
+ 415 01e6 11D1     		bne	.L33
+ 225:hw.c          ****     {
+ 226:hw.c          ****       greenLedShadow = ledState;
+ 416              		.loc 1 226 0
+ 417 01e8 124B     		ldr	r3, .L41+12
+ 418 01ea 1970     		strb	r1, [r3]
+ 227:hw.c          ****       if (TRUE == ledState)
+ 419              		.loc 1 227 0
+ 420 01ec 0129     		cmp	r1, #1
+ 421 01ee 02D1     		bne	.L34
+ 228:hw.c          ****         commandLedGreen[1] = 0x40;
+ 422              		.loc 1 228 0
+ 423 01f0 4022     		mov	r2, #64
+ 424 01f2 6946     		mov	r1, sp
+ 425 01f4 4A70     		strb	r2, [r1, #1]
+ 426              	.L34:
+ 229:hw.c          ****       if(TRUE == btResetShadow)
+ 427              		.loc 1 229 0
+ 428 01f6 5B78     		ldrb	r3, [r3, #1]
+ 429 01f8 012B     		cmp	r3, #1
+ 430 01fa 05D1     		bne	.L35
+ 230:hw.c          ****         commandLedGreen[1] |= 0x10;
+ 431              		.loc 1 230 0
+ 432 01fc 6A46     		mov	r2, sp
+ 433 01fe 5378     		ldrb	r3, [r2, #1]
+ 434 0200 1022     		mov	r2, #16
+ 435 0202 1343     		orr	r3, r2
+ 436 0204 6846     		mov	r0, sp
+ 437 0206 4370     		strb	r3, [r0, #1]
+ 438              	.L35:
+ 231:hw.c          ****       pca9532(commandLedGreen, sizeof(commandLedGreen), NULL, 0);
+ 439              		.loc 1 231 0
+ 440 0208 6846     		mov	r0, sp
+ 441 020a 04E0     		b	.L36
+ 442              	.L33:
+ 232:hw.c          ****     }
+ 233:hw.c          ****     else if (LED_RED == ledSelect)
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 13
+
+
+ 443              		.loc 1 233 0
+ 444 020c 022B     		cmp	r3, #2
+ 445 020e 07D1     		bne	.L27
+ 234:hw.c          ****     {
+ 235:hw.c          ****       if (TRUE == ledState)
+ 446              		.loc 1 235 0
+ 447 0210 0129     		cmp	r1, #1
+ 448 0212 00D1     		bne	.L36
+ 236:hw.c          ****         commandLedRed[1] = 0x01;
+ 449              		.loc 1 236 0
+ 450 0214 4170     		strb	r1, [r0, #1]
+ 451              	.L36:
+ 237:hw.c          ****       pca9532(commandLedRed, sizeof(commandLedRed), NULL, 0);
+ 452              		.loc 1 237 0
+ 453 0216 0022     		mov	r2, #0
+ 454 0218 0221     		mov	r1, #2
+ 455 021a 131C     		mov	r3, r2
+ 456 021c FFF7FEFF 		bl	pca9532
+ 457              	.L27:
+ 238:hw.c          ****     }
+ 239:hw.c          ****   }
+ 240:hw.c          **** }
+ 458              		.loc 1 240 0
+ 459              		@ sp needed for prologue
+ 460 0220 13BC     		pop	{r0, r1, r4}
+ 461 0222 01BC     		pop	{r0}
+ 462 0224 0047     		bx	r0
+ 463              	.L42:
+ 464 0226 C046     		.align	2
+ 465              	.L41:
+ 466 0228 00000000 		.word	ver1_0
+ 467 022c 048002E0 		.word	-536707068
+ 468 0230 0C8002E0 		.word	-536707060
+ 469 0234 00000000 		.word	.LANCHOR1
+ 470              		.cfi_endproc
+ 471              	.LFE4:
+ 472              		.size	setLED, .-setLED
+ 473              		.align	1
+ 474              		.global	getKeys
+ 475              		.code	16
+ 476              		.thumb_func
+ 477              		.type	getKeys, %function
+ 478              	getKeys:
+ 479              	.LFB5:
+ 241:hw.c          **** 
+ 242:hw.c          **** 
+ 243:hw.c          **** /*****************************************************************************
+ 244:hw.c          ****  *
+ 245:hw.c          ****  * Description:
+ 246:hw.c          ****  *    Get current state of joystick switch
+ 247:hw.c          ****  *
+ 248:hw.c          ****  ****************************************************************************/
+ 249:hw.c          **** tU8
+ 250:hw.c          **** getKeys(void)
+ 251:hw.c          **** {
+ 480              		.loc 1 251 0
+ 481              		.cfi_startproc
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 14
+
+
+ 482 0238 11B5     		push	{r0, r4, lr}
+ 483              	.LCFI4:
+ 484              		.cfi_def_cfa_offset 12
+ 485              		.cfi_offset 0, -12
+ 486              		.cfi_offset 4, -8
+ 487              		.cfi_offset 14, -4
+ 252:hw.c          ****   tU8 commandReadKeys[] = {0x00};
+ 488              		.loc 1 252 0
+ 489 023a 0023     		mov	r3, #0
+ 490 023c 6946     		mov	r1, sp
+ 491 023e 0B70     		strb	r3, [r1]
+ 492              	.LVL7:
+ 253:hw.c          ****   tU8 readKeys = KEY_NOTHING;
+ 254:hw.c          ****   tU8 keySample;
+ 255:hw.c          **** 
+ 256:hw.c          ****   //check if ver 1.0 of HW
+ 257:hw.c          ****   if (TRUE == ver1_0)
+ 493              		.loc 1 257 0
+ 494 0240 1F4B     		ldr	r3, .L57
+ 495 0242 1A78     		ldrb	r2, [r3]
+ 496 0244 012A     		cmp	r2, #1
+ 497 0246 19D1     		bne	.L44
+ 258:hw.c          ****   {
+ 259:hw.c          ****     if ((IOPIN & KEYPIN_CENTER) == 0) readKeys |= KEY_CENTER;
+ 498              		.loc 1 259 0
+ 499 0248 1E4B     		ldr	r3, .L57+4
+ 500 024a 8020     		mov	r0, #128
+ 501 024c 1968     		ldr	r1, [r3]
+ 502 024e C001     		lsl	r0, r0, #7
+ 503 0250 0840     		and	r0, r1
+ 253:hw.c          ****   tU8 readKeys = KEY_NOTHING;
+ 504              		.loc 1 253 0
+ 505 0252 4142     		neg	r1, r0
+ 506 0254 4841     		adc	r0, r0, r1
+ 260:hw.c          ****     if ((IOPIN & KEYPIN_UP) == 0)     readKeys |= KEY_UP;
+ 507              		.loc 1 260 0
+ 508 0256 1968     		ldr	r1, [r3]
+ 253:hw.c          ****   tU8 readKeys = KEY_NOTHING;
+ 509              		.loc 1 253 0
+ 510 0258 0001     		lsl	r0, r0, #4
+ 511              	.LVL8:
+ 512              		.loc 1 260 0
+ 513 025a CC03     		lsl	r4, r1, #15
+ 514 025c 00D4     		bmi	.L46
+ 515              		.loc 1 260 0 is_stmt 0 discriminator 1
+ 516 025e 1043     		orr	r0, r2
+ 517              	.LVL9:
+ 518              	.L46:
+ 261:hw.c          ****     if ((IOPIN & KEYPIN_DOWN) == 0)   readKeys |= KEY_DOWN;
+ 519              		.loc 1 261 0 is_stmt 1
+ 520 0260 1A68     		ldr	r2, [r3]
+ 521 0262 1102     		lsl	r1, r2, #8
+ 522 0264 01D4     		bmi	.L47
+ 523              		.loc 1 261 0 is_stmt 0 discriminator 1
+ 524 0266 0422     		mov	r2, #4
+ 525 0268 1043     		orr	r0, r2
+ 526              	.LVL10:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 15
+
+
+ 527              	.L47:
+ 262:hw.c          ****     if ((IOPIN & KEYPIN_LEFT) == 0)   readKeys |= KEY_LEFT;
+ 528              		.loc 1 262 0 is_stmt 1
+ 529 026a 1A68     		ldr	r2, [r3]
+ 530 026c 1404     		lsl	r4, r2, #16
+ 531 026e 01D4     		bmi	.L48
+ 532              		.loc 1 262 0 is_stmt 0 discriminator 1
+ 533 0270 0822     		mov	r2, #8
+ 534 0272 1043     		orr	r0, r2
+ 535              	.LVL11:
+ 536              	.L48:
+ 263:hw.c          ****     if ((IOPIN & KEYPIN_RIGHT) == 0)  readKeys |= KEY_RIGHT;
+ 537              		.loc 1 263 0 is_stmt 1
+ 538 0274 1B68     		ldr	r3, [r3]
+ 539 0276 5902     		lsl	r1, r3, #9
+ 540 0278 1ED4     		bmi	.L49
+ 541 027a 1BE0     		b	.L56
+ 542              	.LVL12:
+ 543              	.L44:
+ 264:hw.c          ****   }
+ 265:hw.c          **** 
+ 266:hw.c          ****   //HW is ver 1.1
+ 267:hw.c          ****   else
+ 268:hw.c          ****   {
+ 269:hw.c          ****     pca9532(commandReadKeys, sizeof(commandReadKeys), &keySample, 1);
+ 544              		.loc 1 269 0
+ 545 027c 6C46     		mov	r4, sp
+ 546 027e 0121     		mov	r1, #1
+ 547 0280 0334     		add	r4, r4, #3
+ 548 0282 0B1C     		mov	r3, r1
+ 549 0284 221C     		mov	r2, r4
+ 550 0286 6846     		mov	r0, sp
+ 551 0288 FFF7FEFF 		bl	pca9532
+ 552              	.LVL13:
+ 270:hw.c          ****     if ((keySample & 0x01) == 0) readKeys |= KEY_CENTER;
+ 553              		.loc 1 270 0
+ 554 028c 2378     		ldrb	r3, [r4]
+ 555 028e 0122     		mov	r2, #1
+ 556 0290 181C     		mov	r0, r3
+ 557 0292 1040     		and	r0, r2
+ 253:hw.c          ****   tU8 readKeys = KEY_NOTHING;
+ 558              		.loc 1 253 0
+ 559 0294 4142     		neg	r1, r0
+ 560 0296 4841     		adc	r0, r0, r1
+ 561 0298 0001     		lsl	r0, r0, #4
+ 562              	.LVL14:
+ 271:hw.c          ****     if ((keySample & 0x04) == 0) readKeys |= KEY_UP;
+ 563              		.loc 1 271 0
+ 564 029a 5C07     		lsl	r4, r3, #29
+ 565 029c 00D4     		bmi	.L51
+ 566              		.loc 1 271 0 is_stmt 0 discriminator 1
+ 567 029e 1043     		orr	r0, r2
+ 568              	.LVL15:
+ 569              	.L51:
+ 272:hw.c          ****     if ((keySample & 0x10) == 0) readKeys |= KEY_DOWN;
+ 570              		.loc 1 272 0 is_stmt 1
+ 571 02a0 D906     		lsl	r1, r3, #27
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 16
+
+
+ 572 02a2 01D4     		bmi	.L52
+ 573              		.loc 1 272 0 is_stmt 0 discriminator 1
+ 574 02a4 0422     		mov	r2, #4
+ 575 02a6 1043     		orr	r0, r2
+ 576              	.LVL16:
+ 577              	.L52:
+ 578 02a8 0822     		mov	r2, #8
+ 273:hw.c          ****     if ((keySample & 0x02) == 0) readKeys |= KEY_LEFT;
+ 579              		.loc 1 273 0 is_stmt 1
+ 580 02aa 9C07     		lsl	r4, r3, #30
+ 581 02ac 00D4     		bmi	.L53
+ 582              		.loc 1 273 0 is_stmt 0 discriminator 1
+ 583 02ae 1043     		orr	r0, r2
+ 584              	.LVL17:
+ 585              	.L53:
+ 274:hw.c          ****     if ((keySample & 0x08) == 0) readKeys |= KEY_RIGHT;
+ 586              		.loc 1 274 0 is_stmt 1
+ 587 02b0 1342     		tst	r3, r2
+ 588 02b2 01D1     		bne	.L49
+ 589              	.LVL18:
+ 590              	.L56:
+ 591              		.loc 1 274 0 is_stmt 0 discriminator 1
+ 592 02b4 0223     		mov	r3, #2
+ 593 02b6 1843     		orr	r0, r3
+ 594              	.LVL19:
+ 595              	.L49:
+ 275:hw.c          ****   }
+ 276:hw.c          **** 
+ 277:hw.c          ****   return readKeys;
+ 278:hw.c          **** }
+ 596              		.loc 1 278 0 is_stmt 1
+ 597              		@ sp needed for prologue
+ 598 02b8 12BC     		pop	{r1, r4}
+ 599 02ba 02BC     		pop	{r1}
+ 600 02bc 0847     		bx	r1
+ 601              	.L58:
+ 602 02be C046     		.align	2
+ 603              	.L57:
+ 604 02c0 00000000 		.word	ver1_0
+ 605 02c4 008002E0 		.word	-536707072
+ 606              		.cfi_endproc
+ 607              	.LFE5:
+ 608              		.size	getKeys, .-getKeys
+ 609              		.align	1
+ 610              		.global	selectLCD
+ 611              		.code	16
+ 612              		.thumb_func
+ 613              		.type	selectLCD, %function
+ 614              	selectLCD:
+ 615              	.LFB6:
+ 279:hw.c          **** 
+ 280:hw.c          **** 
+ 281:hw.c          **** /*****************************************************************************
+ 282:hw.c          ****  *
+ 283:hw.c          ****  * Description:
+ 284:hw.c          ****  *    Select/deselect LCD controller (by controlling chip select signal)
+ 285:hw.c          ****  *
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 17
+
+
+ 286:hw.c          ****  ****************************************************************************/
+ 287:hw.c          **** void
+ 288:hw.c          **** selectLCD(tBool select)
+ 289:hw.c          **** {
+ 616              		.loc 1 289 0
+ 617              		.cfi_startproc
+ 618              	.LVL20:
+ 290:hw.c          ****   //check if ver 1.0 of HW
+ 291:hw.c          ****   if (TRUE == ver1_0)
+ 619              		.loc 1 291 0
+ 620 02c8 084B     		ldr	r3, .L68
+ 621 02ca 1B78     		ldrb	r3, [r3]
+ 289:hw.c          **** {
+ 622              		.loc 1 289 0
+ 623 02cc 0006     		lsl	r0, r0, #24
+ 624              	.LVL21:
+ 625 02ce 000E     		lsr	r0, r0, #24
+ 626              		.loc 1 291 0
+ 627 02d0 012B     		cmp	r3, #1
+ 628 02d2 02D1     		bne	.L60
+ 629 02d4 8023     		mov	r3, #128
+ 630 02d6 5B04     		lsl	r3, r3, #17
+ 631 02d8 01E0     		b	.L67
+ 632              	.L60:
+ 633 02da 8023     		mov	r3, #128
+ 634 02dc 1B02     		lsl	r3, r3, #8
+ 635              	.L67:
+ 292:hw.c          ****   {
+ 293:hw.c          ****     if (TRUE == select)
+ 294:hw.c          ****       IOCLR = LCD_CS_V1_0;
+ 295:hw.c          ****     else
+ 296:hw.c          ****       IOSET = LCD_CS_V1_0;
+ 297:hw.c          ****   }
+ 298:hw.c          **** 
+ 299:hw.c          ****   //HW is ver 1.1
+ 300:hw.c          ****   else
+ 301:hw.c          ****   {
+ 302:hw.c          ****     if (TRUE == select)
+ 636              		.loc 1 302 0
+ 637 02de 0128     		cmp	r0, #1
+ 638 02e0 01D1     		bne	.L63
+ 303:hw.c          ****       IOCLR = LCD_CS_V1_1;
+ 639              		.loc 1 303 0
+ 640 02e2 034A     		ldr	r2, .L68+4
+ 641 02e4 00E0     		b	.L64
+ 642              	.L63:
+ 304:hw.c          ****     else
+ 305:hw.c          ****       IOSET = LCD_CS_V1_1;
+ 643              		.loc 1 305 0
+ 644 02e6 034A     		ldr	r2, .L68+8
+ 645              	.L64:
+ 646 02e8 1360     		str	r3, [r2]
+ 306:hw.c          ****   }
+ 307:hw.c          **** }
+ 647              		.loc 1 307 0
+ 648              		@ sp needed for prologue
+ 649 02ea 7047     		bx	lr
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 18
+
+
+ 650              	.L69:
+ 651              		.align	2
+ 652              	.L68:
+ 653 02ec 00000000 		.word	ver1_0
+ 654 02f0 0C8002E0 		.word	-536707060
+ 655 02f4 048002E0 		.word	-536707068
+ 656              		.cfi_endproc
+ 657              	.LFE6:
+ 658              		.size	selectLCD, .-selectLCD
+ 659              		.align	1
+ 660              		.global	sendToLCD
+ 661              		.code	16
+ 662              		.thumb_func
+ 663              		.type	sendToLCD, %function
+ 664              	sendToLCD:
+ 665              	.LFB7:
+ 308:hw.c          **** 
+ 309:hw.c          **** 
+ 310:hw.c          **** /*****************************************************************************
+ 311:hw.c          ****  *
+ 312:hw.c          ****  * Description:
+ 313:hw.c          ****  *    Send 9-bit data to LCD controller
+ 314:hw.c          ****  *
+ 315:hw.c          ****  ****************************************************************************/
+ 316:hw.c          **** void
+ 317:hw.c          **** sendToLCD(tU8 firstBit, tU8 data)
+ 318:hw.c          **** {
+ 666              		.loc 1 318 0
+ 667              		.cfi_startproc
+ 668 02f8 30B5     		push	{r4, r5, lr}
+ 669              	.LCFI5:
+ 670              		.cfi_def_cfa_offset 12
+ 671              		.cfi_offset 4, -12
+ 672              		.cfi_offset 5, -8
+ 673              		.cfi_offset 14, -4
+ 674              	.LVL22:
+ 319:hw.c          ****   //disable SPI
+ 320:hw.c          ****   IOCLR = LCD_CLK;
+ 675              		.loc 1 320 0
+ 676 02fa 154A     		ldr	r2, .L75
+ 677 02fc 1023     		mov	r3, #16
+ 678 02fe 1360     		str	r3, [r2]
+ 321:hw.c          ****   PINSEL0 &= 0xffff00ff;
+ 679              		.loc 1 321 0
+ 680 0300 144B     		ldr	r3, .L75+4
+ 681 0302 154C     		ldr	r4, .L75+8
+ 682 0304 1D68     		ldr	r5, [r3]
+ 318:hw.c          **** {
+ 683              		.loc 1 318 0
+ 684 0306 0006     		lsl	r0, r0, #24
+ 685              	.LVL23:
+ 686              		.loc 1 321 0
+ 687 0308 2C40     		and	r4, r5
+ 318:hw.c          **** {
+ 688              		.loc 1 318 0
+ 689 030a 0906     		lsl	r1, r1, #24
+ 690              	.LVL24:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 19
+
+
+ 691              		.loc 1 321 0
+ 692 030c 1C60     		str	r4, [r3]
+ 318:hw.c          **** {
+ 693              		.loc 1 318 0
+ 694 030e 000E     		lsr	r0, r0, #24
+ 695 0310 090E     		lsr	r1, r1, #24
+ 696 0312 124C     		ldr	r4, .L75+12
+ 697 0314 4025     		mov	r5, #64
+ 322:hw.c          ****   
+ 323:hw.c          ****   if (1 == firstBit)
+ 698              		.loc 1 323 0
+ 699 0316 0128     		cmp	r0, #1
+ 700 0318 01D1     		bne	.L71
+ 324:hw.c          ****     IOSET = LCD_MOSI;   //set MOSI
+ 701              		.loc 1 324 0
+ 702 031a 2560     		str	r5, [r4]
+ 703 031c 00E0     		b	.L72
+ 704              	.L71:
+ 325:hw.c          ****   else
+ 326:hw.c          ****     IOCLR = LCD_MOSI;   //reset MOSI
+ 705              		.loc 1 326 0
+ 706 031e 1560     		str	r5, [r2]
+ 707              	.L72:
+ 327:hw.c          ****   
+ 328:hw.c          ****   //Set clock high
+ 329:hw.c          ****   IOSET = LCD_CLK;
+ 708              		.loc 1 329 0
+ 709 0320 1020     		mov	r0, #16
+ 710 0322 2060     		str	r0, [r4]
+ 330:hw.c          ****   
+ 331:hw.c          ****   //Set clock low
+ 332:hw.c          ****   IOCLR = LCD_CLK;
+ 711              		.loc 1 332 0
+ 712 0324 1060     		str	r0, [r2]
+ 333:hw.c          ****   
+ 334:hw.c          ****   /*
+ 335:hw.c          ****    * Enable SPI again
+ 336:hw.c          ****    */
+ 337:hw.c          ****   //initialize SPI interface
+ 338:hw.c          ****   SPI_SPCCR = 0x08;    
+ 713              		.loc 1 338 0
+ 714 0326 0E4A     		ldr	r2, .L75+16
+ 715 0328 0820     		mov	r0, #8
+ 716 032a 1060     		str	r0, [r2]
+ 339:hw.c          ****   SPI_SPCR  = 0x20;
+ 717              		.loc 1 339 0
+ 718 032c 0D4A     		ldr	r2, .L75+20
+ 719 032e 2020     		mov	r0, #32
+ 720 0330 1060     		str	r0, [r2]
+ 340:hw.c          **** 
+ 341:hw.c          ****   //connect SPI bus to IO-pins
+ 342:hw.c          ****   PINSEL0 |= 0x00005500;
+ 721              		.loc 1 342 0
+ 722 0332 AA22     		mov	r2, #170
+ 723 0334 1868     		ldr	r0, [r3]
+ 724 0336 D201     		lsl	r2, r2, #7
+ 725 0338 0243     		orr	r2, r0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 20
+
+
+ 726 033a 1A60     		str	r2, [r3]
+ 343:hw.c          ****   
+ 344:hw.c          ****   //send byte
+ 345:hw.c          ****   SPI_SPDR = data;
+ 727              		.loc 1 345 0
+ 728 033c 0A4B     		ldr	r3, .L75+24
+ 346:hw.c          ****   while((SPI_SPSR & 0x80) == 0)
+ 729              		.loc 1 346 0
+ 730 033e 0B4A     		ldr	r2, .L75+28
+ 345:hw.c          ****   SPI_SPDR = data;
+ 731              		.loc 1 345 0
+ 732 0340 1960     		str	r1, [r3]
+ 733              		.loc 1 346 0
+ 734 0342 8023     		mov	r3, #128
+ 735              	.L73:
+ 736              		.loc 1 346 0 is_stmt 0 discriminator 1
+ 737 0344 1168     		ldr	r1, [r2]
+ 738 0346 1942     		tst	r1, r3
+ 739 0348 FCD0     		beq	.L73
+ 347:hw.c          ****     ;
+ 348:hw.c          **** }
+ 740              		.loc 1 348 0 is_stmt 1
+ 741              		@ sp needed for prologue
+ 742 034a 30BC     		pop	{r4, r5}
+ 743 034c 01BC     		pop	{r0}
+ 744 034e 0047     		bx	r0
+ 745              	.L76:
+ 746              		.align	2
+ 747              	.L75:
+ 748 0350 0C8002E0 		.word	-536707060
+ 749 0354 00C002E0 		.word	-536690688
+ 750 0358 FF00FFFF 		.word	-65281
+ 751 035c 048002E0 		.word	-536707068
+ 752 0360 0C0002E0 		.word	-536739828
+ 753 0364 000002E0 		.word	-536739840
+ 754 0368 080002E0 		.word	-536739832
+ 755 036c 040002E0 		.word	-536739836
+ 756              		.cfi_endproc
+ 757              	.LFE7:
+ 758              		.size	sendToLCD, .-sendToLCD
+ 759              		.align	1
+ 760              		.global	initSpiForLcd
+ 761              		.code	16
+ 762              		.thumb_func
+ 763              		.type	initSpiForLcd, %function
+ 764              	initSpiForLcd:
+ 765              	.LFB8:
+ 349:hw.c          **** 
+ 350:hw.c          **** 
+ 351:hw.c          **** /*****************************************************************************
+ 352:hw.c          ****  *
+ 353:hw.c          ****  * Description:
+ 354:hw.c          ****  *    Initialize the SPI interface for the LCD controller
+ 355:hw.c          ****  *
+ 356:hw.c          ****  ****************************************************************************/
+ 357:hw.c          **** void
+ 358:hw.c          **** initSpiForLcd(void)
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 21
+
+
+ 359:hw.c          **** {
+ 766              		.loc 1 359 0
+ 767              		.cfi_startproc
+ 768 0370 00B5     		push	{lr}
+ 769              	.LCFI6:
+ 770              		.cfi_def_cfa_offset 4
+ 771              		.cfi_offset 14, -4
+ 360:hw.c          ****   //make SPI slave chip select an output and set signal high
+ 361:hw.c          ****   //check if ver 1.0 of HW
+ 362:hw.c          ****   if (TRUE == ver1_0)
+ 772              		.loc 1 362 0
+ 773 0372 0E4B     		ldr	r3, .L81
+ 774 0374 1A78     		ldrb	r2, [r3]
+ 775 0376 0E4B     		ldr	r3, .L81+4
+ 776 0378 012A     		cmp	r2, #1
+ 777 037a 02D1     		bne	.L78
+ 363:hw.c          ****   {
+ 364:hw.c          ****     IODIR |= (LCD_CS_V1_0 | LCD_CLK | LCD_MOSI);
+ 778              		.loc 1 364 0
+ 779 037c 1A68     		ldr	r2, [r3]
+ 780 037e 0D49     		ldr	r1, .L81+8
+ 781 0380 01E0     		b	.L80
+ 782              	.L78:
+ 365:hw.c          ****   }
+ 366:hw.c          **** 
+ 367:hw.c          ****   //HW is ver 1.1
+ 368:hw.c          ****   else
+ 369:hw.c          ****   {
+ 370:hw.c          ****     IODIR |= (LCD_CS_V1_1 | LCD_CLK | LCD_MOSI);
+ 783              		.loc 1 370 0
+ 784 0382 1A68     		ldr	r2, [r3]
+ 785 0384 0C49     		ldr	r1, .L81+12
+ 786              	.L80:
+ 787 0386 0A43     		orr	r2, r1
+ 788 0388 1A60     		str	r2, [r3]
+ 371:hw.c          ****   }
+ 372:hw.c          ****   
+ 373:hw.c          ****   //deselect controller
+ 374:hw.c          ****   selectLCD(FALSE);
+ 789              		.loc 1 374 0
+ 790 038a 0020     		mov	r0, #0
+ 791 038c FFF7FEFF 		bl	selectLCD
+ 375:hw.c          **** 
+ 376:hw.c          ****   //connect SPI bus to IO-pins
+ 377:hw.c          ****   PINSEL0 |= 0x00005500;
+ 792              		.loc 1 377 0
+ 793 0390 0A4B     		ldr	r3, .L81+16
+ 794 0392 AA22     		mov	r2, #170
+ 795 0394 1968     		ldr	r1, [r3]
+ 796 0396 D201     		lsl	r2, r2, #7
+ 797 0398 0A43     		orr	r2, r1
+ 798 039a 1A60     		str	r2, [r3]
+ 378:hw.c          ****   
+ 379:hw.c          ****   //initialize SPI interface
+ 380:hw.c          ****   SPI_SPCCR = 0x08;    
+ 799              		.loc 1 380 0
+ 800 039c 084B     		ldr	r3, .L81+20
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 22
+
+
+ 801 039e 0822     		mov	r2, #8
+ 802 03a0 1A60     		str	r2, [r3]
+ 381:hw.c          ****   SPI_SPCR  = 0x20;
+ 803              		.loc 1 381 0
+ 804 03a2 084B     		ldr	r3, .L81+24
+ 805 03a4 2022     		mov	r2, #32
+ 806 03a6 1A60     		str	r2, [r3]
+ 382:hw.c          **** }
+ 807              		.loc 1 382 0
+ 808              		@ sp needed for prologue
+ 809 03a8 01BC     		pop	{r0}
+ 810 03aa 0047     		bx	r0
+ 811              	.L82:
+ 812              		.align	2
+ 813              	.L81:
+ 814 03ac 00000000 		.word	ver1_0
+ 815 03b0 088002E0 		.word	-536707064
+ 816 03b4 50000001 		.word	16777296
+ 817 03b8 50800000 		.word	32848
+ 818 03bc 00C002E0 		.word	-536690688
+ 819 03c0 0C0002E0 		.word	-536739828
+ 820 03c4 000002E0 		.word	-536739840
+ 821              		.cfi_endproc
+ 822              	.LFE8:
+ 823              		.size	initSpiForLcd, .-initSpiForLcd
+ 824              		.comm	ver1_1,1,1
+ 825              		.comm	ver1_0,1,1
+ 826              		.section	.rodata
+ 827              		.set	.LANCHOR0,. + 0
+ 828              	.LC0:
+ 829 0000 12       		.byte	18
+ 830 0001 97       		.byte	-105
+ 831 0002 80       		.byte	-128
+ 832 0003 00       		.byte	0
+ 833 0004 40       		.byte	64
+ 834 0005 00       		.byte	0
+ 835 0006 14       		.byte	20
+ 836 0007 00       		.byte	0
+ 837 0008 00       		.byte	0
+ 838              		.bss
+ 839              		.set	.LANCHOR1,. + 0
+ 840              		.type	greenLedShadow, %object
+ 841              		.size	greenLedShadow, 1
+ 842              	greenLedShadow:
+ 843 0000 00       		.space	1
+ 844              		.type	btResetShadow, %object
+ 845              		.size	btResetShadow, 1
+ 846              	btResetShadow:
+ 847 0001 00       		.space	1
+ 848              		.text
+ 849              	.Letext0:
+ 850              		.file 2 "./startup/../pre_emptive_os/api/../api/general.h"
+ 851              		.section	.debug_info,"",%progbits
+ 852              	.Ldebug_info0:
+ 853 0000 A5020000 		.4byte	0x2a5
+ 854 0004 0200     		.2byte	0x2
+ 855 0006 00000000 		.4byte	.Ldebug_abbrev0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 23
+
+
+ 856 000a 04       		.byte	0x4
+ 857 000b 01       		.uleb128 0x1
+ 858 000c CC000000 		.4byte	.LASF31
+ 859 0010 01       		.byte	0x1
+ 860 0011 85010000 		.4byte	.LASF32
+ 861 0015 F9000000 		.4byte	.LASF33
+ 862 0019 00000000 		.4byte	.Ltext0
+ 863 001d C8030000 		.4byte	.Letext0
+ 864 0021 00000000 		.4byte	.Ldebug_line0
+ 865 0025 02       		.uleb128 0x2
+ 866 0026 74553800 		.ascii	"tU8\000"
+ 867 002a 02       		.byte	0x2
+ 868 002b 47       		.byte	0x47
+ 869 002c 30000000 		.4byte	0x30
+ 870 0030 03       		.uleb128 0x3
+ 871 0031 01       		.byte	0x1
+ 872 0032 08       		.byte	0x8
+ 873 0033 70000000 		.4byte	.LASF0
+ 874 0037 03       		.uleb128 0x3
+ 875 0038 02       		.byte	0x2
+ 876 0039 07       		.byte	0x7
+ 877 003a A0000000 		.4byte	.LASF1
+ 878 003e 03       		.uleb128 0x3
+ 879 003f 04       		.byte	0x4
+ 880 0040 07       		.byte	0x7
+ 881 0041 24010000 		.4byte	.LASF2
+ 882 0045 03       		.uleb128 0x3
+ 883 0046 01       		.byte	0x1
+ 884 0047 06       		.byte	0x6
+ 885 0048 94010000 		.4byte	.LASF3
+ 886 004c 03       		.uleb128 0x3
+ 887 004d 02       		.byte	0x2
+ 888 004e 05       		.byte	0x5
+ 889 004f 7B010000 		.4byte	.LASF4
+ 890 0053 04       		.uleb128 0x4
+ 891 0054 04       		.byte	0x4
+ 892 0055 05       		.byte	0x5
+ 893 0056 696E7400 		.ascii	"int\000"
+ 894 005a 05       		.uleb128 0x5
+ 895 005b A0010000 		.4byte	.LASF5
+ 896 005f 02       		.byte	0x2
+ 897 0060 4D       		.byte	0x4d
+ 898 0061 30000000 		.4byte	0x30
+ 899 0065 03       		.uleb128 0x3
+ 900 0066 04       		.byte	0x4
+ 901 0067 07       		.byte	0x7
+ 902 0068 8E000000 		.4byte	.LASF6
+ 903 006c 06       		.uleb128 0x6
+ 904 006d 01       		.byte	0x1
+ 905 006e 7E000000 		.4byte	.LASF7
+ 906 0072 01       		.byte	0x1
+ 907 0073 37       		.byte	0x37
+ 908 0074 01       		.byte	0x1
+ 909 0075 00000000 		.4byte	.LFB0
+ 910 0079 AC000000 		.4byte	.LFE0
+ 911 007d 00000000 		.4byte	.LLST0
+ 912 0081 94000000 		.4byte	0x94
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 24
+
+
+ 913 0085 07       		.uleb128 0x7
+ 914 0086 44010000 		.4byte	.LASF9
+ 915 008a 01       		.byte	0x1
+ 916 008b 39       		.byte	0x39
+ 917 008c 94000000 		.4byte	0x94
+ 918 0090 02       		.byte	0x2
+ 919 0091 91       		.byte	0x91
+ 920 0092 68       		.sleb128 -24
+ 921 0093 00       		.byte	0
+ 922 0094 08       		.uleb128 0x8
+ 923 0095 25000000 		.4byte	0x25
+ 924 0099 A4000000 		.4byte	0xa4
+ 925 009d 09       		.uleb128 0x9
+ 926 009e 65000000 		.4byte	0x65
+ 927 00a2 08       		.byte	0x8
+ 928 00a3 00       		.byte	0
+ 929 00a4 06       		.uleb128 0x6
+ 930 00a5 01       		.byte	0x1
+ 931 00a6 50010000 		.4byte	.LASF8
+ 932 00aa 01       		.byte	0x1
+ 933 00ab 68       		.byte	0x68
+ 934 00ac 01       		.byte	0x1
+ 935 00ad AC000000 		.4byte	.LFB1
+ 936 00b1 14010000 		.4byte	.LFE1
+ 937 00b5 20000000 		.4byte	.LLST1
+ 938 00b9 CC000000 		.4byte	0xcc
+ 939 00bd 07       		.uleb128 0x7
+ 940 00be 2E000000 		.4byte	.LASF10
+ 941 00c2 01       		.byte	0x1
+ 942 00c3 6A       		.byte	0x6a
+ 943 00c4 CC000000 		.4byte	0xcc
+ 944 00c8 02       		.byte	0x2
+ 945 00c9 91       		.byte	0x91
+ 946 00ca 74       		.sleb128 -12
+ 947 00cb 00       		.byte	0
+ 948 00cc 08       		.uleb128 0x8
+ 949 00cd 25000000 		.4byte	0x25
+ 950 00d1 DC000000 		.4byte	0xdc
+ 951 00d5 09       		.uleb128 0x9
+ 952 00d6 65000000 		.4byte	0x65
+ 953 00da 01       		.byte	0x1
+ 954 00db 00       		.byte	0
+ 955 00dc 06       		.uleb128 0x6
+ 956 00dd 01       		.byte	0x1
+ 957 00de 68000000 		.4byte	.LASF11
+ 958 00e2 01       		.byte	0x1
+ 959 00e3 8B       		.byte	0x8b
+ 960 00e4 01       		.byte	0x1
+ 961 00e5 14010000 		.4byte	.LFB2
+ 962 00e9 80010000 		.4byte	.LFE2
+ 963 00ed 40000000 		.4byte	.LLST2
+ 964 00f1 13010000 		.4byte	0x113
+ 965 00f5 0A       		.uleb128 0xa
+ 966 00f6 EF000000 		.4byte	.LASF13
+ 967 00fa 01       		.byte	0x1
+ 968 00fb 8B       		.byte	0x8b
+ 969 00fc 5A000000 		.4byte	0x5a
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 25
+
+
+ 970 0100 60000000 		.4byte	.LLST3
+ 971 0104 07       		.uleb128 0x7
+ 972 0105 2E000000 		.4byte	.LASF10
+ 973 0109 01       		.byte	0x1
+ 974 010a 8D       		.byte	0x8d
+ 975 010b CC000000 		.4byte	0xcc
+ 976 010f 02       		.byte	0x2
+ 977 0110 91       		.byte	0x91
+ 978 0111 78       		.sleb128 -8
+ 979 0112 00       		.byte	0
+ 980 0113 0B       		.uleb128 0xb
+ 981 0114 01       		.byte	0x1
+ 982 0115 8A010000 		.4byte	.LASF12
+ 983 0119 01       		.byte	0x1
+ 984 011a AF       		.byte	0xaf
+ 985 011b 01       		.byte	0x1
+ 986 011c 80010000 		.4byte	.LFB3
+ 987 0120 A0010000 		.4byte	.LFE3
+ 988 0124 02       		.byte	0x2
+ 989 0125 7D       		.byte	0x7d
+ 990 0126 00       		.sleb128 0
+ 991 0127 3A010000 		.4byte	0x13a
+ 992 012b 0C       		.uleb128 0xc
+ 993 012c 6F6E00   		.ascii	"on\000"
+ 994 012f 01       		.byte	0x1
+ 995 0130 AF       		.byte	0xaf
+ 996 0131 5A000000 		.4byte	0x5a
+ 997 0135 73000000 		.4byte	.LLST4
+ 998 0139 00       		.byte	0
+ 999 013a 06       		.uleb128 0x6
+ 1000 013b 01       		.byte	0x1
+ 1001 013c 00000000 		.4byte	.LASF14
+ 1002 0140 01       		.byte	0x1
+ 1003 0141 BF       		.byte	0xbf
+ 1004 0142 01       		.byte	0x1
+ 1005 0143 A0010000 		.4byte	.LFB4
+ 1006 0147 38020000 		.4byte	.LFE4
+ 1007 014b 86000000 		.4byte	.LLST5
+ 1008 014f 8E010000 		.4byte	0x18e
+ 1009 0153 0A       		.uleb128 0xa
+ 1010 0154 5E000000 		.4byte	.LASF15
+ 1011 0158 01       		.byte	0x1
+ 1012 0159 BF       		.byte	0xbf
+ 1013 015a 25000000 		.4byte	0x25
+ 1014 015e A6000000 		.4byte	.LLST6
+ 1015 0162 0A       		.uleb128 0xa
+ 1016 0163 17000000 		.4byte	.LASF16
+ 1017 0167 01       		.byte	0x1
+ 1018 0168 BF       		.byte	0xbf
+ 1019 0169 5A000000 		.4byte	0x5a
+ 1020 016d B9000000 		.4byte	.LLST7
+ 1021 0171 07       		.uleb128 0x7
+ 1022 0172 07000000 		.4byte	.LASF17
+ 1023 0176 01       		.byte	0x1
+ 1024 0177 C1       		.byte	0xc1
+ 1025 0178 CC000000 		.4byte	0xcc
+ 1026 017c 02       		.byte	0x2
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 26
+
+
+ 1027 017d 91       		.byte	0x91
+ 1028 017e 70       		.sleb128 -16
+ 1029 017f 07       		.uleb128 0x7
+ 1030 0180 4B000000 		.4byte	.LASF18
+ 1031 0184 01       		.byte	0x1
+ 1032 0185 C6       		.byte	0xc6
+ 1033 0186 CC000000 		.4byte	0xcc
+ 1034 018a 02       		.byte	0x2
+ 1035 018b 91       		.byte	0x91
+ 1036 018c 74       		.sleb128 -12
+ 1037 018d 00       		.byte	0
+ 1038 018e 0D       		.uleb128 0xd
+ 1039 018f 01       		.byte	0x1
+ 1040 0190 D8000000 		.4byte	.LASF34
+ 1041 0194 01       		.byte	0x1
+ 1042 0195 FA       		.byte	0xfa
+ 1043 0196 01       		.byte	0x1
+ 1044 0197 25000000 		.4byte	0x25
+ 1045 019b 38020000 		.4byte	.LFB5
+ 1046 019f C8020000 		.4byte	.LFE5
+ 1047 01a3 CC000000 		.4byte	.LLST8
+ 1048 01a7 D7010000 		.4byte	0x1d7
+ 1049 01ab 07       		.uleb128 0x7
+ 1050 01ac B3000000 		.4byte	.LASF19
+ 1051 01b0 01       		.byte	0x1
+ 1052 01b1 FC       		.byte	0xfc
+ 1053 01b2 D7010000 		.4byte	0x1d7
+ 1054 01b6 02       		.byte	0x2
+ 1055 01b7 91       		.byte	0x91
+ 1056 01b8 74       		.sleb128 -12
+ 1057 01b9 0E       		.uleb128 0xe
+ 1058 01ba 3B010000 		.4byte	.LASF20
+ 1059 01be 01       		.byte	0x1
+ 1060 01bf FD       		.byte	0xfd
+ 1061 01c0 25000000 		.4byte	0x25
+ 1062 01c4 EC000000 		.4byte	.LLST9
+ 1063 01c8 07       		.uleb128 0x7
+ 1064 01c9 71010000 		.4byte	.LASF21
+ 1065 01cd 01       		.byte	0x1
+ 1066 01ce FE       		.byte	0xfe
+ 1067 01cf 25000000 		.4byte	0x25
+ 1068 01d3 02       		.byte	0x2
+ 1069 01d4 74       		.byte	0x74
+ 1070 01d5 00       		.sleb128 0
+ 1071 01d6 00       		.byte	0
+ 1072 01d7 08       		.uleb128 0x8
+ 1073 01d8 25000000 		.4byte	0x25
+ 1074 01dc E7010000 		.4byte	0x1e7
+ 1075 01e0 09       		.uleb128 0x9
+ 1076 01e1 65000000 		.4byte	0x65
+ 1077 01e5 00       		.byte	0
+ 1078 01e6 00       		.byte	0
+ 1079 01e7 0F       		.uleb128 0xf
+ 1080 01e8 01       		.byte	0x1
+ 1081 01e9 59010000 		.4byte	.LASF22
+ 1082 01ed 01       		.byte	0x1
+ 1083 01ee 2001     		.2byte	0x120
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 27
+
+
+ 1084 01f0 01       		.byte	0x1
+ 1085 01f1 C8020000 		.4byte	.LFB6
+ 1086 01f5 F8020000 		.4byte	.LFE6
+ 1087 01f9 02       		.byte	0x2
+ 1088 01fa 7D       		.byte	0x7d
+ 1089 01fb 00       		.sleb128 0
+ 1090 01fc 11020000 		.4byte	0x211
+ 1091 0200 10       		.uleb128 0x10
+ 1092 0201 44000000 		.4byte	.LASF23
+ 1093 0205 01       		.byte	0x1
+ 1094 0206 2001     		.2byte	0x120
+ 1095 0208 5A000000 		.4byte	0x5a
+ 1096 020c 2D010000 		.4byte	.LLST10
+ 1097 0210 00       		.byte	0
+ 1098 0211 11       		.uleb128 0x11
+ 1099 0212 01       		.byte	0x1
+ 1100 0213 31010000 		.4byte	.LASF24
+ 1101 0217 01       		.byte	0x1
+ 1102 0218 3D01     		.2byte	0x13d
+ 1103 021a 01       		.byte	0x1
+ 1104 021b F8020000 		.4byte	.LFB7
+ 1105 021f 70030000 		.4byte	.LFE7
+ 1106 0223 40010000 		.4byte	.LLST11
+ 1107 0227 4C020000 		.4byte	0x24c
+ 1108 022b 10       		.uleb128 0x10
+ 1109 022c C3000000 		.4byte	.LASF25
+ 1110 0230 01       		.byte	0x1
+ 1111 0231 3D01     		.2byte	0x13d
+ 1112 0233 25000000 		.4byte	0x25
+ 1113 0237 60010000 		.4byte	.LLST12
+ 1114 023b 10       		.uleb128 0x10
+ 1115 023c 59000000 		.4byte	.LASF26
+ 1116 0240 01       		.byte	0x1
+ 1117 0241 3D01     		.2byte	0x13d
+ 1118 0243 25000000 		.4byte	0x25
+ 1119 0247 73010000 		.4byte	.LLST13
+ 1120 024b 00       		.byte	0
+ 1121 024c 12       		.uleb128 0x12
+ 1122 024d 01       		.byte	0x1
+ 1123 024e 36000000 		.4byte	.LASF35
+ 1124 0252 01       		.byte	0x1
+ 1125 0253 6601     		.2byte	0x166
+ 1126 0255 01       		.byte	0x1
+ 1127 0256 70030000 		.4byte	.LFB8
+ 1128 025a C8030000 		.4byte	.LFE8
+ 1129 025e 86010000 		.4byte	.LLST14
+ 1130 0262 07       		.uleb128 0x7
+ 1131 0263 E0000000 		.4byte	.LASF27
+ 1132 0267 01       		.byte	0x1
+ 1133 0268 28       		.byte	0x28
+ 1134 0269 25000000 		.4byte	0x25
+ 1135 026d 05       		.byte	0x5
+ 1136 026e 03       		.byte	0x3
+ 1137 026f 00000000 		.4byte	greenLedShadow
+ 1138 0273 07       		.uleb128 0x7
+ 1139 0274 20000000 		.4byte	.LASF28
+ 1140 0278 01       		.byte	0x1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 28
+
+
+ 1141 0279 29       		.byte	0x29
+ 1142 027a 25000000 		.4byte	0x25
+ 1143 027e 05       		.byte	0x5
+ 1144 027f 03       		.byte	0x3
+ 1145 0280 01000000 		.4byte	btResetShadow
+ 1146 0284 13       		.uleb128 0x13
+ 1147 0285 63010000 		.4byte	.LASF29
+ 1148 0289 01       		.byte	0x1
+ 1149 028a 22       		.byte	0x22
+ 1150 028b 5A000000 		.4byte	0x5a
+ 1151 028f 01       		.byte	0x1
+ 1152 0290 05       		.byte	0x5
+ 1153 0291 03       		.byte	0x3
+ 1154 0292 00000000 		.4byte	ver1_0
+ 1155 0296 13       		.uleb128 0x13
+ 1156 0297 6A010000 		.4byte	.LASF30
+ 1157 029b 01       		.byte	0x1
+ 1158 029c 23       		.byte	0x23
+ 1159 029d 5A000000 		.4byte	0x5a
+ 1160 02a1 01       		.byte	0x1
+ 1161 02a2 05       		.byte	0x5
+ 1162 02a3 03       		.byte	0x3
+ 1163 02a4 00000000 		.4byte	ver1_1
+ 1164 02a8 00       		.byte	0
+ 1165              		.section	.debug_abbrev,"",%progbits
+ 1166              	.Ldebug_abbrev0:
+ 1167 0000 01       		.uleb128 0x1
+ 1168 0001 11       		.uleb128 0x11
+ 1169 0002 01       		.byte	0x1
+ 1170 0003 25       		.uleb128 0x25
+ 1171 0004 0E       		.uleb128 0xe
+ 1172 0005 13       		.uleb128 0x13
+ 1173 0006 0B       		.uleb128 0xb
+ 1174 0007 03       		.uleb128 0x3
+ 1175 0008 0E       		.uleb128 0xe
+ 1176 0009 1B       		.uleb128 0x1b
+ 1177 000a 0E       		.uleb128 0xe
+ 1178 000b 11       		.uleb128 0x11
+ 1179 000c 01       		.uleb128 0x1
+ 1180 000d 12       		.uleb128 0x12
+ 1181 000e 01       		.uleb128 0x1
+ 1182 000f 10       		.uleb128 0x10
+ 1183 0010 06       		.uleb128 0x6
+ 1184 0011 00       		.byte	0
+ 1185 0012 00       		.byte	0
+ 1186 0013 02       		.uleb128 0x2
+ 1187 0014 16       		.uleb128 0x16
+ 1188 0015 00       		.byte	0
+ 1189 0016 03       		.uleb128 0x3
+ 1190 0017 08       		.uleb128 0x8
+ 1191 0018 3A       		.uleb128 0x3a
+ 1192 0019 0B       		.uleb128 0xb
+ 1193 001a 3B       		.uleb128 0x3b
+ 1194 001b 0B       		.uleb128 0xb
+ 1195 001c 49       		.uleb128 0x49
+ 1196 001d 13       		.uleb128 0x13
+ 1197 001e 00       		.byte	0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 29
+
+
+ 1198 001f 00       		.byte	0
+ 1199 0020 03       		.uleb128 0x3
+ 1200 0021 24       		.uleb128 0x24
+ 1201 0022 00       		.byte	0
+ 1202 0023 0B       		.uleb128 0xb
+ 1203 0024 0B       		.uleb128 0xb
+ 1204 0025 3E       		.uleb128 0x3e
+ 1205 0026 0B       		.uleb128 0xb
+ 1206 0027 03       		.uleb128 0x3
+ 1207 0028 0E       		.uleb128 0xe
+ 1208 0029 00       		.byte	0
+ 1209 002a 00       		.byte	0
+ 1210 002b 04       		.uleb128 0x4
+ 1211 002c 24       		.uleb128 0x24
+ 1212 002d 00       		.byte	0
+ 1213 002e 0B       		.uleb128 0xb
+ 1214 002f 0B       		.uleb128 0xb
+ 1215 0030 3E       		.uleb128 0x3e
+ 1216 0031 0B       		.uleb128 0xb
+ 1217 0032 03       		.uleb128 0x3
+ 1218 0033 08       		.uleb128 0x8
+ 1219 0034 00       		.byte	0
+ 1220 0035 00       		.byte	0
+ 1221 0036 05       		.uleb128 0x5
+ 1222 0037 16       		.uleb128 0x16
+ 1223 0038 00       		.byte	0
+ 1224 0039 03       		.uleb128 0x3
+ 1225 003a 0E       		.uleb128 0xe
+ 1226 003b 3A       		.uleb128 0x3a
+ 1227 003c 0B       		.uleb128 0xb
+ 1228 003d 3B       		.uleb128 0x3b
+ 1229 003e 0B       		.uleb128 0xb
+ 1230 003f 49       		.uleb128 0x49
+ 1231 0040 13       		.uleb128 0x13
+ 1232 0041 00       		.byte	0
+ 1233 0042 00       		.byte	0
+ 1234 0043 06       		.uleb128 0x6
+ 1235 0044 2E       		.uleb128 0x2e
+ 1236 0045 01       		.byte	0x1
+ 1237 0046 3F       		.uleb128 0x3f
+ 1238 0047 0C       		.uleb128 0xc
+ 1239 0048 03       		.uleb128 0x3
+ 1240 0049 0E       		.uleb128 0xe
+ 1241 004a 3A       		.uleb128 0x3a
+ 1242 004b 0B       		.uleb128 0xb
+ 1243 004c 3B       		.uleb128 0x3b
+ 1244 004d 0B       		.uleb128 0xb
+ 1245 004e 27       		.uleb128 0x27
+ 1246 004f 0C       		.uleb128 0xc
+ 1247 0050 11       		.uleb128 0x11
+ 1248 0051 01       		.uleb128 0x1
+ 1249 0052 12       		.uleb128 0x12
+ 1250 0053 01       		.uleb128 0x1
+ 1251 0054 40       		.uleb128 0x40
+ 1252 0055 06       		.uleb128 0x6
+ 1253 0056 01       		.uleb128 0x1
+ 1254 0057 13       		.uleb128 0x13
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 30
+
+
+ 1255 0058 00       		.byte	0
+ 1256 0059 00       		.byte	0
+ 1257 005a 07       		.uleb128 0x7
+ 1258 005b 34       		.uleb128 0x34
+ 1259 005c 00       		.byte	0
+ 1260 005d 03       		.uleb128 0x3
+ 1261 005e 0E       		.uleb128 0xe
+ 1262 005f 3A       		.uleb128 0x3a
+ 1263 0060 0B       		.uleb128 0xb
+ 1264 0061 3B       		.uleb128 0x3b
+ 1265 0062 0B       		.uleb128 0xb
+ 1266 0063 49       		.uleb128 0x49
+ 1267 0064 13       		.uleb128 0x13
+ 1268 0065 02       		.uleb128 0x2
+ 1269 0066 0A       		.uleb128 0xa
+ 1270 0067 00       		.byte	0
+ 1271 0068 00       		.byte	0
+ 1272 0069 08       		.uleb128 0x8
+ 1273 006a 01       		.uleb128 0x1
+ 1274 006b 01       		.byte	0x1
+ 1275 006c 49       		.uleb128 0x49
+ 1276 006d 13       		.uleb128 0x13
+ 1277 006e 01       		.uleb128 0x1
+ 1278 006f 13       		.uleb128 0x13
+ 1279 0070 00       		.byte	0
+ 1280 0071 00       		.byte	0
+ 1281 0072 09       		.uleb128 0x9
+ 1282 0073 21       		.uleb128 0x21
+ 1283 0074 00       		.byte	0
+ 1284 0075 49       		.uleb128 0x49
+ 1285 0076 13       		.uleb128 0x13
+ 1286 0077 2F       		.uleb128 0x2f
+ 1287 0078 0B       		.uleb128 0xb
+ 1288 0079 00       		.byte	0
+ 1289 007a 00       		.byte	0
+ 1290 007b 0A       		.uleb128 0xa
+ 1291 007c 05       		.uleb128 0x5
+ 1292 007d 00       		.byte	0
+ 1293 007e 03       		.uleb128 0x3
+ 1294 007f 0E       		.uleb128 0xe
+ 1295 0080 3A       		.uleb128 0x3a
+ 1296 0081 0B       		.uleb128 0xb
+ 1297 0082 3B       		.uleb128 0x3b
+ 1298 0083 0B       		.uleb128 0xb
+ 1299 0084 49       		.uleb128 0x49
+ 1300 0085 13       		.uleb128 0x13
+ 1301 0086 02       		.uleb128 0x2
+ 1302 0087 06       		.uleb128 0x6
+ 1303 0088 00       		.byte	0
+ 1304 0089 00       		.byte	0
+ 1305 008a 0B       		.uleb128 0xb
+ 1306 008b 2E       		.uleb128 0x2e
+ 1307 008c 01       		.byte	0x1
+ 1308 008d 3F       		.uleb128 0x3f
+ 1309 008e 0C       		.uleb128 0xc
+ 1310 008f 03       		.uleb128 0x3
+ 1311 0090 0E       		.uleb128 0xe
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 31
+
+
+ 1312 0091 3A       		.uleb128 0x3a
+ 1313 0092 0B       		.uleb128 0xb
+ 1314 0093 3B       		.uleb128 0x3b
+ 1315 0094 0B       		.uleb128 0xb
+ 1316 0095 27       		.uleb128 0x27
+ 1317 0096 0C       		.uleb128 0xc
+ 1318 0097 11       		.uleb128 0x11
+ 1319 0098 01       		.uleb128 0x1
+ 1320 0099 12       		.uleb128 0x12
+ 1321 009a 01       		.uleb128 0x1
+ 1322 009b 40       		.uleb128 0x40
+ 1323 009c 0A       		.uleb128 0xa
+ 1324 009d 01       		.uleb128 0x1
+ 1325 009e 13       		.uleb128 0x13
+ 1326 009f 00       		.byte	0
+ 1327 00a0 00       		.byte	0
+ 1328 00a1 0C       		.uleb128 0xc
+ 1329 00a2 05       		.uleb128 0x5
+ 1330 00a3 00       		.byte	0
+ 1331 00a4 03       		.uleb128 0x3
+ 1332 00a5 08       		.uleb128 0x8
+ 1333 00a6 3A       		.uleb128 0x3a
+ 1334 00a7 0B       		.uleb128 0xb
+ 1335 00a8 3B       		.uleb128 0x3b
+ 1336 00a9 0B       		.uleb128 0xb
+ 1337 00aa 49       		.uleb128 0x49
+ 1338 00ab 13       		.uleb128 0x13
+ 1339 00ac 02       		.uleb128 0x2
+ 1340 00ad 06       		.uleb128 0x6
+ 1341 00ae 00       		.byte	0
+ 1342 00af 00       		.byte	0
+ 1343 00b0 0D       		.uleb128 0xd
+ 1344 00b1 2E       		.uleb128 0x2e
+ 1345 00b2 01       		.byte	0x1
+ 1346 00b3 3F       		.uleb128 0x3f
+ 1347 00b4 0C       		.uleb128 0xc
+ 1348 00b5 03       		.uleb128 0x3
+ 1349 00b6 0E       		.uleb128 0xe
+ 1350 00b7 3A       		.uleb128 0x3a
+ 1351 00b8 0B       		.uleb128 0xb
+ 1352 00b9 3B       		.uleb128 0x3b
+ 1353 00ba 0B       		.uleb128 0xb
+ 1354 00bb 27       		.uleb128 0x27
+ 1355 00bc 0C       		.uleb128 0xc
+ 1356 00bd 49       		.uleb128 0x49
+ 1357 00be 13       		.uleb128 0x13
+ 1358 00bf 11       		.uleb128 0x11
+ 1359 00c0 01       		.uleb128 0x1
+ 1360 00c1 12       		.uleb128 0x12
+ 1361 00c2 01       		.uleb128 0x1
+ 1362 00c3 40       		.uleb128 0x40
+ 1363 00c4 06       		.uleb128 0x6
+ 1364 00c5 01       		.uleb128 0x1
+ 1365 00c6 13       		.uleb128 0x13
+ 1366 00c7 00       		.byte	0
+ 1367 00c8 00       		.byte	0
+ 1368 00c9 0E       		.uleb128 0xe
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 32
+
+
+ 1369 00ca 34       		.uleb128 0x34
+ 1370 00cb 00       		.byte	0
+ 1371 00cc 03       		.uleb128 0x3
+ 1372 00cd 0E       		.uleb128 0xe
+ 1373 00ce 3A       		.uleb128 0x3a
+ 1374 00cf 0B       		.uleb128 0xb
+ 1375 00d0 3B       		.uleb128 0x3b
+ 1376 00d1 0B       		.uleb128 0xb
+ 1377 00d2 49       		.uleb128 0x49
+ 1378 00d3 13       		.uleb128 0x13
+ 1379 00d4 02       		.uleb128 0x2
+ 1380 00d5 06       		.uleb128 0x6
+ 1381 00d6 00       		.byte	0
+ 1382 00d7 00       		.byte	0
+ 1383 00d8 0F       		.uleb128 0xf
+ 1384 00d9 2E       		.uleb128 0x2e
+ 1385 00da 01       		.byte	0x1
+ 1386 00db 3F       		.uleb128 0x3f
+ 1387 00dc 0C       		.uleb128 0xc
+ 1388 00dd 03       		.uleb128 0x3
+ 1389 00de 0E       		.uleb128 0xe
+ 1390 00df 3A       		.uleb128 0x3a
+ 1391 00e0 0B       		.uleb128 0xb
+ 1392 00e1 3B       		.uleb128 0x3b
+ 1393 00e2 05       		.uleb128 0x5
+ 1394 00e3 27       		.uleb128 0x27
+ 1395 00e4 0C       		.uleb128 0xc
+ 1396 00e5 11       		.uleb128 0x11
+ 1397 00e6 01       		.uleb128 0x1
+ 1398 00e7 12       		.uleb128 0x12
+ 1399 00e8 01       		.uleb128 0x1
+ 1400 00e9 40       		.uleb128 0x40
+ 1401 00ea 0A       		.uleb128 0xa
+ 1402 00eb 01       		.uleb128 0x1
+ 1403 00ec 13       		.uleb128 0x13
+ 1404 00ed 00       		.byte	0
+ 1405 00ee 00       		.byte	0
+ 1406 00ef 10       		.uleb128 0x10
+ 1407 00f0 05       		.uleb128 0x5
+ 1408 00f1 00       		.byte	0
+ 1409 00f2 03       		.uleb128 0x3
+ 1410 00f3 0E       		.uleb128 0xe
+ 1411 00f4 3A       		.uleb128 0x3a
+ 1412 00f5 0B       		.uleb128 0xb
+ 1413 00f6 3B       		.uleb128 0x3b
+ 1414 00f7 05       		.uleb128 0x5
+ 1415 00f8 49       		.uleb128 0x49
+ 1416 00f9 13       		.uleb128 0x13
+ 1417 00fa 02       		.uleb128 0x2
+ 1418 00fb 06       		.uleb128 0x6
+ 1419 00fc 00       		.byte	0
+ 1420 00fd 00       		.byte	0
+ 1421 00fe 11       		.uleb128 0x11
+ 1422 00ff 2E       		.uleb128 0x2e
+ 1423 0100 01       		.byte	0x1
+ 1424 0101 3F       		.uleb128 0x3f
+ 1425 0102 0C       		.uleb128 0xc
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 33
+
+
+ 1426 0103 03       		.uleb128 0x3
+ 1427 0104 0E       		.uleb128 0xe
+ 1428 0105 3A       		.uleb128 0x3a
+ 1429 0106 0B       		.uleb128 0xb
+ 1430 0107 3B       		.uleb128 0x3b
+ 1431 0108 05       		.uleb128 0x5
+ 1432 0109 27       		.uleb128 0x27
+ 1433 010a 0C       		.uleb128 0xc
+ 1434 010b 11       		.uleb128 0x11
+ 1435 010c 01       		.uleb128 0x1
+ 1436 010d 12       		.uleb128 0x12
+ 1437 010e 01       		.uleb128 0x1
+ 1438 010f 40       		.uleb128 0x40
+ 1439 0110 06       		.uleb128 0x6
+ 1440 0111 01       		.uleb128 0x1
+ 1441 0112 13       		.uleb128 0x13
+ 1442 0113 00       		.byte	0
+ 1443 0114 00       		.byte	0
+ 1444 0115 12       		.uleb128 0x12
+ 1445 0116 2E       		.uleb128 0x2e
+ 1446 0117 00       		.byte	0
+ 1447 0118 3F       		.uleb128 0x3f
+ 1448 0119 0C       		.uleb128 0xc
+ 1449 011a 03       		.uleb128 0x3
+ 1450 011b 0E       		.uleb128 0xe
+ 1451 011c 3A       		.uleb128 0x3a
+ 1452 011d 0B       		.uleb128 0xb
+ 1453 011e 3B       		.uleb128 0x3b
+ 1454 011f 05       		.uleb128 0x5
+ 1455 0120 27       		.uleb128 0x27
+ 1456 0121 0C       		.uleb128 0xc
+ 1457 0122 11       		.uleb128 0x11
+ 1458 0123 01       		.uleb128 0x1
+ 1459 0124 12       		.uleb128 0x12
+ 1460 0125 01       		.uleb128 0x1
+ 1461 0126 40       		.uleb128 0x40
+ 1462 0127 06       		.uleb128 0x6
+ 1463 0128 00       		.byte	0
+ 1464 0129 00       		.byte	0
+ 1465 012a 13       		.uleb128 0x13
+ 1466 012b 34       		.uleb128 0x34
+ 1467 012c 00       		.byte	0
+ 1468 012d 03       		.uleb128 0x3
+ 1469 012e 0E       		.uleb128 0xe
+ 1470 012f 3A       		.uleb128 0x3a
+ 1471 0130 0B       		.uleb128 0xb
+ 1472 0131 3B       		.uleb128 0x3b
+ 1473 0132 0B       		.uleb128 0xb
+ 1474 0133 49       		.uleb128 0x49
+ 1475 0134 13       		.uleb128 0x13
+ 1476 0135 3F       		.uleb128 0x3f
+ 1477 0136 0C       		.uleb128 0xc
+ 1478 0137 02       		.uleb128 0x2
+ 1479 0138 0A       		.uleb128 0xa
+ 1480 0139 00       		.byte	0
+ 1481 013a 00       		.byte	0
+ 1482 013b 00       		.byte	0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 34
+
+
+ 1483              		.section	.debug_loc,"",%progbits
+ 1484              	.Ldebug_loc0:
+ 1485              	.LLST0:
+ 1486 0000 00000000 		.4byte	.LFB0-.Ltext0
+ 1487 0004 02000000 		.4byte	.LCFI0-.Ltext0
+ 1488 0008 0200     		.2byte	0x2
+ 1489 000a 7D       		.byte	0x7d
+ 1490 000b 00       		.sleb128 0
+ 1491 000c 02000000 		.4byte	.LCFI0-.Ltext0
+ 1492 0010 AC000000 		.4byte	.LFE0-.Ltext0
+ 1493 0014 0200     		.2byte	0x2
+ 1494 0016 7D       		.byte	0x7d
+ 1495 0017 18       		.sleb128 24
+ 1496 0018 00000000 		.4byte	0
+ 1497 001c 00000000 		.4byte	0
+ 1498              	.LLST1:
+ 1499 0020 AC000000 		.4byte	.LFB1-.Ltext0
+ 1500 0024 AE000000 		.4byte	.LCFI1-.Ltext0
+ 1501 0028 0200     		.2byte	0x2
+ 1502 002a 7D       		.byte	0x7d
+ 1503 002b 00       		.sleb128 0
+ 1504 002c AE000000 		.4byte	.LCFI1-.Ltext0
+ 1505 0030 14010000 		.4byte	.LFE1-.Ltext0
+ 1506 0034 0200     		.2byte	0x2
+ 1507 0036 7D       		.byte	0x7d
+ 1508 0037 0C       		.sleb128 12
+ 1509 0038 00000000 		.4byte	0
+ 1510 003c 00000000 		.4byte	0
+ 1511              	.LLST2:
+ 1512 0040 14010000 		.4byte	.LFB2-.Ltext0
+ 1513 0044 16010000 		.4byte	.LCFI2-.Ltext0
+ 1514 0048 0200     		.2byte	0x2
+ 1515 004a 7D       		.byte	0x7d
+ 1516 004b 00       		.sleb128 0
+ 1517 004c 16010000 		.4byte	.LCFI2-.Ltext0
+ 1518 0050 80010000 		.4byte	.LFE2-.Ltext0
+ 1519 0054 0200     		.2byte	0x2
+ 1520 0056 7D       		.byte	0x7d
+ 1521 0057 08       		.sleb128 8
+ 1522 0058 00000000 		.4byte	0
+ 1523 005c 00000000 		.4byte	0
+ 1524              	.LLST3:
+ 1525 0060 16010000 		.4byte	.LVL0-.Ltext0
+ 1526 0064 26010000 		.4byte	.LVL1-.Ltext0
+ 1527 0068 0100     		.2byte	0x1
+ 1528 006a 50       		.byte	0x50
+ 1529 006b 00000000 		.4byte	0
+ 1530 006f 00000000 		.4byte	0
+ 1531              	.LLST4:
+ 1532 0073 80010000 		.4byte	.LVL2-.Ltext0
+ 1533 0077 82010000 		.4byte	.LVL3-.Ltext0
+ 1534 007b 0100     		.2byte	0x1
+ 1535 007d 50       		.byte	0x50
+ 1536 007e 00000000 		.4byte	0
+ 1537 0082 00000000 		.4byte	0
+ 1538              	.LLST5:
+ 1539 0086 A0010000 		.4byte	.LFB4-.Ltext0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 35
+
+
+ 1540 008a A2010000 		.4byte	.LCFI3-.Ltext0
+ 1541 008e 0200     		.2byte	0x2
+ 1542 0090 7D       		.byte	0x7d
+ 1543 0091 00       		.sleb128 0
+ 1544 0092 A2010000 		.4byte	.LCFI3-.Ltext0
+ 1545 0096 38020000 		.4byte	.LFE4-.Ltext0
+ 1546 009a 0200     		.2byte	0x2
+ 1547 009c 7D       		.byte	0x7d
+ 1548 009d 10       		.sleb128 16
+ 1549 009e 00000000 		.4byte	0
+ 1550 00a2 00000000 		.4byte	0
+ 1551              	.LLST6:
+ 1552 00a6 A2010000 		.4byte	.LVL4-.Ltext0
+ 1553 00aa A8010000 		.4byte	.LVL5-.Ltext0
+ 1554 00ae 0100     		.2byte	0x1
+ 1555 00b0 50       		.byte	0x50
+ 1556 00b1 00000000 		.4byte	0
+ 1557 00b5 00000000 		.4byte	0
+ 1558              	.LLST7:
+ 1559 00b9 A2010000 		.4byte	.LVL4-.Ltext0
+ 1560 00bd B8010000 		.4byte	.LVL6-.Ltext0
+ 1561 00c1 0100     		.2byte	0x1
+ 1562 00c3 51       		.byte	0x51
+ 1563 00c4 00000000 		.4byte	0
+ 1564 00c8 00000000 		.4byte	0
+ 1565              	.LLST8:
+ 1566 00cc 38020000 		.4byte	.LFB5-.Ltext0
+ 1567 00d0 3A020000 		.4byte	.LCFI4-.Ltext0
+ 1568 00d4 0200     		.2byte	0x2
+ 1569 00d6 7D       		.byte	0x7d
+ 1570 00d7 00       		.sleb128 0
+ 1571 00d8 3A020000 		.4byte	.LCFI4-.Ltext0
+ 1572 00dc C8020000 		.4byte	.LFE5-.Ltext0
+ 1573 00e0 0200     		.2byte	0x2
+ 1574 00e2 7D       		.byte	0x7d
+ 1575 00e3 0C       		.sleb128 12
+ 1576 00e4 00000000 		.4byte	0
+ 1577 00e8 00000000 		.4byte	0
+ 1578              	.LLST9:
+ 1579 00ec 40020000 		.4byte	.LVL7-.Ltext0
+ 1580 00f0 5A020000 		.4byte	.LVL8-.Ltext0
+ 1581 00f4 0200     		.2byte	0x2
+ 1582 00f6 30       		.byte	0x30
+ 1583 00f7 9F       		.byte	0x9f
+ 1584 00f8 5A020000 		.4byte	.LVL8-.Ltext0
+ 1585 00fc 7C020000 		.4byte	.LVL12-.Ltext0
+ 1586 0100 0100     		.2byte	0x1
+ 1587 0102 50       		.byte	0x50
+ 1588 0103 7C020000 		.4byte	.LVL12-.Ltext0
+ 1589 0107 9A020000 		.4byte	.LVL14-.Ltext0
+ 1590 010b 0200     		.2byte	0x2
+ 1591 010d 30       		.byte	0x30
+ 1592 010e 9F       		.byte	0x9f
+ 1593 010f 9A020000 		.4byte	.LVL14-.Ltext0
+ 1594 0113 B4020000 		.4byte	.LVL18-.Ltext0
+ 1595 0117 0100     		.2byte	0x1
+ 1596 0119 50       		.byte	0x50
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 36
+
+
+ 1597 011a B8020000 		.4byte	.LVL19-.Ltext0
+ 1598 011e C8020000 		.4byte	.LFE5-.Ltext0
+ 1599 0122 0100     		.2byte	0x1
+ 1600 0124 50       		.byte	0x50
+ 1601 0125 00000000 		.4byte	0
+ 1602 0129 00000000 		.4byte	0
+ 1603              	.LLST10:
+ 1604 012d C8020000 		.4byte	.LVL20-.Ltext0
+ 1605 0131 CE020000 		.4byte	.LVL21-.Ltext0
+ 1606 0135 0100     		.2byte	0x1
+ 1607 0137 50       		.byte	0x50
+ 1608 0138 00000000 		.4byte	0
+ 1609 013c 00000000 		.4byte	0
+ 1610              	.LLST11:
+ 1611 0140 F8020000 		.4byte	.LFB7-.Ltext0
+ 1612 0144 FA020000 		.4byte	.LCFI5-.Ltext0
+ 1613 0148 0200     		.2byte	0x2
+ 1614 014a 7D       		.byte	0x7d
+ 1615 014b 00       		.sleb128 0
+ 1616 014c FA020000 		.4byte	.LCFI5-.Ltext0
+ 1617 0150 70030000 		.4byte	.LFE7-.Ltext0
+ 1618 0154 0200     		.2byte	0x2
+ 1619 0156 7D       		.byte	0x7d
+ 1620 0157 0C       		.sleb128 12
+ 1621 0158 00000000 		.4byte	0
+ 1622 015c 00000000 		.4byte	0
+ 1623              	.LLST12:
+ 1624 0160 FA020000 		.4byte	.LVL22-.Ltext0
+ 1625 0164 08030000 		.4byte	.LVL23-.Ltext0
+ 1626 0168 0100     		.2byte	0x1
+ 1627 016a 50       		.byte	0x50
+ 1628 016b 00000000 		.4byte	0
+ 1629 016f 00000000 		.4byte	0
+ 1630              	.LLST13:
+ 1631 0173 FA020000 		.4byte	.LVL22-.Ltext0
+ 1632 0177 0C030000 		.4byte	.LVL24-.Ltext0
+ 1633 017b 0100     		.2byte	0x1
+ 1634 017d 51       		.byte	0x51
+ 1635 017e 00000000 		.4byte	0
+ 1636 0182 00000000 		.4byte	0
+ 1637              	.LLST14:
+ 1638 0186 70030000 		.4byte	.LFB8-.Ltext0
+ 1639 018a 72030000 		.4byte	.LCFI6-.Ltext0
+ 1640 018e 0200     		.2byte	0x2
+ 1641 0190 7D       		.byte	0x7d
+ 1642 0191 00       		.sleb128 0
+ 1643 0192 72030000 		.4byte	.LCFI6-.Ltext0
+ 1644 0196 C8030000 		.4byte	.LFE8-.Ltext0
+ 1645 019a 0200     		.2byte	0x2
+ 1646 019c 7D       		.byte	0x7d
+ 1647 019d 04       		.sleb128 4
+ 1648 019e 00000000 		.4byte	0
+ 1649 01a2 00000000 		.4byte	0
+ 1650              		.section	.debug_aranges,"",%progbits
+ 1651 0000 1C000000 		.4byte	0x1c
+ 1652 0004 0200     		.2byte	0x2
+ 1653 0006 00000000 		.4byte	.Ldebug_info0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 37
+
+
+ 1654 000a 04       		.byte	0x4
+ 1655 000b 00       		.byte	0
+ 1656 000c 0000     		.2byte	0
+ 1657 000e 0000     		.2byte	0
+ 1658 0010 00000000 		.4byte	.Ltext0
+ 1659 0014 C8030000 		.4byte	.Letext0-.Ltext0
+ 1660 0018 00000000 		.4byte	0
+ 1661 001c 00000000 		.4byte	0
+ 1662              		.section	.debug_line,"",%progbits
+ 1663              	.Ldebug_line0:
+ 1664 0000 51010000 		.section	.debug_str,"MS",%progbits,1
+ 1664      02004F00 
+ 1664      00000201 
+ 1664      FB0E0D00 
+ 1664      01010101 
+ 1665              	.LASF14:
+ 1666 0000 7365744C 		.ascii	"setLED\000"
+ 1666      454400
+ 1667              	.LASF17:
+ 1668 0007 636F6D6D 		.ascii	"commandLedGreen\000"
+ 1668      616E644C 
+ 1668      65644772 
+ 1668      65656E00 
+ 1669              	.LASF16:
+ 1670 0017 6C656453 		.ascii	"ledState\000"
+ 1670      74617465 
+ 1670      00
+ 1671              	.LASF28:
+ 1672 0020 62745265 		.ascii	"btResetShadow\000"
+ 1672      73657453 
+ 1672      6861646F 
+ 1672      7700
+ 1673              	.LASF10:
+ 1674 002e 636F6D6D 		.ascii	"command\000"
+ 1674      616E6400 
+ 1675              	.LASF35:
+ 1676 0036 696E6974 		.ascii	"initSpiForLcd\000"
+ 1676      53706946 
+ 1676      6F724C63 
+ 1676      6400
+ 1677              	.LASF23:
+ 1678 0044 73656C65 		.ascii	"select\000"
+ 1678      637400
+ 1679              	.LASF18:
+ 1680 004b 636F6D6D 		.ascii	"commandLedRed\000"
+ 1680      616E644C 
+ 1680      65645265 
+ 1680      6400
+ 1681              	.LASF26:
+ 1682 0059 64617461 		.ascii	"data\000"
+ 1682      00
+ 1683              	.LASF15:
+ 1684 005e 6C656453 		.ascii	"ledSelect\000"
+ 1684      656C6563 
+ 1684      7400
+ 1685              	.LASF11:
+ 1686 0068 72657365 		.ascii	"resetBT\000"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 38
+
+
+ 1686      74425400 
+ 1687              	.LASF0:
+ 1688 0070 756E7369 		.ascii	"unsigned char\000"
+ 1688      676E6564 
+ 1688      20636861 
+ 1688      7200
+ 1689              	.LASF7:
+ 1690 007e 696D6D65 		.ascii	"immediateIoInit\000"
+ 1690      64696174 
+ 1690      65496F49 
+ 1690      6E697400 
+ 1691              	.LASF6:
+ 1692 008e 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1692      20756E73 
+ 1692      69676E65 
+ 1692      6420696E 
+ 1692      7400
+ 1693              	.LASF1:
+ 1694 00a0 73686F72 		.ascii	"short unsigned int\000"
+ 1694      7420756E 
+ 1694      7369676E 
+ 1694      65642069 
+ 1694      6E7400
+ 1695              	.LASF19:
+ 1696 00b3 636F6D6D 		.ascii	"commandReadKeys\000"
+ 1696      616E6452 
+ 1696      6561644B 
+ 1696      65797300 
+ 1697              	.LASF25:
+ 1698 00c3 66697273 		.ascii	"firstBit\000"
+ 1698      74426974 
+ 1698      00
+ 1699              	.LASF31:
+ 1700 00cc 474E5520 		.ascii	"GNU C 4.6.3\000"
+ 1700      4320342E 
+ 1700      362E3300 
+ 1701              	.LASF34:
+ 1702 00d8 6765744B 		.ascii	"getKeys\000"
+ 1702      65797300 
+ 1703              	.LASF27:
+ 1704 00e0 67726565 		.ascii	"greenLedShadow\000"
+ 1704      6E4C6564 
+ 1704      53686164 
+ 1704      6F7700
+ 1705              	.LASF13:
+ 1706 00ef 72657365 		.ascii	"resetFlag\000"
+ 1706      74466C61 
+ 1706      6700
+ 1707              	.LASF33:
+ 1708 00f9 433A5C55 		.ascii	"C:\\Users\\kozlovsky\\Downloads\\TicTac\\TicTac\000"
+ 1708      73657273 
+ 1708      5C6B6F7A 
+ 1708      6C6F7673 
+ 1708      6B795C44 
+ 1709              	.LASF2:
+ 1710 0124 756E7369 		.ascii	"unsigned int\000"
+ 1710      676E6564 
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 39
+
+
+ 1710      20696E74 
+ 1710      00
+ 1711              	.LASF24:
+ 1712 0131 73656E64 		.ascii	"sendToLCD\000"
+ 1712      546F4C43 
+ 1712      4400
+ 1713              	.LASF20:
+ 1714 013b 72656164 		.ascii	"readKeys\000"
+ 1714      4B657973 
+ 1714      00
+ 1715              	.LASF9:
+ 1716 0144 696E6974 		.ascii	"initCommand\000"
+ 1716      436F6D6D 
+ 1716      616E6400 
+ 1717              	.LASF8:
+ 1718 0150 72657365 		.ascii	"resetLCD\000"
+ 1718      744C4344 
+ 1718      00
+ 1719              	.LASF22:
+ 1720 0159 73656C65 		.ascii	"selectLCD\000"
+ 1720      63744C43 
+ 1720      4400
+ 1721              	.LASF29:
+ 1722 0163 76657231 		.ascii	"ver1_0\000"
+ 1722      5F3000
+ 1723              	.LASF30:
+ 1724 016a 76657231 		.ascii	"ver1_1\000"
+ 1724      5F3100
+ 1725              	.LASF21:
+ 1726 0171 6B657953 		.ascii	"keySample\000"
+ 1726      616D706C 
+ 1726      6500
+ 1727              	.LASF4:
+ 1728 017b 73686F72 		.ascii	"short int\000"
+ 1728      7420696E 
+ 1728      7400
+ 1729              	.LASF32:
+ 1730 0185 68772E63 		.ascii	"hw.c\000"
+ 1730      00
+ 1731              	.LASF12:
+ 1732 018a 73657442 		.ascii	"setBuzzer\000"
+ 1732      757A7A65 
+ 1732      7200
+ 1733              	.LASF3:
+ 1734 0194 7369676E 		.ascii	"signed char\000"
+ 1734      65642063 
+ 1734      68617200 
+ 1735              	.LASF5:
+ 1736 01a0 74426F6F 		.ascii	"tBool\000"
+ 1736      6C00
+ 1737              		.ident	"GCC: (GNU) 4.6.3"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s 			page 40
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 hw.c
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:6      .text:00000000 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:11     .text:00000000 immediateIoInit
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:121    .text:0000008c $d
+                            *COM*:00000001 ver1_0
+                            *COM*:00000001 ver1_1
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:132    .text:000000ac $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:137    .text:000000ac resetLCD
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:207    .text:00000108 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:213    .text:00000114 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:218    .text:00000114 resetBT
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:297    .text:00000170 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:304    .text:00000180 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:309    .text:00000180 setBuzzer
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:337    .text:00000198 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:342    .text:000001a0 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:347    .text:000001a0 setLED
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:466    .text:00000228 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:473    .text:00000238 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:478    .text:00000238 getKeys
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:604    .text:000002c0 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:609    .text:000002c8 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:614    .text:000002c8 selectLCD
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:653    .text:000002ec $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:659    .text:000002f8 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:664    .text:000002f8 sendToLCD
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:748    .text:00000350 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:759    .text:00000370 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:764    .text:00000370 initSpiForLcd
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:814    .text:000003ac $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:842    .bss:00000000 greenLedShadow
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:843    .bss:00000000 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccr4NRvu.s:846    .bss:00000001 btResetShadow
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+memcpy
+i2cInit
+pca9532
+osSleep

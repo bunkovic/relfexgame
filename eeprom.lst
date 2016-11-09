@@ -1,0 +1,2978 @@
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 1
+
+
+   1              		.code	16
+   2              		.file	"eeprom.c"
+   3              		.text
+   4              	.Ltext0:
+   5              		.cfi_sections	.debug_frame
+   6              		.align	1
+   7              		.global	eepromPoll
+   8              		.code	16
+   9              		.thumb_func
+  10              		.type	eepromPoll, %function
+  11              	eepromPoll:
+  12              	.LFB0:
+  13              		.file 1 "eeprom.c"
+   1:eeprom.c      **** /******************************************************************************
+   2:eeprom.c      ****  *
+   3:eeprom.c      ****  * Copyright:
+   4:eeprom.c      ****  *    (C) 2006 Embedded Artists AB
+   5:eeprom.c      ****  *
+   6:eeprom.c      ****  * File:
+   7:eeprom.c      ****  *    eeprom.c
+   8:eeprom.c      ****  *
+   9:eeprom.c      ****  * Description:
+  10:eeprom.c      ****  *    Implements routines for communicating over I2C bus
+  11:eeprom.c      ****  *
+  12:eeprom.c      ****  *****************************************************************************/
+  13:eeprom.c      **** 
+  14:eeprom.c      **** /******************************************************************************
+  15:eeprom.c      ****  * Includes
+  16:eeprom.c      ****  *****************************************************************************/
+  17:eeprom.c      **** #include "../pre_emptive_os/api/general.h"
+  18:eeprom.c      **** #include "i2c.h"
+  19:eeprom.c      **** 
+  20:eeprom.c      **** /******************************************************************************
+  21:eeprom.c      ****  * Defines and typedefs
+  22:eeprom.c      ****  *****************************************************************************/
+  23:eeprom.c      **** 
+  24:eeprom.c      **** #define EEPROM_SIZE       0x0800
+  25:eeprom.c      **** #define LOCAL_EEPROM_ADDR 0x0
+  26:eeprom.c      **** #define EEPROM_ADDR       0xA0
+  27:eeprom.c      **** 
+  28:eeprom.c      **** #define I2C_EEPROM_ADDR   (EEPROM_ADDR + (LOCAL_EEPROM_ADDR << 1))
+  29:eeprom.c      **** #define I2C_EEPROM_RCV    (EEPROM_ADDR + (LOCAL_EEPROM_ADDR << 1) + 0x01)
+  30:eeprom.c      **** #define I2C_EEPROM_SND    (EEPROM_ADDR + (LOCAL_EEPROM_ADDR << 1) + 0x00)
+  31:eeprom.c      **** 
+  32:eeprom.c      **** 
+  33:eeprom.c      **** /******************************************************************************
+  34:eeprom.c      ****  * Implementation of public functions
+  35:eeprom.c      ****  *****************************************************************************/
+  36:eeprom.c      **** 
+  37:eeprom.c      **** /******************************************************************************
+  38:eeprom.c      ****  *
+  39:eeprom.c      ****  * Description:
+  40:eeprom.c      ****  *    Waits till I2C returns ACK (after BURN cycle)
+  41:eeprom.c      ****  *
+  42:eeprom.c      ****  *    Note: After a stop condition, you may need a bus free time before you 
+  43:eeprom.c      ****  *          can generate a new start condition.
+  44:eeprom.c      ****  *
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 2
+
+
+  45:eeprom.c      ****  * Returns:
+  46:eeprom.c      ****  *    I2C_CODE_OK or I2C_CODE_ERROR
+  47:eeprom.c      ****  *
+  48:eeprom.c      ****  *****************************************************************************/
+  49:eeprom.c      **** tS8 
+  50:eeprom.c      **** eepromPoll(void)
+  51:eeprom.c      **** {
+  14              		.loc 1 51 0
+  15              		.cfi_startproc
+  16 0000 70B5     		push	{r4, r5, r6, lr}
+  17              	.LCFI0:
+  18              		.cfi_def_cfa_offset 16
+  19              		.cfi_offset 4, -16
+  20              		.cfi_offset 5, -12
+  21              		.cfi_offset 6, -8
+  22              		.cfi_offset 14, -4
+  23              	.L5:
+  52:eeprom.c      ****   tS8 retCode  = I2C_CODE_OK;
+  53:eeprom.c      ****   tU8 status   = 0;
+  54:eeprom.c      ****   tBool burnEnd = FALSE;
+  55:eeprom.c      **** 
+  56:eeprom.c      ****   while(burnEnd == FALSE)
+  57:eeprom.c      ****   {
+  58:eeprom.c      **** getI2cLock();
+  24              		.loc 1 58 0
+  25 0002 FFF7FEFF 		bl	getI2cLock
+  59:eeprom.c      ****     /* Generate Start condition */
+  60:eeprom.c      ****     retCode = i2cStart();
+  26              		.loc 1 60 0
+  27 0006 FFF7FEFF 		bl	i2cStart
+  61:eeprom.c      **** 
+  62:eeprom.c      ****     /* Transmit SLA+W */
+  63:eeprom.c      ****     if(retCode == I2C_CODE_OK)
+  28              		.loc 1 63 0
+  29 000a 0024     		mov	r4, #0
+  60:eeprom.c      ****     retCode = i2cStart();
+  30              		.loc 1 60 0
+  31 000c 061C     		mov	r6, r0
+  32              	.LVL0:
+  33              		.loc 1 63 0
+  34 000e 0128     		cmp	r0, #1
+  35 0010 16D1     		bne	.L2
+  36              	.LVL1:
+  37              	.L4:
+  64:eeprom.c      ****     {
+  65:eeprom.c      ****       /* Write SLA+W */
+  66:eeprom.c      ****       retCode = i2cPutChar(I2C_EEPROM_SND);
+  67:eeprom.c      ****       while(retCode == I2C_CODE_BUSY)
+  68:eeprom.c      ****       {
+  69:eeprom.c      ****         retCode = i2cPutChar(I2C_EEPROM_SND);
+  38              		.loc 1 69 0
+  39 0012 A020     		mov	r0, #160
+  40 0014 FFF7FEFF 		bl	i2cPutChar
+  41              	.LVL2:
+  67:eeprom.c      ****       while(retCode == I2C_CODE_BUSY)
+  42              		.loc 1 67 0
+  43 0018 0506     		lsl	r5, r0, #24
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 3
+
+
+  44 001a 2D16     		asr	r5, r5, #24
+  45 001c 2B1D     		add	r3, r5, #4
+  46 001e F8D0     		beq	.L4
+  47 0020 061C     		mov	r6, r0
+  70:eeprom.c      ****       }
+  71:eeprom.c      ****     }
+  72:eeprom.c      **** 
+  73:eeprom.c      ****     if(retCode == I2C_CODE_OK)
+  48              		.loc 1 73 0
+  49 0022 0024     		mov	r4, #0
+  50 0024 012D     		cmp	r5, #1
+  51 0026 0BD1     		bne	.L2
+  74:eeprom.c      ****     {
+  75:eeprom.c      ****       /* Wait until SLA+W transmitted */
+  76:eeprom.c      ****       /* Get new status */
+  77:eeprom.c      ****       status = i2cCheckStatus();
+  52              		.loc 1 77 0
+  53 0028 FFF7FEFF 		bl	i2cCheckStatus
+  54              	.LVL3:
+  78:eeprom.c      **** 
+  79:eeprom.c      ****       if(status == 0x18)
+  80:eeprom.c      ****       {
+  81:eeprom.c      ****         /* data transmitted and ACK received */
+  82:eeprom.c      ****         burnEnd = TRUE;
+  55              		.loc 1 82 0
+  56 002c 2C1C     		mov	r4, r5
+  79:eeprom.c      ****       if(status == 0x18)
+  57              		.loc 1 79 0
+  58 002e 1828     		cmp	r0, #24
+  59 0030 06D0     		beq	.L2
+  83:eeprom.c      ****       }
+  84:eeprom.c      ****       else if(status == 0x20)
+  85:eeprom.c      ****       {
+  86:eeprom.c      ****         /* data transmitted and ACK not received */
+  87:eeprom.c      ****         // send start bit, start again
+  88:eeprom.c      ****         burnEnd = FALSE;
+  60              		.loc 1 88 0
+  61 0032 0024     		mov	r4, #0
+  84:eeprom.c      ****       else if(status == 0x20)
+  62              		.loc 1 84 0
+  63 0034 2028     		cmp	r0, #32
+  64 0036 03D0     		beq	.L2
+  89:eeprom.c      ****       }
+  90:eeprom.c      ****       else if( status != 0xf8 )
+  65              		.loc 1 90 0
+  66 0038 F828     		cmp	r0, #248
+  67 003a 01D0     		beq	.L2
+  91:eeprom.c      ****       {
+  92:eeprom.c      ****         /* error ---*/
+  93:eeprom.c      ****         retCode = I2C_CODE_ERROR;
+  94:eeprom.c      ****         burnEnd = TRUE;
+  68              		.loc 1 94 0
+  69 003c 2C1C     		mov	r4, r5
+  93:eeprom.c      ****         retCode = I2C_CODE_ERROR;
+  70              		.loc 1 93 0
+  71 003e FF26     		mov	r6, #255
+  72              	.LVL4:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 4
+
+
+  73              	.L2:
+  95:eeprom.c      ****       }
+  96:eeprom.c      ****     }
+  97:eeprom.c      **** 
+  98:eeprom.c      ****     /* Generate Stop condition */
+  99:eeprom.c      ****     i2cStop();
+  74              		.loc 1 99 0
+  75 0040 FFF7FEFF 		bl	i2cStop
+ 100:eeprom.c      **** releaseI2cLock();
+  76              		.loc 1 100 0
+  77 0044 FFF7FEFF 		bl	releaseI2cLock
+  56:eeprom.c      ****   while(burnEnd == FALSE)
+  78              		.loc 1 56 0
+  79 0048 002C     		cmp	r4, #0
+  80 004a DAD0     		beq	.L5
+ 101:eeprom.c      **** 
+ 102:eeprom.c      ****   } // end of while 
+ 103:eeprom.c      **** 
+ 104:eeprom.c      **** 
+ 105:eeprom.c      ****   return retCode;
+  81              		.loc 1 105 0
+  82 004c 3606     		lsl	r6, r6, #24
+  83              	.LVL5:
+  84 004e 3016     		asr	r0, r6, #24
+ 106:eeprom.c      **** 
+ 107:eeprom.c      **** }
+  85              		.loc 1 107 0
+  86              		@ sp needed for prologue
+  87              	.LVL6:
+  88 0050 70BC     		pop	{r4, r5, r6}
+  89 0052 02BC     		pop	{r1}
+  90 0054 0847     		bx	r1
+  91              		.cfi_endproc
+  92              	.LFE0:
+  93              		.size	eepromPoll, .-eepromPoll
+  94              		.align	1
+  95              		.global	eepromStartRead
+  96              		.code	16
+  97              		.thumb_func
+  98              		.type	eepromStartRead, %function
+  99              	eepromStartRead:
+ 100              	.LFB1:
+ 108:eeprom.c      **** 
+ 109:eeprom.c      **** 
+ 110:eeprom.c      **** /******************************************************************************
+ 111:eeprom.c      ****  *
+ 112:eeprom.c      ****  * Description:
+ 113:eeprom.c      ****  *    Start a read
+ 114:eeprom.c      ****  *
+ 115:eeprom.c      ****  * Params:
+ 116:eeprom.c      ****  *    [in] devAddr - device address
+ 117:eeprom.c      ****  *    [in] address - eeprom address
+ 118:eeprom.c      ****  *
+ 119:eeprom.c      ****  * Returns:
+ 120:eeprom.c      ****  *    I2C_CODE_OK or I2C_CODE_ERROR
+ 121:eeprom.c      ****  *
+ 122:eeprom.c      ****  *****************************************************************************/
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 5
+
+
+ 123:eeprom.c      **** tS8 
+ 124:eeprom.c      **** eepromStartRead(tU8  devAddr, 
+ 125:eeprom.c      ****                 tU16 address)
+ 126:eeprom.c      **** {
+ 101              		.loc 1 126 0
+ 102              		.cfi_startproc
+ 103 0056 70B5     		push	{r4, r5, r6, lr}
+ 104              	.LCFI1:
+ 105              		.cfi_def_cfa_offset 16
+ 106              		.cfi_offset 4, -16
+ 107              		.cfi_offset 5, -12
+ 108              		.cfi_offset 6, -8
+ 109              		.cfi_offset 14, -4
+ 110              	.LVL7:
+ 111              		.loc 1 126 0
+ 112 0058 0506     		lsl	r5, r0, #24
+ 113 005a 0C04     		lsl	r4, r1, #16
+ 114 005c 2D0E     		lsr	r5, r5, #24
+ 115 005e 260C     		lsr	r6, r4, #16
+ 127:eeprom.c      ****   tS8 retCode = 0;
+ 128:eeprom.c      ****   tU8 status  = 0;
+ 129:eeprom.c      **** 
+ 130:eeprom.c      ****   /* Generate Start condition */
+ 131:eeprom.c      ****   retCode = i2cStart();
+ 116              		.loc 1 131 0
+ 117 0060 FFF7FEFF 		bl	i2cStart
+ 118              	.LVL8:
+ 132:eeprom.c      **** 
+ 133:eeprom.c      ****   /* Transmit address */
+ 134:eeprom.c      ****   if(retCode == I2C_CODE_OK )
+ 119              		.loc 1 134 0
+ 120 0064 0128     		cmp	r0, #1
+ 121 0066 1ED1     		bne	.L29
+ 135:eeprom.c      ****   {
+ 136:eeprom.c      ****     /* Write SLA+W */
+ 137:eeprom.c      ****     retCode = i2cPutChar(devAddr | ((tU8)(address >> 7) & 0x0e));
+ 122              		.loc 1 137 0
+ 123 0068 E40D     		lsr	r4, r4, #23
+ 124 006a 0E23     		mov	r3, #14
+ 125 006c 1C40     		and	r4, r3
+ 126 006e 2C43     		orr	r4, r5
+ 127              	.LVL9:
+ 128              	.L15:
+ 138:eeprom.c      **** //    retCode = i2cPutChar(devAddr);
+ 139:eeprom.c      ****     while( retCode == I2C_CODE_BUSY )
+ 140:eeprom.c      ****     {
+ 141:eeprom.c      **** //      retCode = i2cPutChar( devAddr );
+ 142:eeprom.c      ****       retCode = i2cPutChar( devAddr | ((tU8)(address >> 7) & 0x0e));
+ 129              		.loc 1 142 0
+ 130 0070 201C     		mov	r0, r4
+ 131 0072 FFF7FEFF 		bl	i2cPutChar
+ 132              	.LVL10:
+ 139:eeprom.c      ****     while( retCode == I2C_CODE_BUSY )
+ 133              		.loc 1 139 0
+ 134 0076 0006     		lsl	r0, r0, #24
+ 135              	.LVL11:
+ 136 0078 0016     		asr	r0, r0, #24
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 6
+
+
+ 137 007a 031D     		add	r3, r0, #4
+ 138 007c F8D0     		beq	.L15
+ 143:eeprom.c      ****     }
+ 144:eeprom.c      ****   }
+ 145:eeprom.c      **** 
+ 146:eeprom.c      ****   if( retCode == I2C_CODE_OK )
+ 139              		.loc 1 146 0
+ 140 007e 0128     		cmp	r0, #1
+ 141 0080 11D1     		bne	.L29
+ 142              	.LVL12:
+ 143              	.L30:
+ 147:eeprom.c      ****   {
+ 148:eeprom.c      **** #if 0
+ 149:eeprom.c      ****     /* Wait until data transmitted */
+ 150:eeprom.c      ****     while(1)
+ 151:eeprom.c      ****     {
+ 152:eeprom.c      ****       /* Get new status */
+ 153:eeprom.c      ****       status = i2cCheckStatus();
+ 154:eeprom.c      **** 
+ 155:eeprom.c      ****       if( (status == 0x18) || (status == 0x28) )
+ 156:eeprom.c      ****       {
+ 157:eeprom.c      ****         /* Data transmitted and ACK received */
+ 158:eeprom.c      **** 
+ 159:eeprom.c      **** 
+ 160:eeprom.c      ****         /* Write data */
+ 161:eeprom.c      ****         retCode = i2cPutChar( (tU8)(address >> 8) );
+ 162:eeprom.c      ****         while(retCode == I2C_CODE_BUSY)
+ 163:eeprom.c      ****         {
+ 164:eeprom.c      ****           retCode = i2cPutChar( (tU8)(address >> 8) );
+ 165:eeprom.c      ****         }
+ 166:eeprom.c      ****         break;
+ 167:eeprom.c      ****       }
+ 168:eeprom.c      ****       else if(status != 0xf8)
+ 169:eeprom.c      ****       {
+ 170:eeprom.c      ****         /* error */
+ 171:eeprom.c      ****         retCode = I2C_CODE_ERROR;
+ 172:eeprom.c      ****         break;
+ 173:eeprom.c      ****       }
+ 174:eeprom.c      ****     }
+ 175:eeprom.c      **** #endif
+ 176:eeprom.c      **** 
+ 177:eeprom.c      ****     if(retCode == I2C_CODE_OK)
+ 178:eeprom.c      ****     {
+ 179:eeprom.c      ****       /* Wait until data transmitted */
+ 180:eeprom.c      ****       while(1)
+ 181:eeprom.c      ****       {
+ 182:eeprom.c      ****         /* Get new status */
+ 183:eeprom.c      ****         status = i2cCheckStatus();
+ 144              		.loc 1 183 0
+ 145 0082 FFF7FEFF 		bl	i2cCheckStatus
+ 146              	.LVL13:
+ 184:eeprom.c      **** 
+ 185:eeprom.c      ****         if( (status == 0x18) || (status == 0x28) )
+ 147              		.loc 1 185 0
+ 148 0086 2828     		cmp	r0, #40
+ 149 0088 01D0     		beq	.L27
+ 150 008a 1828     		cmp	r0, #24
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 7
+
+
+ 151 008c 09D1     		bne	.L16
+ 152              	.L27:
+ 186:eeprom.c      ****         {
+ 187:eeprom.c      ****           /* Data transmitted and ACK received */
+ 188:eeprom.c      **** 
+ 189:eeprom.c      **** 
+ 190:eeprom.c      ****           /* Write data */
+ 191:eeprom.c      ****           retCode = i2cPutChar( (tU8)(address & 0xff) );
+ 153              		.loc 1 191 0
+ 154 008e 3406     		lsl	r4, r6, #24
+ 155 0090 240E     		lsr	r4, r4, #24
+ 156              	.LVL14:
+ 157              	.L19:
+ 192:eeprom.c      ****           while( retCode == I2C_CODE_BUSY )
+ 193:eeprom.c      ****           {
+ 194:eeprom.c      ****             retCode = i2cPutChar( (tU8)(address & 0xff) );
+ 158              		.loc 1 194 0
+ 159 0092 201C     		mov	r0, r4
+ 160 0094 FFF7FEFF 		bl	i2cPutChar
+ 161              	.LVL15:
+ 192:eeprom.c      ****           while( retCode == I2C_CODE_BUSY )
+ 162              		.loc 1 192 0
+ 163 0098 0006     		lsl	r0, r0, #24
+ 164              	.LVL16:
+ 165 009a 0016     		asr	r0, r0, #24
+ 166 009c 0430     		add	r0, r0, #4
+ 167 009e F8D0     		beq	.L19
+ 168 00a0 01E0     		b	.L29
+ 169              	.LVL17:
+ 170              	.L16:
+ 195:eeprom.c      ****           }
+ 196:eeprom.c      **** 
+ 197:eeprom.c      ****           break;
+ 198:eeprom.c      ****         }
+ 199:eeprom.c      ****         else if( status != 0xf8 )
+ 171              		.loc 1 199 0
+ 172 00a2 F828     		cmp	r0, #248
+ 173 00a4 EDD0     		beq	.L30
+ 174              	.LVL18:
+ 175              	.L29:
+ 200:eeprom.c      ****         {
+ 201:eeprom.c      ****           /*  error */
+ 202:eeprom.c      ****           retCode = I2C_CODE_ERROR;
+ 203:eeprom.c      ****           break;
+ 204:eeprom.c      ****         }
+ 205:eeprom.c      ****       }
+ 206:eeprom.c      ****     }
+ 207:eeprom.c      ****   }
+ 208:eeprom.c      **** 
+ 209:eeprom.c      ****   /* Wait until data transmitted */
+ 210:eeprom.c      ****   while(1)
+ 211:eeprom.c      ****   {
+ 212:eeprom.c      ****     /* Get new status */
+ 213:eeprom.c      ****     status = i2cCheckStatus();
+ 176              		.loc 1 213 0
+ 177 00a6 FFF7FEFF 		bl	i2cCheckStatus
+ 178              	.LVL19:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 8
+
+
+ 214:eeprom.c      **** 
+ 215:eeprom.c      ****     if(status == 0x28)
+ 216:eeprom.c      ****     {
+ 217:eeprom.c      ****       /* Data transmitted and ACK received */
+ 218:eeprom.c      ****       break;
+ 219:eeprom.c      ****     }
+ 220:eeprom.c      ****     else if( status != 0xf8 )
+ 179              		.loc 1 220 0
+ 180 00aa F828     		cmp	r0, #248
+ 181 00ac FBD0     		beq	.L29
+ 221:eeprom.c      ****     {
+ 222:eeprom.c      ****       /* error */
+ 223:eeprom.c      ****       retCode = I2C_CODE_ERROR;
+ 224:eeprom.c      ****       break;
+ 225:eeprom.c      ****     }
+ 226:eeprom.c      ****   }
+ 227:eeprom.c      **** 
+ 228:eeprom.c      ****   /* Generate Start condition */
+ 229:eeprom.c      ****   retCode = i2cRepeatStart();
+ 182              		.loc 1 229 0
+ 183 00ae FFF7FEFF 		bl	i2cRepeatStart
+ 184              	.LVL20:
+ 185 00b2 041C     		mov	r4, r0
+ 186              	.LVL21:
+ 230:eeprom.c      **** 
+ 231:eeprom.c      ****   /* Transmit device address */
+ 232:eeprom.c      ****   if( retCode == I2C_CODE_OK)
+ 187              		.loc 1 232 0
+ 188 00b4 0128     		cmp	r0, #1
+ 189 00b6 0AD1     		bne	.L28
+ 233:eeprom.c      ****   {
+ 234:eeprom.c      ****     /* Write SLA+R */
+ 235:eeprom.c      ****     retCode = i2cPutChar( devAddr + 0x01 );
+ 190              		.loc 1 235 0
+ 191 00b8 0135     		add	r5, r5, #1
+ 192 00ba 2D06     		lsl	r5, r5, #24
+ 193 00bc 2D0E     		lsr	r5, r5, #24
+ 194              	.LVL22:
+ 195              	.L24:
+ 236:eeprom.c      ****     while( retCode == I2C_CODE_BUSY )
+ 237:eeprom.c      ****     {
+ 238:eeprom.c      ****       retCode = i2cPutChar( devAddr + 0x01 );
+ 196              		.loc 1 238 0
+ 197 00be 281C     		mov	r0, r5
+ 198 00c0 FFF7FEFF 		bl	i2cPutChar
+ 236:eeprom.c      ****     while( retCode == I2C_CODE_BUSY )
+ 199              		.loc 1 236 0
+ 200 00c4 0306     		lsl	r3, r0, #24
+ 201 00c6 1B16     		asr	r3, r3, #24
+ 202              		.loc 1 238 0
+ 203 00c8 041C     		mov	r4, r0
+ 204              	.LVL23:
+ 236:eeprom.c      ****     while( retCode == I2C_CODE_BUSY )
+ 205              		.loc 1 236 0
+ 206 00ca 0433     		add	r3, r3, #4
+ 207 00cc F7D0     		beq	.L24
+ 208              	.LVL24:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 9
+
+
+ 209              	.L28:
+ 239:eeprom.c      ****     }
+ 240:eeprom.c      ****   }
+ 241:eeprom.c      **** 
+ 242:eeprom.c      ****   /* Wait until SLA+R transmitted */
+ 243:eeprom.c      ****   while(1)
+ 244:eeprom.c      ****   {
+ 245:eeprom.c      ****     /* Get new status */
+ 246:eeprom.c      ****     status = i2cCheckStatus();
+ 210              		.loc 1 246 0
+ 211 00ce FFF7FEFF 		bl	i2cCheckStatus
+ 212              	.LVL25:
+ 247:eeprom.c      **** 
+ 248:eeprom.c      ****     if(status == 0x40)
+ 213              		.loc 1 248 0
+ 214 00d2 4028     		cmp	r0, #64
+ 215 00d4 02D0     		beq	.L25
+ 249:eeprom.c      ****     {
+ 250:eeprom.c      ****       /* Data transmitted and ACK received */
+ 251:eeprom.c      ****       break;
+ 252:eeprom.c      ****     }
+ 253:eeprom.c      ****     else if(status != 0xf8)
+ 216              		.loc 1 253 0
+ 217 00d6 F828     		cmp	r0, #248
+ 218 00d8 F9D0     		beq	.L28
+ 254:eeprom.c      ****     {
+ 255:eeprom.c      ****       /* error */
+ 256:eeprom.c      ****       retCode = I2C_CODE_ERROR;
+ 219              		.loc 1 256 0
+ 220 00da FF24     		mov	r4, #255
+ 221              	.LVL26:
+ 222              	.L25:
+ 257:eeprom.c      ****       break;
+ 258:eeprom.c      ****     }
+ 259:eeprom.c      ****   }
+ 260:eeprom.c      **** 
+ 261:eeprom.c      ****   // Do not generate a stop bit
+ 262:eeprom.c      **** 
+ 263:eeprom.c      ****   return retCode;
+ 223              		.loc 1 263 0
+ 224 00dc 2406     		lsl	r4, r4, #24
+ 225              	.LVL27:
+ 226 00de 2016     		asr	r0, r4, #24
+ 227              	.LVL28:
+ 264:eeprom.c      **** }
+ 228              		.loc 1 264 0
+ 229              		@ sp needed for prologue
+ 230 00e0 70BC     		pop	{r4, r5, r6}
+ 231 00e2 02BC     		pop	{r1}
+ 232 00e4 0847     		bx	r1
+ 233              		.cfi_endproc
+ 234              	.LFE1:
+ 235              		.size	eepromStartRead, .-eepromStartRead
+ 236              		.align	1
+ 237              		.global	eepromPageRead
+ 238              		.code	16
+ 239              		.thumb_func
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 10
+
+
+ 240              		.type	eepromPageRead, %function
+ 241              	eepromPageRead:
+ 242              	.LFB2:
+ 265:eeprom.c      **** 
+ 266:eeprom.c      **** 
+ 267:eeprom.c      **** /******************************************************************************
+ 268:eeprom.c      ****  *
+ 269:eeprom.c      ****  * Description:
+ 270:eeprom.c      ****  *    Random read from 'address'. Write read bytes to 'pBuf'.
+ 271:eeprom.c      ****  *
+ 272:eeprom.c      ****  *****************************************************************************/
+ 273:eeprom.c      **** tS8 
+ 274:eeprom.c      **** eepromPageRead(tU16 address, 
+ 275:eeprom.c      ****                tU8* pBuf, 
+ 276:eeprom.c      ****                tU16 len) 
+ 277:eeprom.c      **** {
+ 243              		.loc 1 277 0
+ 244              		.cfi_startproc
+ 245 00e6 F0B5     		push	{r4, r5, r6, r7, lr}
+ 246              	.LCFI2:
+ 247              		.cfi_def_cfa_offset 20
+ 248              		.cfi_offset 4, -20
+ 249              		.cfi_offset 5, -16
+ 250              		.cfi_offset 6, -12
+ 251              		.cfi_offset 7, -8
+ 252              		.cfi_offset 14, -4
+ 253              	.LVL29:
+ 254              		.loc 1 277 0
+ 255 00e8 0404     		lsl	r4, r0, #16
+ 256 00ea 240C     		lsr	r4, r4, #16
+ 257 00ec 1704     		lsl	r7, r2, #16
+ 258 00ee 0E1C     		mov	r6, r1
+ 278:eeprom.c      ****   tS8  retCode = 0;
+ 279:eeprom.c      ****   tU8  status  = 0;
+ 280:eeprom.c      ****   tU16 i       = 0;
+ 281:eeprom.c      **** 
+ 282:eeprom.c      **** getI2cLock();
+ 259              		.loc 1 282 0
+ 260 00f0 FFF7FEFF 		bl	getI2cLock
+ 261              	.LVL30:
+ 283:eeprom.c      ****   /* Write 3/4 bytes, see 24Cxx Random Read */
+ 284:eeprom.c      ****   retCode = eepromStartRead(I2C_EEPROM_ADDR, address);
+ 262              		.loc 1 284 0
+ 263 00f4 211C     		mov	r1, r4
+ 264 00f6 A020     		mov	r0, #160
+ 265 00f8 FFF7FEFF 		bl	eepromStartRead
+ 277:eeprom.c      **** {
+ 266              		.loc 1 277 0
+ 267 00fc 3F0C     		lsr	r7, r7, #16
+ 268              		.loc 1 284 0
+ 269 00fe 041C     		mov	r4, r0
+ 270              	.LVL31:
+ 285:eeprom.c      **** 
+ 286:eeprom.c      **** 
+ 287:eeprom.c      ****   if( retCode == I2C_CODE_OK )
+ 271              		.loc 1 287 0
+ 272 0100 0128     		cmp	r0, #1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 11
+
+
+ 273 0102 25D1     		bne	.L36
+ 274 0104 21E0     		b	.L49
+ 275              	.LVL32:
+ 276              	.L46:
+ 288:eeprom.c      ****   {
+ 289:eeprom.c      ****     /* wait until address transmitted and receive data */
+ 290:eeprom.c      ****     for(i = 1; i <= len; i++ )
+ 291:eeprom.c      ****     {
+ 292:eeprom.c      ****       /* wait until data transmitted */
+ 293:eeprom.c      ****       while(1)
+ 294:eeprom.c      ****       {
+ 295:eeprom.c      ****         /* Get new status */
+ 296:eeprom.c      ****         status = i2cCheckStatus();
+ 277              		.loc 1 296 0
+ 278 0106 FFF7FEFF 		bl	i2cCheckStatus
+ 279              	.LVL33:
+ 297:eeprom.c      **** 
+ 298:eeprom.c      ****         if(( status == 0x40 ) || ( status == 0x48 ) || ( status == 0x50 ))
+ 280              		.loc 1 298 0
+ 281 010a 4828     		cmp	r0, #72
+ 282 010c 03D0     		beq	.L37
+ 283 010e 4028     		cmp	r0, #64
+ 284 0110 01D0     		beq	.L37
+ 285              		.loc 1 298 0 is_stmt 0 discriminator 1
+ 286 0112 5028     		cmp	r0, #80
+ 287 0114 11D1     		bne	.L38
+ 288              	.L37:
+ 299:eeprom.c      ****         {
+ 300:eeprom.c      ****           /* Data received */
+ 301:eeprom.c      **** 
+ 302:eeprom.c      ****           if(i == len )
+ 303:eeprom.c      ****           {
+ 304:eeprom.c      ****             /* Set generate NACK */
+ 305:eeprom.c      ****             retCode = i2cGetChar( I2C_MODE_ACK1, pBuf );
+ 289              		.loc 1 305 0 is_stmt 1
+ 290 0116 0120     		mov	r0, #1
+ 291              	.LVL34:
+ 302:eeprom.c      ****           if(i == len )
+ 292              		.loc 1 302 0
+ 293 0118 BD42     		cmp	r5, r7
+ 294 011a 00D0     		beq	.L48
+ 306:eeprom.c      ****           }
+ 307:eeprom.c      ****           else
+ 308:eeprom.c      ****           {
+ 309:eeprom.c      ****             retCode = i2cGetChar( I2C_MODE_ACK0, pBuf );
+ 295              		.loc 1 309 0
+ 296 011c 0020     		mov	r0, #0
+ 297              	.L48:
+ 298 011e 311C     		mov	r1, r6
+ 299 0120 FFF7FEFF 		bl	i2cGetChar
+ 300              	.LVL35:
+ 301              	.L42:
+ 310:eeprom.c      ****           }
+ 311:eeprom.c      **** 
+ 312:eeprom.c      ****           /* Read data */
+ 313:eeprom.c      ****           retCode = i2cGetChar( I2C_MODE_READ, pBuf );
+ 314:eeprom.c      ****           while( retCode == I2C_CODE_EMPTY )
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 12
+
+
+ 315:eeprom.c      ****           {
+ 316:eeprom.c      ****             retCode = i2cGetChar( I2C_MODE_READ, pBuf );
+ 302              		.loc 1 316 0
+ 303 0124 0220     		mov	r0, #2
+ 304 0126 311C     		mov	r1, r6
+ 305 0128 FFF7FEFF 		bl	i2cGetChar
+ 314:eeprom.c      ****           while( retCode == I2C_CODE_EMPTY )
+ 306              		.loc 1 314 0
+ 307 012c 0306     		lsl	r3, r0, #24
+ 308 012e 1B16     		asr	r3, r3, #24
+ 309              		.loc 1 316 0
+ 310 0130 041C     		mov	r4, r0
+ 311              	.LVL36:
+ 314:eeprom.c      ****           while( retCode == I2C_CODE_EMPTY )
+ 312              		.loc 1 314 0
+ 313 0132 0333     		add	r3, r3, #3
+ 314 0134 F6D0     		beq	.L42
+ 317:eeprom.c      ****           }
+ 318:eeprom.c      ****           pBuf++;
+ 315              		.loc 1 318 0
+ 316 0136 0136     		add	r6, r6, #1
+ 317              	.LVL37:
+ 319:eeprom.c      **** 
+ 320:eeprom.c      ****           break;
+ 318              		.loc 1 320 0
+ 319 0138 03E0     		b	.L43
+ 320              	.LVL38:
+ 321              	.L38:
+ 321:eeprom.c      ****         }
+ 322:eeprom.c      ****         else if( status != 0xf8 )
+ 322              		.loc 1 322 0
+ 323 013a F828     		cmp	r0, #248
+ 324 013c E3D0     		beq	.L46
+ 325 013e 3D1C     		mov	r5, r7
+ 326              	.LVL39:
+ 323:eeprom.c      ****         {
+ 324:eeprom.c      ****           /* ERROR */
+ 325:eeprom.c      ****           i = len;
+ 326:eeprom.c      ****           retCode = I2C_CODE_ERROR;
+ 327              		.loc 1 326 0
+ 328 0140 FF24     		mov	r4, #255
+ 329              	.LVL40:
+ 330              	.L43:
+ 290:eeprom.c      ****     for(i = 1; i <= len; i++ )
+ 331              		.loc 1 290 0
+ 332 0142 0135     		add	r5, r5, #1
+ 333              	.LVL41:
+ 334 0144 2D04     		lsl	r5, r5, #16
+ 335              	.LVL42:
+ 336 0146 2D0C     		lsr	r5, r5, #16
+ 337              	.LVL43:
+ 338 0148 00E0     		b	.L35
+ 339              	.LVL44:
+ 340              	.L49:
+ 287:eeprom.c      ****   if( retCode == I2C_CODE_OK )
+ 341              		.loc 1 287 0
+ 342 014a 051C     		mov	r5, r0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 13
+
+
+ 343              	.LVL45:
+ 344              	.L35:
+ 290:eeprom.c      ****     for(i = 1; i <= len; i++ )
+ 345              		.loc 1 290 0 discriminator 1
+ 346 014c BD42     		cmp	r5, r7
+ 347 014e DAD9     		bls	.L46
+ 348              	.LVL46:
+ 349              	.L36:
+ 327:eeprom.c      ****           break;
+ 328:eeprom.c      ****         }
+ 329:eeprom.c      ****       }
+ 330:eeprom.c      ****     }
+ 331:eeprom.c      ****   }
+ 332:eeprom.c      **** 
+ 333:eeprom.c      ****   /* Generate Stop condition */
+ 334:eeprom.c      ****   i2cStop();
+ 335:eeprom.c      **** releaseI2cLock();
+ 336:eeprom.c      **** 
+ 337:eeprom.c      ****   return retCode;
+ 350              		.loc 1 337 0
+ 351 0150 2406     		lsl	r4, r4, #24
+ 352              	.LVL47:
+ 334:eeprom.c      ****   i2cStop();
+ 353              		.loc 1 334 0
+ 354 0152 FFF7FEFF 		bl	i2cStop
+ 338:eeprom.c      **** 
+ 339:eeprom.c      **** }
+ 355              		.loc 1 339 0
+ 356              		@ sp needed for prologue
+ 335:eeprom.c      **** releaseI2cLock();
+ 357              		.loc 1 335 0
+ 358 0156 FFF7FEFF 		bl	releaseI2cLock
+ 337:eeprom.c      ****   return retCode;
+ 359              		.loc 1 337 0
+ 360 015a 2016     		asr	r0, r4, #24
+ 361              	.LVL48:
+ 362              		.loc 1 339 0
+ 363 015c F0BC     		pop	{r4, r5, r6, r7}
+ 364 015e 02BC     		pop	{r1}
+ 365 0160 0847     		bx	r1
+ 366              		.cfi_endproc
+ 367              	.LFE2:
+ 368              		.size	eepromPageRead, .-eepromPageRead
+ 369              		.align	1
+ 370              		.global	eepromWrite
+ 371              		.code	16
+ 372              		.thumb_func
+ 373              		.type	eepromWrite, %function
+ 374              	eepromWrite:
+ 375              	.LFB3:
+ 340:eeprom.c      **** 
+ 341:eeprom.c      **** 
+ 342:eeprom.c      **** /******************************************************************************
+ 343:eeprom.c      ****  *
+ 344:eeprom.c      ****  * Description:
+ 345:eeprom.c      ****  *    Start a (random) write operation
+ 346:eeprom.c      ****  *
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 14
+
+
+ 347:eeprom.c      ****  *****************************************************************************/
+ 348:eeprom.c      **** tS8
+ 349:eeprom.c      **** eepromWrite(tU16 addr,
+ 350:eeprom.c      ****             tU8* pData,
+ 351:eeprom.c      ****             tU16 len)
+ 352:eeprom.c      **** {
+ 376              		.loc 1 352 0
+ 377              		.cfi_startproc
+ 378 0162 F1B5     		push	{r0, r4, r5, r6, r7, lr}
+ 379              	.LCFI3:
+ 380              		.cfi_def_cfa_offset 24
+ 381              		.cfi_offset 0, -24
+ 382              		.cfi_offset 4, -20
+ 383              		.cfi_offset 5, -16
+ 384              		.cfi_offset 6, -12
+ 385              		.cfi_offset 7, -8
+ 386              		.cfi_offset 14, -4
+ 387              	.LVL49:
+ 388              		.loc 1 352 0
+ 389 0164 0504     		lsl	r5, r0, #16
+ 390 0166 1604     		lsl	r6, r2, #16
+ 391 0168 0091     		str	r1, [sp]
+ 353:eeprom.c      ****   tS8  retCode = 0;
+ 354:eeprom.c      ****   tU16 i       = 0;
+ 355:eeprom.c      **** 
+ 356:eeprom.c      **** getI2cLock();
+ 392              		.loc 1 356 0
+ 393 016a FFF7FEFF 		bl	getI2cLock
+ 394              	.LVL50:
+ 357:eeprom.c      ****   do
+ 358:eeprom.c      ****   {
+ 359:eeprom.c      **** 
+ 360:eeprom.c      ****     /* generate Start condition */
+ 361:eeprom.c      ****     retCode = i2cStart();
+ 395              		.loc 1 361 0
+ 396 016e FFF7FEFF 		bl	i2cStart
+ 352:eeprom.c      **** {
+ 397              		.loc 1 352 0
+ 398 0172 2F0C     		lsr	r7, r5, #16
+ 399 0174 360C     		lsr	r6, r6, #16
+ 400              		.loc 1 361 0
+ 401 0176 041C     		mov	r4, r0
+ 402              	.LVL51:
+ 362:eeprom.c      ****     if(retCode != I2C_CODE_OK)
+ 403              		.loc 1 362 0
+ 404 0178 0128     		cmp	r0, #1
+ 405 017a 1FD1     		bne	.L51
+ 363:eeprom.c      ****       break;
+ 364:eeprom.c      **** 
+ 365:eeprom.c      **** 
+ 366:eeprom.c      ****     /* write EEPROM I2C address */
+ 367:eeprom.c      ****     retCode = i2cWriteWithWait(I2C_EEPROM_ADDR | ((tU8)(addr >> 7) & 0x0e));
+ 406              		.loc 1 367 0
+ 407 017c 0E23     		mov	r3, #14
+ 408 017e E80D     		lsr	r0, r5, #23
+ 409              	.LVL52:
+ 410 0180 1840     		and	r0, r3
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 15
+
+
+ 411 0182 A023     		mov	r3, #160
+ 412 0184 1843     		orr	r0, r3
+ 413 0186 FFF7FEFF 		bl	i2cWriteWithWait
+ 414 018a 041C     		mov	r4, r0
+ 415              	.LVL53:
+ 368:eeprom.c      **** //    retCode = i2cWriteWithWait(I2C_EEPROM_ADDR);
+ 369:eeprom.c      ****     if(retCode != I2C_CODE_OK)
+ 416              		.loc 1 369 0
+ 417 018c 0128     		cmp	r0, #1
+ 418 018e 15D1     		bne	.L51
+ 370:eeprom.c      ****       break;
+ 371:eeprom.c      **** 
+ 372:eeprom.c      **** #if 0
+ 373:eeprom.c      ****     /* write offset high in EEPROM space  */
+ 374:eeprom.c      ****     retCode = i2cWriteWithWait( (tU8)(addr >> 8));
+ 375:eeprom.c      ****     if(retCode != I2C_CODE_OK)
+ 376:eeprom.c      ****       break;
+ 377:eeprom.c      **** #endif
+ 378:eeprom.c      **** 
+ 379:eeprom.c      ****     /* write offset low in EEPROM space  */
+ 380:eeprom.c      ****     retCode = i2cWriteWithWait( (tU8)(addr & 0xFF));
+ 419              		.loc 1 380 0
+ 420 0190 3806     		lsl	r0, r7, #24
+ 421              	.LVL54:
+ 422 0192 000E     		lsr	r0, r0, #24
+ 423 0194 FFF7FEFF 		bl	i2cWriteWithWait
+ 381:eeprom.c      ****     if(retCode != I2C_CODE_OK)
+ 424              		.loc 1 381 0
+ 425 0198 0025     		mov	r5, #0
+ 380:eeprom.c      ****     retCode = i2cWriteWithWait( (tU8)(addr & 0xFF));
+ 426              		.loc 1 380 0
+ 427 019a 041C     		mov	r4, r0
+ 428              	.LVL55:
+ 429              		.loc 1 381 0
+ 430 019c 0128     		cmp	r0, #1
+ 431 019e 0DD1     		bne	.L51
+ 432 01a0 06E0     		b	.L52
+ 433              	.LVL56:
+ 434              	.L53:
+ 382:eeprom.c      ****       break;
+ 383:eeprom.c      **** 
+ 384:eeprom.c      **** 
+ 385:eeprom.c      ****     /* write data */
+ 386:eeprom.c      ****     for(i = 0; i <len; i++)
+ 387:eeprom.c      ****     {
+ 388:eeprom.c      ****       retCode = i2cWriteWithWait(*pData);
+ 435              		.loc 1 388 0
+ 436 01a2 009B     		ldr	r3, [sp]
+ 437 01a4 585D     		ldrb	r0, [r3, r5]
+ 438 01a6 FFF7FEFF 		bl	i2cWriteWithWait
+ 439              	.LVL57:
+ 440 01aa 0135     		add	r5, r5, #1
+ 389:eeprom.c      ****       if(retCode != I2C_CODE_OK)
+ 441              		.loc 1 389 0
+ 442 01ac 0128     		cmp	r0, #1
+ 443 01ae 04D1     		bne	.L54
+ 444              	.LVL58:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 16
+
+
+ 445              	.L52:
+ 386:eeprom.c      ****     for(i = 0; i <len; i++)
+ 446              		.loc 1 386 0 discriminator 1
+ 447 01b0 2B04     		lsl	r3, r5, #16
+ 448 01b2 1B0C     		lsr	r3, r3, #16
+ 449 01b4 B342     		cmp	r3, r6
+ 450 01b6 F4D3     		bcc	.L53
+ 451 01b8 00E0     		b	.L51
+ 452              	.LVL59:
+ 453              	.L54:
+ 388:eeprom.c      ****       retCode = i2cWriteWithWait(*pData);
+ 454              		.loc 1 388 0
+ 455 01ba 041C     		mov	r4, r0
+ 456              	.LVL60:
+ 457              	.L51:
+ 390:eeprom.c      ****         break;
+ 391:eeprom.c      **** 
+ 392:eeprom.c      ****       pData++;
+ 393:eeprom.c      ****     }
+ 394:eeprom.c      **** 
+ 395:eeprom.c      ****   } while(0);
+ 396:eeprom.c      **** 
+ 397:eeprom.c      ****   /* generate Stop condition */
+ 398:eeprom.c      ****   i2cStop();
+ 399:eeprom.c      **** releaseI2cLock();
+ 400:eeprom.c      **** 
+ 401:eeprom.c      **** 
+ 402:eeprom.c      ****   return retCode;
+ 458              		.loc 1 402 0
+ 459 01bc 2406     		lsl	r4, r4, #24
+ 460              	.LVL61:
+ 398:eeprom.c      ****   i2cStop();
+ 461              		.loc 1 398 0
+ 462 01be FFF7FEFF 		bl	i2cStop
+ 403:eeprom.c      **** }
+ 463              		.loc 1 403 0
+ 464              		@ sp needed for prologue
+ 399:eeprom.c      **** releaseI2cLock();
+ 465              		.loc 1 399 0
+ 466 01c2 FFF7FEFF 		bl	releaseI2cLock
+ 402:eeprom.c      ****   return retCode;
+ 467              		.loc 1 402 0
+ 468 01c6 2016     		asr	r0, r4, #24
+ 469              		.loc 1 403 0
+ 470 01c8 F2BC     		pop	{r1, r4, r5, r6, r7}
+ 471 01ca 02BC     		pop	{r1}
+ 472 01cc 0847     		bx	r1
+ 473              		.cfi_endproc
+ 474              	.LFE3:
+ 475              		.size	eepromWrite, .-eepromWrite
+ 476              		.align	1
+ 477              		.global	lm75Read
+ 478              		.code	16
+ 479              		.thumb_func
+ 480              		.type	lm75Read, %function
+ 481              	lm75Read:
+ 482              	.LFB4:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 17
+
+
+ 404:eeprom.c      **** 
+ 405:eeprom.c      **** 
+ 406:eeprom.c      **** /******************************************************************************
+ 407:eeprom.c      ****  *
+ 408:eeprom.c      ****  * Description:
+ 409:eeprom.c      ****  *    Read the temperature from a LM75 temperature sensor
+ 410:eeprom.c      ****  *
+ 411:eeprom.c      ****  *****************************************************************************/
+ 412:eeprom.c      **** tS8 
+ 413:eeprom.c      **** lm75Read(tU8 address, tU8* pBuf, tU16 len) 
+ 414:eeprom.c      **** {
+ 483              		.loc 1 414 0
+ 484              		.cfi_startproc
+ 485 01ce F0B5     		push	{r4, r5, r6, r7, lr}
+ 486              	.LCFI4:
+ 487              		.cfi_def_cfa_offset 20
+ 488              		.cfi_offset 4, -20
+ 489              		.cfi_offset 5, -16
+ 490              		.cfi_offset 6, -12
+ 491              		.cfi_offset 7, -8
+ 492              		.cfi_offset 14, -4
+ 493              	.LVL62:
+ 494              		.loc 1 414 0
+ 495 01d0 0406     		lsl	r4, r0, #24
+ 496 01d2 240E     		lsr	r4, r4, #24
+ 497 01d4 1704     		lsl	r7, r2, #16
+ 498 01d6 0E1C     		mov	r6, r1
+ 415:eeprom.c      ****   tS8  retCode = 0;
+ 416:eeprom.c      ****   tU8  status  = 0;
+ 417:eeprom.c      ****   tU16 i       = 0;
+ 418:eeprom.c      **** 
+ 419:eeprom.c      **** getI2cLock();
+ 499              		.loc 1 419 0
+ 500 01d8 FFF7FEFF 		bl	getI2cLock
+ 501              	.LVL63:
+ 420:eeprom.c      ****   retCode = eepromStartRead(address, 0);
+ 502              		.loc 1 420 0
+ 503 01dc 201C     		mov	r0, r4
+ 504 01de 0021     		mov	r1, #0
+ 505 01e0 FFF7FEFF 		bl	eepromStartRead
+ 414:eeprom.c      **** {
+ 506              		.loc 1 414 0
+ 507 01e4 3F0C     		lsr	r7, r7, #16
+ 508              		.loc 1 420 0
+ 509 01e6 041C     		mov	r4, r0
+ 510              	.LVL64:
+ 421:eeprom.c      **** 
+ 422:eeprom.c      **** 
+ 423:eeprom.c      ****   if( retCode == I2C_CODE_OK )
+ 511              		.loc 1 423 0
+ 512 01e8 0128     		cmp	r0, #1
+ 513 01ea 25D1     		bne	.L57
+ 514 01ec 21E0     		b	.L70
+ 515              	.LVL65:
+ 516              	.L67:
+ 424:eeprom.c      ****   {
+ 425:eeprom.c      ****     /* wait until address transmitted and receive data */
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 18
+
+
+ 426:eeprom.c      ****     for(i = 1; i <= len; i++ )
+ 427:eeprom.c      ****     {
+ 428:eeprom.c      ****       /* wait until data transmitted */
+ 429:eeprom.c      ****       while(1)
+ 430:eeprom.c      ****       {
+ 431:eeprom.c      ****         /* Get new status */
+ 432:eeprom.c      ****         status = i2cCheckStatus();
+ 517              		.loc 1 432 0
+ 518 01ee FFF7FEFF 		bl	i2cCheckStatus
+ 519              	.LVL66:
+ 433:eeprom.c      **** 
+ 434:eeprom.c      ****         if(( status == 0x40 ) || ( status == 0x48 ) || ( status == 0x50 ))
+ 520              		.loc 1 434 0
+ 521 01f2 4828     		cmp	r0, #72
+ 522 01f4 03D0     		beq	.L58
+ 523 01f6 4028     		cmp	r0, #64
+ 524 01f8 01D0     		beq	.L58
+ 525              		.loc 1 434 0 is_stmt 0 discriminator 1
+ 526 01fa 5028     		cmp	r0, #80
+ 527 01fc 11D1     		bne	.L59
+ 528              	.L58:
+ 435:eeprom.c      ****         {
+ 436:eeprom.c      ****           /* Data received */
+ 437:eeprom.c      **** 
+ 438:eeprom.c      ****           if(i == len )
+ 439:eeprom.c      ****           {
+ 440:eeprom.c      ****             /* Set generate NACK */
+ 441:eeprom.c      ****             retCode = i2cGetChar( I2C_MODE_ACK1, pBuf );
+ 529              		.loc 1 441 0 is_stmt 1
+ 530 01fe 0120     		mov	r0, #1
+ 531              	.LVL67:
+ 438:eeprom.c      ****           if(i == len )
+ 532              		.loc 1 438 0
+ 533 0200 BD42     		cmp	r5, r7
+ 534 0202 00D0     		beq	.L69
+ 442:eeprom.c      ****           }
+ 443:eeprom.c      ****           else
+ 444:eeprom.c      ****           {
+ 445:eeprom.c      ****             retCode = i2cGetChar( I2C_MODE_ACK0, pBuf );
+ 535              		.loc 1 445 0
+ 536 0204 0020     		mov	r0, #0
+ 537              	.L69:
+ 538 0206 311C     		mov	r1, r6
+ 539 0208 FFF7FEFF 		bl	i2cGetChar
+ 540              	.LVL68:
+ 541              	.L63:
+ 446:eeprom.c      ****           }
+ 447:eeprom.c      **** 
+ 448:eeprom.c      ****           /* Read data */
+ 449:eeprom.c      ****           retCode = i2cGetChar( I2C_MODE_READ, pBuf );
+ 450:eeprom.c      ****           while( retCode == I2C_CODE_EMPTY )
+ 451:eeprom.c      ****           {
+ 452:eeprom.c      ****             retCode = i2cGetChar( I2C_MODE_READ, pBuf );
+ 542              		.loc 1 452 0
+ 543 020c 0220     		mov	r0, #2
+ 544 020e 311C     		mov	r1, r6
+ 545 0210 FFF7FEFF 		bl	i2cGetChar
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 19
+
+
+ 450:eeprom.c      ****           while( retCode == I2C_CODE_EMPTY )
+ 546              		.loc 1 450 0
+ 547 0214 0306     		lsl	r3, r0, #24
+ 548 0216 1B16     		asr	r3, r3, #24
+ 549              		.loc 1 452 0
+ 550 0218 041C     		mov	r4, r0
+ 551              	.LVL69:
+ 450:eeprom.c      ****           while( retCode == I2C_CODE_EMPTY )
+ 552              		.loc 1 450 0
+ 553 021a 0333     		add	r3, r3, #3
+ 554 021c F6D0     		beq	.L63
+ 453:eeprom.c      ****           }
+ 454:eeprom.c      ****           pBuf++;
+ 555              		.loc 1 454 0
+ 556 021e 0136     		add	r6, r6, #1
+ 557              	.LVL70:
+ 455:eeprom.c      **** 
+ 456:eeprom.c      ****           break;
+ 558              		.loc 1 456 0
+ 559 0220 03E0     		b	.L64
+ 560              	.LVL71:
+ 561              	.L59:
+ 457:eeprom.c      ****         }
+ 458:eeprom.c      ****         else if( status != 0xf8 )
+ 562              		.loc 1 458 0
+ 563 0222 F828     		cmp	r0, #248
+ 564 0224 E3D0     		beq	.L67
+ 565 0226 3D1C     		mov	r5, r7
+ 566              	.LVL72:
+ 459:eeprom.c      ****         {
+ 460:eeprom.c      ****           /* ERROR */
+ 461:eeprom.c      ****           i = len;
+ 462:eeprom.c      ****           retCode = I2C_CODE_ERROR;
+ 567              		.loc 1 462 0
+ 568 0228 FF24     		mov	r4, #255
+ 569              	.LVL73:
+ 570              	.L64:
+ 426:eeprom.c      ****     for(i = 1; i <= len; i++ )
+ 571              		.loc 1 426 0
+ 572 022a 0135     		add	r5, r5, #1
+ 573              	.LVL74:
+ 574 022c 2D04     		lsl	r5, r5, #16
+ 575              	.LVL75:
+ 576 022e 2D0C     		lsr	r5, r5, #16
+ 577              	.LVL76:
+ 578 0230 00E0     		b	.L56
+ 579              	.LVL77:
+ 580              	.L70:
+ 423:eeprom.c      ****   if( retCode == I2C_CODE_OK )
+ 581              		.loc 1 423 0
+ 582 0232 051C     		mov	r5, r0
+ 583              	.LVL78:
+ 584              	.L56:
+ 426:eeprom.c      ****     for(i = 1; i <= len; i++ )
+ 585              		.loc 1 426 0 discriminator 1
+ 586 0234 BD42     		cmp	r5, r7
+ 587 0236 DAD9     		bls	.L67
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 20
+
+
+ 588              	.LVL79:
+ 589              	.L57:
+ 463:eeprom.c      ****           break;
+ 464:eeprom.c      ****         }
+ 465:eeprom.c      ****       }
+ 466:eeprom.c      ****     }
+ 467:eeprom.c      ****   }
+ 468:eeprom.c      **** 
+ 469:eeprom.c      ****   /* Generate Stop condition */
+ 470:eeprom.c      ****   i2cStop();
+ 471:eeprom.c      **** releaseI2cLock();
+ 472:eeprom.c      **** 
+ 473:eeprom.c      ****   return retCode;
+ 590              		.loc 1 473 0
+ 591 0238 2406     		lsl	r4, r4, #24
+ 592              	.LVL80:
+ 470:eeprom.c      ****   i2cStop();
+ 593              		.loc 1 470 0
+ 594 023a FFF7FEFF 		bl	i2cStop
+ 474:eeprom.c      **** 
+ 475:eeprom.c      **** }
+ 595              		.loc 1 475 0
+ 596              		@ sp needed for prologue
+ 471:eeprom.c      **** releaseI2cLock();
+ 597              		.loc 1 471 0
+ 598 023e FFF7FEFF 		bl	releaseI2cLock
+ 473:eeprom.c      ****   return retCode;
+ 599              		.loc 1 473 0
+ 600 0242 2016     		asr	r0, r4, #24
+ 601              	.LVL81:
+ 602              		.loc 1 475 0
+ 603 0244 F0BC     		pop	{r4, r5, r6, r7}
+ 604 0246 02BC     		pop	{r1}
+ 605 0248 0847     		bx	r1
+ 606              		.cfi_endproc
+ 607              	.LFE4:
+ 608              		.size	lm75Read, .-lm75Read
+ 609              		.align	1
+ 610              		.global	pca9532
+ 611              		.code	16
+ 612              		.thumb_func
+ 613              		.type	pca9532, %function
+ 614              	pca9532:
+ 615              	.LFB5:
+ 476:eeprom.c      **** 
+ 477:eeprom.c      **** 
+ 478:eeprom.c      **** /******************************************************************************
+ 479:eeprom.c      ****  *
+ 480:eeprom.c      ****  * Description:
+ 481:eeprom.c      ****  *    Communicate with the PCA9532
+ 482:eeprom.c      ****  *    First pBuf/len = bytes to write
+ 483:eeprom.c      ****  *    Second pBuf2/len2 = bytes to read
+ 484:eeprom.c      ****  *
+ 485:eeprom.c      ****  *****************************************************************************/
+ 486:eeprom.c      **** tS8
+ 487:eeprom.c      **** pca9532(tU8* pBuf, tU16 len, tU8* pBuf2, tU16 len2) 
+ 488:eeprom.c      **** {
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 21
+
+
+ 616              		.loc 1 488 0
+ 617              		.cfi_startproc
+ 618 024a F3B5     		push	{r0, r1, r4, r5, r6, r7, lr}
+ 619              	.LCFI5:
+ 620              		.cfi_def_cfa_offset 28
+ 621              		.cfi_offset 0, -28
+ 622              		.cfi_offset 1, -24
+ 623              		.cfi_offset 4, -20
+ 624              		.cfi_offset 5, -16
+ 625              		.cfi_offset 6, -12
+ 626              		.cfi_offset 7, -8
+ 627              		.cfi_offset 14, -4
+ 628              	.LVL82:
+ 629              		.loc 1 488 0
+ 630 024c 0904     		lsl	r1, r1, #16
+ 631              	.LVL83:
+ 632 024e 171C     		mov	r7, r2
+ 633 0250 0A0C     		lsr	r2, r1, #16
+ 634              	.LVL84:
+ 635 0252 1E04     		lsl	r6, r3, #16
+ 636 0254 0190     		str	r0, [sp, #4]
+ 637 0256 0092     		str	r2, [sp]
+ 489:eeprom.c      ****   tS8  retCode = 0;
+ 490:eeprom.c      ****   tU8  status  = 0;
+ 491:eeprom.c      ****   tU16 i       = 0;
+ 492:eeprom.c      **** 
+ 493:eeprom.c      **** getI2cLock();
+ 638              		.loc 1 493 0
+ 639 0258 FFF7FEFF 		bl	getI2cLock
+ 640              	.LVL85:
+ 494:eeprom.c      ****   do
+ 495:eeprom.c      ****   {
+ 496:eeprom.c      ****     /* generate Start condition */
+ 497:eeprom.c      ****     retCode = i2cStart();
+ 641              		.loc 1 497 0
+ 642 025c FFF7FEFF 		bl	i2cStart
+ 488:eeprom.c      **** {
+ 643              		.loc 1 488 0
+ 644 0260 360C     		lsr	r6, r6, #16
+ 645              		.loc 1 497 0
+ 646 0262 041C     		mov	r4, r0
+ 647              	.LVL86:
+ 498:eeprom.c      ****     if(retCode != I2C_CODE_OK)
+ 648              		.loc 1 498 0
+ 649 0264 0128     		cmp	r0, #1
+ 650 0266 15D1     		bne	.L72
+ 499:eeprom.c      ****       break;
+ 500:eeprom.c      **** 
+ 501:eeprom.c      **** 
+ 502:eeprom.c      ****     /* write pca9532 address */
+ 503:eeprom.c      ****     retCode = i2cWriteWithWait(0xc0);
+ 651              		.loc 1 503 0
+ 652 0268 C020     		mov	r0, #192
+ 653              	.LVL87:
+ 654 026a FFF7FEFF 		bl	i2cWriteWithWait
+ 504:eeprom.c      ****     if(retCode != I2C_CODE_OK)
+ 655              		.loc 1 504 0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 22
+
+
+ 656 026e 0025     		mov	r5, #0
+ 503:eeprom.c      ****     retCode = i2cWriteWithWait(0xc0);
+ 657              		.loc 1 503 0
+ 658 0270 041C     		mov	r4, r0
+ 659              	.LVL88:
+ 660              		.loc 1 504 0
+ 661 0272 0128     		cmp	r0, #1
+ 662 0274 0ED1     		bne	.L72
+ 663 0276 06E0     		b	.L73
+ 664              	.LVL89:
+ 665              	.L74:
+ 505:eeprom.c      ****       break;
+ 506:eeprom.c      **** 
+ 507:eeprom.c      ****     /* write data */
+ 508:eeprom.c      ****     for(i = 0; i <len; i++)
+ 509:eeprom.c      ****     {
+ 510:eeprom.c      ****       retCode = i2cWriteWithWait(*pBuf);
+ 666              		.loc 1 510 0
+ 667 0278 019B     		ldr	r3, [sp, #4]
+ 668 027a 585D     		ldrb	r0, [r3, r5]
+ 669 027c FFF7FEFF 		bl	i2cWriteWithWait
+ 670              	.LVL90:
+ 671 0280 0135     		add	r5, r5, #1
+ 511:eeprom.c      ****       if(retCode != I2C_CODE_OK)
+ 672              		.loc 1 511 0
+ 673 0282 0128     		cmp	r0, #1
+ 674 0284 05D1     		bne	.L90
+ 675              	.LVL91:
+ 676              	.L73:
+ 508:eeprom.c      ****     for(i = 0; i <len; i++)
+ 677              		.loc 1 508 0 discriminator 1
+ 678 0286 009A     		ldr	r2, [sp]
+ 679 0288 2B04     		lsl	r3, r5, #16
+ 680 028a 1B0C     		lsr	r3, r3, #16
+ 681 028c 9342     		cmp	r3, r2
+ 682 028e F3D3     		bcc	.L74
+ 683 0290 00E0     		b	.L72
+ 684              	.LVL92:
+ 685              	.L90:
+ 510:eeprom.c      ****       retCode = i2cWriteWithWait(*pBuf);
+ 686              		.loc 1 510 0
+ 687 0292 041C     		mov	r4, r0
+ 688              	.LVL93:
+ 689              	.L72:
+ 512:eeprom.c      ****         break;
+ 513:eeprom.c      **** 
+ 514:eeprom.c      ****       pBuf++;
+ 515:eeprom.c      ****     }
+ 516:eeprom.c      **** 
+ 517:eeprom.c      ****   } while(0);
+ 518:eeprom.c      **** 
+ 519:eeprom.c      ****   if (len2 > 0)
+ 690              		.loc 1 519 0
+ 691 0294 002E     		cmp	r6, #0
+ 692 0296 3DD0     		beq	.L75
+ 520:eeprom.c      ****   {
+ 521:eeprom.c      ****     /* Generate Start condition */
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 23
+
+
+ 522:eeprom.c      ****     retCode = i2cRepeatStart();
+ 693              		.loc 1 522 0
+ 694 0298 FFF7FEFF 		bl	i2cRepeatStart
+ 695 029c 041C     		mov	r4, r0
+ 696              	.LVL94:
+ 523:eeprom.c      **** 
+ 524:eeprom.c      ****     /* Transmit device address */
+ 525:eeprom.c      ****     if( retCode == I2C_CODE_OK)
+ 697              		.loc 1 525 0
+ 698 029e 0128     		cmp	r0, #1
+ 699 02a0 07D1     		bne	.L95
+ 700              	.LVL95:
+ 701              	.L78:
+ 526:eeprom.c      ****     {
+ 527:eeprom.c      ****       /* Write SLA+R */
+ 528:eeprom.c      ****       retCode = i2cPutChar( 0xc0 + 0x01 );
+ 529:eeprom.c      ****       while( retCode == I2C_CODE_BUSY )
+ 530:eeprom.c      ****       {
+ 531:eeprom.c      ****         retCode = i2cPutChar( 0xc0 + 0x01 );
+ 702              		.loc 1 531 0
+ 703 02a2 C120     		mov	r0, #193
+ 704 02a4 FFF7FEFF 		bl	i2cPutChar
+ 529:eeprom.c      ****       while( retCode == I2C_CODE_BUSY )
+ 705              		.loc 1 529 0
+ 706 02a8 0306     		lsl	r3, r0, #24
+ 707 02aa 1B16     		asr	r3, r3, #24
+ 708              		.loc 1 531 0
+ 709 02ac 041C     		mov	r4, r0
+ 710              	.LVL96:
+ 529:eeprom.c      ****       while( retCode == I2C_CODE_BUSY )
+ 711              		.loc 1 529 0
+ 712 02ae 0433     		add	r3, r3, #4
+ 713 02b0 F7D0     		beq	.L78
+ 714              	.LVL97:
+ 715              	.L95:
+ 532:eeprom.c      ****       }
+ 533:eeprom.c      ****     }
+ 534:eeprom.c      **** 
+ 535:eeprom.c      ****     /* Wait until SLA+R transmitted */
+ 536:eeprom.c      ****     while(1)
+ 537:eeprom.c      ****     {
+ 538:eeprom.c      ****       /* Get new status */
+ 539:eeprom.c      ****       status = i2cCheckStatus();
+ 716              		.loc 1 539 0
+ 717 02b2 FFF7FEFF 		bl	i2cCheckStatus
+ 718              	.LVL98:
+ 540:eeprom.c      **** 
+ 541:eeprom.c      ****       if(status == 0x40)
+ 719              		.loc 1 541 0
+ 720 02b6 4028     		cmp	r0, #64
+ 721 02b8 02D0     		beq	.L79
+ 542:eeprom.c      ****       {
+ 543:eeprom.c      ****         /* Data transmitted and ACK received */
+ 544:eeprom.c      ****         break;
+ 545:eeprom.c      ****       }
+ 546:eeprom.c      ****       else if(status != 0xf8)
+ 722              		.loc 1 546 0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 24
+
+
+ 723 02ba F828     		cmp	r0, #248
+ 724 02bc F9D0     		beq	.L95
+ 725 02be 28E0     		b	.L98
+ 726              	.L79:
+ 547:eeprom.c      ****       {
+ 548:eeprom.c      ****         /* error */
+ 549:eeprom.c      ****         retCode = I2C_CODE_ERROR;
+ 550:eeprom.c      ****         break;
+ 551:eeprom.c      ****       }
+ 552:eeprom.c      ****     }
+ 553:eeprom.c      **** 
+ 554:eeprom.c      ****     if( retCode == I2C_CODE_OK )
+ 727              		.loc 1 554 0
+ 728 02c0 2506     		lsl	r5, r4, #24
+ 729 02c2 2D16     		asr	r5, r5, #24
+ 730 02c4 012D     		cmp	r5, #1
+ 731 02c6 21D0     		beq	.L96
+ 732 02c8 24E0     		b	.L75
+ 733              	.LVL99:
+ 734              	.L93:
+ 555:eeprom.c      ****     {
+ 556:eeprom.c      ****       /* wait until address transmitted and receive data */
+ 557:eeprom.c      ****       for(i = 1; i <= len2; i++ )
+ 558:eeprom.c      ****       {
+ 559:eeprom.c      ****         /* wait until data transmitted */
+ 560:eeprom.c      ****         while(1)
+ 561:eeprom.c      ****         {
+ 562:eeprom.c      ****           /* Get new status */
+ 563:eeprom.c      ****           status = i2cCheckStatus();
+ 735              		.loc 1 563 0
+ 736 02ca FFF7FEFF 		bl	i2cCheckStatus
+ 737              	.LVL100:
+ 564:eeprom.c      **** 
+ 565:eeprom.c      ****           if(( status == 0x40 ) || ( status == 0x48 ) || ( status == 0x50 ))
+ 738              		.loc 1 565 0
+ 739 02ce 4828     		cmp	r0, #72
+ 740 02d0 03D0     		beq	.L82
+ 741 02d2 4028     		cmp	r0, #64
+ 742 02d4 01D0     		beq	.L82
+ 743              		.loc 1 565 0 is_stmt 0 discriminator 1
+ 744 02d6 5028     		cmp	r0, #80
+ 745 02d8 11D1     		bne	.L83
+ 746              	.L82:
+ 566:eeprom.c      ****           {
+ 567:eeprom.c      ****             /* Data received */
+ 568:eeprom.c      **** 
+ 569:eeprom.c      ****             if(i == len2 )
+ 570:eeprom.c      ****             {
+ 571:eeprom.c      ****               /* Set generate NACK */
+ 572:eeprom.c      ****               retCode = i2cGetChar( I2C_MODE_ACK1, pBuf2 );
+ 747              		.loc 1 572 0 is_stmt 1
+ 748 02da 0120     		mov	r0, #1
+ 749              	.LVL101:
+ 569:eeprom.c      ****             if(i == len2 )
+ 750              		.loc 1 569 0
+ 751 02dc B542     		cmp	r5, r6
+ 752 02de 00D0     		beq	.L97
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 25
+
+
+ 573:eeprom.c      ****             }
+ 574:eeprom.c      ****             else
+ 575:eeprom.c      ****             {
+ 576:eeprom.c      ****               retCode = i2cGetChar( I2C_MODE_ACK0, pBuf2 );
+ 753              		.loc 1 576 0
+ 754 02e0 0020     		mov	r0, #0
+ 755              	.L97:
+ 756 02e2 391C     		mov	r1, r7
+ 757 02e4 FFF7FEFF 		bl	i2cGetChar
+ 758              	.LVL102:
+ 759              	.L87:
+ 577:eeprom.c      ****             }
+ 578:eeprom.c      **** 
+ 579:eeprom.c      ****             /* Read data */
+ 580:eeprom.c      ****             retCode = i2cGetChar( I2C_MODE_READ, pBuf2 );
+ 581:eeprom.c      ****             while( retCode == I2C_CODE_EMPTY )
+ 582:eeprom.c      ****             {
+ 583:eeprom.c      ****               retCode = i2cGetChar( I2C_MODE_READ, pBuf2 );
+ 760              		.loc 1 583 0
+ 761 02e8 0220     		mov	r0, #2
+ 762 02ea 391C     		mov	r1, r7
+ 763 02ec FFF7FEFF 		bl	i2cGetChar
+ 581:eeprom.c      ****             while( retCode == I2C_CODE_EMPTY )
+ 764              		.loc 1 581 0
+ 765 02f0 0306     		lsl	r3, r0, #24
+ 766 02f2 1B16     		asr	r3, r3, #24
+ 767              		.loc 1 583 0
+ 768 02f4 041C     		mov	r4, r0
+ 769              	.LVL103:
+ 581:eeprom.c      ****             while( retCode == I2C_CODE_EMPTY )
+ 770              		.loc 1 581 0
+ 771 02f6 0333     		add	r3, r3, #3
+ 772 02f8 F6D0     		beq	.L87
+ 584:eeprom.c      ****             }
+ 585:eeprom.c      ****             pBuf2++;
+ 773              		.loc 1 585 0
+ 774 02fa 0137     		add	r7, r7, #1
+ 775              	.LVL104:
+ 586:eeprom.c      **** 
+ 587:eeprom.c      ****             break;
+ 776              		.loc 1 587 0
+ 777 02fc 03E0     		b	.L88
+ 778              	.LVL105:
+ 779              	.L83:
+ 588:eeprom.c      ****           }
+ 589:eeprom.c      ****           else if( status != 0xf8 )
+ 780              		.loc 1 589 0
+ 781 02fe F828     		cmp	r0, #248
+ 782 0300 E3D0     		beq	.L93
+ 783 0302 351C     		mov	r5, r6
+ 784              	.LVL106:
+ 590:eeprom.c      ****           {
+ 591:eeprom.c      ****             /* ERROR */
+ 592:eeprom.c      ****             i = len2;
+ 593:eeprom.c      ****             retCode = I2C_CODE_ERROR;
+ 785              		.loc 1 593 0
+ 786 0304 FF24     		mov	r4, #255
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 26
+
+
+ 787              	.LVL107:
+ 788              	.L88:
+ 557:eeprom.c      ****       for(i = 1; i <= len2; i++ )
+ 789              		.loc 1 557 0
+ 790 0306 0135     		add	r5, r5, #1
+ 791              	.LVL108:
+ 792 0308 2D04     		lsl	r5, r5, #16
+ 793              	.LVL109:
+ 794 030a 2D0C     		lsr	r5, r5, #16
+ 795              	.LVL110:
+ 796              	.L96:
+ 557:eeprom.c      ****       for(i = 1; i <= len2; i++ )
+ 797              		.loc 1 557 0 is_stmt 0 discriminator 1
+ 798 030c B542     		cmp	r5, r6
+ 799 030e DCD9     		bls	.L93
+ 800 0310 00E0     		b	.L75
+ 801              	.LVL111:
+ 802              	.L98:
+ 549:eeprom.c      ****         retCode = I2C_CODE_ERROR;
+ 803              		.loc 1 549 0 is_stmt 1
+ 804 0312 FF24     		mov	r4, #255
+ 805              	.LVL112:
+ 806              	.L75:
+ 594:eeprom.c      ****             break;
+ 595:eeprom.c      ****           }
+ 596:eeprom.c      ****         }
+ 597:eeprom.c      ****       }
+ 598:eeprom.c      ****     }
+ 599:eeprom.c      ****   }
+ 600:eeprom.c      **** 
+ 601:eeprom.c      ****   /* Generate Stop condition */
+ 602:eeprom.c      ****   i2cStop();
+ 603:eeprom.c      **** releaseI2cLock();
+ 604:eeprom.c      **** 
+ 605:eeprom.c      ****   return retCode;
+ 807              		.loc 1 605 0
+ 808 0314 2406     		lsl	r4, r4, #24
+ 809              	.LVL113:
+ 602:eeprom.c      ****   i2cStop();
+ 810              		.loc 1 602 0
+ 811 0316 FFF7FEFF 		bl	i2cStop
+ 606:eeprom.c      **** 
+ 607:eeprom.c      **** }
+ 812              		.loc 1 607 0
+ 813              		@ sp needed for prologue
+ 603:eeprom.c      **** releaseI2cLock();
+ 814              		.loc 1 603 0
+ 815 031a FFF7FEFF 		bl	releaseI2cLock
+ 605:eeprom.c      ****   return retCode;
+ 816              		.loc 1 605 0
+ 817 031e 2016     		asr	r0, r4, #24
+ 818              	.LVL114:
+ 819              		.loc 1 607 0
+ 820 0320 F6BC     		pop	{r1, r2, r4, r5, r6, r7}
+ 821 0322 02BC     		pop	{r1}
+ 822 0324 0847     		bx	r1
+ 823              		.cfi_endproc
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 27
+
+
+ 824              	.LFE5:
+ 825              		.size	pca9532, .-pca9532
+ 826              	.Letext0:
+ 827              		.file 2 "./startup/../pre_emptive_os/api/general.h"
+ 828              		.section	.debug_info,"",%progbits
+ 829              	.Ldebug_info0:
+ 830 0000 13030000 		.4byte	0x313
+ 831 0004 0200     		.2byte	0x2
+ 832 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 833 000a 04       		.byte	0x4
+ 834 000b 01       		.uleb128 0x1
+ 835 000c AA000000 		.4byte	.LASF22
+ 836 0010 01       		.byte	0x1
+ 837 0011 09010000 		.4byte	.LASF23
+ 838 0015 5E000000 		.4byte	.LASF24
+ 839 0019 00000000 		.4byte	.Ltext0
+ 840 001d 26030000 		.4byte	.Letext0
+ 841 0021 00000000 		.4byte	.Ldebug_line0
+ 842 0025 02       		.uleb128 0x2
+ 843 0026 74553800 		.ascii	"tU8\000"
+ 844 002a 02       		.byte	0x2
+ 845 002b 47       		.byte	0x47
+ 846 002c 30000000 		.4byte	0x30
+ 847 0030 03       		.uleb128 0x3
+ 848 0031 01       		.byte	0x1
+ 849 0032 08       		.byte	0x8
+ 850 0033 8E000000 		.4byte	.LASF1
+ 851 0037 04       		.uleb128 0x4
+ 852 0038 F4000000 		.4byte	.LASF0
+ 853 003c 02       		.byte	0x2
+ 854 003d 48       		.byte	0x48
+ 855 003e 42000000 		.4byte	0x42
+ 856 0042 03       		.uleb128 0x3
+ 857 0043 02       		.byte	0x2
+ 858 0044 07       		.byte	0x7
+ 859 0045 C5000000 		.4byte	.LASF2
+ 860 0049 03       		.uleb128 0x3
+ 861 004a 04       		.byte	0x4
+ 862 004b 07       		.byte	0x7
+ 863 004c 08000000 		.4byte	.LASF3
+ 864 0050 02       		.uleb128 0x2
+ 865 0051 74533800 		.ascii	"tS8\000"
+ 866 0055 02       		.byte	0x2
+ 867 0056 4A       		.byte	0x4a
+ 868 0057 5B000000 		.4byte	0x5b
+ 869 005b 03       		.uleb128 0x3
+ 870 005c 01       		.byte	0x1
+ 871 005d 06       		.byte	0x6
+ 872 005e D8000000 		.4byte	.LASF4
+ 873 0062 03       		.uleb128 0x3
+ 874 0063 02       		.byte	0x2
+ 875 0064 05       		.byte	0x5
+ 876 0065 FF000000 		.4byte	.LASF5
+ 877 0069 05       		.uleb128 0x5
+ 878 006a 04       		.byte	0x4
+ 879 006b 05       		.byte	0x5
+ 880 006c 696E7400 		.ascii	"int\000"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 28
+
+
+ 881 0070 04       		.uleb128 0x4
+ 882 0071 F9000000 		.4byte	.LASF6
+ 883 0075 02       		.byte	0x2
+ 884 0076 4D       		.byte	0x4d
+ 885 0077 30000000 		.4byte	0x30
+ 886 007b 06       		.uleb128 0x6
+ 887 007c 01       		.byte	0x1
+ 888 007d E4000000 		.4byte	.LASF10
+ 889 0081 01       		.byte	0x1
+ 890 0082 32       		.byte	0x32
+ 891 0083 01       		.byte	0x1
+ 892 0084 50000000 		.4byte	0x50
+ 893 0088 00000000 		.4byte	.LFB0
+ 894 008c 56000000 		.4byte	.LFE0
+ 895 0090 00000000 		.4byte	.LLST0
+ 896 0094 C6000000 		.4byte	0xc6
+ 897 0098 07       		.uleb128 0x7
+ 898 0099 21000000 		.4byte	.LASF7
+ 899 009d 01       		.byte	0x1
+ 900 009e 34       		.byte	0x34
+ 901 009f 50000000 		.4byte	0x50
+ 902 00a3 20000000 		.4byte	.LLST1
+ 903 00a7 07       		.uleb128 0x7
+ 904 00a8 42000000 		.4byte	.LASF8
+ 905 00ac 01       		.byte	0x1
+ 906 00ad 35       		.byte	0x35
+ 907 00ae 25000000 		.4byte	0x25
+ 908 00b2 49000000 		.4byte	.LLST2
+ 909 00b6 07       		.uleb128 0x7
+ 910 00b7 A2000000 		.4byte	.LASF9
+ 911 00bb 01       		.byte	0x1
+ 912 00bc 36       		.byte	0x36
+ 913 00bd 70000000 		.4byte	0x70
+ 914 00c1 5C000000 		.4byte	.LLST3
+ 915 00c5 00       		.byte	0
+ 916 00c6 06       		.uleb128 0x6
+ 917 00c7 01       		.byte	0x1
+ 918 00c8 29000000 		.4byte	.LASF11
+ 919 00cc 01       		.byte	0x1
+ 920 00cd 7C       		.byte	0x7c
+ 921 00ce 01       		.byte	0x1
+ 922 00cf 50000000 		.4byte	0x50
+ 923 00d3 56000000 		.4byte	.LFB1
+ 924 00d7 E6000000 		.4byte	.LFE1
+ 925 00db 6F000000 		.4byte	.LLST4
+ 926 00df 20010000 		.4byte	0x120
+ 927 00e3 08       		.uleb128 0x8
+ 928 00e4 51000000 		.4byte	.LASF12
+ 929 00e8 01       		.byte	0x1
+ 930 00e9 7C       		.byte	0x7c
+ 931 00ea 25000000 		.4byte	0x25
+ 932 00ee 8F000000 		.4byte	.LLST5
+ 933 00f2 08       		.uleb128 0x8
+ 934 00f3 49000000 		.4byte	.LASF13
+ 935 00f7 01       		.byte	0x1
+ 936 00f8 7D       		.byte	0x7d
+ 937 00f9 37000000 		.4byte	0x37
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 29
+
+
+ 938 00fd A2000000 		.4byte	.LLST6
+ 939 0101 07       		.uleb128 0x7
+ 940 0102 21000000 		.4byte	.LASF7
+ 941 0106 01       		.byte	0x1
+ 942 0107 7F       		.byte	0x7f
+ 943 0108 50000000 		.4byte	0x50
+ 944 010c B5000000 		.4byte	.LLST7
+ 945 0110 07       		.uleb128 0x7
+ 946 0111 42000000 		.4byte	.LASF8
+ 947 0115 01       		.byte	0x1
+ 948 0116 80       		.byte	0x80
+ 949 0117 25000000 		.4byte	0x25
+ 950 011b 0B010000 		.4byte	.LLST8
+ 951 011f 00       		.byte	0
+ 952 0120 09       		.uleb128 0x9
+ 953 0121 01       		.byte	0x1
+ 954 0122 B6000000 		.4byte	.LASF14
+ 955 0126 01       		.byte	0x1
+ 956 0127 1201     		.2byte	0x112
+ 957 0129 01       		.byte	0x1
+ 958 012a 50000000 		.4byte	0x50
+ 959 012e E6000000 		.4byte	.LFB2
+ 960 0132 62010000 		.4byte	.LFE2
+ 961 0136 4B010000 		.4byte	.LLST9
+ 962 013a 9D010000 		.4byte	0x19d
+ 963 013e 0A       		.uleb128 0xa
+ 964 013f 49000000 		.4byte	.LASF13
+ 965 0143 01       		.byte	0x1
+ 966 0144 1201     		.2byte	0x112
+ 967 0146 37000000 		.4byte	0x37
+ 968 014a 6B010000 		.4byte	.LLST10
+ 969 014e 0A       		.uleb128 0xa
+ 970 014f 89000000 		.4byte	.LASF15
+ 971 0153 01       		.byte	0x1
+ 972 0154 1301     		.2byte	0x113
+ 973 0156 9D010000 		.4byte	0x19d
+ 974 015a 7E010000 		.4byte	.LLST11
+ 975 015e 0B       		.uleb128 0xb
+ 976 015f 6C656E00 		.ascii	"len\000"
+ 977 0163 01       		.byte	0x1
+ 978 0164 1401     		.2byte	0x114
+ 979 0166 37000000 		.4byte	0x37
+ 980 016a 9C010000 		.4byte	.LLST12
+ 981 016e 0C       		.uleb128 0xc
+ 982 016f 21000000 		.4byte	.LASF7
+ 983 0173 01       		.byte	0x1
+ 984 0174 1601     		.2byte	0x116
+ 985 0176 50000000 		.4byte	0x50
+ 986 017a AF010000 		.4byte	.LLST13
+ 987 017e 0C       		.uleb128 0xc
+ 988 017f 42000000 		.4byte	.LASF8
+ 989 0183 01       		.byte	0x1
+ 990 0184 1701     		.2byte	0x117
+ 991 0186 25000000 		.4byte	0x25
+ 992 018a 05020000 		.4byte	.LLST14
+ 993 018e 0D       		.uleb128 0xd
+ 994 018f 6900     		.ascii	"i\000"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 30
+
+
+ 995 0191 01       		.byte	0x1
+ 996 0192 1801     		.2byte	0x118
+ 997 0194 37000000 		.4byte	0x37
+ 998 0198 3B020000 		.4byte	.LLST15
+ 999 019c 00       		.byte	0
+ 1000 019d 0E       		.uleb128 0xe
+ 1001 019e 04       		.byte	0x4
+ 1002 019f 25000000 		.4byte	0x25
+ 1003 01a3 09       		.uleb128 0x9
+ 1004 01a4 01       		.byte	0x1
+ 1005 01a5 15000000 		.4byte	.LASF16
+ 1006 01a9 01       		.byte	0x1
+ 1007 01aa 5D01     		.2byte	0x15d
+ 1008 01ac 01       		.byte	0x1
+ 1009 01ad 50000000 		.4byte	0x50
+ 1010 01b1 62010000 		.4byte	.LFB3
+ 1011 01b5 CE010000 		.4byte	.LFE3
+ 1012 01b9 94020000 		.4byte	.LLST16
+ 1013 01bd 10020000 		.4byte	0x210
+ 1014 01c1 0A       		.uleb128 0xa
+ 1015 01c2 59000000 		.4byte	.LASF17
+ 1016 01c6 01       		.byte	0x1
+ 1017 01c7 5D01     		.2byte	0x15d
+ 1018 01c9 37000000 		.4byte	0x37
+ 1019 01cd B4020000 		.4byte	.LLST17
+ 1020 01d1 0A       		.uleb128 0xa
+ 1021 01d2 12010000 		.4byte	.LASF18
+ 1022 01d6 01       		.byte	0x1
+ 1023 01d7 5E01     		.2byte	0x15e
+ 1024 01d9 9D010000 		.4byte	0x19d
+ 1025 01dd C7020000 		.4byte	.LLST18
+ 1026 01e1 0B       		.uleb128 0xb
+ 1027 01e2 6C656E00 		.ascii	"len\000"
+ 1028 01e6 01       		.byte	0x1
+ 1029 01e7 5F01     		.2byte	0x15f
+ 1030 01e9 37000000 		.4byte	0x37
+ 1031 01ed E6020000 		.4byte	.LLST19
+ 1032 01f1 0C       		.uleb128 0xc
+ 1033 01f2 21000000 		.4byte	.LASF7
+ 1034 01f6 01       		.byte	0x1
+ 1035 01f7 6101     		.2byte	0x161
+ 1036 01f9 50000000 		.4byte	0x50
+ 1037 01fd F9020000 		.4byte	.LLST20
+ 1038 0201 0D       		.uleb128 0xd
+ 1039 0202 6900     		.ascii	"i\000"
+ 1040 0204 01       		.byte	0x1
+ 1041 0205 6201     		.2byte	0x162
+ 1042 0207 37000000 		.4byte	0x37
+ 1043 020b 7D030000 		.4byte	.LLST21
+ 1044 020f 00       		.byte	0
+ 1045 0210 09       		.uleb128 0x9
+ 1046 0211 01       		.byte	0x1
+ 1047 0212 39000000 		.4byte	.LASF19
+ 1048 0216 01       		.byte	0x1
+ 1049 0217 9D01     		.2byte	0x19d
+ 1050 0219 01       		.byte	0x1
+ 1051 021a 50000000 		.4byte	0x50
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 31
+
+
+ 1052 021e CE010000 		.4byte	.LFB4
+ 1053 0222 4A020000 		.4byte	.LFE4
+ 1054 0226 91030000 		.4byte	.LLST22
+ 1055 022a 8D020000 		.4byte	0x28d
+ 1056 022e 0A       		.uleb128 0xa
+ 1057 022f 49000000 		.4byte	.LASF13
+ 1058 0233 01       		.byte	0x1
+ 1059 0234 9D01     		.2byte	0x19d
+ 1060 0236 25000000 		.4byte	0x25
+ 1061 023a B1030000 		.4byte	.LLST23
+ 1062 023e 0A       		.uleb128 0xa
+ 1063 023f 89000000 		.4byte	.LASF15
+ 1064 0243 01       		.byte	0x1
+ 1065 0244 9D01     		.2byte	0x19d
+ 1066 0246 9D010000 		.4byte	0x19d
+ 1067 024a C4030000 		.4byte	.LLST24
+ 1068 024e 0B       		.uleb128 0xb
+ 1069 024f 6C656E00 		.ascii	"len\000"
+ 1070 0253 01       		.byte	0x1
+ 1071 0254 9D01     		.2byte	0x19d
+ 1072 0256 37000000 		.4byte	0x37
+ 1073 025a E2030000 		.4byte	.LLST25
+ 1074 025e 0C       		.uleb128 0xc
+ 1075 025f 21000000 		.4byte	.LASF7
+ 1076 0263 01       		.byte	0x1
+ 1077 0264 9F01     		.2byte	0x19f
+ 1078 0266 50000000 		.4byte	0x50
+ 1079 026a F5030000 		.4byte	.LLST26
+ 1080 026e 0C       		.uleb128 0xc
+ 1081 026f 42000000 		.4byte	.LASF8
+ 1082 0273 01       		.byte	0x1
+ 1083 0274 A001     		.2byte	0x1a0
+ 1084 0276 25000000 		.4byte	0x25
+ 1085 027a 4B040000 		.4byte	.LLST27
+ 1086 027e 0D       		.uleb128 0xd
+ 1087 027f 6900     		.ascii	"i\000"
+ 1088 0281 01       		.byte	0x1
+ 1089 0282 A101     		.2byte	0x1a1
+ 1090 0284 37000000 		.4byte	0x37
+ 1091 0288 81040000 		.4byte	.LLST28
+ 1092 028c 00       		.byte	0
+ 1093 028d 0F       		.uleb128 0xf
+ 1094 028e 01       		.byte	0x1
+ 1095 028f 00000000 		.4byte	.LASF25
+ 1096 0293 01       		.byte	0x1
+ 1097 0294 E701     		.2byte	0x1e7
+ 1098 0296 01       		.byte	0x1
+ 1099 0297 50000000 		.4byte	0x50
+ 1100 029b 4A020000 		.4byte	.LFB5
+ 1101 029f 26030000 		.4byte	.LFE5
+ 1102 02a3 DA040000 		.4byte	.LLST29
+ 1103 02a7 0A       		.uleb128 0xa
+ 1104 02a8 89000000 		.4byte	.LASF15
+ 1105 02ac 01       		.byte	0x1
+ 1106 02ad E701     		.2byte	0x1e7
+ 1107 02af 9D010000 		.4byte	0x19d
+ 1108 02b3 FA040000 		.4byte	.LLST30
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 32
+
+
+ 1109 02b7 0B       		.uleb128 0xb
+ 1110 02b8 6C656E00 		.ascii	"len\000"
+ 1111 02bc 01       		.byte	0x1
+ 1112 02bd E701     		.2byte	0x1e7
+ 1113 02bf 37000000 		.4byte	0x37
+ 1114 02c3 19050000 		.4byte	.LLST31
+ 1115 02c7 0A       		.uleb128 0xa
+ 1116 02c8 9C000000 		.4byte	.LASF20
+ 1117 02cc 01       		.byte	0x1
+ 1118 02cd E701     		.2byte	0x1e7
+ 1119 02cf 9D010000 		.4byte	0x19d
+ 1120 02d3 2C050000 		.4byte	.LLST32
+ 1121 02d7 0A       		.uleb128 0xa
+ 1122 02d8 EF000000 		.4byte	.LASF21
+ 1123 02dc 01       		.byte	0x1
+ 1124 02dd E701     		.2byte	0x1e7
+ 1125 02df 37000000 		.4byte	0x37
+ 1126 02e3 4A050000 		.4byte	.LLST33
+ 1127 02e7 0C       		.uleb128 0xc
+ 1128 02e8 21000000 		.4byte	.LASF7
+ 1129 02ec 01       		.byte	0x1
+ 1130 02ed E901     		.2byte	0x1e9
+ 1131 02ef 50000000 		.4byte	0x50
+ 1132 02f3 5D050000 		.4byte	.LLST34
+ 1133 02f7 0C       		.uleb128 0xc
+ 1134 02f8 42000000 		.4byte	.LASF8
+ 1135 02fc 01       		.byte	0x1
+ 1136 02fd EA01     		.2byte	0x1ea
+ 1137 02ff 25000000 		.4byte	0x25
+ 1138 0303 02060000 		.4byte	.LLST35
+ 1139 0307 0D       		.uleb128 0xd
+ 1140 0308 6900     		.ascii	"i\000"
+ 1141 030a 01       		.byte	0x1
+ 1142 030b EB01     		.2byte	0x1eb
+ 1143 030d 37000000 		.4byte	0x37
+ 1144 0311 42060000 		.4byte	.LLST36
+ 1145 0315 00       		.byte	0
+ 1146 0316 00       		.byte	0
+ 1147              		.section	.debug_abbrev,"",%progbits
+ 1148              	.Ldebug_abbrev0:
+ 1149 0000 01       		.uleb128 0x1
+ 1150 0001 11       		.uleb128 0x11
+ 1151 0002 01       		.byte	0x1
+ 1152 0003 25       		.uleb128 0x25
+ 1153 0004 0E       		.uleb128 0xe
+ 1154 0005 13       		.uleb128 0x13
+ 1155 0006 0B       		.uleb128 0xb
+ 1156 0007 03       		.uleb128 0x3
+ 1157 0008 0E       		.uleb128 0xe
+ 1158 0009 1B       		.uleb128 0x1b
+ 1159 000a 0E       		.uleb128 0xe
+ 1160 000b 11       		.uleb128 0x11
+ 1161 000c 01       		.uleb128 0x1
+ 1162 000d 12       		.uleb128 0x12
+ 1163 000e 01       		.uleb128 0x1
+ 1164 000f 10       		.uleb128 0x10
+ 1165 0010 06       		.uleb128 0x6
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 33
+
+
+ 1166 0011 00       		.byte	0
+ 1167 0012 00       		.byte	0
+ 1168 0013 02       		.uleb128 0x2
+ 1169 0014 16       		.uleb128 0x16
+ 1170 0015 00       		.byte	0
+ 1171 0016 03       		.uleb128 0x3
+ 1172 0017 08       		.uleb128 0x8
+ 1173 0018 3A       		.uleb128 0x3a
+ 1174 0019 0B       		.uleb128 0xb
+ 1175 001a 3B       		.uleb128 0x3b
+ 1176 001b 0B       		.uleb128 0xb
+ 1177 001c 49       		.uleb128 0x49
+ 1178 001d 13       		.uleb128 0x13
+ 1179 001e 00       		.byte	0
+ 1180 001f 00       		.byte	0
+ 1181 0020 03       		.uleb128 0x3
+ 1182 0021 24       		.uleb128 0x24
+ 1183 0022 00       		.byte	0
+ 1184 0023 0B       		.uleb128 0xb
+ 1185 0024 0B       		.uleb128 0xb
+ 1186 0025 3E       		.uleb128 0x3e
+ 1187 0026 0B       		.uleb128 0xb
+ 1188 0027 03       		.uleb128 0x3
+ 1189 0028 0E       		.uleb128 0xe
+ 1190 0029 00       		.byte	0
+ 1191 002a 00       		.byte	0
+ 1192 002b 04       		.uleb128 0x4
+ 1193 002c 16       		.uleb128 0x16
+ 1194 002d 00       		.byte	0
+ 1195 002e 03       		.uleb128 0x3
+ 1196 002f 0E       		.uleb128 0xe
+ 1197 0030 3A       		.uleb128 0x3a
+ 1198 0031 0B       		.uleb128 0xb
+ 1199 0032 3B       		.uleb128 0x3b
+ 1200 0033 0B       		.uleb128 0xb
+ 1201 0034 49       		.uleb128 0x49
+ 1202 0035 13       		.uleb128 0x13
+ 1203 0036 00       		.byte	0
+ 1204 0037 00       		.byte	0
+ 1205 0038 05       		.uleb128 0x5
+ 1206 0039 24       		.uleb128 0x24
+ 1207 003a 00       		.byte	0
+ 1208 003b 0B       		.uleb128 0xb
+ 1209 003c 0B       		.uleb128 0xb
+ 1210 003d 3E       		.uleb128 0x3e
+ 1211 003e 0B       		.uleb128 0xb
+ 1212 003f 03       		.uleb128 0x3
+ 1213 0040 08       		.uleb128 0x8
+ 1214 0041 00       		.byte	0
+ 1215 0042 00       		.byte	0
+ 1216 0043 06       		.uleb128 0x6
+ 1217 0044 2E       		.uleb128 0x2e
+ 1218 0045 01       		.byte	0x1
+ 1219 0046 3F       		.uleb128 0x3f
+ 1220 0047 0C       		.uleb128 0xc
+ 1221 0048 03       		.uleb128 0x3
+ 1222 0049 0E       		.uleb128 0xe
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 34
+
+
+ 1223 004a 3A       		.uleb128 0x3a
+ 1224 004b 0B       		.uleb128 0xb
+ 1225 004c 3B       		.uleb128 0x3b
+ 1226 004d 0B       		.uleb128 0xb
+ 1227 004e 27       		.uleb128 0x27
+ 1228 004f 0C       		.uleb128 0xc
+ 1229 0050 49       		.uleb128 0x49
+ 1230 0051 13       		.uleb128 0x13
+ 1231 0052 11       		.uleb128 0x11
+ 1232 0053 01       		.uleb128 0x1
+ 1233 0054 12       		.uleb128 0x12
+ 1234 0055 01       		.uleb128 0x1
+ 1235 0056 40       		.uleb128 0x40
+ 1236 0057 06       		.uleb128 0x6
+ 1237 0058 01       		.uleb128 0x1
+ 1238 0059 13       		.uleb128 0x13
+ 1239 005a 00       		.byte	0
+ 1240 005b 00       		.byte	0
+ 1241 005c 07       		.uleb128 0x7
+ 1242 005d 34       		.uleb128 0x34
+ 1243 005e 00       		.byte	0
+ 1244 005f 03       		.uleb128 0x3
+ 1245 0060 0E       		.uleb128 0xe
+ 1246 0061 3A       		.uleb128 0x3a
+ 1247 0062 0B       		.uleb128 0xb
+ 1248 0063 3B       		.uleb128 0x3b
+ 1249 0064 0B       		.uleb128 0xb
+ 1250 0065 49       		.uleb128 0x49
+ 1251 0066 13       		.uleb128 0x13
+ 1252 0067 02       		.uleb128 0x2
+ 1253 0068 06       		.uleb128 0x6
+ 1254 0069 00       		.byte	0
+ 1255 006a 00       		.byte	0
+ 1256 006b 08       		.uleb128 0x8
+ 1257 006c 05       		.uleb128 0x5
+ 1258 006d 00       		.byte	0
+ 1259 006e 03       		.uleb128 0x3
+ 1260 006f 0E       		.uleb128 0xe
+ 1261 0070 3A       		.uleb128 0x3a
+ 1262 0071 0B       		.uleb128 0xb
+ 1263 0072 3B       		.uleb128 0x3b
+ 1264 0073 0B       		.uleb128 0xb
+ 1265 0074 49       		.uleb128 0x49
+ 1266 0075 13       		.uleb128 0x13
+ 1267 0076 02       		.uleb128 0x2
+ 1268 0077 06       		.uleb128 0x6
+ 1269 0078 00       		.byte	0
+ 1270 0079 00       		.byte	0
+ 1271 007a 09       		.uleb128 0x9
+ 1272 007b 2E       		.uleb128 0x2e
+ 1273 007c 01       		.byte	0x1
+ 1274 007d 3F       		.uleb128 0x3f
+ 1275 007e 0C       		.uleb128 0xc
+ 1276 007f 03       		.uleb128 0x3
+ 1277 0080 0E       		.uleb128 0xe
+ 1278 0081 3A       		.uleb128 0x3a
+ 1279 0082 0B       		.uleb128 0xb
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 35
+
+
+ 1280 0083 3B       		.uleb128 0x3b
+ 1281 0084 05       		.uleb128 0x5
+ 1282 0085 27       		.uleb128 0x27
+ 1283 0086 0C       		.uleb128 0xc
+ 1284 0087 49       		.uleb128 0x49
+ 1285 0088 13       		.uleb128 0x13
+ 1286 0089 11       		.uleb128 0x11
+ 1287 008a 01       		.uleb128 0x1
+ 1288 008b 12       		.uleb128 0x12
+ 1289 008c 01       		.uleb128 0x1
+ 1290 008d 40       		.uleb128 0x40
+ 1291 008e 06       		.uleb128 0x6
+ 1292 008f 01       		.uleb128 0x1
+ 1293 0090 13       		.uleb128 0x13
+ 1294 0091 00       		.byte	0
+ 1295 0092 00       		.byte	0
+ 1296 0093 0A       		.uleb128 0xa
+ 1297 0094 05       		.uleb128 0x5
+ 1298 0095 00       		.byte	0
+ 1299 0096 03       		.uleb128 0x3
+ 1300 0097 0E       		.uleb128 0xe
+ 1301 0098 3A       		.uleb128 0x3a
+ 1302 0099 0B       		.uleb128 0xb
+ 1303 009a 3B       		.uleb128 0x3b
+ 1304 009b 05       		.uleb128 0x5
+ 1305 009c 49       		.uleb128 0x49
+ 1306 009d 13       		.uleb128 0x13
+ 1307 009e 02       		.uleb128 0x2
+ 1308 009f 06       		.uleb128 0x6
+ 1309 00a0 00       		.byte	0
+ 1310 00a1 00       		.byte	0
+ 1311 00a2 0B       		.uleb128 0xb
+ 1312 00a3 05       		.uleb128 0x5
+ 1313 00a4 00       		.byte	0
+ 1314 00a5 03       		.uleb128 0x3
+ 1315 00a6 08       		.uleb128 0x8
+ 1316 00a7 3A       		.uleb128 0x3a
+ 1317 00a8 0B       		.uleb128 0xb
+ 1318 00a9 3B       		.uleb128 0x3b
+ 1319 00aa 05       		.uleb128 0x5
+ 1320 00ab 49       		.uleb128 0x49
+ 1321 00ac 13       		.uleb128 0x13
+ 1322 00ad 02       		.uleb128 0x2
+ 1323 00ae 06       		.uleb128 0x6
+ 1324 00af 00       		.byte	0
+ 1325 00b0 00       		.byte	0
+ 1326 00b1 0C       		.uleb128 0xc
+ 1327 00b2 34       		.uleb128 0x34
+ 1328 00b3 00       		.byte	0
+ 1329 00b4 03       		.uleb128 0x3
+ 1330 00b5 0E       		.uleb128 0xe
+ 1331 00b6 3A       		.uleb128 0x3a
+ 1332 00b7 0B       		.uleb128 0xb
+ 1333 00b8 3B       		.uleb128 0x3b
+ 1334 00b9 05       		.uleb128 0x5
+ 1335 00ba 49       		.uleb128 0x49
+ 1336 00bb 13       		.uleb128 0x13
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 36
+
+
+ 1337 00bc 02       		.uleb128 0x2
+ 1338 00bd 06       		.uleb128 0x6
+ 1339 00be 00       		.byte	0
+ 1340 00bf 00       		.byte	0
+ 1341 00c0 0D       		.uleb128 0xd
+ 1342 00c1 34       		.uleb128 0x34
+ 1343 00c2 00       		.byte	0
+ 1344 00c3 03       		.uleb128 0x3
+ 1345 00c4 08       		.uleb128 0x8
+ 1346 00c5 3A       		.uleb128 0x3a
+ 1347 00c6 0B       		.uleb128 0xb
+ 1348 00c7 3B       		.uleb128 0x3b
+ 1349 00c8 05       		.uleb128 0x5
+ 1350 00c9 49       		.uleb128 0x49
+ 1351 00ca 13       		.uleb128 0x13
+ 1352 00cb 02       		.uleb128 0x2
+ 1353 00cc 06       		.uleb128 0x6
+ 1354 00cd 00       		.byte	0
+ 1355 00ce 00       		.byte	0
+ 1356 00cf 0E       		.uleb128 0xe
+ 1357 00d0 0F       		.uleb128 0xf
+ 1358 00d1 00       		.byte	0
+ 1359 00d2 0B       		.uleb128 0xb
+ 1360 00d3 0B       		.uleb128 0xb
+ 1361 00d4 49       		.uleb128 0x49
+ 1362 00d5 13       		.uleb128 0x13
+ 1363 00d6 00       		.byte	0
+ 1364 00d7 00       		.byte	0
+ 1365 00d8 0F       		.uleb128 0xf
+ 1366 00d9 2E       		.uleb128 0x2e
+ 1367 00da 01       		.byte	0x1
+ 1368 00db 3F       		.uleb128 0x3f
+ 1369 00dc 0C       		.uleb128 0xc
+ 1370 00dd 03       		.uleb128 0x3
+ 1371 00de 0E       		.uleb128 0xe
+ 1372 00df 3A       		.uleb128 0x3a
+ 1373 00e0 0B       		.uleb128 0xb
+ 1374 00e1 3B       		.uleb128 0x3b
+ 1375 00e2 05       		.uleb128 0x5
+ 1376 00e3 27       		.uleb128 0x27
+ 1377 00e4 0C       		.uleb128 0xc
+ 1378 00e5 49       		.uleb128 0x49
+ 1379 00e6 13       		.uleb128 0x13
+ 1380 00e7 11       		.uleb128 0x11
+ 1381 00e8 01       		.uleb128 0x1
+ 1382 00e9 12       		.uleb128 0x12
+ 1383 00ea 01       		.uleb128 0x1
+ 1384 00eb 40       		.uleb128 0x40
+ 1385 00ec 06       		.uleb128 0x6
+ 1386 00ed 00       		.byte	0
+ 1387 00ee 00       		.byte	0
+ 1388 00ef 00       		.byte	0
+ 1389              		.section	.debug_loc,"",%progbits
+ 1390              	.Ldebug_loc0:
+ 1391              	.LLST0:
+ 1392 0000 00000000 		.4byte	.LFB0-.Ltext0
+ 1393 0004 02000000 		.4byte	.LCFI0-.Ltext0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 37
+
+
+ 1394 0008 0200     		.2byte	0x2
+ 1395 000a 7D       		.byte	0x7d
+ 1396 000b 00       		.sleb128 0
+ 1397 000c 02000000 		.4byte	.LCFI0-.Ltext0
+ 1398 0010 56000000 		.4byte	.LFE0-.Ltext0
+ 1399 0014 0200     		.2byte	0x2
+ 1400 0016 7D       		.byte	0x7d
+ 1401 0017 10       		.sleb128 16
+ 1402 0018 00000000 		.4byte	0
+ 1403 001c 00000000 		.4byte	0
+ 1404              	.LLST1:
+ 1405 0020 0E000000 		.4byte	.LVL0-.Ltext0
+ 1406 0024 12000000 		.4byte	.LVL1-.Ltext0
+ 1407 0028 0100     		.2byte	0x1
+ 1408 002a 50       		.byte	0x50
+ 1409 002b 18000000 		.4byte	.LVL2-.Ltext0
+ 1410 002f 2B000000 		.4byte	.LVL3-1-.Ltext0
+ 1411 0033 0100     		.2byte	0x1
+ 1412 0035 50       		.byte	0x50
+ 1413 0036 2B000000 		.4byte	.LVL3-1-.Ltext0
+ 1414 003a 4E000000 		.4byte	.LVL5-.Ltext0
+ 1415 003e 0100     		.2byte	0x1
+ 1416 0040 56       		.byte	0x56
+ 1417 0041 00000000 		.4byte	0
+ 1418 0045 00000000 		.4byte	0
+ 1419              	.LLST2:
+ 1420 0049 2C000000 		.4byte	.LVL3-.Ltext0
+ 1421 004d 40000000 		.4byte	.LVL4-.Ltext0
+ 1422 0051 0100     		.2byte	0x1
+ 1423 0053 50       		.byte	0x50
+ 1424 0054 00000000 		.4byte	0
+ 1425 0058 00000000 		.4byte	0
+ 1426              	.LLST3:
+ 1427 005c 40000000 		.4byte	.LVL4-.Ltext0
+ 1428 0060 50000000 		.4byte	.LVL6-.Ltext0
+ 1429 0064 0100     		.2byte	0x1
+ 1430 0066 54       		.byte	0x54
+ 1431 0067 00000000 		.4byte	0
+ 1432 006b 00000000 		.4byte	0
+ 1433              	.LLST4:
+ 1434 006f 56000000 		.4byte	.LFB1-.Ltext0
+ 1435 0073 58000000 		.4byte	.LCFI1-.Ltext0
+ 1436 0077 0200     		.2byte	0x2
+ 1437 0079 7D       		.byte	0x7d
+ 1438 007a 00       		.sleb128 0
+ 1439 007b 58000000 		.4byte	.LCFI1-.Ltext0
+ 1440 007f E6000000 		.4byte	.LFE1-.Ltext0
+ 1441 0083 0200     		.2byte	0x2
+ 1442 0085 7D       		.byte	0x7d
+ 1443 0086 10       		.sleb128 16
+ 1444 0087 00000000 		.4byte	0
+ 1445 008b 00000000 		.4byte	0
+ 1446              	.LLST5:
+ 1447 008f 58000000 		.4byte	.LVL7-.Ltext0
+ 1448 0093 63000000 		.4byte	.LVL8-1-.Ltext0
+ 1449 0097 0100     		.2byte	0x1
+ 1450 0099 50       		.byte	0x50
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 38
+
+
+ 1451 009a 00000000 		.4byte	0
+ 1452 009e 00000000 		.4byte	0
+ 1453              	.LLST6:
+ 1454 00a2 58000000 		.4byte	.LVL7-.Ltext0
+ 1455 00a6 63000000 		.4byte	.LVL8-1-.Ltext0
+ 1456 00aa 0100     		.2byte	0x1
+ 1457 00ac 51       		.byte	0x51
+ 1458 00ad 00000000 		.4byte	0
+ 1459 00b1 00000000 		.4byte	0
+ 1460              	.LLST7:
+ 1461 00b5 58000000 		.4byte	.LVL7-.Ltext0
+ 1462 00b9 64000000 		.4byte	.LVL8-.Ltext0
+ 1463 00bd 0200     		.2byte	0x2
+ 1464 00bf 30       		.byte	0x30
+ 1465 00c0 9F       		.byte	0x9f
+ 1466 00c1 64000000 		.4byte	.LVL8-.Ltext0
+ 1467 00c5 70000000 		.4byte	.LVL9-.Ltext0
+ 1468 00c9 0100     		.2byte	0x1
+ 1469 00cb 50       		.byte	0x50
+ 1470 00cc 76000000 		.4byte	.LVL10-.Ltext0
+ 1471 00d0 78000000 		.4byte	.LVL11-.Ltext0
+ 1472 00d4 0100     		.2byte	0x1
+ 1473 00d6 50       		.byte	0x50
+ 1474 00d7 98000000 		.4byte	.LVL15-.Ltext0
+ 1475 00db 9A000000 		.4byte	.LVL16-.Ltext0
+ 1476 00df 0100     		.2byte	0x1
+ 1477 00e1 50       		.byte	0x50
+ 1478 00e2 B4000000 		.4byte	.LVL21-.Ltext0
+ 1479 00e6 BE000000 		.4byte	.LVL22-.Ltext0
+ 1480 00ea 0100     		.2byte	0x1
+ 1481 00ec 50       		.byte	0x50
+ 1482 00ed CA000000 		.4byte	.LVL23-.Ltext0
+ 1483 00f1 CE000000 		.4byte	.LVL24-.Ltext0
+ 1484 00f5 0100     		.2byte	0x1
+ 1485 00f7 50       		.byte	0x50
+ 1486 00f8 CE000000 		.4byte	.LVL24-.Ltext0
+ 1487 00fc DE000000 		.4byte	.LVL27-.Ltext0
+ 1488 0100 0100     		.2byte	0x1
+ 1489 0102 54       		.byte	0x54
+ 1490 0103 00000000 		.4byte	0
+ 1491 0107 00000000 		.4byte	0
+ 1492              	.LLST8:
+ 1493 010b 58000000 		.4byte	.LVL7-.Ltext0
+ 1494 010f 82000000 		.4byte	.LVL12-.Ltext0
+ 1495 0113 0200     		.2byte	0x2
+ 1496 0115 30       		.byte	0x30
+ 1497 0116 9F       		.byte	0x9f
+ 1498 0117 86000000 		.4byte	.LVL13-.Ltext0
+ 1499 011b 92000000 		.4byte	.LVL14-.Ltext0
+ 1500 011f 0100     		.2byte	0x1
+ 1501 0121 50       		.byte	0x50
+ 1502 0122 A2000000 		.4byte	.LVL17-.Ltext0
+ 1503 0126 A6000000 		.4byte	.LVL18-.Ltext0
+ 1504 012a 0100     		.2byte	0x1
+ 1505 012c 50       		.byte	0x50
+ 1506 012d AA000000 		.4byte	.LVL19-.Ltext0
+ 1507 0131 B1000000 		.4byte	.LVL20-1-.Ltext0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 39
+
+
+ 1508 0135 0100     		.2byte	0x1
+ 1509 0137 50       		.byte	0x50
+ 1510 0138 D2000000 		.4byte	.LVL25-.Ltext0
+ 1511 013c E0000000 		.4byte	.LVL28-.Ltext0
+ 1512 0140 0100     		.2byte	0x1
+ 1513 0142 50       		.byte	0x50
+ 1514 0143 00000000 		.4byte	0
+ 1515 0147 00000000 		.4byte	0
+ 1516              	.LLST9:
+ 1517 014b E6000000 		.4byte	.LFB2-.Ltext0
+ 1518 014f E8000000 		.4byte	.LCFI2-.Ltext0
+ 1519 0153 0200     		.2byte	0x2
+ 1520 0155 7D       		.byte	0x7d
+ 1521 0156 00       		.sleb128 0
+ 1522 0157 E8000000 		.4byte	.LCFI2-.Ltext0
+ 1523 015b 62010000 		.4byte	.LFE2-.Ltext0
+ 1524 015f 0200     		.2byte	0x2
+ 1525 0161 7D       		.byte	0x7d
+ 1526 0162 14       		.sleb128 20
+ 1527 0163 00000000 		.4byte	0
+ 1528 0167 00000000 		.4byte	0
+ 1529              	.LLST10:
+ 1530 016b E8000000 		.4byte	.LVL29-.Ltext0
+ 1531 016f F3000000 		.4byte	.LVL30-1-.Ltext0
+ 1532 0173 0100     		.2byte	0x1
+ 1533 0175 50       		.byte	0x50
+ 1534 0176 00000000 		.4byte	0
+ 1535 017a 00000000 		.4byte	0
+ 1536              	.LLST11:
+ 1537 017e E8000000 		.4byte	.LVL29-.Ltext0
+ 1538 0182 F3000000 		.4byte	.LVL30-1-.Ltext0
+ 1539 0186 0100     		.2byte	0x1
+ 1540 0188 51       		.byte	0x51
+ 1541 0189 F3000000 		.4byte	.LVL30-1-.Ltext0
+ 1542 018d 5C010000 		.4byte	.LVL48-.Ltext0
+ 1543 0191 0100     		.2byte	0x1
+ 1544 0193 56       		.byte	0x56
+ 1545 0194 00000000 		.4byte	0
+ 1546 0198 00000000 		.4byte	0
+ 1547              	.LLST12:
+ 1548 019c E8000000 		.4byte	.LVL29-.Ltext0
+ 1549 01a0 F3000000 		.4byte	.LVL30-1-.Ltext0
+ 1550 01a4 0100     		.2byte	0x1
+ 1551 01a6 52       		.byte	0x52
+ 1552 01a7 00000000 		.4byte	0
+ 1553 01ab 00000000 		.4byte	0
+ 1554              	.LLST13:
+ 1555 01af E8000000 		.4byte	.LVL29-.Ltext0
+ 1556 01b3 00010000 		.4byte	.LVL31-.Ltext0
+ 1557 01b7 0200     		.2byte	0x2
+ 1558 01b9 30       		.byte	0x30
+ 1559 01ba 9F       		.byte	0x9f
+ 1560 01bb 00010000 		.4byte	.LVL31-.Ltext0
+ 1561 01bf 06010000 		.4byte	.LVL32-.Ltext0
+ 1562 01c3 0100     		.2byte	0x1
+ 1563 01c5 50       		.byte	0x50
+ 1564 01c6 06010000 		.4byte	.LVL32-.Ltext0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 40
+
+
+ 1565 01ca 24010000 		.4byte	.LVL35-.Ltext0
+ 1566 01ce 0100     		.2byte	0x1
+ 1567 01d0 54       		.byte	0x54
+ 1568 01d1 32010000 		.4byte	.LVL36-.Ltext0
+ 1569 01d5 3A010000 		.4byte	.LVL38-.Ltext0
+ 1570 01d9 0100     		.2byte	0x1
+ 1571 01db 50       		.byte	0x50
+ 1572 01dc 3A010000 		.4byte	.LVL38-.Ltext0
+ 1573 01e0 4A010000 		.4byte	.LVL44-.Ltext0
+ 1574 01e4 0100     		.2byte	0x1
+ 1575 01e6 54       		.byte	0x54
+ 1576 01e7 4A010000 		.4byte	.LVL44-.Ltext0
+ 1577 01eb 4C010000 		.4byte	.LVL45-.Ltext0
+ 1578 01ef 0100     		.2byte	0x1
+ 1579 01f1 50       		.byte	0x50
+ 1580 01f2 4C010000 		.4byte	.LVL45-.Ltext0
+ 1581 01f6 52010000 		.4byte	.LVL47-.Ltext0
+ 1582 01fa 0100     		.2byte	0x1
+ 1583 01fc 54       		.byte	0x54
+ 1584 01fd 00000000 		.4byte	0
+ 1585 0201 00000000 		.4byte	0
+ 1586              	.LLST14:
+ 1587 0205 E8000000 		.4byte	.LVL29-.Ltext0
+ 1588 0209 06010000 		.4byte	.LVL32-.Ltext0
+ 1589 020d 0200     		.2byte	0x2
+ 1590 020f 30       		.byte	0x30
+ 1591 0210 9F       		.byte	0x9f
+ 1592 0211 0A010000 		.4byte	.LVL33-.Ltext0
+ 1593 0215 18010000 		.4byte	.LVL34-.Ltext0
+ 1594 0219 0100     		.2byte	0x1
+ 1595 021b 50       		.byte	0x50
+ 1596 021c 3A010000 		.4byte	.LVL38-.Ltext0
+ 1597 0220 42010000 		.4byte	.LVL40-.Ltext0
+ 1598 0224 0100     		.2byte	0x1
+ 1599 0226 50       		.byte	0x50
+ 1600 0227 4A010000 		.4byte	.LVL44-.Ltext0
+ 1601 022b 4C010000 		.4byte	.LVL45-.Ltext0
+ 1602 022f 0200     		.2byte	0x2
+ 1603 0231 30       		.byte	0x30
+ 1604 0232 9F       		.byte	0x9f
+ 1605 0233 00000000 		.4byte	0
+ 1606 0237 00000000 		.4byte	0
+ 1607              	.LLST15:
+ 1608 023b E8000000 		.4byte	.LVL29-.Ltext0
+ 1609 023f 06010000 		.4byte	.LVL32-.Ltext0
+ 1610 0243 0200     		.2byte	0x2
+ 1611 0245 30       		.byte	0x30
+ 1612 0246 9F       		.byte	0x9f
+ 1613 0247 06010000 		.4byte	.LVL32-.Ltext0
+ 1614 024b 40010000 		.4byte	.LVL39-.Ltext0
+ 1615 024f 0100     		.2byte	0x1
+ 1616 0251 55       		.byte	0x55
+ 1617 0252 42010000 		.4byte	.LVL40-.Ltext0
+ 1618 0256 44010000 		.4byte	.LVL41-.Ltext0
+ 1619 025a 0100     		.2byte	0x1
+ 1620 025c 55       		.byte	0x55
+ 1621 025d 44010000 		.4byte	.LVL41-.Ltext0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 41
+
+
+ 1622 0261 46010000 		.4byte	.LVL42-.Ltext0
+ 1623 0265 0300     		.2byte	0x3
+ 1624 0267 75       		.byte	0x75
+ 1625 0268 7F       		.sleb128 -1
+ 1626 0269 9F       		.byte	0x9f
+ 1627 026a 48010000 		.4byte	.LVL43-.Ltext0
+ 1628 026e 4A010000 		.4byte	.LVL44-.Ltext0
+ 1629 0272 0100     		.2byte	0x1
+ 1630 0274 55       		.byte	0x55
+ 1631 0275 4A010000 		.4byte	.LVL44-.Ltext0
+ 1632 0279 4C010000 		.4byte	.LVL45-.Ltext0
+ 1633 027d 0200     		.2byte	0x2
+ 1634 027f 30       		.byte	0x30
+ 1635 0280 9F       		.byte	0x9f
+ 1636 0281 4C010000 		.4byte	.LVL45-.Ltext0
+ 1637 0285 50010000 		.4byte	.LVL46-.Ltext0
+ 1638 0289 0100     		.2byte	0x1
+ 1639 028b 55       		.byte	0x55
+ 1640 028c 00000000 		.4byte	0
+ 1641 0290 00000000 		.4byte	0
+ 1642              	.LLST16:
+ 1643 0294 62010000 		.4byte	.LFB3-.Ltext0
+ 1644 0298 64010000 		.4byte	.LCFI3-.Ltext0
+ 1645 029c 0200     		.2byte	0x2
+ 1646 029e 7D       		.byte	0x7d
+ 1647 029f 00       		.sleb128 0
+ 1648 02a0 64010000 		.4byte	.LCFI3-.Ltext0
+ 1649 02a4 CE010000 		.4byte	.LFE3-.Ltext0
+ 1650 02a8 0200     		.2byte	0x2
+ 1651 02aa 7D       		.byte	0x7d
+ 1652 02ab 18       		.sleb128 24
+ 1653 02ac 00000000 		.4byte	0
+ 1654 02b0 00000000 		.4byte	0
+ 1655              	.LLST17:
+ 1656 02b4 64010000 		.4byte	.LVL49-.Ltext0
+ 1657 02b8 6D010000 		.4byte	.LVL50-1-.Ltext0
+ 1658 02bc 0100     		.2byte	0x1
+ 1659 02be 50       		.byte	0x50
+ 1660 02bf 00000000 		.4byte	0
+ 1661 02c3 00000000 		.4byte	0
+ 1662              	.LLST18:
+ 1663 02c7 64010000 		.4byte	.LVL49-.Ltext0
+ 1664 02cb 6D010000 		.4byte	.LVL50-1-.Ltext0
+ 1665 02cf 0100     		.2byte	0x1
+ 1666 02d1 51       		.byte	0x51
+ 1667 02d2 6D010000 		.4byte	.LVL50-1-.Ltext0
+ 1668 02d6 A2010000 		.4byte	.LVL56-.Ltext0
+ 1669 02da 0200     		.2byte	0x2
+ 1670 02dc 91       		.byte	0x91
+ 1671 02dd 00       		.sleb128 0
+ 1672 02de 00000000 		.4byte	0
+ 1673 02e2 00000000 		.4byte	0
+ 1674              	.LLST19:
+ 1675 02e6 64010000 		.4byte	.LVL49-.Ltext0
+ 1676 02ea 6D010000 		.4byte	.LVL50-1-.Ltext0
+ 1677 02ee 0100     		.2byte	0x1
+ 1678 02f0 52       		.byte	0x52
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 42
+
+
+ 1679 02f1 00000000 		.4byte	0
+ 1680 02f5 00000000 		.4byte	0
+ 1681              	.LLST20:
+ 1682 02f9 64010000 		.4byte	.LVL49-.Ltext0
+ 1683 02fd 78010000 		.4byte	.LVL51-.Ltext0
+ 1684 0301 0200     		.2byte	0x2
+ 1685 0303 30       		.byte	0x30
+ 1686 0304 9F       		.byte	0x9f
+ 1687 0305 78010000 		.4byte	.LVL51-.Ltext0
+ 1688 0309 80010000 		.4byte	.LVL52-.Ltext0
+ 1689 030d 0100     		.2byte	0x1
+ 1690 030f 50       		.byte	0x50
+ 1691 0310 80010000 		.4byte	.LVL52-.Ltext0
+ 1692 0314 8C010000 		.4byte	.LVL53-.Ltext0
+ 1693 0318 0100     		.2byte	0x1
+ 1694 031a 54       		.byte	0x54
+ 1695 031b 8C010000 		.4byte	.LVL53-.Ltext0
+ 1696 031f 92010000 		.4byte	.LVL54-.Ltext0
+ 1697 0323 0100     		.2byte	0x1
+ 1698 0325 50       		.byte	0x50
+ 1699 0326 92010000 		.4byte	.LVL54-.Ltext0
+ 1700 032a 9C010000 		.4byte	.LVL55-.Ltext0
+ 1701 032e 0100     		.2byte	0x1
+ 1702 0330 54       		.byte	0x54
+ 1703 0331 9C010000 		.4byte	.LVL55-.Ltext0
+ 1704 0335 A2010000 		.4byte	.LVL56-.Ltext0
+ 1705 0339 0100     		.2byte	0x1
+ 1706 033b 50       		.byte	0x50
+ 1707 033c A2010000 		.4byte	.LVL56-.Ltext0
+ 1708 0340 AA010000 		.4byte	.LVL57-.Ltext0
+ 1709 0344 0200     		.2byte	0x2
+ 1710 0346 31       		.byte	0x31
+ 1711 0347 9F       		.byte	0x9f
+ 1712 0348 AA010000 		.4byte	.LVL57-.Ltext0
+ 1713 034c B0010000 		.4byte	.LVL58-.Ltext0
+ 1714 0350 0100     		.2byte	0x1
+ 1715 0352 50       		.byte	0x50
+ 1716 0353 B0010000 		.4byte	.LVL58-.Ltext0
+ 1717 0357 BA010000 		.4byte	.LVL59-.Ltext0
+ 1718 035b 0200     		.2byte	0x2
+ 1719 035d 31       		.byte	0x31
+ 1720 035e 9F       		.byte	0x9f
+ 1721 035f BA010000 		.4byte	.LVL59-.Ltext0
+ 1722 0363 BC010000 		.4byte	.LVL60-.Ltext0
+ 1723 0367 0100     		.2byte	0x1
+ 1724 0369 50       		.byte	0x50
+ 1725 036a BC010000 		.4byte	.LVL60-.Ltext0
+ 1726 036e BE010000 		.4byte	.LVL61-.Ltext0
+ 1727 0372 0100     		.2byte	0x1
+ 1728 0374 54       		.byte	0x54
+ 1729 0375 00000000 		.4byte	0
+ 1730 0379 00000000 		.4byte	0
+ 1731              	.LLST21:
+ 1732 037d 64010000 		.4byte	.LVL49-.Ltext0
+ 1733 0381 A2010000 		.4byte	.LVL56-.Ltext0
+ 1734 0385 0200     		.2byte	0x2
+ 1735 0387 30       		.byte	0x30
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 43
+
+
+ 1736 0388 9F       		.byte	0x9f
+ 1737 0389 00000000 		.4byte	0
+ 1738 038d 00000000 		.4byte	0
+ 1739              	.LLST22:
+ 1740 0391 CE010000 		.4byte	.LFB4-.Ltext0
+ 1741 0395 D0010000 		.4byte	.LCFI4-.Ltext0
+ 1742 0399 0200     		.2byte	0x2
+ 1743 039b 7D       		.byte	0x7d
+ 1744 039c 00       		.sleb128 0
+ 1745 039d D0010000 		.4byte	.LCFI4-.Ltext0
+ 1746 03a1 4A020000 		.4byte	.LFE4-.Ltext0
+ 1747 03a5 0200     		.2byte	0x2
+ 1748 03a7 7D       		.byte	0x7d
+ 1749 03a8 14       		.sleb128 20
+ 1750 03a9 00000000 		.4byte	0
+ 1751 03ad 00000000 		.4byte	0
+ 1752              	.LLST23:
+ 1753 03b1 D0010000 		.4byte	.LVL62-.Ltext0
+ 1754 03b5 DB010000 		.4byte	.LVL63-1-.Ltext0
+ 1755 03b9 0100     		.2byte	0x1
+ 1756 03bb 50       		.byte	0x50
+ 1757 03bc 00000000 		.4byte	0
+ 1758 03c0 00000000 		.4byte	0
+ 1759              	.LLST24:
+ 1760 03c4 D0010000 		.4byte	.LVL62-.Ltext0
+ 1761 03c8 DB010000 		.4byte	.LVL63-1-.Ltext0
+ 1762 03cc 0100     		.2byte	0x1
+ 1763 03ce 51       		.byte	0x51
+ 1764 03cf DB010000 		.4byte	.LVL63-1-.Ltext0
+ 1765 03d3 44020000 		.4byte	.LVL81-.Ltext0
+ 1766 03d7 0100     		.2byte	0x1
+ 1767 03d9 56       		.byte	0x56
+ 1768 03da 00000000 		.4byte	0
+ 1769 03de 00000000 		.4byte	0
+ 1770              	.LLST25:
+ 1771 03e2 D0010000 		.4byte	.LVL62-.Ltext0
+ 1772 03e6 DB010000 		.4byte	.LVL63-1-.Ltext0
+ 1773 03ea 0100     		.2byte	0x1
+ 1774 03ec 52       		.byte	0x52
+ 1775 03ed 00000000 		.4byte	0
+ 1776 03f1 00000000 		.4byte	0
+ 1777              	.LLST26:
+ 1778 03f5 D0010000 		.4byte	.LVL62-.Ltext0
+ 1779 03f9 E8010000 		.4byte	.LVL64-.Ltext0
+ 1780 03fd 0200     		.2byte	0x2
+ 1781 03ff 30       		.byte	0x30
+ 1782 0400 9F       		.byte	0x9f
+ 1783 0401 E8010000 		.4byte	.LVL64-.Ltext0
+ 1784 0405 EE010000 		.4byte	.LVL65-.Ltext0
+ 1785 0409 0100     		.2byte	0x1
+ 1786 040b 50       		.byte	0x50
+ 1787 040c EE010000 		.4byte	.LVL65-.Ltext0
+ 1788 0410 0C020000 		.4byte	.LVL68-.Ltext0
+ 1789 0414 0100     		.2byte	0x1
+ 1790 0416 54       		.byte	0x54
+ 1791 0417 1A020000 		.4byte	.LVL69-.Ltext0
+ 1792 041b 22020000 		.4byte	.LVL71-.Ltext0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 44
+
+
+ 1793 041f 0100     		.2byte	0x1
+ 1794 0421 50       		.byte	0x50
+ 1795 0422 22020000 		.4byte	.LVL71-.Ltext0
+ 1796 0426 32020000 		.4byte	.LVL77-.Ltext0
+ 1797 042a 0100     		.2byte	0x1
+ 1798 042c 54       		.byte	0x54
+ 1799 042d 32020000 		.4byte	.LVL77-.Ltext0
+ 1800 0431 34020000 		.4byte	.LVL78-.Ltext0
+ 1801 0435 0100     		.2byte	0x1
+ 1802 0437 50       		.byte	0x50
+ 1803 0438 34020000 		.4byte	.LVL78-.Ltext0
+ 1804 043c 3A020000 		.4byte	.LVL80-.Ltext0
+ 1805 0440 0100     		.2byte	0x1
+ 1806 0442 54       		.byte	0x54
+ 1807 0443 00000000 		.4byte	0
+ 1808 0447 00000000 		.4byte	0
+ 1809              	.LLST27:
+ 1810 044b D0010000 		.4byte	.LVL62-.Ltext0
+ 1811 044f EE010000 		.4byte	.LVL65-.Ltext0
+ 1812 0453 0200     		.2byte	0x2
+ 1813 0455 30       		.byte	0x30
+ 1814 0456 9F       		.byte	0x9f
+ 1815 0457 F2010000 		.4byte	.LVL66-.Ltext0
+ 1816 045b 00020000 		.4byte	.LVL67-.Ltext0
+ 1817 045f 0100     		.2byte	0x1
+ 1818 0461 50       		.byte	0x50
+ 1819 0462 22020000 		.4byte	.LVL71-.Ltext0
+ 1820 0466 2A020000 		.4byte	.LVL73-.Ltext0
+ 1821 046a 0100     		.2byte	0x1
+ 1822 046c 50       		.byte	0x50
+ 1823 046d 32020000 		.4byte	.LVL77-.Ltext0
+ 1824 0471 34020000 		.4byte	.LVL78-.Ltext0
+ 1825 0475 0200     		.2byte	0x2
+ 1826 0477 30       		.byte	0x30
+ 1827 0478 9F       		.byte	0x9f
+ 1828 0479 00000000 		.4byte	0
+ 1829 047d 00000000 		.4byte	0
+ 1830              	.LLST28:
+ 1831 0481 D0010000 		.4byte	.LVL62-.Ltext0
+ 1832 0485 EE010000 		.4byte	.LVL65-.Ltext0
+ 1833 0489 0200     		.2byte	0x2
+ 1834 048b 30       		.byte	0x30
+ 1835 048c 9F       		.byte	0x9f
+ 1836 048d EE010000 		.4byte	.LVL65-.Ltext0
+ 1837 0491 28020000 		.4byte	.LVL72-.Ltext0
+ 1838 0495 0100     		.2byte	0x1
+ 1839 0497 55       		.byte	0x55
+ 1840 0498 2A020000 		.4byte	.LVL73-.Ltext0
+ 1841 049c 2C020000 		.4byte	.LVL74-.Ltext0
+ 1842 04a0 0100     		.2byte	0x1
+ 1843 04a2 55       		.byte	0x55
+ 1844 04a3 2C020000 		.4byte	.LVL74-.Ltext0
+ 1845 04a7 2E020000 		.4byte	.LVL75-.Ltext0
+ 1846 04ab 0300     		.2byte	0x3
+ 1847 04ad 75       		.byte	0x75
+ 1848 04ae 7F       		.sleb128 -1
+ 1849 04af 9F       		.byte	0x9f
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 45
+
+
+ 1850 04b0 30020000 		.4byte	.LVL76-.Ltext0
+ 1851 04b4 32020000 		.4byte	.LVL77-.Ltext0
+ 1852 04b8 0100     		.2byte	0x1
+ 1853 04ba 55       		.byte	0x55
+ 1854 04bb 32020000 		.4byte	.LVL77-.Ltext0
+ 1855 04bf 34020000 		.4byte	.LVL78-.Ltext0
+ 1856 04c3 0200     		.2byte	0x2
+ 1857 04c5 30       		.byte	0x30
+ 1858 04c6 9F       		.byte	0x9f
+ 1859 04c7 34020000 		.4byte	.LVL78-.Ltext0
+ 1860 04cb 38020000 		.4byte	.LVL79-.Ltext0
+ 1861 04cf 0100     		.2byte	0x1
+ 1862 04d1 55       		.byte	0x55
+ 1863 04d2 00000000 		.4byte	0
+ 1864 04d6 00000000 		.4byte	0
+ 1865              	.LLST29:
+ 1866 04da 4A020000 		.4byte	.LFB5-.Ltext0
+ 1867 04de 4C020000 		.4byte	.LCFI5-.Ltext0
+ 1868 04e2 0200     		.2byte	0x2
+ 1869 04e4 7D       		.byte	0x7d
+ 1870 04e5 00       		.sleb128 0
+ 1871 04e6 4C020000 		.4byte	.LCFI5-.Ltext0
+ 1872 04ea 26030000 		.4byte	.LFE5-.Ltext0
+ 1873 04ee 0200     		.2byte	0x2
+ 1874 04f0 7D       		.byte	0x7d
+ 1875 04f1 1C       		.sleb128 28
+ 1876 04f2 00000000 		.4byte	0
+ 1877 04f6 00000000 		.4byte	0
+ 1878              	.LLST30:
+ 1879 04fa 4C020000 		.4byte	.LVL82-.Ltext0
+ 1880 04fe 5B020000 		.4byte	.LVL85-1-.Ltext0
+ 1881 0502 0100     		.2byte	0x1
+ 1882 0504 50       		.byte	0x50
+ 1883 0505 5B020000 		.4byte	.LVL85-1-.Ltext0
+ 1884 0509 78020000 		.4byte	.LVL89-.Ltext0
+ 1885 050d 0200     		.2byte	0x2
+ 1886 050f 91       		.byte	0x91
+ 1887 0510 04       		.sleb128 4
+ 1888 0511 00000000 		.4byte	0
+ 1889 0515 00000000 		.4byte	0
+ 1890              	.LLST31:
+ 1891 0519 4C020000 		.4byte	.LVL82-.Ltext0
+ 1892 051d 4E020000 		.4byte	.LVL83-.Ltext0
+ 1893 0521 0100     		.2byte	0x1
+ 1894 0523 51       		.byte	0x51
+ 1895 0524 00000000 		.4byte	0
+ 1896 0528 00000000 		.4byte	0
+ 1897              	.LLST32:
+ 1898 052c 4C020000 		.4byte	.LVL82-.Ltext0
+ 1899 0530 52020000 		.4byte	.LVL84-.Ltext0
+ 1900 0534 0100     		.2byte	0x1
+ 1901 0536 52       		.byte	0x52
+ 1902 0537 52020000 		.4byte	.LVL84-.Ltext0
+ 1903 053b 20030000 		.4byte	.LVL114-.Ltext0
+ 1904 053f 0100     		.2byte	0x1
+ 1905 0541 57       		.byte	0x57
+ 1906 0542 00000000 		.4byte	0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 46
+
+
+ 1907 0546 00000000 		.4byte	0
+ 1908              	.LLST33:
+ 1909 054a 4C020000 		.4byte	.LVL82-.Ltext0
+ 1910 054e 5B020000 		.4byte	.LVL85-1-.Ltext0
+ 1911 0552 0100     		.2byte	0x1
+ 1912 0554 53       		.byte	0x53
+ 1913 0555 00000000 		.4byte	0
+ 1914 0559 00000000 		.4byte	0
+ 1915              	.LLST34:
+ 1916 055d 4C020000 		.4byte	.LVL82-.Ltext0
+ 1917 0561 64020000 		.4byte	.LVL86-.Ltext0
+ 1918 0565 0200     		.2byte	0x2
+ 1919 0567 30       		.byte	0x30
+ 1920 0568 9F       		.byte	0x9f
+ 1921 0569 64020000 		.4byte	.LVL86-.Ltext0
+ 1922 056d 6A020000 		.4byte	.LVL87-.Ltext0
+ 1923 0571 0100     		.2byte	0x1
+ 1924 0573 50       		.byte	0x50
+ 1925 0574 6A020000 		.4byte	.LVL87-.Ltext0
+ 1926 0578 72020000 		.4byte	.LVL88-.Ltext0
+ 1927 057c 0100     		.2byte	0x1
+ 1928 057e 54       		.byte	0x54
+ 1929 057f 72020000 		.4byte	.LVL88-.Ltext0
+ 1930 0583 78020000 		.4byte	.LVL89-.Ltext0
+ 1931 0587 0100     		.2byte	0x1
+ 1932 0589 50       		.byte	0x50
+ 1933 058a 78020000 		.4byte	.LVL89-.Ltext0
+ 1934 058e 80020000 		.4byte	.LVL90-.Ltext0
+ 1935 0592 0200     		.2byte	0x2
+ 1936 0594 31       		.byte	0x31
+ 1937 0595 9F       		.byte	0x9f
+ 1938 0596 80020000 		.4byte	.LVL90-.Ltext0
+ 1939 059a 86020000 		.4byte	.LVL91-.Ltext0
+ 1940 059e 0100     		.2byte	0x1
+ 1941 05a0 50       		.byte	0x50
+ 1942 05a1 86020000 		.4byte	.LVL91-.Ltext0
+ 1943 05a5 92020000 		.4byte	.LVL92-.Ltext0
+ 1944 05a9 0200     		.2byte	0x2
+ 1945 05ab 31       		.byte	0x31
+ 1946 05ac 9F       		.byte	0x9f
+ 1947 05ad 92020000 		.4byte	.LVL92-.Ltext0
+ 1948 05b1 94020000 		.4byte	.LVL93-.Ltext0
+ 1949 05b5 0100     		.2byte	0x1
+ 1950 05b7 50       		.byte	0x50
+ 1951 05b8 94020000 		.4byte	.LVL93-.Ltext0
+ 1952 05bc 9E020000 		.4byte	.LVL94-.Ltext0
+ 1953 05c0 0100     		.2byte	0x1
+ 1954 05c2 54       		.byte	0x54
+ 1955 05c3 9E020000 		.4byte	.LVL94-.Ltext0
+ 1956 05c7 A2020000 		.4byte	.LVL95-.Ltext0
+ 1957 05cb 0100     		.2byte	0x1
+ 1958 05cd 50       		.byte	0x50
+ 1959 05ce AE020000 		.4byte	.LVL96-.Ltext0
+ 1960 05d2 B2020000 		.4byte	.LVL97-.Ltext0
+ 1961 05d6 0100     		.2byte	0x1
+ 1962 05d8 50       		.byte	0x50
+ 1963 05d9 B2020000 		.4byte	.LVL97-.Ltext0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 47
+
+
+ 1964 05dd E8020000 		.4byte	.LVL102-.Ltext0
+ 1965 05e1 0100     		.2byte	0x1
+ 1966 05e3 54       		.byte	0x54
+ 1967 05e4 F6020000 		.4byte	.LVL103-.Ltext0
+ 1968 05e8 FE020000 		.4byte	.LVL105-.Ltext0
+ 1969 05ec 0100     		.2byte	0x1
+ 1970 05ee 50       		.byte	0x50
+ 1971 05ef FE020000 		.4byte	.LVL105-.Ltext0
+ 1972 05f3 16030000 		.4byte	.LVL113-.Ltext0
+ 1973 05f7 0100     		.2byte	0x1
+ 1974 05f9 54       		.byte	0x54
+ 1975 05fa 00000000 		.4byte	0
+ 1976 05fe 00000000 		.4byte	0
+ 1977              	.LLST35:
+ 1978 0602 4C020000 		.4byte	.LVL82-.Ltext0
+ 1979 0606 B2020000 		.4byte	.LVL97-.Ltext0
+ 1980 060a 0200     		.2byte	0x2
+ 1981 060c 30       		.byte	0x30
+ 1982 060d 9F       		.byte	0x9f
+ 1983 060e B6020000 		.4byte	.LVL98-.Ltext0
+ 1984 0612 CA020000 		.4byte	.LVL99-.Ltext0
+ 1985 0616 0100     		.2byte	0x1
+ 1986 0618 50       		.byte	0x50
+ 1987 0619 CE020000 		.4byte	.LVL100-.Ltext0
+ 1988 061d DC020000 		.4byte	.LVL101-.Ltext0
+ 1989 0621 0100     		.2byte	0x1
+ 1990 0623 50       		.byte	0x50
+ 1991 0624 FE020000 		.4byte	.LVL105-.Ltext0
+ 1992 0628 06030000 		.4byte	.LVL107-.Ltext0
+ 1993 062c 0100     		.2byte	0x1
+ 1994 062e 50       		.byte	0x50
+ 1995 062f 12030000 		.4byte	.LVL111-.Ltext0
+ 1996 0633 14030000 		.4byte	.LVL112-.Ltext0
+ 1997 0637 0100     		.2byte	0x1
+ 1998 0639 50       		.byte	0x50
+ 1999 063a 00000000 		.4byte	0
+ 2000 063e 00000000 		.4byte	0
+ 2001              	.LLST36:
+ 2002 0642 4C020000 		.4byte	.LVL82-.Ltext0
+ 2003 0646 78020000 		.4byte	.LVL89-.Ltext0
+ 2004 064a 0200     		.2byte	0x2
+ 2005 064c 30       		.byte	0x30
+ 2006 064d 9F       		.byte	0x9f
+ 2007 064e CA020000 		.4byte	.LVL99-.Ltext0
+ 2008 0652 04030000 		.4byte	.LVL106-.Ltext0
+ 2009 0656 0100     		.2byte	0x1
+ 2010 0658 55       		.byte	0x55
+ 2011 0659 06030000 		.4byte	.LVL107-.Ltext0
+ 2012 065d 08030000 		.4byte	.LVL108-.Ltext0
+ 2013 0661 0100     		.2byte	0x1
+ 2014 0663 55       		.byte	0x55
+ 2015 0664 08030000 		.4byte	.LVL108-.Ltext0
+ 2016 0668 0A030000 		.4byte	.LVL109-.Ltext0
+ 2017 066c 0300     		.2byte	0x3
+ 2018 066e 75       		.byte	0x75
+ 2019 066f 7F       		.sleb128 -1
+ 2020 0670 9F       		.byte	0x9f
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 48
+
+
+ 2021 0671 0C030000 		.4byte	.LVL110-.Ltext0
+ 2022 0675 12030000 		.4byte	.LVL111-.Ltext0
+ 2023 0679 0100     		.2byte	0x1
+ 2024 067b 55       		.byte	0x55
+ 2025 067c 00000000 		.4byte	0
+ 2026 0680 00000000 		.4byte	0
+ 2027              		.section	.debug_aranges,"",%progbits
+ 2028 0000 1C000000 		.4byte	0x1c
+ 2029 0004 0200     		.2byte	0x2
+ 2030 0006 00000000 		.4byte	.Ldebug_info0
+ 2031 000a 04       		.byte	0x4
+ 2032 000b 00       		.byte	0
+ 2033 000c 0000     		.2byte	0
+ 2034 000e 0000     		.2byte	0
+ 2035 0010 00000000 		.4byte	.Ltext0
+ 2036 0014 26030000 		.4byte	.Letext0-.Ltext0
+ 2037 0018 00000000 		.4byte	0
+ 2038 001c 00000000 		.4byte	0
+ 2039              		.section	.debug_line,"",%progbits
+ 2040              	.Ldebug_line0:
+ 2041 0000 7F010000 		.section	.debug_str,"MS",%progbits,1
+ 2041      02004C00 
+ 2041      00000201 
+ 2041      FB0E0D00 
+ 2041      01010101 
+ 2042              	.LASF25:
+ 2043 0000 70636139 		.ascii	"pca9532\000"
+ 2043      35333200 
+ 2044              	.LASF3:
+ 2045 0008 756E7369 		.ascii	"unsigned int\000"
+ 2045      676E6564 
+ 2045      20696E74 
+ 2045      00
+ 2046              	.LASF16:
+ 2047 0015 65657072 		.ascii	"eepromWrite\000"
+ 2047      6F6D5772 
+ 2047      69746500 
+ 2048              	.LASF7:
+ 2049 0021 72657443 		.ascii	"retCode\000"
+ 2049      6F646500 
+ 2050              	.LASF11:
+ 2051 0029 65657072 		.ascii	"eepromStartRead\000"
+ 2051      6F6D5374 
+ 2051      61727452 
+ 2051      65616400 
+ 2052              	.LASF19:
+ 2053 0039 6C6D3735 		.ascii	"lm75Read\000"
+ 2053      52656164 
+ 2053      00
+ 2054              	.LASF8:
+ 2055 0042 73746174 		.ascii	"status\000"
+ 2055      757300
+ 2056              	.LASF13:
+ 2057 0049 61646472 		.ascii	"address\000"
+ 2057      65737300 
+ 2058              	.LASF12:
+ 2059 0051 64657641 		.ascii	"devAddr\000"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 49
+
+
+ 2059      64647200 
+ 2060              	.LASF17:
+ 2061 0059 61646472 		.ascii	"addr\000"
+ 2061      00
+ 2062              	.LASF24:
+ 2063 005e 433A5C55 		.ascii	"C:\\Users\\kozlovsky\\Downloads\\TicTac\\TicTac\000"
+ 2063      73657273 
+ 2063      5C6B6F7A 
+ 2063      6C6F7673 
+ 2063      6B795C44 
+ 2064              	.LASF15:
+ 2065 0089 70427566 		.ascii	"pBuf\000"
+ 2065      00
+ 2066              	.LASF1:
+ 2067 008e 756E7369 		.ascii	"unsigned char\000"
+ 2067      676E6564 
+ 2067      20636861 
+ 2067      7200
+ 2068              	.LASF20:
+ 2069 009c 70427566 		.ascii	"pBuf2\000"
+ 2069      3200
+ 2070              	.LASF9:
+ 2071 00a2 6275726E 		.ascii	"burnEnd\000"
+ 2071      456E6400 
+ 2072              	.LASF22:
+ 2073 00aa 474E5520 		.ascii	"GNU C 4.6.3\000"
+ 2073      4320342E 
+ 2073      362E3300 
+ 2074              	.LASF14:
+ 2075 00b6 65657072 		.ascii	"eepromPageRead\000"
+ 2075      6F6D5061 
+ 2075      67655265 
+ 2075      616400
+ 2076              	.LASF2:
+ 2077 00c5 73686F72 		.ascii	"short unsigned int\000"
+ 2077      7420756E 
+ 2077      7369676E 
+ 2077      65642069 
+ 2077      6E7400
+ 2078              	.LASF4:
+ 2079 00d8 7369676E 		.ascii	"signed char\000"
+ 2079      65642063 
+ 2079      68617200 
+ 2080              	.LASF10:
+ 2081 00e4 65657072 		.ascii	"eepromPoll\000"
+ 2081      6F6D506F 
+ 2081      6C6C00
+ 2082              	.LASF21:
+ 2083 00ef 6C656E32 		.ascii	"len2\000"
+ 2083      00
+ 2084              	.LASF0:
+ 2085 00f4 74553136 		.ascii	"tU16\000"
+ 2085      00
+ 2086              	.LASF6:
+ 2087 00f9 74426F6F 		.ascii	"tBool\000"
+ 2087      6C00
+ 2088              	.LASF5:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 50
+
+
+ 2089 00ff 73686F72 		.ascii	"short int\000"
+ 2089      7420696E 
+ 2089      7400
+ 2090              	.LASF23:
+ 2091 0109 65657072 		.ascii	"eeprom.c\000"
+ 2091      6F6D2E63 
+ 2091      00
+ 2092              	.LASF18:
+ 2093 0112 70446174 		.ascii	"pData\000"
+ 2093      6100
+ 2094              		.ident	"GCC: (GNU) 4.6.3"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s 			page 51
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 eeprom.c
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s:6      .text:00000000 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s:11     .text:00000000 eepromPoll
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s:99     .text:00000056 eepromStartRead
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s:241    .text:000000e6 eepromPageRead
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s:374    .text:00000162 eepromWrite
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s:481    .text:000001ce lm75Read
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccE95QpY.s:614    .text:0000024a pca9532
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+getI2cLock
+i2cStart
+i2cPutChar
+i2cCheckStatus
+i2cStop
+releaseI2cLock
+i2cRepeatStart
+i2cGetChar
+i2cWriteWithWait

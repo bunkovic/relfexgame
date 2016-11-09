@@ -1,0 +1,3142 @@
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 1
+
+
+   1              		.code	16
+   2              		.file	"snake.c"
+   3              		.text
+   4              	.Ltext0:
+   5              		.cfi_sections	.debug_frame
+   6              		.align	1
+   7              		.code	16
+   8              		.thumb_func
+   9              		.type	addSegment, %function
+  10              	addSegment:
+  11              	.LFB3:
+  12              		.file 1 "snake.c"
+   1:snake.c       **** /******************************************************************************
+   2:snake.c       ****  *
+   3:snake.c       ****  * Copyright:
+   4:snake.c       ****  *    (C) 2006 Embedded Artists AB
+   5:snake.c       ****  *
+   6:snake.c       ****  * File:
+   7:snake.c       ****  *    snake.c
+   8:snake.c       ****  *
+   9:snake.c       ****  * Description:
+  10:snake.c       ****  *    Implements the snake game.
+  11:snake.c       ****  *
+  12:snake.c       ****  *****************************************************************************/
+  13:snake.c       **** 
+  14:snake.c       **** /******************************************************************************
+  15:snake.c       ****  * Includes
+  16:snake.c       ****  *****************************************************************************/
+  17:snake.c       **** #include "../pre_emptive_os/api/osapi.h"
+  18:snake.c       **** #include "../pre_emptive_os/api/general.h"
+  19:snake.c       **** #include <printf_P.h>
+  20:snake.c       **** #include <ea_init.h>
+  21:snake.c       **** #include <stdlib.h>
+  22:snake.c       **** #include "lcd.h"
+  23:snake.c       **** #include "key.h"
+  24:snake.c       **** #include "select.h"
+  25:snake.c       **** 
+  26:snake.c       **** 
+  27:snake.c       **** /******************************************************************************
+  28:snake.c       ****  * Typedefs and defines
+  29:snake.c       ****  *****************************************************************************/
+  30:snake.c       **** #define MAXROW 20
+  31:snake.c       **** #define MAXCOL 31
+  32:snake.c       **** 
+  33:snake.c       **** #define SNAKE_START_COL 15
+  34:snake.c       **** #define SNAKE_START_ROW  7
+  35:snake.c       **** #define PAUSE_LENGTH     2
+  36:snake.c       **** 
+  37:snake.c       **** 
+  38:snake.c       **** /*****************************************************************************
+  39:snake.c       ****  * Local prototypes
+  40:snake.c       ****  ****************************************************************************/
+  41:snake.c       **** static void showScore();
+  42:snake.c       **** static void addSegment();
+  43:snake.c       **** static void setupLevel();
+  44:snake.c       **** static void gotoxy(tU8 x, tU8 y, tU8 color);
+  45:snake.c       **** 
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 2
+
+
+  46:snake.c       **** 
+  47:snake.c       **** /*****************************************************************************
+  48:snake.c       ****  * Local variables
+  49:snake.c       ****  ****************************************************************************/
+  50:snake.c       **** static tS32  score;
+  51:snake.c       **** static tS32  snakeLength;
+  52:snake.c       **** static tS32  speed;
+  53:snake.c       **** static tS32  obstacles;
+  54:snake.c       **** static tS32  level;
+  55:snake.c       **** static tBool firstPress;
+  56:snake.c       **** static tS32  high_score = 0;
+  57:snake.c       **** static tS8   screenGrid[MAXROW][MAXCOL];
+  58:snake.c       **** static tS8   direction = KEY_RIGHT;
+  59:snake.c       **** 
+  60:snake.c       **** struct snakeSegment
+  61:snake.c       **** {
+  62:snake.c       ****   tS32 row;
+  63:snake.c       ****   tS32 col;
+  64:snake.c       **** } snake[100];
+  65:snake.c       **** 
+  66:snake.c       **** 
+  67:snake.c       **** /*****************************************************************************
+  68:snake.c       ****  * External variables
+  69:snake.c       ****  ****************************************************************************/
+  70:snake.c       **** extern volatile tU32 ms;
+  71:snake.c       **** 
+  72:snake.c       **** 
+  73:snake.c       **** /*****************************************************************************
+  74:snake.c       ****  *
+  75:snake.c       ****  * Description:
+  76:snake.c       ****  *    Implement Snake game
+  77:snake.c       ****  *
+  78:snake.c       ****  ****************************************************************************/
+  79:snake.c       **** void playSnake(void)
+  80:snake.c       **** {
+  81:snake.c       ****   tU8 keypress;
+  82:snake.c       ****   tU8 done = FALSE;
+  83:snake.c       **** 
+  84:snake.c       ****   //game loop
+  85:snake.c       ****   do
+  86:snake.c       ****   {
+  87:snake.c       ****     obstacles = 4;
+  88:snake.c       ****     level     = 1;
+  89:snake.c       ****     score     = 0;
+  90:snake.c       ****     speed     = 14;
+  91:snake.c       ****     srand(ms);        //Ensure random seed initiated
+  92:snake.c       ****     setupLevel();
+  93:snake.c       **** 
+  94:snake.c       ****     //main loop
+  95:snake.c       ****     do
+  96:snake.c       ****     {
+  97:snake.c       ****       tS32 i;
+  98:snake.c       ****       
+  99:snake.c       ****       //delay between snake moves
+ 100:snake.c       ****       osSleep(speed * PAUSE_LENGTH);
+ 101:snake.c       ****       
+ 102:snake.c       ****       //check if key press
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 3
+
+
+ 103:snake.c       ****       keypress = checkKey();
+ 104:snake.c       ****       if (keypress != KEY_NOTHING)
+ 105:snake.c       ****       {
+ 106:snake.c       ****         if ((keypress == KEY_UP)    ||
+ 107:snake.c       ****             (keypress == KEY_RIGHT) ||
+ 108:snake.c       ****             (keypress == KEY_DOWN)  ||
+ 109:snake.c       ****             (keypress == KEY_LEFT))
+ 110:snake.c       ****           direction = keypress;
+ 111:snake.c       ****       }
+ 112:snake.c       **** 
+ 113:snake.c       ****       //add a segment to the end of the snake
+ 114:snake.c       ****       addSegment();
+ 115:snake.c       **** 
+ 116:snake.c       ****       //removed last segment of snake
+ 117:snake.c       ****       gotoxy(snake[0].col, snake[0].row, 0);
+ 118:snake.c       **** 
+ 119:snake.c       ****       //remove last segment from the array
+ 120:snake.c       ****       for(i=1; i<=snakeLength; i++)
+ 121:snake.c       ****         snake[i-1] = snake[i];
+ 122:snake.c       **** 
+ 123:snake.c       ****       //display snake in yellow
+ 124:snake.c       ****       for (i=0; i<=snakeLength; i++)
+ 125:snake.c       ****         gotoxy(snake[i].col, snake[i].row, 0xfc);
+ 126:snake.c       **** 
+ 127:snake.c       ****       //if first press on each level, pause until a key is pressed
+ 128:snake.c       ****       if (firstPress == TRUE)
+ 129:snake.c       ****       {
+ 130:snake.c       ****         while(KEY_NOTHING == checkKey())
+ 131:snake.c       ****           ;
+ 132:snake.c       ****         firstPress = FALSE;
+ 133:snake.c       ****       }
+ 134:snake.c       **** 
+ 135:snake.c       ****       /* collision detection - walls (bad!) */
+ 136:snake.c       ****       if ((snake[snakeLength-1].row >= MAXROW) || (snake[snakeLength-1].row < 0) ||
+ 137:snake.c       ****           (snake[snakeLength-1].col >= MAXCOL) || (snake[snakeLength-1].col < 0) ||
+ 138:snake.c       **** 
+ 139:snake.c       ****       /* collision detection - obstacles (bad!) */
+ 140:snake.c       ****           (screenGrid[snake[snakeLength-1].row][snake[snakeLength-1].col] == 'x'))
+ 141:snake.c       ****         keypress = KEY_CENTER;
+ 142:snake.c       **** 
+ 143:snake.c       ****       //collision detection - snake (bad!)
+ 144:snake.c       ****       for (i=0; i<snakeLength-1; i++)
+ 145:snake.c       ****         if ((snake[snakeLength-1].row) == (snake[i].row) &&
+ 146:snake.c       ****             (snake[snakeLength-1].col) == (snake[i].col))
+ 147:snake.c       ****         {
+ 148:snake.c       ****           keypress = KEY_CENTER;   //exit loop - game over
+ 149:snake.c       ****           break;
+ 150:snake.c       ****         }
+ 151:snake.c       **** 
+ 152:snake.c       ****       //collision detection - food (good!)
+ 153:snake.c       ****       if (screenGrid[snake[snakeLength-1].row][snake[snakeLength-1].col] == '.')
+ 154:snake.c       ****       {
+ 155:snake.c       ****         //increase score and length of snake
+ 156:snake.c       ****         score += snakeLength * obstacles;
+ 157:snake.c       ****         showScore();
+ 158:snake.c       ****         snakeLength++;
+ 159:snake.c       ****         addSegment();
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 4
+
+
+ 160:snake.c       **** 
+ 161:snake.c       ****         //if length of snake reaches certain size, onto next level
+ 162:snake.c       ****         if (snakeLength == (level + 3) * 2)
+ 163:snake.c       ****         {
+ 164:snake.c       ****           score += level * 1000;
+ 165:snake.c       ****           obstacles += 2;          //add obstacles
+ 166:snake.c       ****           level++;
+ 167:snake.c       ****           
+ 168:snake.c       ****           //check if time to inclrease speed (every 5 levels)
+ 169:snake.c       ****           if ((level % 5 == 0) && (speed > 1))
+ 170:snake.c       ****             speed--;
+ 171:snake.c       **** 
+ 172:snake.c       ****           //draw next level
+ 173:snake.c       ****           setupLevel();
+ 174:snake.c       ****         }
+ 175:snake.c       ****       }
+ 176:snake.c       ****     } while (keypress != KEY_CENTER);
+ 177:snake.c       ****     
+ 178:snake.c       ****     //game over message
+ 179:snake.c       ****     if (score > high_score)
+ 180:snake.c       ****       high_score = score;
+ 181:snake.c       ****     showScore();
+ 182:snake.c       **** 
+ 183:snake.c       ****     {
+ 184:snake.c       ****       tMenu menu;
+ 185:snake.c       ****         
+ 186:snake.c       ****       menu.xPos = 10;
+ 187:snake.c       ****       menu.yPos = 40;
+ 188:snake.c       ****       menu.xLen = 6+(12*8);
+ 189:snake.c       ****       menu.yLen = 4*14;
+ 190:snake.c       ****       menu.noOfChoices = 2;
+ 191:snake.c       ****       menu.initialChoice = 0;
+ 192:snake.c       ****       menu.pHeaderText = "Game over!";
+ 193:snake.c       ****       menu.headerTextXpos = 20;
+ 194:snake.c       ****       menu.pChoice[0] = "Restart game";
+ 195:snake.c       ****       menu.pChoice[1] = "End game";
+ 196:snake.c       ****       menu.bgColor       = 0;
+ 197:snake.c       ****       menu.borderColor   = 0x6d;
+ 198:snake.c       ****       menu.headerColor   = 0;
+ 199:snake.c       ****       menu.choicesColor  = 0xfd;
+ 200:snake.c       ****       menu.selectedColor = 0xe0;
+ 201:snake.c       ****         
+ 202:snake.c       ****       switch(drawMenu(menu))
+ 203:snake.c       ****       {
+ 204:snake.c       ****         case 0: done = FALSE; break;  //Restart game
+ 205:snake.c       ****         case 1: done = TRUE; break;   //End game
+ 206:snake.c       ****         default: break;
+ 207:snake.c       ****       }
+ 208:snake.c       ****     }
+ 209:snake.c       **** 
+ 210:snake.c       ****   } while (done == FALSE);
+ 211:snake.c       **** }
+ 212:snake.c       **** 
+ 213:snake.c       **** 
+ 214:snake.c       **** /*****************************************************************************
+ 215:snake.c       ****  *
+ 216:snake.c       ****  * Description:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 5
+
+
+ 217:snake.c       ****  *    Initialize one level of the game. Draw game board.
+ 218:snake.c       ****  *
+ 219:snake.c       ****  ****************************************************************************/
+ 220:snake.c       **** void setupLevel()
+ 221:snake.c       **** {
+ 222:snake.c       ****   tS32 row, col, i;
+ 223:snake.c       **** 
+ 224:snake.c       ****   //clear screen
+ 225:snake.c       ****   lcdColor(0,0xe0);
+ 226:snake.c       ****   lcdClrscr();
+ 227:snake.c       **** 
+ 228:snake.c       ****   //draw frame
+ 229:snake.c       ****   lcdGotoxy(42,0);
+ 230:snake.c       ****   lcdPuts("Snake");
+ 231:snake.c       **** 
+ 232:snake.c       ****   //draw game board rectangle
+ 233:snake.c       ****   lcdRect(0, 14, (4*MAXCOL)+4, (4*MAXROW)+4, 3);
+ 234:snake.c       ****   lcdRect(2, 16, 4*MAXCOL,     4*MAXROW,     1);
+ 235:snake.c       **** 
+ 236:snake.c       ****   //set up global variables for new level
+ 237:snake.c       ****   snakeLength = level + 4;
+ 238:snake.c       ****   direction   = KEY_RIGHT;
+ 239:snake.c       ****   firstPress  = TRUE;
+ 240:snake.c       **** 
+ 241:snake.c       ****   //fill grid with blanks
+ 242:snake.c       ****   for(row=0; row<MAXROW; row++)
+ 243:snake.c       ****     for(col=0; col<MAXCOL; col++)
+ 244:snake.c       ****       screenGrid[row][col] = ' ';
+ 245:snake.c       **** 
+ 246:snake.c       ****   //fill grid with Xs and food
+ 247:snake.c       ****   for(i=0; i<obstacles*2; i++)
+ 248:snake.c       ****   {
+ 249:snake.c       ****     row = rand() % MAXROW;
+ 250:snake.c       ****     col = rand() % MAXCOL;
+ 251:snake.c       ****     if (i < obstacles)
+ 252:snake.c       ****       screenGrid[row][col] = 'x';  //= obstacle
+ 253:snake.c       ****     else
+ 254:snake.c       ****       screenGrid[row][col] = '.';  //= food
+ 255:snake.c       ****   }
+ 256:snake.c       **** 
+ 257:snake.c       ****   //create snake array of length snakeLength
+ 258:snake.c       ****   for(i=0; i<snakeLength; i++)
+ 259:snake.c       ****   {
+ 260:snake.c       ****     snake[i].row = SNAKE_START_ROW;
+ 261:snake.c       ****     snake[i].col = SNAKE_START_COL + i;
+ 262:snake.c       ****   }
+ 263:snake.c       **** 
+ 264:snake.c       ****   //draw game board
+ 265:snake.c       ****   for(row=0; row<MAXROW; row++)
+ 266:snake.c       ****   {
+ 267:snake.c       ****     for(col=0; col<MAXCOL; col++)
+ 268:snake.c       ****     {
+ 269:snake.c       ****       switch(screenGrid[row][col])
+ 270:snake.c       ****       {
+ 271:snake.c       ****         case ' ': gotoxy(col,row,0); break;
+ 272:snake.c       ****         case '.': gotoxy(col,row,0x1c); break;
+ 273:snake.c       ****         case 'x': gotoxy(col,row,0xe0); break;
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 6
+
+
+ 274:snake.c       ****         default: break;
+ 275:snake.c       ****       }
+ 276:snake.c       ****     }
+ 277:snake.c       ****   }
+ 278:snake.c       **** 
+ 279:snake.c       ****   showScore();
+ 280:snake.c       **** }
+ 281:snake.c       **** 
+ 282:snake.c       **** 
+ 283:snake.c       **** /*****************************************************************************
+ 284:snake.c       ****  *
+ 285:snake.c       ****  * Description:
+ 286:snake.c       ****  *    Draw current score
+ 287:snake.c       ****  *
+ 288:snake.c       ****  ****************************************************************************/
+ 289:snake.c       **** void showScore()
+ 290:snake.c       **** {
+ 291:snake.c       ****   tU8 str[13];
+ 292:snake.c       ****   
+ 293:snake.c       ****   str[0] = 'L';
+ 294:snake.c       ****   str[1] = ':';
+ 295:snake.c       ****   str[2] = level + '0';
+ 296:snake.c       ****   str[3] = ' ';
+ 297:snake.c       ****   str[4] = 'S';
+ 298:snake.c       ****   str[5] = ':';
+ 299:snake.c       ****   str[6] = score/100000 + '0';
+ 300:snake.c       ****   str[7] = (score/10000)%10 + '0';
+ 301:snake.c       ****   str[8] = (score/1000)%10 + '0';
+ 302:snake.c       ****   str[9] = (score/100)%10 + '0';
+ 303:snake.c       ****   str[10] = (score/10)%10 + '0';
+ 304:snake.c       ****   str[11] = score%10 + '0';
+ 305:snake.c       ****   str[12] = 0;
+ 306:snake.c       ****   
+ 307:snake.c       ****   //remove leading zeroes
+ 308:snake.c       ****   if (str[6] == '0')
+ 309:snake.c       ****   {
+ 310:snake.c       ****     str[6] = ' ';
+ 311:snake.c       ****     if (str[7] == '0')
+ 312:snake.c       ****     {
+ 313:snake.c       ****       str[7] = ' ';
+ 314:snake.c       ****       if (str[8] == '0')
+ 315:snake.c       ****       {
+ 316:snake.c       ****         str[8] = ' ';
+ 317:snake.c       ****         if (str[9] == '0')
+ 318:snake.c       ****         {
+ 319:snake.c       ****           str[9] = ' ';
+ 320:snake.c       ****           if (str[10] == '0')
+ 321:snake.c       ****           {
+ 322:snake.c       ****             str[10] = ' ';
+ 323:snake.c       ****           }
+ 324:snake.c       ****         }
+ 325:snake.c       ****       }
+ 326:snake.c       ****     }
+ 327:snake.c       ****   }
+ 328:snake.c       ****   lcdGotoxy(0,114);
+ 329:snake.c       ****   lcdPuts(str);
+ 330:snake.c       **** }
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 7
+
+
+ 331:snake.c       **** 
+ 332:snake.c       **** 
+ 333:snake.c       **** /*****************************************************************************
+ 334:snake.c       ****  *
+ 335:snake.c       ****  * Description:
+ 336:snake.c       ****  *    Add one snake segment
+ 337:snake.c       ****  *
+ 338:snake.c       ****  ****************************************************************************/
+ 339:snake.c       **** void addSegment()
+ 340:snake.c       **** {
+  13              		.loc 1 340 0
+  14              		.cfi_startproc
+  15 0000 00B5     		push	{lr}
+  16              	.LCFI0:
+  17              		.cfi_def_cfa_offset 4
+  18              		.cfi_offset 14, -4
+ 341:snake.c       ****   switch(direction)
+  19              		.loc 1 341 0
+  20 0002 1F4B     		ldr	r3, .L10
+  21 0004 0020     		mov	r0, #0
+  22 0006 1856     		ldrsb	r0, [r3, r0]
+  23 0008 0138     		sub	r0, r0, #1
+  24 000a 0728     		cmp	r0, #7
+  25 000c 36D8     		bhi	.L1
+  26 000e FFF7FEFF 		bl	__gnu_thumb1_case_uqi
+  27              	.L7:
+  28 0012 1F       		.byte	(.L3-.L7)/2
+  29 0013 04       		.byte	(.L4-.L7)/2
+  30 0014 35       		.byte	(.L1-.L7)/2
+  31 0015 28       		.byte	(.L5-.L7)/2
+  32 0016 35       		.byte	(.L1-.L7)/2
+  33 0017 35       		.byte	(.L1-.L7)/2
+  34 0018 35       		.byte	(.L1-.L7)/2
+  35 0019 11       		.byte	(.L6-.L7)/2
+  36              		.align	1
+  37              	.L4:
+ 342:snake.c       ****   {
+ 343:snake.c       ****     case(KEY_RIGHT): snake[snakeLength].row = snake[snakeLength-1].row;
+  38              		.loc 1 343 0
+  39 001a 1A4B     		ldr	r3, .L10+4
+  40 001c 1968     		ldr	r1, [r3]
+  41 001e 1A4B     		ldr	r3, .L10+8
+  42 0020 4A1E     		sub	r2, r1, #1
+  43 0022 D200     		lsl	r2, r2, #3
+  44 0024 D058     		ldr	r0, [r2, r3]
+  45 0026 C900     		lsl	r1, r1, #3
+  46 0028 C850     		str	r0, [r1, r3]
+ 344:snake.c       ****                      snake[snakeLength].col = snake[snakeLength-1].col+1;
+  47              		.loc 1 344 0
+  48 002a 5918     		add	r1, r3, r1
+  49 002c 9B18     		add	r3, r3, r2
+  50 002e 5B68     		ldr	r3, [r3, #4]
+  51 0030 0133     		add	r3, r3, #1
+  52 0032 0BE0     		b	.L8
+  53              	.L6:
+ 345:snake.c       ****                      break;
+ 346:snake.c       ****     case(KEY_LEFT) : snake[snakeLength].row = snake[snakeLength-1].row;
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 8
+
+
+  54              		.loc 1 346 0
+  55 0034 134B     		ldr	r3, .L10+4
+  56 0036 1968     		ldr	r1, [r3]
+  57 0038 134B     		ldr	r3, .L10+8
+  58 003a 4A1E     		sub	r2, r1, #1
+  59 003c D200     		lsl	r2, r2, #3
+  60 003e D058     		ldr	r0, [r2, r3]
+  61 0040 C900     		lsl	r1, r1, #3
+  62 0042 C850     		str	r0, [r1, r3]
+ 347:snake.c       ****                      snake[snakeLength].col = snake[snakeLength-1].col-1;
+  63              		.loc 1 347 0
+  64 0044 5918     		add	r1, r3, r1
+  65 0046 9B18     		add	r3, r3, r2
+  66 0048 5B68     		ldr	r3, [r3, #4]
+  67 004a 013B     		sub	r3, r3, #1
+  68              	.L8:
+  69 004c 4B60     		str	r3, [r1, #4]
+ 348:snake.c       ****                      break;
+  70              		.loc 1 348 0
+  71 004e 15E0     		b	.L1
+  72              	.L3:
+ 349:snake.c       ****     case(KEY_UP)   : snake[snakeLength].row = snake[snakeLength-1].row-1;
+  73              		.loc 1 349 0
+  74 0050 0C4B     		ldr	r3, .L10+4
+  75 0052 1A68     		ldr	r2, [r3]
+  76 0054 0C4B     		ldr	r3, .L10+8
+  77 0056 511E     		sub	r1, r2, #1
+  78 0058 C900     		lsl	r1, r1, #3
+  79 005a C858     		ldr	r0, [r1, r3]
+  80 005c D200     		lsl	r2, r2, #3
+  81 005e 0138     		sub	r0, r0, #1
+  82 0060 07E0     		b	.L9
+  83              	.L5:
+ 350:snake.c       ****                      snake[snakeLength].col = snake[snakeLength-1].col;
+ 351:snake.c       ****                      break;
+ 352:snake.c       ****     case(KEY_DOWN) : snake[snakeLength].row = snake[snakeLength-1].row+1;
+  84              		.loc 1 352 0
+  85 0062 084B     		ldr	r3, .L10+4
+  86 0064 1A68     		ldr	r2, [r3]
+  87 0066 084B     		ldr	r3, .L10+8
+  88 0068 511E     		sub	r1, r2, #1
+  89 006a C900     		lsl	r1, r1, #3
+  90 006c C858     		ldr	r0, [r1, r3]
+  91 006e D200     		lsl	r2, r2, #3
+  92 0070 0130     		add	r0, r0, #1
+  93              	.L9:
+  94 0072 D050     		str	r0, [r2, r3]
+ 353:snake.c       ****                      snake[snakeLength].col = snake[snakeLength-1].col;
+  95              		.loc 1 353 0
+  96 0074 5918     		add	r1, r3, r1
+  97 0076 4968     		ldr	r1, [r1, #4]
+  98 0078 9B18     		add	r3, r3, r2
+  99 007a 5960     		str	r1, [r3, #4]
+ 100              	.L1:
+ 354:snake.c       ****   }
+ 355:snake.c       **** }
+ 101              		.loc 1 355 0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 9
+
+
+ 102              		@ sp needed for prologue
+ 103 007c 01BC     		pop	{r0}
+ 104 007e 0047     		bx	r0
+ 105              	.L11:
+ 106              		.align	2
+ 107              	.L10:
+ 108 0080 00000000 		.word	.LANCHOR0
+ 109 0084 00000000 		.word	.LANCHOR1
+ 110 0088 00000000 		.word	snake
+ 111              		.cfi_endproc
+ 112              	.LFE3:
+ 113              		.size	addSegment, .-addSegment
+ 114              		.align	1
+ 115              		.code	16
+ 116              		.thumb_func
+ 117              		.type	gotoxy, %function
+ 118              	gotoxy:
+ 119              	.LFB4:
+ 356:snake.c       **** 
+ 357:snake.c       **** 
+ 358:snake.c       **** /*****************************************************************************
+ 359:snake.c       ****  *
+ 360:snake.c       ****  * Description:
+ 361:snake.c       ****  *    Goto a specifc xy position and draw a 4x4 pixel rectangle in
+ 362:snake.c       ****  *    specified color
+ 363:snake.c       ****  *
+ 364:snake.c       ****  ****************************************************************************/
+ 365:snake.c       **** void gotoxy(tU8 x, tU8 y, tU8 color)
+ 366:snake.c       **** {
+ 120              		.loc 1 366 0
+ 121              		.cfi_startproc
+ 122 008c 01B5     		push	{r0, lr}
+ 123              	.LCFI1:
+ 124              		.cfi_def_cfa_offset 8
+ 125              		.cfi_offset 0, -8
+ 126              		.cfi_offset 14, -4
+ 127              	.LVL0:
+ 367:snake.c       ****   lcdRect(2+(x*4), 16+(y*4), 4, 4, color);
+ 128              		.loc 1 367 0
+ 129 008e 8000     		lsl	r0, r0, #2
+ 130              	.LVL1:
+ 131 0090 0431     		add	r1, r1, #4
+ 132              	.LVL2:
+ 133 0092 0230     		add	r0, r0, #2
+ 134 0094 8900     		lsl	r1, r1, #2
+ 135 0096 0092     		str	r2, [sp]
+ 136 0098 0006     		lsl	r0, r0, #24
+ 137 009a 0422     		mov	r2, #4
+ 138              	.LVL3:
+ 139 009c 0906     		lsl	r1, r1, #24
+ 140 009e 000E     		lsr	r0, r0, #24
+ 141 00a0 090E     		lsr	r1, r1, #24
+ 142 00a2 131C     		mov	r3, r2
+ 143 00a4 FFF7FEFF 		bl	lcdRect
+ 368:snake.c       **** }
+ 144              		.loc 1 368 0
+ 145 00a8 01B0     		add	sp, sp, #4
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 10
+
+
+ 146              		@ sp needed for prologue
+ 147 00aa 01BC     		pop	{r0}
+ 148 00ac 0047     		bx	r0
+ 149              		.cfi_endproc
+ 150              	.LFE4:
+ 151              		.size	gotoxy, .-gotoxy
+ 152              		.global	__divsi3
+ 153              		.global	__modsi3
+ 154              		.align	1
+ 155              		.code	16
+ 156              		.thumb_func
+ 157              		.type	showScore, %function
+ 158              	showScore:
+ 159              	.LFB2:
+ 290:snake.c       **** {
+ 160              		.loc 1 290 0
+ 161              		.cfi_startproc
+ 162 00ae F0B5     		push	{r4, r5, r6, r7, lr}
+ 163              	.LCFI2:
+ 164              		.cfi_def_cfa_offset 20
+ 165              		.cfi_offset 4, -20
+ 166              		.cfi_offset 5, -16
+ 167              		.cfi_offset 6, -12
+ 168              		.cfi_offset 7, -8
+ 169              		.cfi_offset 14, -4
+ 170 00b0 87B0     		sub	sp, sp, #28
+ 171              	.LCFI3:
+ 172              		.cfi_def_cfa_offset 48
+ 293:snake.c       ****   str[0] = 'L';
+ 173              		.loc 1 293 0
+ 174 00b2 6846     		mov	r0, sp
+ 175 00b4 4C23     		mov	r3, #76
+ 176 00b6 0373     		strb	r3, [r0, #12]
+ 295:snake.c       ****   str[2] = level + '0';
+ 177              		.loc 1 295 0
+ 178 00b8 384B     		ldr	r3, .L15
+ 179 00ba 5968     		ldr	r1, [r3, #4]
+ 299:snake.c       ****   str[6] = score/100000 + '0';
+ 180              		.loc 1 299 0
+ 181 00bc 9C68     		ldr	r4, [r3, #8]
+ 295:snake.c       ****   str[2] = level + '0';
+ 182              		.loc 1 295 0
+ 183 00be 3031     		add	r1, r1, #48
+ 294:snake.c       ****   str[1] = ':';
+ 184              		.loc 1 294 0
+ 185 00c0 3A22     		mov	r2, #58
+ 295:snake.c       ****   str[2] = level + '0';
+ 186              		.loc 1 295 0
+ 187 00c2 8173     		strb	r1, [r0, #14]
+ 296:snake.c       ****   str[3] = ' ';
+ 188              		.loc 1 296 0
+ 189 00c4 2025     		mov	r5, #32
+ 297:snake.c       ****   str[4] = 'S';
+ 190              		.loc 1 297 0
+ 191 00c6 5321     		mov	r1, #83
+ 294:snake.c       ****   str[1] = ':';
+ 192              		.loc 1 294 0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 11
+
+
+ 193 00c8 4273     		strb	r2, [r0, #13]
+ 298:snake.c       ****   str[5] = ':';
+ 194              		.loc 1 298 0
+ 195 00ca 4274     		strb	r2, [r0, #17]
+ 297:snake.c       ****   str[4] = 'S';
+ 196              		.loc 1 297 0
+ 197 00cc 0174     		strb	r1, [r0, #16]
+ 296:snake.c       ****   str[3] = ' ';
+ 198              		.loc 1 296 0
+ 199 00ce C573     		strb	r5, [r0, #15]
+ 299:snake.c       ****   str[6] = score/100000 + '0';
+ 200              		.loc 1 299 0
+ 201 00d0 3349     		ldr	r1, .L15+4
+ 202 00d2 201C     		mov	r0, r4
+ 203 00d4 FFF7FEFF 		bl	__divsi3
+ 204 00d8 061C     		mov	r6, r0
+ 205 00da 3036     		add	r6, r6, #48
+ 206 00dc 3606     		lsl	r6, r6, #24
+ 207 00de 6946     		mov	r1, sp
+ 208 00e0 360E     		lsr	r6, r6, #24
+ 209 00e2 8E74     		strb	r6, [r1, #18]
+ 300:snake.c       ****   str[7] = (score/10000)%10 + '0';
+ 210              		.loc 1 300 0
+ 211 00e4 201C     		mov	r0, r4
+ 212 00e6 2F49     		ldr	r1, .L15+8
+ 213 00e8 FFF7FEFF 		bl	__divsi3
+ 214 00ec 0A21     		mov	r1, #10
+ 215 00ee FFF7FEFF 		bl	__modsi3
+ 216 00f2 071C     		mov	r7, r0
+ 217 00f4 3037     		add	r7, r7, #48
+ 218 00f6 3F06     		lsl	r7, r7, #24
+ 219 00f8 6A46     		mov	r2, sp
+ 220 00fa 3F0E     		lsr	r7, r7, #24
+ 301:snake.c       ****   str[8] = (score/1000)%10 + '0';
+ 221              		.loc 1 301 0
+ 222 00fc FA21     		mov	r1, #250
+ 300:snake.c       ****   str[7] = (score/10000)%10 + '0';
+ 223              		.loc 1 300 0
+ 224 00fe D774     		strb	r7, [r2, #19]
+ 301:snake.c       ****   str[8] = (score/1000)%10 + '0';
+ 225              		.loc 1 301 0
+ 226 0100 8900     		lsl	r1, r1, #2
+ 227 0102 201C     		mov	r0, r4
+ 228 0104 FFF7FEFF 		bl	__divsi3
+ 229 0108 0A21     		mov	r1, #10
+ 230 010a FFF7FEFF 		bl	__modsi3
+ 231 010e 3030     		add	r0, r0, #48
+ 232 0110 0006     		lsl	r0, r0, #24
+ 233 0112 6B46     		mov	r3, sp
+ 234 0114 000E     		lsr	r0, r0, #24
+ 235 0116 1875     		strb	r0, [r3, #20]
+ 236 0118 0090     		str	r0, [sp]
+ 302:snake.c       ****   str[9] = (score/100)%10 + '0';
+ 237              		.loc 1 302 0
+ 238 011a 6421     		mov	r1, #100
+ 239 011c 201C     		mov	r0, r4
+ 240 011e FFF7FEFF 		bl	__divsi3
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 12
+
+
+ 241 0122 0A21     		mov	r1, #10
+ 242 0124 FFF7FEFF 		bl	__modsi3
+ 243 0128 3030     		add	r0, r0, #48
+ 244 012a 0006     		lsl	r0, r0, #24
+ 245 012c 000E     		lsr	r0, r0, #24
+ 246 012e 6946     		mov	r1, sp
+ 247 0130 4875     		strb	r0, [r1, #21]
+ 248 0132 0190     		str	r0, [sp, #4]
+ 303:snake.c       ****   str[10] = (score/10)%10 + '0';
+ 249              		.loc 1 303 0
+ 250 0134 0A21     		mov	r1, #10
+ 251 0136 201C     		mov	r0, r4
+ 252 0138 FFF7FEFF 		bl	__divsi3
+ 253 013c 0A21     		mov	r1, #10
+ 254 013e FFF7FEFF 		bl	__modsi3
+ 255 0142 3030     		add	r0, r0, #48
+ 256 0144 0006     		lsl	r0, r0, #24
+ 257 0146 000E     		lsr	r0, r0, #24
+ 258 0148 6B46     		mov	r3, sp
+ 259 014a 9875     		strb	r0, [r3, #22]
+ 260 014c 0290     		str	r0, [sp, #8]
+ 304:snake.c       ****   str[11] = score%10 + '0';
+ 261              		.loc 1 304 0
+ 262 014e 0A21     		mov	r1, #10
+ 263 0150 201C     		mov	r0, r4
+ 264 0152 FFF7FEFF 		bl	__modsi3
+ 265 0156 6946     		mov	r1, sp
+ 266 0158 3030     		add	r0, r0, #48
+ 305:snake.c       ****   str[12] = 0;
+ 267              		.loc 1 305 0
+ 268 015a 0023     		mov	r3, #0
+ 304:snake.c       ****   str[11] = score%10 + '0';
+ 269              		.loc 1 304 0
+ 270 015c C875     		strb	r0, [r1, #23]
+ 305:snake.c       ****   str[12] = 0;
+ 271              		.loc 1 305 0
+ 272 015e 0B76     		strb	r3, [r1, #24]
+ 308:snake.c       ****   if (str[6] == '0')
+ 273              		.loc 1 308 0
+ 274 0160 302E     		cmp	r6, #48
+ 275 0162 0FD1     		bne	.L14
+ 310:snake.c       ****     str[6] = ' ';
+ 276              		.loc 1 310 0
+ 277 0164 8D74     		strb	r5, [r1, #18]
+ 311:snake.c       ****     if (str[7] == '0')
+ 278              		.loc 1 311 0
+ 279 0166 302F     		cmp	r7, #48
+ 280 0168 0CD1     		bne	.L14
+ 314:snake.c       ****       if (str[8] == '0')
+ 281              		.loc 1 314 0
+ 282 016a 009A     		ldr	r2, [sp]
+ 313:snake.c       ****       str[7] = ' ';
+ 283              		.loc 1 313 0
+ 284 016c CD74     		strb	r5, [r1, #19]
+ 314:snake.c       ****       if (str[8] == '0')
+ 285              		.loc 1 314 0
+ 286 016e 302A     		cmp	r2, #48
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 13
+
+
+ 287 0170 08D1     		bne	.L14
+ 317:snake.c       ****         if (str[9] == '0')
+ 288              		.loc 1 317 0
+ 289 0172 019B     		ldr	r3, [sp, #4]
+ 316:snake.c       ****         str[8] = ' ';
+ 290              		.loc 1 316 0
+ 291 0174 0D75     		strb	r5, [r1, #20]
+ 317:snake.c       ****         if (str[9] == '0')
+ 292              		.loc 1 317 0
+ 293 0176 302B     		cmp	r3, #48
+ 294 0178 04D1     		bne	.L14
+ 320:snake.c       ****           if (str[10] == '0')
+ 295              		.loc 1 320 0
+ 296 017a 0298     		ldr	r0, [sp, #8]
+ 319:snake.c       ****           str[9] = ' ';
+ 297              		.loc 1 319 0
+ 298 017c 4D75     		strb	r5, [r1, #21]
+ 320:snake.c       ****           if (str[10] == '0')
+ 299              		.loc 1 320 0
+ 300 017e 3028     		cmp	r0, #48
+ 301 0180 00D1     		bne	.L14
+ 322:snake.c       ****             str[10] = ' ';
+ 302              		.loc 1 322 0
+ 303 0182 8D75     		strb	r5, [r1, #22]
+ 304              	.L14:
+ 328:snake.c       ****   lcdGotoxy(0,114);
+ 305              		.loc 1 328 0
+ 306 0184 7221     		mov	r1, #114
+ 307 0186 0020     		mov	r0, #0
+ 308 0188 FFF7FEFF 		bl	lcdGotoxy
+ 329:snake.c       ****   lcdPuts(str);
+ 309              		.loc 1 329 0
+ 310 018c 03A8     		add	r0, sp, #12
+ 311 018e FFF7FEFF 		bl	lcdPuts
+ 330:snake.c       **** }
+ 312              		.loc 1 330 0
+ 313 0192 07B0     		add	sp, sp, #28
+ 314              		@ sp needed for prologue
+ 315 0194 F0BC     		pop	{r4, r5, r6, r7}
+ 316 0196 01BC     		pop	{r0}
+ 317 0198 0047     		bx	r0
+ 318              	.L16:
+ 319 019a C046     		.align	2
+ 320              	.L15:
+ 321 019c 00000000 		.word	.LANCHOR1
+ 322 01a0 A0860100 		.word	100000
+ 323 01a4 10270000 		.word	10000
+ 324              		.cfi_endproc
+ 325              	.LFE2:
+ 326              		.size	showScore, .-showScore
+ 327              		.align	1
+ 328              		.code	16
+ 329              		.thumb_func
+ 330              		.type	setupLevel, %function
+ 331              	setupLevel:
+ 332              	.LFB1:
+ 221:snake.c       **** {
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 14
+
+
+ 333              		.loc 1 221 0
+ 334              		.cfi_startproc
+ 335 01a8 F1B5     		push	{r0, r4, r5, r6, r7, lr}
+ 336              	.LCFI4:
+ 337              		.cfi_def_cfa_offset 24
+ 338              		.cfi_offset 0, -24
+ 339              		.cfi_offset 4, -20
+ 340              		.cfi_offset 5, -16
+ 341              		.cfi_offset 6, -12
+ 342              		.cfi_offset 7, -8
+ 343              		.cfi_offset 14, -4
+ 225:snake.c       ****   lcdColor(0,0xe0);
+ 344              		.loc 1 225 0
+ 345 01aa 0020     		mov	r0, #0
+ 346 01ac E021     		mov	r1, #224
+ 347 01ae FFF7FEFF 		bl	lcdColor
+ 226:snake.c       ****   lcdClrscr();
+ 348              		.loc 1 226 0
+ 349 01b2 FFF7FEFF 		bl	lcdClrscr
+ 229:snake.c       ****   lcdGotoxy(42,0);
+ 350              		.loc 1 229 0
+ 351 01b6 0021     		mov	r1, #0
+ 352 01b8 2A20     		mov	r0, #42
+ 353 01ba FFF7FEFF 		bl	lcdGotoxy
+ 230:snake.c       ****   lcdPuts("Snake");
+ 354              		.loc 1 230 0
+ 355 01be 4048     		ldr	r0, .L37
+ 356 01c0 FFF7FEFF 		bl	lcdPuts
+ 233:snake.c       ****   lcdRect(0, 14, (4*MAXCOL)+4, (4*MAXROW)+4, 3);
+ 357              		.loc 1 233 0
+ 358 01c4 0323     		mov	r3, #3
+ 359 01c6 0093     		str	r3, [sp]
+ 360 01c8 0020     		mov	r0, #0
+ 361 01ca 0E21     		mov	r1, #14
+ 362 01cc 8022     		mov	r2, #128
+ 363 01ce 5423     		mov	r3, #84
+ 364 01d0 FFF7FEFF 		bl	lcdRect
+ 234:snake.c       ****   lcdRect(2, 16, 4*MAXCOL,     4*MAXROW,     1);
+ 365              		.loc 1 234 0
+ 366 01d4 0124     		mov	r4, #1
+ 367 01d6 0220     		mov	r0, #2
+ 368 01d8 1021     		mov	r1, #16
+ 369 01da 7C22     		mov	r2, #124
+ 370 01dc 5023     		mov	r3, #80
+ 371 01de 0094     		str	r4, [sp]
+ 372 01e0 FFF7FEFF 		bl	lcdRect
+ 237:snake.c       ****   snakeLength = level + 4;
+ 373              		.loc 1 237 0
+ 374 01e4 374B     		ldr	r3, .L37+4
+ 375 01e6 5A68     		ldr	r2, [r3, #4]
+ 376 01e8 0432     		add	r2, r2, #4
+ 377 01ea 1A60     		str	r2, [r3]
+ 238:snake.c       ****   direction   = KEY_RIGHT;
+ 378              		.loc 1 238 0
+ 379 01ec 364A     		ldr	r2, .L37+8
+ 380 01ee 0221     		mov	r1, #2
+ 239:snake.c       ****   firstPress  = TRUE;
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 15
+
+
+ 381              		.loc 1 239 0
+ 382 01f0 1E1C     		mov	r6, r3
+ 238:snake.c       ****   direction   = KEY_RIGHT;
+ 383              		.loc 1 238 0
+ 384 01f2 1170     		strb	r1, [r2]
+ 220:snake.c       **** void setupLevel()
+ 385              		.loc 1 220 0
+ 386 01f4 354A     		ldr	r2, .L37+12
+ 239:snake.c       ****   firstPress  = TRUE;
+ 387              		.loc 1 239 0
+ 388 01f6 0D36     		add	r6, r6, #13
+ 389 01f8 1C73     		strb	r4, [r3, #12]
+ 390              	.LVL4:
+ 244:snake.c       ****       screenGrid[row][col] = ' ';
+ 391              		.loc 1 244 0
+ 392 01fa 2020     		mov	r0, #32
+ 220:snake.c       **** void setupLevel()
+ 393              		.loc 1 220 0
+ 394 01fc 9B18     		add	r3, r3, r2
+ 395 01fe 321C     		mov	r2, r6
+ 396 0200 06E0     		b	.L18
+ 397              	.LVL5:
+ 398              	.L19:
+ 244:snake.c       ****       screenGrid[row][col] = ' ';
+ 399              		.loc 1 244 0 discriminator 2
+ 400 0202 5054     		strb	r0, [r2, r1]
+ 243:snake.c       ****     for(col=0; col<MAXCOL; col++)
+ 401              		.loc 1 243 0 discriminator 2
+ 402 0204 0131     		add	r1, r1, #1
+ 403              	.LVL6:
+ 404 0206 1F29     		cmp	r1, #31
+ 405 0208 FBD1     		bne	.L19
+ 243:snake.c       ****     for(col=0; col<MAXCOL; col++)
+ 406              		.loc 1 243 0 is_stmt 0
+ 407 020a 1F32     		add	r2, r2, #31
+ 242:snake.c       ****   for(row=0; row<MAXROW; row++)
+ 408              		.loc 1 242 0 is_stmt 1
+ 409 020c 9A42     		cmp	r2, r3
+ 410 020e 18D0     		beq	.L32
+ 411              	.LVL7:
+ 412              	.L18:
+ 221:snake.c       **** {
+ 413              		.loc 1 221 0 discriminator 1
+ 414 0210 0021     		mov	r1, #0
+ 415 0212 F6E7     		b	.L19
+ 416              	.LVL8:
+ 417              	.L22:
+ 249:snake.c       ****     row = rand() % MAXROW;
+ 418              		.loc 1 249 0
+ 419 0214 FFF7FEFF 		bl	rand
+ 420 0218 1421     		mov	r1, #20
+ 421 021a FFF7FEFF 		bl	__modsi3
+ 422 021e 071C     		mov	r7, r0
+ 423              	.LVL9:
+ 250:snake.c       ****     col = rand() % MAXCOL;
+ 424              		.loc 1 250 0
+ 425 0220 FFF7FEFF 		bl	rand
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 16
+
+
+ 426              	.LVL10:
+ 427 0224 1F21     		mov	r1, #31
+ 428 0226 FFF7FEFF 		bl	__modsi3
+ 429              	.LVL11:
+ 251:snake.c       ****     if (i < obstacles)
+ 430              		.loc 1 251 0
+ 431 022a E26F     		ldr	r2, [r4, #124]
+ 252:snake.c       ****       screenGrid[row][col] = 'x';  //= obstacle
+ 432              		.loc 1 252 0
+ 433 022c 7823     		mov	r3, #120
+ 251:snake.c       ****     if (i < obstacles)
+ 434              		.loc 1 251 0
+ 435 022e 9542     		cmp	r5, r2
+ 436 0230 00DB     		blt	.L21
+ 254:snake.c       ****       screenGrid[row][col] = '.';  //= food
+ 437              		.loc 1 254 0
+ 438 0232 2E23     		mov	r3, #46
+ 439              	.L21:
+ 251:snake.c       ****     if (i < obstacles)
+ 440              		.loc 1 251 0
+ 441 0234 7A01     		lsl	r2, r7, #5
+ 442 0236 D71B     		sub	r7, r2, r7
+ 443              	.LVL12:
+ 444 0238 254A     		ldr	r2, .L37+16
+ 445 023a 3F18     		add	r7, r7, r0
+ 446 023c BB54     		strb	r3, [r7, r2]
+ 247:snake.c       ****   for(i=0; i<obstacles*2; i++)
+ 447              		.loc 1 247 0
+ 448 023e 0135     		add	r5, r5, #1
+ 449              	.LVL13:
+ 450 0240 00E0     		b	.L20
+ 451              	.LVL14:
+ 452              	.L32:
+ 242:snake.c       ****   for(row=0; row<MAXROW; row++)
+ 453              		.loc 1 242 0
+ 454 0242 0025     		mov	r5, #0
+ 455              	.LVL15:
+ 456              	.L20:
+ 247:snake.c       ****   for(i=0; i<obstacles*2; i++)
+ 457              		.loc 1 247 0 discriminator 1
+ 458 0244 234C     		ldr	r4, .L37+20
+ 459 0246 E36F     		ldr	r3, [r4, #124]
+ 460 0248 5B00     		lsl	r3, r3, #1
+ 461 024a 9D42     		cmp	r5, r3
+ 462 024c E2DB     		blt	.L22
+ 258:snake.c       ****   for(i=0; i<snakeLength; i++)
+ 463              		.loc 1 258 0
+ 464 024e 1D4B     		ldr	r3, .L37+4
+ 465 0250 0022     		mov	r2, #0
+ 466 0252 1D68     		ldr	r5, [r3]
+ 467              	.LVL16:
+ 220:snake.c       **** void setupLevel()
+ 468              		.loc 1 220 0
+ 469 0254 204C     		ldr	r4, .L37+24
+ 258:snake.c       ****   for(i=0; i<snakeLength; i++)
+ 470              		.loc 1 258 0
+ 471 0256 131C     		mov	r3, r2
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 17
+
+
+ 260:snake.c       ****     snake[i].row = SNAKE_START_ROW;
+ 472              		.loc 1 260 0
+ 473 0258 0720     		mov	r0, #7
+ 474 025a 08E0     		b	.L23
+ 475              	.LVL17:
+ 476              	.L24:
+ 220:snake.c       **** void setupLevel()
+ 477              		.loc 1 220 0 discriminator 2
+ 478 025c 1119     		add	r1, r2, r4
+ 479 025e 0F1C     		mov	r7, r1
+ 480 0260 083F     		sub	r7, r7, #8
+ 260:snake.c       ****     snake[i].row = SNAKE_START_ROW;
+ 481              		.loc 1 260 0 discriminator 2
+ 482 0262 3860     		str	r0, [r7]
+ 220:snake.c       **** void setupLevel()
+ 483              		.loc 1 220 0 discriminator 2
+ 484 0264 1F1C     		mov	r7, r3
+ 485 0266 0439     		sub	r1, r1, #4
+ 486 0268 0F37     		add	r7, r7, #15
+ 261:snake.c       ****     snake[i].col = SNAKE_START_COL + i;
+ 487              		.loc 1 261 0 discriminator 2
+ 488 026a 0F60     		str	r7, [r1]
+ 258:snake.c       ****   for(i=0; i<snakeLength; i++)
+ 489              		.loc 1 258 0 discriminator 2
+ 490 026c 0133     		add	r3, r3, #1
+ 491              	.LVL18:
+ 492              	.L23:
+ 258:snake.c       ****   for(i=0; i<snakeLength; i++)
+ 493              		.loc 1 258 0 is_stmt 0 discriminator 1
+ 494 026e 0832     		add	r2, r2, #8
+ 495 0270 AB42     		cmp	r3, r5
+ 496 0272 F3DB     		blt	.L24
+ 258:snake.c       ****   for(i=0; i<snakeLength; i++)
+ 497              		.loc 1 258 0
+ 498 0274 0025     		mov	r5, #0
+ 499 0276 1CE0     		b	.L25
+ 500              	.LVL19:
+ 501              	.L30:
+ 269:snake.c       ****       switch(screenGrid[row][col])
+ 502              		.loc 1 269 0 is_stmt 1
+ 503 0278 325D     		ldrb	r2, [r6, r4]
+ 504 027a 1306     		lsl	r3, r2, #24
+ 505 027c 1B16     		asr	r3, r3, #24
+ 506 027e 2E2A     		cmp	r2, #46
+ 507 0280 07D0     		beq	.L28
+ 508 0282 782B     		cmp	r3, #120
+ 509 0284 09D0     		beq	.L29
+ 510 0286 202B     		cmp	r3, #32
+ 511 0288 0CD1     		bne	.L26
+ 271:snake.c       ****         case ' ': gotoxy(col,row,0); break;
+ 512              		.loc 1 271 0
+ 513 028a 201C     		mov	r0, r4
+ 514 028c 291C     		mov	r1, r5
+ 515 028e 0022     		mov	r2, #0
+ 516 0290 06E0     		b	.L36
+ 517              	.L28:
+ 272:snake.c       ****         case '.': gotoxy(col,row,0x1c); break;
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 18
+
+
+ 518              		.loc 1 272 0
+ 519 0292 201C     		mov	r0, r4
+ 520 0294 291C     		mov	r1, r5
+ 521 0296 1C22     		mov	r2, #28
+ 522 0298 02E0     		b	.L36
+ 523              	.L29:
+ 273:snake.c       ****         case 'x': gotoxy(col,row,0xe0); break;
+ 524              		.loc 1 273 0
+ 525 029a 201C     		mov	r0, r4
+ 526 029c 291C     		mov	r1, r5
+ 527 029e E022     		mov	r2, #224
+ 528              	.L36:
+ 529 02a0 FFF7F4FE 		bl	gotoxy
+ 530              	.L26:
+ 267:snake.c       ****     for(col=0; col<MAXCOL; col++)
+ 531              		.loc 1 267 0
+ 532 02a4 0134     		add	r4, r4, #1
+ 533              	.LVL20:
+ 534 02a6 1F2C     		cmp	r4, #31
+ 535 02a8 E6D1     		bne	.L30
+ 265:snake.c       ****   for(row=0; row<MAXROW; row++)
+ 536              		.loc 1 265 0
+ 537 02aa 0135     		add	r5, r5, #1
+ 538              	.LVL21:
+ 539 02ac 1F36     		add	r6, r6, #31
+ 540 02ae 142D     		cmp	r5, #20
+ 541 02b0 01D0     		beq	.L31
+ 542              	.LVL22:
+ 543              	.L25:
+ 258:snake.c       ****   for(i=0; i<snakeLength; i++)
+ 544              		.loc 1 258 0 discriminator 1
+ 545 02b2 0024     		mov	r4, #0
+ 546 02b4 E0E7     		b	.L30
+ 547              	.LVL23:
+ 548              	.L31:
+ 279:snake.c       ****   showScore();
+ 549              		.loc 1 279 0
+ 550 02b6 FFF7FAFE 		bl	showScore
+ 280:snake.c       **** }
+ 551              		.loc 1 280 0
+ 552              		@ sp needed for prologue
+ 553              	.LVL24:
+ 554              	.LVL25:
+ 555 02ba F1BC     		pop	{r0, r4, r5, r6, r7}
+ 556 02bc 01BC     		pop	{r0}
+ 557 02be 0047     		bx	r0
+ 558              	.L38:
+ 559              		.align	2
+ 560              	.L37:
+ 561 02c0 00000000 		.word	.LC7
+ 562 02c4 00000000 		.word	.LANCHOR1
+ 563 02c8 00000000 		.word	.LANCHOR0
+ 564 02cc 79020000 		.word	633
+ 565 02d0 0D000000 		.word	.LANCHOR1+13
+ 566 02d4 00020000 		.word	.LANCHOR2
+ 567 02d8 00000000 		.word	snake
+ 568              		.cfi_endproc
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 19
+
+
+ 569              	.LFE1:
+ 570              		.size	setupLevel, .-setupLevel
+ 571              		.align	1
+ 572              		.global	playSnake
+ 573              		.code	16
+ 574              		.thumb_func
+ 575              		.type	playSnake, %function
+ 576              	playSnake:
+ 577              	.LFB0:
+  80:snake.c       **** {
+ 578              		.loc 1 80 0
+ 579              		.cfi_startproc
+ 580 02dc F0B5     		push	{r4, r5, r6, r7, lr}
+ 581              	.LCFI5:
+ 582              		.cfi_def_cfa_offset 20
+ 583              		.cfi_offset 4, -20
+ 584              		.cfi_offset 5, -16
+ 585              		.cfi_offset 6, -12
+ 586              		.cfi_offset 7, -8
+ 587              		.cfi_offset 14, -4
+ 588 02de 96B0     		sub	sp, sp, #88
+ 589              	.LCFI6:
+ 590              		.cfi_def_cfa_offset 108
+ 591              	.L40:
+ 592              	.LVL26:
+  87:snake.c       ****     obstacles = 4;
+ 593              		.loc 1 87 0
+ 594 02e0 7F4C     		ldr	r4, .L67
+ 595 02e2 0420     		mov	r0, #4
+ 596 02e4 E067     		str	r0, [r4, #124]
+  88:snake.c       ****     level     = 1;
+ 597              		.loc 1 88 0
+ 598 02e6 7F4C     		ldr	r4, .L67+4
+ 599 02e8 0123     		mov	r3, #1
+ 600 02ea 6360     		str	r3, [r4, #4]
+  89:snake.c       ****     score     = 0;
+ 601              		.loc 1 89 0
+ 602 02ec 0023     		mov	r3, #0
+ 603 02ee A360     		str	r3, [r4, #8]
+  90:snake.c       ****     speed     = 14;
+ 604              		.loc 1 90 0
+ 605 02f0 7D4E     		ldr	r6, .L67+8
+  91:snake.c       ****     srand(ms);        //Ensure random seed initiated
+ 606              		.loc 1 91 0
+ 607 02f2 7E4B     		ldr	r3, .L67+12
+  90:snake.c       ****     speed     = 14;
+ 608              		.loc 1 90 0
+ 609 02f4 0E25     		mov	r5, #14
+  91:snake.c       ****     srand(ms);        //Ensure random seed initiated
+ 610              		.loc 1 91 0
+ 611 02f6 1868     		ldr	r0, [r3]
+  90:snake.c       ****     speed     = 14;
+ 612              		.loc 1 90 0
+ 613 02f8 3560     		str	r5, [r6]
+  91:snake.c       ****     srand(ms);        //Ensure random seed initiated
+ 614              		.loc 1 91 0
+ 615 02fa FFF7FEFF 		bl	srand
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 20
+
+
+  92:snake.c       ****     setupLevel();
+ 616              		.loc 1 92 0
+ 617 02fe FFF753FF 		bl	setupLevel
+ 618              	.L56:
+ 619              	.LBB2:
+ 100:snake.c       ****       osSleep(speed * PAUSE_LENGTH);
+ 620              		.loc 1 100 0
+ 621 0302 794B     		ldr	r3, .L67+8
+ 622 0304 1868     		ldr	r0, [r3]
+ 623 0306 4000     		lsl	r0, r0, #1
+ 624 0308 FFF7FEFF 		bl	osSleep
+ 103:snake.c       ****       keypress = checkKey();
+ 625              		.loc 1 103 0
+ 626 030c FFF7FEFF 		bl	checkKey
+ 104:snake.c       ****       if (keypress != KEY_NOTHING)
+ 627              		.loc 1 104 0
+ 628 0310 071E     		sub	r7, r0, #0
+ 629 0312 0AD0     		beq	.L41
+ 106:snake.c       ****         if ((keypress == KEY_UP)    ||
+ 630              		.loc 1 106 0
+ 631 0314 431E     		sub	r3, r0, #1
+ 632 0316 1B06     		lsl	r3, r3, #24
+ 633 0318 1B0E     		lsr	r3, r3, #24
+ 634 031a 012B     		cmp	r3, #1
+ 635 031c 03D9     		bls	.L42
+ 636 031e 0428     		cmp	r0, #4
+ 637 0320 01D0     		beq	.L42
+ 108:snake.c       ****             (keypress == KEY_DOWN)  ||
+ 638              		.loc 1 108 0
+ 639 0322 0828     		cmp	r0, #8
+ 640 0324 01D1     		bne	.L41
+ 641              	.L42:
+ 110:snake.c       ****           direction = keypress;
+ 642              		.loc 1 110 0
+ 643 0326 724B     		ldr	r3, .L67+16
+ 644 0328 1870     		strb	r0, [r3]
+ 645              	.L41:
+ 114:snake.c       ****       addSegment();
+ 646              		.loc 1 114 0
+ 647 032a FFF769FE 		bl	addSegment
+ 117:snake.c       ****       gotoxy(snake[0].col, snake[0].row, 0);
+ 648              		.loc 1 117 0
+ 649 032e 714D     		ldr	r5, .L67+20
+ 650 0330 0022     		mov	r2, #0
+ 651 0332 2978     		ldrb	r1, [r5]
+ 652 0334 2879     		ldrb	r0, [r5, #4]
+ 653 0336 FFF7A9FE 		bl	gotoxy
+ 654              	.LVL27:
+ 655 033a 2A1C     		mov	r2, r5
+ 656 033c 0832     		add	r2, r2, #8
+ 120:snake.c       ****       for(i=1; i<=snakeLength; i++)
+ 657              		.loc 1 120 0
+ 658 033e 0123     		mov	r3, #1
+ 659 0340 6849     		ldr	r1, .L67+4
+ 660 0342 AC46     		mov	ip, r5
+ 661 0344 06E0     		b	.L43
+ 662              	.LVL28:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 21
+
+
+ 663              	.L44:
+ 121:snake.c       ****         snake[i-1] = snake[i];
+ 664              		.loc 1 121 0 discriminator 2
+ 665 0346 6046     		mov	r0, ip
+ 666 0348 0830     		add	r0, r0, #8
+ 667 034a 60CA     		ldmia	r2!, {r5, r6}
+ 668 034c 8446     		mov	ip, r0
+ 669 034e 0838     		sub	r0, r0, #8
+ 670 0350 60C0     		stmia	r0!, {r5, r6}
+ 120:snake.c       ****       for(i=1; i<=snakeLength; i++)
+ 671              		.loc 1 120 0 discriminator 2
+ 672 0352 0133     		add	r3, r3, #1
+ 673              	.LVL29:
+ 674              	.L43:
+ 120:snake.c       ****       for(i=1; i<=snakeLength; i++)
+ 675              		.loc 1 120 0 is_stmt 0 discriminator 1
+ 676 0354 0868     		ldr	r0, [r1]
+ 677 0356 8342     		cmp	r3, r0
+ 678 0358 F5DD     		ble	.L44
+ 120:snake.c       ****       for(i=1; i<=snakeLength; i++)
+ 679              		.loc 1 120 0
+ 680 035a 0025     		mov	r5, #0
+ 681 035c 0895     		str	r5, [sp, #32]
+ 124:snake.c       ****       for (i=0; i<=snakeLength; i++)
+ 682              		.loc 1 124 0 is_stmt 1
+ 683 035e 614D     		ldr	r5, .L67+4
+ 684 0360 0BE0     		b	.L45
+ 685              	.LVL30:
+ 686              	.L46:
+  79:snake.c       **** void playSnake(void)
+ 687              		.loc 1 79 0 discriminator 2
+ 688 0362 089E     		ldr	r6, [sp, #32]
+ 689 0364 F300     		lsl	r3, r6, #3
+ 690 0366 634E     		ldr	r6, .L67+20
+ 691 0368 9B19     		add	r3, r3, r6
+ 125:snake.c       ****         gotoxy(snake[i].col, snake[i].row, 0xfc);
+ 692              		.loc 1 125 0 discriminator 2
+ 693 036a 1879     		ldrb	r0, [r3, #4]
+ 694              	.LVL31:
+ 695 036c 1978     		ldrb	r1, [r3]
+ 696 036e FC22     		mov	r2, #252
+ 697 0370 FFF78CFE 		bl	gotoxy
+ 124:snake.c       ****       for (i=0; i<=snakeLength; i++)
+ 698              		.loc 1 124 0 discriminator 2
+ 699 0374 089E     		ldr	r6, [sp, #32]
+ 700 0376 0136     		add	r6, r6, #1
+ 701 0378 0896     		str	r6, [sp, #32]
+ 702              	.LVL32:
+ 703              	.L45:
+ 124:snake.c       ****       for (i=0; i<=snakeLength; i++)
+ 704              		.loc 1 124 0 is_stmt 0 discriminator 1
+ 705 037a 2B68     		ldr	r3, [r5]
+ 706 037c 0898     		ldr	r0, [sp, #32]
+ 707 037e 2E1C     		mov	r6, r5
+ 708 0380 9842     		cmp	r0, r3
+ 709 0382 EEDD     		ble	.L46
+ 128:snake.c       ****       if (firstPress == TRUE)
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 22
+
+
+ 710              		.loc 1 128 0 is_stmt 1
+ 711 0384 2B7B     		ldrb	r3, [r5, #12]
+ 712 0386 012B     		cmp	r3, #1
+ 713 0388 05D1     		bne	.L47
+ 714              	.L64:
+ 130:snake.c       ****         while(KEY_NOTHING == checkKey())
+ 715              		.loc 1 130 0 discriminator 1
+ 716 038a FFF7FEFF 		bl	checkKey
+ 717 038e 0028     		cmp	r0, #0
+ 718 0390 FBD0     		beq	.L64
+ 132:snake.c       ****         firstPress = FALSE;
+ 719              		.loc 1 132 0
+ 720 0392 0023     		mov	r3, #0
+ 721 0394 3373     		strb	r3, [r6, #12]
+ 722              	.L47:
+ 136:snake.c       ****       if ((snake[snakeLength-1].row >= MAXROW) || (snake[snakeLength-1].row < 0) ||
+ 723              		.loc 1 136 0
+ 724 0396 3268     		ldr	r2, [r6]
+ 725 0398 5648     		ldr	r0, .L67+20
+ 726 039a 0892     		str	r2, [sp, #32]
+ 727 039c 013A     		sub	r2, r2, #1
+ 728 039e D100     		lsl	r1, r2, #3
+ 729 03a0 0B58     		ldr	r3, [r1, r0]
+ 730 03a2 132B     		cmp	r3, #19
+ 731 03a4 0CD8     		bhi	.L62
+ 137:snake.c       ****           (snake[snakeLength-1].col >= MAXCOL) || (snake[snakeLength-1].col < 0) ||
+ 732              		.loc 1 137 0 discriminator 1
+ 733 03a6 4118     		add	r1, r0, r1
+ 734 03a8 4968     		ldr	r1, [r1, #4]
+ 136:snake.c       ****       if ((snake[snakeLength-1].row >= MAXROW) || (snake[snakeLength-1].row < 0) ||
+ 735              		.loc 1 136 0 discriminator 1
+ 736 03aa 1E29     		cmp	r1, #30
+ 737 03ac 08DC     		bgt	.L62
+ 137:snake.c       ****           (snake[snakeLength-1].col >= MAXCOL) || (snake[snakeLength-1].col < 0) ||
+ 738              		.loc 1 137 0
+ 739 03ae 0029     		cmp	r1, #0
+ 740 03b0 06DB     		blt	.L62
+ 140:snake.c       ****           (screenGrid[snake[snakeLength-1].row][snake[snakeLength-1].col] == 'x'))
+ 741              		.loc 1 140 0 discriminator 1
+ 742 03b2 5801     		lsl	r0, r3, #5
+ 743 03b4 C01A     		sub	r0, r0, r3
+ 744 03b6 0D36     		add	r6, r6, #13
+ 745 03b8 4118     		add	r1, r0, r1
+ 137:snake.c       ****           (snake[snakeLength-1].col >= MAXCOL) || (snake[snakeLength-1].col < 0) ||
+ 746              		.loc 1 137 0 discriminator 1
+ 747 03ba 8957     		ldrsb	r1, [r1, r6]
+ 748 03bc 7829     		cmp	r1, #120
+ 749 03be 00D1     		bne	.L49
+ 750              	.L62:
+ 141:snake.c       ****         keypress = KEY_CENTER;
+ 751              		.loc 1 141 0
+ 752 03c0 1027     		mov	r7, #16
+ 753              	.L49:
+ 754              	.LVL33:
+ 146:snake.c       ****             (snake[snakeLength-1].col) == (snake[i].col))
+ 755              		.loc 1 146 0
+ 756 03c2 4C4D     		ldr	r5, .L67+20
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 23
+
+
+ 144:snake.c       ****       for (i=0; i<snakeLength-1; i++)
+ 757              		.loc 1 144 0
+ 758 03c4 0021     		mov	r1, #0
+ 146:snake.c       ****             (snake[snakeLength-1].col) == (snake[i].col))
+ 759              		.loc 1 146 0
+ 760 03c6 D600     		lsl	r6, r2, #3
+ 144:snake.c       ****       for (i=0; i<snakeLength-1; i++)
+ 761              		.loc 1 144 0
+ 762 03c8 081C     		mov	r0, r1
+ 146:snake.c       ****             (snake[snakeLength-1].col) == (snake[i].col))
+ 763              		.loc 1 146 0
+ 764 03ca AE19     		add	r6, r5, r6
+ 765 03cc 9C46     		mov	ip, r3
+ 144:snake.c       ****       for (i=0; i<snakeLength-1; i++)
+ 766              		.loc 1 144 0
+ 767 03ce 0AE0     		b	.L50
+ 768              	.LVL34:
+ 769              	.L53:
+ 145:snake.c       ****         if ((snake[snakeLength-1].row) == (snake[i].row) &&
+ 770              		.loc 1 145 0
+ 771 03d0 484B     		ldr	r3, .L67+20
+ 772 03d2 CD18     		add	r5, r1, r3
+ 773 03d4 2B68     		ldr	r3, [r5]
+ 774 03d6 9C45     		cmp	ip, r3
+ 775 03d8 03D1     		bne	.L51
+ 145:snake.c       ****         if ((snake[snakeLength-1].row) == (snake[i].row) &&
+ 776              		.loc 1 145 0 is_stmt 0 discriminator 1
+ 777 03da 7368     		ldr	r3, [r6, #4]
+ 778 03dc 6D68     		ldr	r5, [r5, #4]
+ 779 03de AB42     		cmp	r3, r5
+ 780 03e0 05D0     		beq	.L63
+ 781              	.L51:
+ 144:snake.c       ****       for (i=0; i<snakeLength-1; i++)
+ 782              		.loc 1 144 0 is_stmt 1
+ 783 03e2 0130     		add	r0, r0, #1
+ 784              	.LVL35:
+ 785 03e4 0831     		add	r1, r1, #8
+ 786              	.LVL36:
+ 787              	.L50:
+ 144:snake.c       ****       for (i=0; i<snakeLength-1; i++)
+ 788              		.loc 1 144 0 is_stmt 0 discriminator 1
+ 789 03e6 9042     		cmp	r0, r2
+ 790 03e8 F2DB     		blt	.L53
+ 791 03ea 6346     		mov	r3, ip
+ 792 03ec 01E0     		b	.L52
+ 793              	.L63:
+ 794 03ee 6346     		mov	r3, ip
+ 148:snake.c       ****           keypress = KEY_CENTER;   //exit loop - game over
+ 795              		.loc 1 148 0 is_stmt 1
+ 796 03f0 1027     		mov	r7, #16
+ 797              	.LVL37:
+ 798              	.L52:
+ 153:snake.c       ****       if (screenGrid[snake[snakeLength-1].row][snake[snakeLength-1].col] == '.')
+ 799              		.loc 1 153 0
+ 800 03f2 4049     		ldr	r1, .L67+20
+ 801 03f4 D200     		lsl	r2, r2, #3
+ 802 03f6 8A18     		add	r2, r1, r2
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 24
+
+
+ 803 03f8 5268     		ldr	r2, [r2, #4]
+ 804 03fa 5901     		lsl	r1, r3, #5
+ 805 03fc CB1A     		sub	r3, r1, r3
+ 806 03fe 3E4D     		ldr	r5, .L67+24
+ 807 0400 9B18     		add	r3, r3, r2
+ 808 0402 5B57     		ldrsb	r3, [r3, r5]
+ 809 0404 2E2B     		cmp	r3, #46
+ 810 0406 2AD1     		bne	.L54
+ 156:snake.c       ****         score += snakeLength * obstacles;
+ 811              		.loc 1 156 0
+ 812 0408 354D     		ldr	r5, .L67
+ 813 040a 089E     		ldr	r6, [sp, #32]
+ 814 040c EB6F     		ldr	r3, [r5, #124]
+ 815 040e 7343     		mul	r3, r6
+ 816 0410 A268     		ldr	r2, [r4, #8]
+ 817 0412 D318     		add	r3, r2, r3
+ 818 0414 A360     		str	r3, [r4, #8]
+ 157:snake.c       ****         showScore();
+ 819              		.loc 1 157 0
+ 820 0416 FFF74AFE 		bl	showScore
+ 821              	.LVL38:
+ 158:snake.c       ****         snakeLength++;
+ 822              		.loc 1 158 0
+ 823 041a 2668     		ldr	r6, [r4]
+ 824 041c 0136     		add	r6, r6, #1
+ 825 041e 2660     		str	r6, [r4]
+ 159:snake.c       ****         addSegment();
+ 826              		.loc 1 159 0
+ 827 0420 FFF7EEFD 		bl	addSegment
+ 162:snake.c       ****         if (snakeLength == (level + 3) * 2)
+ 828              		.loc 1 162 0
+ 829 0424 6068     		ldr	r0, [r4, #4]
+ 830 0426 C31C     		add	r3, r0, #3
+ 831 0428 5B00     		lsl	r3, r3, #1
+ 832 042a 9E42     		cmp	r6, r3
+ 833 042c 17D1     		bne	.L54
+ 164:snake.c       ****           score += level * 1000;
+ 834              		.loc 1 164 0
+ 835 042e FA23     		mov	r3, #250
+ 836 0430 9B00     		lsl	r3, r3, #2
+ 837 0432 4343     		mul	r3, r0
+ 838 0434 A268     		ldr	r2, [r4, #8]
+ 839 0436 D318     		add	r3, r2, r3
+ 840 0438 A360     		str	r3, [r4, #8]
+ 165:snake.c       ****           obstacles += 2;          //add obstacles
+ 841              		.loc 1 165 0
+ 842 043a EB6F     		ldr	r3, [r5, #124]
+ 166:snake.c       ****           level++;
+ 843              		.loc 1 166 0
+ 844 043c 0130     		add	r0, r0, #1
+ 165:snake.c       ****           obstacles += 2;          //add obstacles
+ 845              		.loc 1 165 0
+ 846 043e 0233     		add	r3, r3, #2
+ 847 0440 EB67     		str	r3, [r5, #124]
+ 166:snake.c       ****           level++;
+ 848              		.loc 1 166 0
+ 849 0442 6060     		str	r0, [r4, #4]
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 25
+
+
+ 169:snake.c       ****           if ((level % 5 == 0) && (speed > 1))
+ 850              		.loc 1 169 0
+ 851 0444 0521     		mov	r1, #5
+ 852 0446 FFF7FEFF 		bl	__modsi3
+ 853 044a 0028     		cmp	r0, #0
+ 854 044c 05D1     		bne	.L55
+ 169:snake.c       ****           if ((level % 5 == 0) && (speed > 1))
+ 855              		.loc 1 169 0 is_stmt 0 discriminator 1
+ 856 044e 264B     		ldr	r3, .L67+8
+ 857 0450 1A68     		ldr	r2, [r3]
+ 858 0452 012A     		cmp	r2, #1
+ 859 0454 01DD     		ble	.L55
+ 170:snake.c       ****             speed--;
+ 860              		.loc 1 170 0 is_stmt 1
+ 861 0456 013A     		sub	r2, r2, #1
+ 862 0458 1A60     		str	r2, [r3]
+ 863              	.L55:
+ 173:snake.c       ****           setupLevel();
+ 864              		.loc 1 173 0
+ 865 045a FFF7A5FE 		bl	setupLevel
+ 866              	.L54:
+ 867              	.LBE2:
+ 176:snake.c       ****     } while (keypress != KEY_CENTER);
+ 868              		.loc 1 176 0
+ 869 045e 102F     		cmp	r7, #16
+ 870 0460 00D0     		beq	.LCB743
+ 871 0462 4EE7     		b	.L56	@long jump
+ 872              	.LCB743:
+ 179:snake.c       ****     if (score > high_score)
+ 873              		.loc 1 179 0
+ 874 0464 1F4B     		ldr	r3, .L67+4
+ 875 0466 9A68     		ldr	r2, [r3, #8]
+ 876 0468 1F4B     		ldr	r3, .L67+8
+ 877 046a 5968     		ldr	r1, [r3, #4]
+ 878 046c 8A42     		cmp	r2, r1
+ 879 046e 00DD     		ble	.L57
+ 180:snake.c       ****       high_score = score;
+ 880              		.loc 1 180 0
+ 881 0470 5A60     		str	r2, [r3, #4]
+ 882              	.L57:
+ 181:snake.c       ****     showScore();
+ 883              		.loc 1 181 0
+ 884 0472 FFF71CFE 		bl	showScore
+ 885              	.LBB3:
+ 186:snake.c       ****       menu.xPos = 10;
+ 886              		.loc 1 186 0
+ 887 0476 0AAB     		add	r3, sp, #40
+ 193:snake.c       ****       menu.headerTextXpos = 20;
+ 888              		.loc 1 193 0
+ 889 0478 1420     		mov	r0, #20
+ 890 047a 1873     		strb	r0, [r3, #12]
+ 194:snake.c       ****       menu.pChoice[0] = "Restart game";
+ 891              		.loc 1 194 0
+ 892 047c 1F48     		ldr	r0, .L67+28
+ 186:snake.c       ****       menu.xPos = 10;
+ 893              		.loc 1 186 0
+ 894 047e 0A22     		mov	r2, #10
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 26
+
+
+ 895 0480 1A70     		strb	r2, [r3]
+ 194:snake.c       ****       menu.pChoice[0] = "Restart game";
+ 896              		.loc 1 194 0
+ 897 0482 0E90     		str	r0, [sp, #56]
+ 187:snake.c       ****       menu.yPos = 40;
+ 898              		.loc 1 187 0
+ 899 0484 2822     		mov	r2, #40
+ 195:snake.c       ****       menu.pChoice[1] = "End game";
+ 900              		.loc 1 195 0
+ 901 0486 1E48     		ldr	r0, .L67+32
+ 187:snake.c       ****       menu.yPos = 40;
+ 902              		.loc 1 187 0
+ 903 0488 5A70     		strb	r2, [r3, #1]
+ 188:snake.c       ****       menu.xLen = 6+(12*8);
+ 904              		.loc 1 188 0
+ 905 048a 6622     		mov	r2, #102
+ 906 048c 9A70     		strb	r2, [r3, #2]
+ 191:snake.c       ****       menu.initialChoice = 0;
+ 907              		.loc 1 191 0
+ 908 048e 0021     		mov	r1, #0
+ 195:snake.c       ****       menu.pChoice[1] = "End game";
+ 909              		.loc 1 195 0
+ 910 0490 0F90     		str	r0, [sp, #60]
+ 189:snake.c       ****       menu.yLen = 4*14;
+ 911              		.loc 1 189 0
+ 912 0492 3822     		mov	r2, #56
+ 196:snake.c       ****       menu.bgColor       = 0;
+ 913              		.loc 1 196 0
+ 914 0494 14A8     		add	r0, sp, #80
+ 189:snake.c       ****       menu.yLen = 4*14;
+ 915              		.loc 1 189 0
+ 916 0496 DA70     		strb	r2, [r3, #3]
+ 191:snake.c       ****       menu.initialChoice = 0;
+ 917              		.loc 1 191 0
+ 918 0498 5971     		strb	r1, [r3, #5]
+ 196:snake.c       ****       menu.bgColor       = 0;
+ 919              		.loc 1 196 0
+ 920 049a 0170     		strb	r1, [r0]
+ 198:snake.c       ****       menu.headerColor   = 0;
+ 921              		.loc 1 198 0
+ 922 049c 8170     		strb	r1, [r0, #2]
+ 197:snake.c       ****       menu.borderColor   = 0x6d;
+ 923              		.loc 1 197 0
+ 924 049e 6D24     		mov	r4, #109
+ 190:snake.c       ****       menu.noOfChoices = 2;
+ 925              		.loc 1 190 0
+ 926 04a0 0222     		mov	r2, #2
+ 199:snake.c       ****       menu.choicesColor  = 0xfd;
+ 927              		.loc 1 199 0
+ 928 04a2 6946     		mov	r1, sp
+ 190:snake.c       ****       menu.noOfChoices = 2;
+ 929              		.loc 1 190 0
+ 930 04a4 1A71     		strb	r2, [r3, #4]
+ 197:snake.c       ****       menu.borderColor   = 0x6d;
+ 931              		.loc 1 197 0
+ 932 04a6 4470     		strb	r4, [r0, #1]
+ 199:snake.c       ****       menu.choicesColor  = 0xfd;
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 27
+
+
+ 933              		.loc 1 199 0
+ 934 04a8 5331     		add	r1, r1, #83
+ 935 04aa FD20     		mov	r0, #253
+ 192:snake.c       ****       menu.pHeaderText = "Game over!";
+ 936              		.loc 1 192 0
+ 937 04ac 154A     		ldr	r2, .L67+36
+ 199:snake.c       ****       menu.choicesColor  = 0xfd;
+ 938              		.loc 1 199 0
+ 939 04ae 0870     		strb	r0, [r1]
+ 200:snake.c       ****       menu.selectedColor = 0xe0;
+ 940              		.loc 1 200 0
+ 941 04b0 E020     		mov	r0, #224
+ 942 04b2 15A9     		add	r1, sp, #84
+ 943 04b4 0870     		strb	r0, [r1]
+ 192:snake.c       ****       menu.pHeaderText = "Game over!";
+ 944              		.loc 1 192 0
+ 945 04b6 0C92     		str	r2, [sp, #48]
+ 202:snake.c       ****       switch(drawMenu(menu))
+ 946              		.loc 1 202 0
+ 947 04b8 0EA9     		add	r1, sp, #56
+ 948 04ba 6846     		mov	r0, sp
+ 949 04bc 70C9     		ldmia	r1!, {r4, r5, r6}
+ 950 04be 70C0     		stmia	r0!, {r4, r5, r6}
+ 951 04c0 70C9     		ldmia	r1!, {r4, r5, r6}
+ 952 04c2 70C0     		stmia	r0!, {r4, r5, r6}
+ 953 04c4 30C9     		ldmia	r1!, {r4, r5}
+ 954 04c6 30C0     		stmia	r0!, {r4, r5}
+ 955 04c8 0A98     		ldr	r0, [sp, #40]
+ 956 04ca 0B99     		ldr	r1, [sp, #44]
+ 957 04cc 0D9B     		ldr	r3, [sp, #52]
+ 958 04ce FFF7FEFF 		bl	drawMenu
+ 959 04d2 0128     		cmp	r0, #1
+ 960 04d4 00D0     		beq	.LCB798
+ 961 04d6 03E7     		b	.L40	@long jump
+ 962              	.LCB798:
+ 963              	.LBE3:
+ 211:snake.c       **** }
+ 964              		.loc 1 211 0
+ 965 04d8 16B0     		add	sp, sp, #88
+ 966              		@ sp needed for prologue
+ 967              	.LVL39:
+ 968 04da F0BC     		pop	{r4, r5, r6, r7}
+ 969 04dc 01BC     		pop	{r0}
+ 970 04de 0047     		bx	r0
+ 971              	.L68:
+ 972              		.align	2
+ 973              	.L67:
+ 974 04e0 00020000 		.word	.LANCHOR2
+ 975 04e4 00000000 		.word	.LANCHOR1
+ 976 04e8 80020000 		.word	.LANCHOR3
+ 977 04ec 00000000 		.word	ms
+ 978 04f0 00000000 		.word	.LANCHOR0
+ 979 04f4 00000000 		.word	snake
+ 980 04f8 0D000000 		.word	.LANCHOR1+13
+ 981 04fc 11000000 		.word	.LC26
+ 982 0500 1E000000 		.word	.LC28
+ 983 0504 06000000 		.word	.LC24
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 28
+
+
+ 984              		.cfi_endproc
+ 985              	.LFE0:
+ 986              		.size	playSnake, .-playSnake
+ 987              		.comm	snake,800,4
+ 988              		.section	.rodata.str1.1,"aMS",%progbits,1
+ 989              	.LC7:
+ 990 0000 536E616B 		.ascii	"Snake\000"
+ 990      6500
+ 991              	.LC24:
+ 992 0006 47616D65 		.ascii	"Game over!\000"
+ 992      206F7665 
+ 992      722100
+ 993              	.LC26:
+ 994 0011 52657374 		.ascii	"Restart game\000"
+ 994      61727420 
+ 994      67616D65 
+ 994      00
+ 995              	.LC28:
+ 996 001e 456E6420 		.ascii	"End game\000"
+ 996      67616D65 
+ 996      00
+ 997              		.data
+ 998              		.set	.LANCHOR0,. + 0
+ 999              		.type	direction, %object
+ 1000              		.size	direction, 1
+ 1001              	direction:
+ 1002 0000 02       		.byte	2
+ 1003              		.bss
+ 1004              		.align	2
+ 1005              		.set	.LANCHOR1,. + 0
+ 1006              		.set	.LANCHOR2,. + 512
+ 1007              		.set	.LANCHOR3,. + 640
+ 1008              		.type	snakeLength, %object
+ 1009              		.size	snakeLength, 4
+ 1010              	snakeLength:
+ 1011 0000 00000000 		.space	4
+ 1012              		.type	level, %object
+ 1013              		.size	level, 4
+ 1014              	level:
+ 1015 0004 00000000 		.space	4
+ 1016              		.type	score, %object
+ 1017              		.size	score, 4
+ 1018              	score:
+ 1019 0008 00000000 		.space	4
+ 1020              		.type	firstPress, %object
+ 1021              		.size	firstPress, 1
+ 1022              	firstPress:
+ 1023 000c 00       		.space	1
+ 1024              		.type	screenGrid, %object
+ 1025              		.size	screenGrid, 620
+ 1026              	screenGrid:
+ 1027 000d 00000000 		.space	620
+ 1027      00000000 
+ 1027      00000000 
+ 1027      00000000 
+ 1027      00000000 
+ 1028 0279 000000   		.space	3
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 29
+
+
+ 1029              		.type	obstacles, %object
+ 1030              		.size	obstacles, 4
+ 1031              	obstacles:
+ 1032 027c 00000000 		.space	4
+ 1033              		.type	speed, %object
+ 1034              		.size	speed, 4
+ 1035              	speed:
+ 1036 0280 00000000 		.space	4
+ 1037              		.type	high_score, %object
+ 1038              		.size	high_score, 4
+ 1039              	high_score:
+ 1040 0284 00000000 		.space	4
+ 1041              		.text
+ 1042              	.Letext0:
+ 1043              		.file 2 "./startup/../pre_emptive_os/api/../api/general.h"
+ 1044              		.file 3 "select.h"
+ 1045              		.section	.debug_info,"",%progbits
+ 1046              	.Ldebug_info0:
+ 1047 0000 DD030000 		.4byte	0x3dd
+ 1048 0004 0200     		.2byte	0x2
+ 1049 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 1050 000a 04       		.byte	0x4
+ 1051 000b 01       		.uleb128 0x1
+ 1052 000c CD000000 		.4byte	.LASF44
+ 1053 0010 01       		.byte	0x1
+ 1054 0011 D9000000 		.4byte	.LASF45
+ 1055 0015 09010000 		.4byte	.LASF46
+ 1056 0019 00000000 		.4byte	.Ltext0
+ 1057 001d 08050000 		.4byte	.Letext0
+ 1058 0021 00000000 		.4byte	.Ldebug_line0
+ 1059 0025 02       		.uleb128 0x2
+ 1060 0026 74553800 		.ascii	"tU8\000"
+ 1061 002a 02       		.byte	0x2
+ 1062 002b 47       		.byte	0x47
+ 1063 002c 30000000 		.4byte	0x30
+ 1064 0030 03       		.uleb128 0x3
+ 1065 0031 01       		.byte	0x1
+ 1066 0032 08       		.byte	0x8
+ 1067 0033 8D000000 		.4byte	.LASF0
+ 1068 0037 03       		.uleb128 0x3
+ 1069 0038 02       		.byte	0x2
+ 1070 0039 07       		.byte	0x7
+ 1071 003a BA000000 		.4byte	.LASF1
+ 1072 003e 04       		.uleb128 0x4
+ 1073 003f BE010000 		.4byte	.LASF2
+ 1074 0043 02       		.byte	0x2
+ 1075 0044 49       		.byte	0x49
+ 1076 0045 49000000 		.4byte	0x49
+ 1077 0049 03       		.uleb128 0x3
+ 1078 004a 04       		.byte	0x4
+ 1079 004b 07       		.byte	0x7
+ 1080 004c 44010000 		.4byte	.LASF3
+ 1081 0050 02       		.uleb128 0x2
+ 1082 0051 74533800 		.ascii	"tS8\000"
+ 1083 0055 02       		.byte	0x2
+ 1084 0056 4A       		.byte	0x4a
+ 1085 0057 5B000000 		.4byte	0x5b
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 30
+
+
+ 1086 005b 03       		.uleb128 0x3
+ 1087 005c 01       		.byte	0x1
+ 1088 005d 06       		.byte	0x6
+ 1089 005e 03020000 		.4byte	.LASF4
+ 1090 0062 03       		.uleb128 0x3
+ 1091 0063 02       		.byte	0x2
+ 1092 0064 05       		.byte	0x5
+ 1093 0065 C8010000 		.4byte	.LASF5
+ 1094 0069 04       		.uleb128 0x4
+ 1095 006a 73000000 		.4byte	.LASF6
+ 1096 006e 02       		.byte	0x2
+ 1097 006f 4C       		.byte	0x4c
+ 1098 0070 74000000 		.4byte	0x74
+ 1099 0074 05       		.uleb128 0x5
+ 1100 0075 04       		.byte	0x4
+ 1101 0076 05       		.byte	0x5
+ 1102 0077 696E7400 		.ascii	"int\000"
+ 1103 007b 04       		.uleb128 0x4
+ 1104 007c 0F020000 		.4byte	.LASF7
+ 1105 0080 02       		.byte	0x2
+ 1106 0081 4D       		.byte	0x4d
+ 1107 0082 30000000 		.4byte	0x30
+ 1108 0086 06       		.uleb128 0x6
+ 1109 0087 04       		.byte	0x4
+ 1110 0088 25000000 		.4byte	0x25
+ 1111 008c 03       		.uleb128 0x3
+ 1112 008d 04       		.byte	0x4
+ 1113 008e 07       		.byte	0x7
+ 1114 008f A8000000 		.4byte	.LASF8
+ 1115 0093 03       		.uleb128 0x3
+ 1116 0094 08       		.byte	0x8
+ 1117 0095 05       		.byte	0x5
+ 1118 0096 B0010000 		.4byte	.LASF9
+ 1119 009a 03       		.uleb128 0x3
+ 1120 009b 08       		.byte	0x8
+ 1121 009c 07       		.byte	0x7
+ 1122 009d 68010000 		.4byte	.LASF10
+ 1123 00a1 03       		.uleb128 0x3
+ 1124 00a2 04       		.byte	0x4
+ 1125 00a3 05       		.byte	0x5
+ 1126 00a4 EA010000 		.4byte	.LASF11
+ 1127 00a8 03       		.uleb128 0x3
+ 1128 00a9 01       		.byte	0x1
+ 1129 00aa 08       		.byte	0x8
+ 1130 00ab C3010000 		.4byte	.LASF12
+ 1131 00af 07       		.uleb128 0x7
+ 1132 00b0 30       		.byte	0x30
+ 1133 00b1 03       		.byte	0x3
+ 1134 00b2 19       		.byte	0x19
+ 1135 00b3 7C010000 		.4byte	0x17c
+ 1136 00b7 08       		.uleb128 0x8
+ 1137 00b8 11000000 		.4byte	.LASF13
+ 1138 00bc 03       		.byte	0x3
+ 1139 00bd 1B       		.byte	0x1b
+ 1140 00be 25000000 		.4byte	0x25
+ 1141 00c2 02       		.byte	0x2
+ 1142 00c3 23       		.byte	0x23
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 31
+
+
+ 1143 00c4 00       		.uleb128 0
+ 1144 00c5 08       		.uleb128 0x8
+ 1145 00c6 FE010000 		.4byte	.LASF14
+ 1146 00ca 03       		.byte	0x3
+ 1147 00cb 1C       		.byte	0x1c
+ 1148 00cc 25000000 		.4byte	0x25
+ 1149 00d0 02       		.byte	0x2
+ 1150 00d1 23       		.byte	0x23
+ 1151 00d2 01       		.uleb128 0x1
+ 1152 00d3 08       		.uleb128 0x8
+ 1153 00d4 9B000000 		.4byte	.LASF15
+ 1154 00d8 03       		.byte	0x3
+ 1155 00d9 1D       		.byte	0x1d
+ 1156 00da 25000000 		.4byte	0x25
+ 1157 00de 02       		.byte	0x2
+ 1158 00df 23       		.byte	0x23
+ 1159 00e0 02       		.uleb128 0x2
+ 1160 00e1 08       		.uleb128 0x8
+ 1161 00e2 34010000 		.4byte	.LASF16
+ 1162 00e6 03       		.byte	0x3
+ 1163 00e7 1E       		.byte	0x1e
+ 1164 00e8 25000000 		.4byte	0x25
+ 1165 00ec 02       		.byte	0x2
+ 1166 00ed 23       		.byte	0x23
+ 1167 00ee 03       		.uleb128 0x3
+ 1168 00ef 08       		.uleb128 0x8
+ 1169 00f0 05000000 		.4byte	.LASF17
+ 1170 00f4 03       		.byte	0x3
+ 1171 00f5 1F       		.byte	0x1f
+ 1172 00f6 25000000 		.4byte	0x25
+ 1173 00fa 02       		.byte	0x2
+ 1174 00fb 23       		.byte	0x23
+ 1175 00fc 04       		.uleb128 0x4
+ 1176 00fd 08       		.uleb128 0x8
+ 1177 00fe FB000000 		.4byte	.LASF18
+ 1178 0102 03       		.byte	0x3
+ 1179 0103 20       		.byte	0x20
+ 1180 0104 25000000 		.4byte	0x25
+ 1181 0108 02       		.byte	0x2
+ 1182 0109 23       		.byte	0x23
+ 1183 010a 05       		.uleb128 0x5
+ 1184 010b 08       		.uleb128 0x8
+ 1185 010c 33000000 		.4byte	.LASF19
+ 1186 0110 03       		.byte	0x3
+ 1187 0111 21       		.byte	0x21
+ 1188 0112 86000000 		.4byte	0x86
+ 1189 0116 02       		.byte	0x2
+ 1190 0117 23       		.byte	0x23
+ 1191 0118 08       		.uleb128 0x8
+ 1192 0119 08       		.uleb128 0x8
+ 1193 011a 5E000000 		.4byte	.LASF20
+ 1194 011e 03       		.byte	0x3
+ 1195 011f 22       		.byte	0x22
+ 1196 0120 25000000 		.4byte	0x25
+ 1197 0124 02       		.byte	0x2
+ 1198 0125 23       		.byte	0x23
+ 1199 0126 0C       		.uleb128 0xc
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 32
+
+
+ 1200 0127 08       		.uleb128 0x8
+ 1201 0128 A0000000 		.4byte	.LASF21
+ 1202 012c 03       		.byte	0x3
+ 1203 012d 23       		.byte	0x23
+ 1204 012e 7C010000 		.4byte	0x17c
+ 1205 0132 02       		.byte	0x2
+ 1206 0133 23       		.byte	0x23
+ 1207 0134 10       		.uleb128 0x10
+ 1208 0135 08       		.uleb128 0x8
+ 1209 0136 56000000 		.4byte	.LASF22
+ 1210 013a 03       		.byte	0x3
+ 1211 013b 24       		.byte	0x24
+ 1212 013c 25000000 		.4byte	0x25
+ 1213 0140 02       		.byte	0x2
+ 1214 0141 23       		.byte	0x23
+ 1215 0142 28       		.uleb128 0x28
+ 1216 0143 08       		.uleb128 0x8
+ 1217 0144 7F010000 		.4byte	.LASF23
+ 1218 0148 03       		.byte	0x3
+ 1219 0149 25       		.byte	0x25
+ 1220 014a 25000000 		.4byte	0x25
+ 1221 014e 02       		.byte	0x2
+ 1222 014f 23       		.byte	0x23
+ 1223 0150 29       		.uleb128 0x29
+ 1224 0151 08       		.uleb128 0x8
+ 1225 0152 51010000 		.4byte	.LASF24
+ 1226 0156 03       		.byte	0x3
+ 1227 0157 26       		.byte	0x26
+ 1228 0158 25000000 		.4byte	0x25
+ 1229 015c 02       		.byte	0x2
+ 1230 015d 23       		.byte	0x23
+ 1231 015e 2A       		.uleb128 0x2a
+ 1232 015f 08       		.uleb128 0x8
+ 1233 0160 49000000 		.4byte	.LASF25
+ 1234 0164 03       		.byte	0x3
+ 1235 0165 27       		.byte	0x27
+ 1236 0166 25000000 		.4byte	0x25
+ 1237 016a 02       		.byte	0x2
+ 1238 016b 23       		.byte	0x23
+ 1239 016c 2B       		.uleb128 0x2b
+ 1240 016d 08       		.uleb128 0x8
+ 1241 016e DC010000 		.4byte	.LASF26
+ 1242 0172 03       		.byte	0x3
+ 1243 0173 28       		.byte	0x28
+ 1244 0174 25000000 		.4byte	0x25
+ 1245 0178 02       		.byte	0x2
+ 1246 0179 23       		.byte	0x23
+ 1247 017a 2C       		.uleb128 0x2c
+ 1248 017b 00       		.byte	0
+ 1249 017c 09       		.uleb128 0x9
+ 1250 017d 86000000 		.4byte	0x86
+ 1251 0181 8C010000 		.4byte	0x18c
+ 1252 0185 0A       		.uleb128 0xa
+ 1253 0186 8C000000 		.4byte	0x8c
+ 1254 018a 05       		.byte	0x5
+ 1255 018b 00       		.byte	0
+ 1256 018c 04       		.uleb128 0x4
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 33
+
+
+ 1257 018d 8B010000 		.4byte	.LASF27
+ 1258 0191 03       		.byte	0x3
+ 1259 0192 29       		.byte	0x29
+ 1260 0193 AF000000 		.4byte	0xaf
+ 1261 0197 0B       		.uleb128 0xb
+ 1262 0198 A3010000 		.4byte	.LASF47
+ 1263 019c 08       		.byte	0x8
+ 1264 019d 01       		.byte	0x1
+ 1265 019e 3C       		.byte	0x3c
+ 1266 019f C0010000 		.4byte	0x1c0
+ 1267 01a3 0C       		.uleb128 0xc
+ 1268 01a4 726F7700 		.ascii	"row\000"
+ 1269 01a8 01       		.byte	0x1
+ 1270 01a9 3E       		.byte	0x3e
+ 1271 01aa 69000000 		.4byte	0x69
+ 1272 01ae 02       		.byte	0x2
+ 1273 01af 23       		.byte	0x23
+ 1274 01b0 00       		.uleb128 0
+ 1275 01b1 0C       		.uleb128 0xc
+ 1276 01b2 636F6C00 		.ascii	"col\000"
+ 1277 01b6 01       		.byte	0x1
+ 1278 01b7 3F       		.byte	0x3f
+ 1279 01b8 69000000 		.4byte	0x69
+ 1280 01bc 02       		.byte	0x2
+ 1281 01bd 23       		.byte	0x23
+ 1282 01be 04       		.uleb128 0x4
+ 1283 01bf 00       		.byte	0
+ 1284 01c0 0D       		.uleb128 0xd
+ 1285 01c1 82000000 		.4byte	.LASF48
+ 1286 01c5 01       		.byte	0x1
+ 1287 01c6 5301     		.2byte	0x153
+ 1288 01c8 00000000 		.4byte	.LFB3
+ 1289 01cc 8C000000 		.4byte	.LFE3
+ 1290 01d0 00000000 		.4byte	.LLST0
+ 1291 01d4 0E       		.uleb128 0xe
+ 1292 01d5 2C000000 		.4byte	.LASF49
+ 1293 01d9 01       		.byte	0x1
+ 1294 01da 6D01     		.2byte	0x16d
+ 1295 01dc 01       		.byte	0x1
+ 1296 01dd 8C000000 		.4byte	.LFB4
+ 1297 01e1 AE000000 		.4byte	.LFE4
+ 1298 01e5 20000000 		.4byte	.LLST1
+ 1299 01e9 1A020000 		.4byte	0x21a
+ 1300 01ed 0F       		.uleb128 0xf
+ 1301 01ee 7800     		.ascii	"x\000"
+ 1302 01f0 01       		.byte	0x1
+ 1303 01f1 6D01     		.2byte	0x16d
+ 1304 01f3 25000000 		.4byte	0x25
+ 1305 01f7 40000000 		.4byte	.LLST2
+ 1306 01fb 0F       		.uleb128 0xf
+ 1307 01fc 7900     		.ascii	"y\000"
+ 1308 01fe 01       		.byte	0x1
+ 1309 01ff 6D01     		.2byte	0x16d
+ 1310 0201 25000000 		.4byte	0x25
+ 1311 0205 53000000 		.4byte	.LLST3
+ 1312 0209 10       		.uleb128 0x10
+ 1313 020a F5000000 		.4byte	.LASF28
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 34
+
+
+ 1314 020e 01       		.byte	0x1
+ 1315 020f 6D01     		.2byte	0x16d
+ 1316 0211 25000000 		.4byte	0x25
+ 1317 0215 66000000 		.4byte	.LLST4
+ 1318 0219 00       		.byte	0
+ 1319 021a 11       		.uleb128 0x11
+ 1320 021b D2010000 		.4byte	.LASF29
+ 1321 021f 01       		.byte	0x1
+ 1322 0220 2101     		.2byte	0x121
+ 1323 0222 AE000000 		.4byte	.LFB2
+ 1324 0226 A8010000 		.4byte	.LFE2
+ 1325 022a 79000000 		.4byte	.LLST5
+ 1326 022e 42020000 		.4byte	0x242
+ 1327 0232 12       		.uleb128 0x12
+ 1328 0233 73747200 		.ascii	"str\000"
+ 1329 0237 01       		.byte	0x1
+ 1330 0238 2301     		.2byte	0x123
+ 1331 023a 42020000 		.4byte	0x242
+ 1332 023e 02       		.byte	0x2
+ 1333 023f 91       		.byte	0x91
+ 1334 0240 5C       		.sleb128 -36
+ 1335 0241 00       		.byte	0
+ 1336 0242 09       		.uleb128 0x9
+ 1337 0243 25000000 		.4byte	0x25
+ 1338 0247 52020000 		.4byte	0x252
+ 1339 024b 0A       		.uleb128 0xa
+ 1340 024c 8C000000 		.4byte	0x8c
+ 1341 0250 0C       		.byte	0xc
+ 1342 0251 00       		.byte	0
+ 1343 0252 13       		.uleb128 0x13
+ 1344 0253 E1000000 		.4byte	.LASF30
+ 1345 0257 01       		.byte	0x1
+ 1346 0258 DC       		.byte	0xdc
+ 1347 0259 A8010000 		.4byte	.LFB1
+ 1348 025d DC020000 		.4byte	.LFE1
+ 1349 0261 A5000000 		.4byte	.LLST6
+ 1350 0265 95020000 		.4byte	0x295
+ 1351 0269 14       		.uleb128 0x14
+ 1352 026a 726F7700 		.ascii	"row\000"
+ 1353 026e 01       		.byte	0x1
+ 1354 026f DE       		.byte	0xde
+ 1355 0270 69000000 		.4byte	0x69
+ 1356 0274 C5000000 		.4byte	.LLST7
+ 1357 0278 14       		.uleb128 0x14
+ 1358 0279 636F6C00 		.ascii	"col\000"
+ 1359 027d 01       		.byte	0x1
+ 1360 027e DE       		.byte	0xde
+ 1361 027f 69000000 		.4byte	0x69
+ 1362 0283 05010000 		.4byte	.LLST8
+ 1363 0287 14       		.uleb128 0x14
+ 1364 0288 6900     		.ascii	"i\000"
+ 1365 028a 01       		.byte	0x1
+ 1366 028b DE       		.byte	0xde
+ 1367 028c 69000000 		.4byte	0x69
+ 1368 0290 5C010000 		.4byte	.LLST9
+ 1369 0294 00       		.byte	0
+ 1370 0295 15       		.uleb128 0x15
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 35
+
+
+ 1371 0296 01       		.byte	0x1
+ 1372 0297 16000000 		.4byte	.LASF50
+ 1373 029b 01       		.byte	0x1
+ 1374 029c 4F       		.byte	0x4f
+ 1375 029d 01       		.byte	0x1
+ 1376 029e DC020000 		.4byte	.LFB0
+ 1377 02a2 08050000 		.4byte	.LFE0
+ 1378 02a6 85010000 		.4byte	.LLST10
+ 1379 02aa FE020000 		.4byte	0x2fe
+ 1380 02ae 16       		.uleb128 0x16
+ 1381 02af EC000000 		.4byte	.LASF31
+ 1382 02b3 01       		.byte	0x1
+ 1383 02b4 51       		.byte	0x51
+ 1384 02b5 25000000 		.4byte	0x25
+ 1385 02b9 B2010000 		.4byte	.LLST11
+ 1386 02bd 17       		.uleb128 0x17
+ 1387 02be 15020000 		.4byte	.LASF32
+ 1388 02c2 01       		.byte	0x1
+ 1389 02c3 52       		.byte	0x52
+ 1390 02c4 25000000 		.4byte	0x25
+ 1391 02c8 00       		.byte	0
+ 1392 02c9 18       		.uleb128 0x18
+ 1393 02ca 02030000 		.4byte	.LBB2
+ 1394 02ce 5E040000 		.4byte	.LBE2
+ 1395 02d2 E4020000 		.4byte	0x2e4
+ 1396 02d6 14       		.uleb128 0x14
+ 1397 02d7 6900     		.ascii	"i\000"
+ 1398 02d9 01       		.byte	0x1
+ 1399 02da 61       		.byte	0x61
+ 1400 02db 69000000 		.4byte	0x69
+ 1401 02df C5010000 		.4byte	.LLST12
+ 1402 02e3 00       		.byte	0
+ 1403 02e4 19       		.uleb128 0x19
+ 1404 02e5 76040000 		.4byte	.LBB3
+ 1405 02e9 D8040000 		.4byte	.LBE3
+ 1406 02ed 1A       		.uleb128 0x1a
+ 1407 02ee 00000000 		.4byte	.LASF33
+ 1408 02f2 01       		.byte	0x1
+ 1409 02f3 B8       		.byte	0xb8
+ 1410 02f4 8C010000 		.4byte	0x18c
+ 1411 02f8 03       		.byte	0x3
+ 1412 02f9 91       		.byte	0x91
+ 1413 02fa BC7F     		.sleb128 -68
+ 1414 02fc 00       		.byte	0
+ 1415 02fd 00       		.byte	0
+ 1416 02fe 1A       		.uleb128 0x1a
+ 1417 02ff 6D000000 		.4byte	.LASF34
+ 1418 0303 01       		.byte	0x1
+ 1419 0304 32       		.byte	0x32
+ 1420 0305 69000000 		.4byte	0x69
+ 1421 0309 05       		.byte	0x5
+ 1422 030a 03       		.byte	0x3
+ 1423 030b 08000000 		.4byte	score
+ 1424 030f 1A       		.uleb128 0x1a
+ 1425 0310 91010000 		.4byte	.LASF35
+ 1426 0314 01       		.byte	0x1
+ 1427 0315 33       		.byte	0x33
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 36
+
+
+ 1428 0316 69000000 		.4byte	0x69
+ 1429 031a 05       		.byte	0x5
+ 1430 031b 03       		.byte	0x3
+ 1431 031c 00000000 		.4byte	snakeLength
+ 1432 0320 1A       		.uleb128 0x1a
+ 1433 0321 9D010000 		.4byte	.LASF36
+ 1434 0325 01       		.byte	0x1
+ 1435 0326 34       		.byte	0x34
+ 1436 0327 69000000 		.4byte	0x69
+ 1437 032b 05       		.byte	0x5
+ 1438 032c 03       		.byte	0x3
+ 1439 032d 80020000 		.4byte	speed
+ 1440 0331 1A       		.uleb128 0x1a
+ 1441 0332 78000000 		.4byte	.LASF37
+ 1442 0336 01       		.byte	0x1
+ 1443 0337 35       		.byte	0x35
+ 1444 0338 69000000 		.4byte	0x69
+ 1445 033c 05       		.byte	0x5
+ 1446 033d 03       		.byte	0x3
+ 1447 033e 7C020000 		.4byte	obstacles
+ 1448 0342 1A       		.uleb128 0x1a
+ 1449 0343 26000000 		.4byte	.LASF38
+ 1450 0347 01       		.byte	0x1
+ 1451 0348 36       		.byte	0x36
+ 1452 0349 69000000 		.4byte	0x69
+ 1453 034d 05       		.byte	0x5
+ 1454 034e 03       		.byte	0x3
+ 1455 034f 04000000 		.4byte	level
+ 1456 0353 1A       		.uleb128 0x1a
+ 1457 0354 5D010000 		.4byte	.LASF39
+ 1458 0358 01       		.byte	0x1
+ 1459 0359 37       		.byte	0x37
+ 1460 035a 7B000000 		.4byte	0x7b
+ 1461 035e 05       		.byte	0x5
+ 1462 035f 03       		.byte	0x3
+ 1463 0360 0C000000 		.4byte	firstPress
+ 1464 0364 1A       		.uleb128 0x1a
+ 1465 0365 F3010000 		.4byte	.LASF40
+ 1466 0369 01       		.byte	0x1
+ 1467 036a 38       		.byte	0x38
+ 1468 036b 69000000 		.4byte	0x69
+ 1469 036f 05       		.byte	0x5
+ 1470 0370 03       		.byte	0x3
+ 1471 0371 84020000 		.4byte	high_score
+ 1472 0375 09       		.uleb128 0x9
+ 1473 0376 50000000 		.4byte	0x50
+ 1474 037a 8B030000 		.4byte	0x38b
+ 1475 037e 0A       		.uleb128 0xa
+ 1476 037f 8C000000 		.4byte	0x8c
+ 1477 0383 13       		.byte	0x13
+ 1478 0384 0A       		.uleb128 0xa
+ 1479 0385 8C000000 		.4byte	0x8c
+ 1480 0389 1E       		.byte	0x1e
+ 1481 038a 00       		.byte	0
+ 1482 038b 1A       		.uleb128 0x1a
+ 1483 038c 39010000 		.4byte	.LASF41
+ 1484 0390 01       		.byte	0x1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 37
+
+
+ 1485 0391 39       		.byte	0x39
+ 1486 0392 75030000 		.4byte	0x375
+ 1487 0396 05       		.byte	0x5
+ 1488 0397 03       		.byte	0x3
+ 1489 0398 0D000000 		.4byte	screenGrid
+ 1490 039c 1A       		.uleb128 0x1a
+ 1491 039d 3F000000 		.4byte	.LASF42
+ 1492 03a1 01       		.byte	0x1
+ 1493 03a2 3A       		.byte	0x3a
+ 1494 03a3 50000000 		.4byte	0x50
+ 1495 03a7 05       		.byte	0x5
+ 1496 03a8 03       		.byte	0x3
+ 1497 03a9 00000000 		.4byte	direction
+ 1498 03ad 09       		.uleb128 0x9
+ 1499 03ae 97010000 		.4byte	0x197
+ 1500 03b2 BD030000 		.4byte	0x3bd
+ 1501 03b6 0A       		.uleb128 0xa
+ 1502 03b7 8C000000 		.4byte	0x8c
+ 1503 03bb 63       		.byte	0x63
+ 1504 03bc 00       		.byte	0
+ 1505 03bd 1B       		.uleb128 0x1b
+ 1506 03be 20000000 		.4byte	.LASF43
+ 1507 03c2 01       		.byte	0x1
+ 1508 03c3 40       		.byte	0x40
+ 1509 03c4 AD030000 		.4byte	0x3ad
+ 1510 03c8 01       		.byte	0x1
+ 1511 03c9 05       		.byte	0x5
+ 1512 03ca 03       		.byte	0x3
+ 1513 03cb 00000000 		.4byte	snake
+ 1514 03cf 1C       		.uleb128 0x1c
+ 1515 03d0 6D7300   		.ascii	"ms\000"
+ 1516 03d3 01       		.byte	0x1
+ 1517 03d4 46       		.byte	0x46
+ 1518 03d5 DB030000 		.4byte	0x3db
+ 1519 03d9 01       		.byte	0x1
+ 1520 03da 01       		.byte	0x1
+ 1521 03db 1D       		.uleb128 0x1d
+ 1522 03dc 3E000000 		.4byte	0x3e
+ 1523 03e0 00       		.byte	0
+ 1524              		.section	.debug_abbrev,"",%progbits
+ 1525              	.Ldebug_abbrev0:
+ 1526 0000 01       		.uleb128 0x1
+ 1527 0001 11       		.uleb128 0x11
+ 1528 0002 01       		.byte	0x1
+ 1529 0003 25       		.uleb128 0x25
+ 1530 0004 0E       		.uleb128 0xe
+ 1531 0005 13       		.uleb128 0x13
+ 1532 0006 0B       		.uleb128 0xb
+ 1533 0007 03       		.uleb128 0x3
+ 1534 0008 0E       		.uleb128 0xe
+ 1535 0009 1B       		.uleb128 0x1b
+ 1536 000a 0E       		.uleb128 0xe
+ 1537 000b 11       		.uleb128 0x11
+ 1538 000c 01       		.uleb128 0x1
+ 1539 000d 12       		.uleb128 0x12
+ 1540 000e 01       		.uleb128 0x1
+ 1541 000f 10       		.uleb128 0x10
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 38
+
+
+ 1542 0010 06       		.uleb128 0x6
+ 1543 0011 00       		.byte	0
+ 1544 0012 00       		.byte	0
+ 1545 0013 02       		.uleb128 0x2
+ 1546 0014 16       		.uleb128 0x16
+ 1547 0015 00       		.byte	0
+ 1548 0016 03       		.uleb128 0x3
+ 1549 0017 08       		.uleb128 0x8
+ 1550 0018 3A       		.uleb128 0x3a
+ 1551 0019 0B       		.uleb128 0xb
+ 1552 001a 3B       		.uleb128 0x3b
+ 1553 001b 0B       		.uleb128 0xb
+ 1554 001c 49       		.uleb128 0x49
+ 1555 001d 13       		.uleb128 0x13
+ 1556 001e 00       		.byte	0
+ 1557 001f 00       		.byte	0
+ 1558 0020 03       		.uleb128 0x3
+ 1559 0021 24       		.uleb128 0x24
+ 1560 0022 00       		.byte	0
+ 1561 0023 0B       		.uleb128 0xb
+ 1562 0024 0B       		.uleb128 0xb
+ 1563 0025 3E       		.uleb128 0x3e
+ 1564 0026 0B       		.uleb128 0xb
+ 1565 0027 03       		.uleb128 0x3
+ 1566 0028 0E       		.uleb128 0xe
+ 1567 0029 00       		.byte	0
+ 1568 002a 00       		.byte	0
+ 1569 002b 04       		.uleb128 0x4
+ 1570 002c 16       		.uleb128 0x16
+ 1571 002d 00       		.byte	0
+ 1572 002e 03       		.uleb128 0x3
+ 1573 002f 0E       		.uleb128 0xe
+ 1574 0030 3A       		.uleb128 0x3a
+ 1575 0031 0B       		.uleb128 0xb
+ 1576 0032 3B       		.uleb128 0x3b
+ 1577 0033 0B       		.uleb128 0xb
+ 1578 0034 49       		.uleb128 0x49
+ 1579 0035 13       		.uleb128 0x13
+ 1580 0036 00       		.byte	0
+ 1581 0037 00       		.byte	0
+ 1582 0038 05       		.uleb128 0x5
+ 1583 0039 24       		.uleb128 0x24
+ 1584 003a 00       		.byte	0
+ 1585 003b 0B       		.uleb128 0xb
+ 1586 003c 0B       		.uleb128 0xb
+ 1587 003d 3E       		.uleb128 0x3e
+ 1588 003e 0B       		.uleb128 0xb
+ 1589 003f 03       		.uleb128 0x3
+ 1590 0040 08       		.uleb128 0x8
+ 1591 0041 00       		.byte	0
+ 1592 0042 00       		.byte	0
+ 1593 0043 06       		.uleb128 0x6
+ 1594 0044 0F       		.uleb128 0xf
+ 1595 0045 00       		.byte	0
+ 1596 0046 0B       		.uleb128 0xb
+ 1597 0047 0B       		.uleb128 0xb
+ 1598 0048 49       		.uleb128 0x49
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 39
+
+
+ 1599 0049 13       		.uleb128 0x13
+ 1600 004a 00       		.byte	0
+ 1601 004b 00       		.byte	0
+ 1602 004c 07       		.uleb128 0x7
+ 1603 004d 13       		.uleb128 0x13
+ 1604 004e 01       		.byte	0x1
+ 1605 004f 0B       		.uleb128 0xb
+ 1606 0050 0B       		.uleb128 0xb
+ 1607 0051 3A       		.uleb128 0x3a
+ 1608 0052 0B       		.uleb128 0xb
+ 1609 0053 3B       		.uleb128 0x3b
+ 1610 0054 0B       		.uleb128 0xb
+ 1611 0055 01       		.uleb128 0x1
+ 1612 0056 13       		.uleb128 0x13
+ 1613 0057 00       		.byte	0
+ 1614 0058 00       		.byte	0
+ 1615 0059 08       		.uleb128 0x8
+ 1616 005a 0D       		.uleb128 0xd
+ 1617 005b 00       		.byte	0
+ 1618 005c 03       		.uleb128 0x3
+ 1619 005d 0E       		.uleb128 0xe
+ 1620 005e 3A       		.uleb128 0x3a
+ 1621 005f 0B       		.uleb128 0xb
+ 1622 0060 3B       		.uleb128 0x3b
+ 1623 0061 0B       		.uleb128 0xb
+ 1624 0062 49       		.uleb128 0x49
+ 1625 0063 13       		.uleb128 0x13
+ 1626 0064 38       		.uleb128 0x38
+ 1627 0065 0A       		.uleb128 0xa
+ 1628 0066 00       		.byte	0
+ 1629 0067 00       		.byte	0
+ 1630 0068 09       		.uleb128 0x9
+ 1631 0069 01       		.uleb128 0x1
+ 1632 006a 01       		.byte	0x1
+ 1633 006b 49       		.uleb128 0x49
+ 1634 006c 13       		.uleb128 0x13
+ 1635 006d 01       		.uleb128 0x1
+ 1636 006e 13       		.uleb128 0x13
+ 1637 006f 00       		.byte	0
+ 1638 0070 00       		.byte	0
+ 1639 0071 0A       		.uleb128 0xa
+ 1640 0072 21       		.uleb128 0x21
+ 1641 0073 00       		.byte	0
+ 1642 0074 49       		.uleb128 0x49
+ 1643 0075 13       		.uleb128 0x13
+ 1644 0076 2F       		.uleb128 0x2f
+ 1645 0077 0B       		.uleb128 0xb
+ 1646 0078 00       		.byte	0
+ 1647 0079 00       		.byte	0
+ 1648 007a 0B       		.uleb128 0xb
+ 1649 007b 13       		.uleb128 0x13
+ 1650 007c 01       		.byte	0x1
+ 1651 007d 03       		.uleb128 0x3
+ 1652 007e 0E       		.uleb128 0xe
+ 1653 007f 0B       		.uleb128 0xb
+ 1654 0080 0B       		.uleb128 0xb
+ 1655 0081 3A       		.uleb128 0x3a
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 40
+
+
+ 1656 0082 0B       		.uleb128 0xb
+ 1657 0083 3B       		.uleb128 0x3b
+ 1658 0084 0B       		.uleb128 0xb
+ 1659 0085 01       		.uleb128 0x1
+ 1660 0086 13       		.uleb128 0x13
+ 1661 0087 00       		.byte	0
+ 1662 0088 00       		.byte	0
+ 1663 0089 0C       		.uleb128 0xc
+ 1664 008a 0D       		.uleb128 0xd
+ 1665 008b 00       		.byte	0
+ 1666 008c 03       		.uleb128 0x3
+ 1667 008d 08       		.uleb128 0x8
+ 1668 008e 3A       		.uleb128 0x3a
+ 1669 008f 0B       		.uleb128 0xb
+ 1670 0090 3B       		.uleb128 0x3b
+ 1671 0091 0B       		.uleb128 0xb
+ 1672 0092 49       		.uleb128 0x49
+ 1673 0093 13       		.uleb128 0x13
+ 1674 0094 38       		.uleb128 0x38
+ 1675 0095 0A       		.uleb128 0xa
+ 1676 0096 00       		.byte	0
+ 1677 0097 00       		.byte	0
+ 1678 0098 0D       		.uleb128 0xd
+ 1679 0099 2E       		.uleb128 0x2e
+ 1680 009a 00       		.byte	0
+ 1681 009b 03       		.uleb128 0x3
+ 1682 009c 0E       		.uleb128 0xe
+ 1683 009d 3A       		.uleb128 0x3a
+ 1684 009e 0B       		.uleb128 0xb
+ 1685 009f 3B       		.uleb128 0x3b
+ 1686 00a0 05       		.uleb128 0x5
+ 1687 00a1 11       		.uleb128 0x11
+ 1688 00a2 01       		.uleb128 0x1
+ 1689 00a3 12       		.uleb128 0x12
+ 1690 00a4 01       		.uleb128 0x1
+ 1691 00a5 40       		.uleb128 0x40
+ 1692 00a6 06       		.uleb128 0x6
+ 1693 00a7 00       		.byte	0
+ 1694 00a8 00       		.byte	0
+ 1695 00a9 0E       		.uleb128 0xe
+ 1696 00aa 2E       		.uleb128 0x2e
+ 1697 00ab 01       		.byte	0x1
+ 1698 00ac 03       		.uleb128 0x3
+ 1699 00ad 0E       		.uleb128 0xe
+ 1700 00ae 3A       		.uleb128 0x3a
+ 1701 00af 0B       		.uleb128 0xb
+ 1702 00b0 3B       		.uleb128 0x3b
+ 1703 00b1 05       		.uleb128 0x5
+ 1704 00b2 27       		.uleb128 0x27
+ 1705 00b3 0C       		.uleb128 0xc
+ 1706 00b4 11       		.uleb128 0x11
+ 1707 00b5 01       		.uleb128 0x1
+ 1708 00b6 12       		.uleb128 0x12
+ 1709 00b7 01       		.uleb128 0x1
+ 1710 00b8 40       		.uleb128 0x40
+ 1711 00b9 06       		.uleb128 0x6
+ 1712 00ba 01       		.uleb128 0x1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 41
+
+
+ 1713 00bb 13       		.uleb128 0x13
+ 1714 00bc 00       		.byte	0
+ 1715 00bd 00       		.byte	0
+ 1716 00be 0F       		.uleb128 0xf
+ 1717 00bf 05       		.uleb128 0x5
+ 1718 00c0 00       		.byte	0
+ 1719 00c1 03       		.uleb128 0x3
+ 1720 00c2 08       		.uleb128 0x8
+ 1721 00c3 3A       		.uleb128 0x3a
+ 1722 00c4 0B       		.uleb128 0xb
+ 1723 00c5 3B       		.uleb128 0x3b
+ 1724 00c6 05       		.uleb128 0x5
+ 1725 00c7 49       		.uleb128 0x49
+ 1726 00c8 13       		.uleb128 0x13
+ 1727 00c9 02       		.uleb128 0x2
+ 1728 00ca 06       		.uleb128 0x6
+ 1729 00cb 00       		.byte	0
+ 1730 00cc 00       		.byte	0
+ 1731 00cd 10       		.uleb128 0x10
+ 1732 00ce 05       		.uleb128 0x5
+ 1733 00cf 00       		.byte	0
+ 1734 00d0 03       		.uleb128 0x3
+ 1735 00d1 0E       		.uleb128 0xe
+ 1736 00d2 3A       		.uleb128 0x3a
+ 1737 00d3 0B       		.uleb128 0xb
+ 1738 00d4 3B       		.uleb128 0x3b
+ 1739 00d5 05       		.uleb128 0x5
+ 1740 00d6 49       		.uleb128 0x49
+ 1741 00d7 13       		.uleb128 0x13
+ 1742 00d8 02       		.uleb128 0x2
+ 1743 00d9 06       		.uleb128 0x6
+ 1744 00da 00       		.byte	0
+ 1745 00db 00       		.byte	0
+ 1746 00dc 11       		.uleb128 0x11
+ 1747 00dd 2E       		.uleb128 0x2e
+ 1748 00de 01       		.byte	0x1
+ 1749 00df 03       		.uleb128 0x3
+ 1750 00e0 0E       		.uleb128 0xe
+ 1751 00e1 3A       		.uleb128 0x3a
+ 1752 00e2 0B       		.uleb128 0xb
+ 1753 00e3 3B       		.uleb128 0x3b
+ 1754 00e4 05       		.uleb128 0x5
+ 1755 00e5 11       		.uleb128 0x11
+ 1756 00e6 01       		.uleb128 0x1
+ 1757 00e7 12       		.uleb128 0x12
+ 1758 00e8 01       		.uleb128 0x1
+ 1759 00e9 40       		.uleb128 0x40
+ 1760 00ea 06       		.uleb128 0x6
+ 1761 00eb 01       		.uleb128 0x1
+ 1762 00ec 13       		.uleb128 0x13
+ 1763 00ed 00       		.byte	0
+ 1764 00ee 00       		.byte	0
+ 1765 00ef 12       		.uleb128 0x12
+ 1766 00f0 34       		.uleb128 0x34
+ 1767 00f1 00       		.byte	0
+ 1768 00f2 03       		.uleb128 0x3
+ 1769 00f3 08       		.uleb128 0x8
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 42
+
+
+ 1770 00f4 3A       		.uleb128 0x3a
+ 1771 00f5 0B       		.uleb128 0xb
+ 1772 00f6 3B       		.uleb128 0x3b
+ 1773 00f7 05       		.uleb128 0x5
+ 1774 00f8 49       		.uleb128 0x49
+ 1775 00f9 13       		.uleb128 0x13
+ 1776 00fa 02       		.uleb128 0x2
+ 1777 00fb 0A       		.uleb128 0xa
+ 1778 00fc 00       		.byte	0
+ 1779 00fd 00       		.byte	0
+ 1780 00fe 13       		.uleb128 0x13
+ 1781 00ff 2E       		.uleb128 0x2e
+ 1782 0100 01       		.byte	0x1
+ 1783 0101 03       		.uleb128 0x3
+ 1784 0102 0E       		.uleb128 0xe
+ 1785 0103 3A       		.uleb128 0x3a
+ 1786 0104 0B       		.uleb128 0xb
+ 1787 0105 3B       		.uleb128 0x3b
+ 1788 0106 0B       		.uleb128 0xb
+ 1789 0107 11       		.uleb128 0x11
+ 1790 0108 01       		.uleb128 0x1
+ 1791 0109 12       		.uleb128 0x12
+ 1792 010a 01       		.uleb128 0x1
+ 1793 010b 40       		.uleb128 0x40
+ 1794 010c 06       		.uleb128 0x6
+ 1795 010d 01       		.uleb128 0x1
+ 1796 010e 13       		.uleb128 0x13
+ 1797 010f 00       		.byte	0
+ 1798 0110 00       		.byte	0
+ 1799 0111 14       		.uleb128 0x14
+ 1800 0112 34       		.uleb128 0x34
+ 1801 0113 00       		.byte	0
+ 1802 0114 03       		.uleb128 0x3
+ 1803 0115 08       		.uleb128 0x8
+ 1804 0116 3A       		.uleb128 0x3a
+ 1805 0117 0B       		.uleb128 0xb
+ 1806 0118 3B       		.uleb128 0x3b
+ 1807 0119 0B       		.uleb128 0xb
+ 1808 011a 49       		.uleb128 0x49
+ 1809 011b 13       		.uleb128 0x13
+ 1810 011c 02       		.uleb128 0x2
+ 1811 011d 06       		.uleb128 0x6
+ 1812 011e 00       		.byte	0
+ 1813 011f 00       		.byte	0
+ 1814 0120 15       		.uleb128 0x15
+ 1815 0121 2E       		.uleb128 0x2e
+ 1816 0122 01       		.byte	0x1
+ 1817 0123 3F       		.uleb128 0x3f
+ 1818 0124 0C       		.uleb128 0xc
+ 1819 0125 03       		.uleb128 0x3
+ 1820 0126 0E       		.uleb128 0xe
+ 1821 0127 3A       		.uleb128 0x3a
+ 1822 0128 0B       		.uleb128 0xb
+ 1823 0129 3B       		.uleb128 0x3b
+ 1824 012a 0B       		.uleb128 0xb
+ 1825 012b 27       		.uleb128 0x27
+ 1826 012c 0C       		.uleb128 0xc
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 43
+
+
+ 1827 012d 11       		.uleb128 0x11
+ 1828 012e 01       		.uleb128 0x1
+ 1829 012f 12       		.uleb128 0x12
+ 1830 0130 01       		.uleb128 0x1
+ 1831 0131 40       		.uleb128 0x40
+ 1832 0132 06       		.uleb128 0x6
+ 1833 0133 01       		.uleb128 0x1
+ 1834 0134 13       		.uleb128 0x13
+ 1835 0135 00       		.byte	0
+ 1836 0136 00       		.byte	0
+ 1837 0137 16       		.uleb128 0x16
+ 1838 0138 34       		.uleb128 0x34
+ 1839 0139 00       		.byte	0
+ 1840 013a 03       		.uleb128 0x3
+ 1841 013b 0E       		.uleb128 0xe
+ 1842 013c 3A       		.uleb128 0x3a
+ 1843 013d 0B       		.uleb128 0xb
+ 1844 013e 3B       		.uleb128 0x3b
+ 1845 013f 0B       		.uleb128 0xb
+ 1846 0140 49       		.uleb128 0x49
+ 1847 0141 13       		.uleb128 0x13
+ 1848 0142 02       		.uleb128 0x2
+ 1849 0143 06       		.uleb128 0x6
+ 1850 0144 00       		.byte	0
+ 1851 0145 00       		.byte	0
+ 1852 0146 17       		.uleb128 0x17
+ 1853 0147 34       		.uleb128 0x34
+ 1854 0148 00       		.byte	0
+ 1855 0149 03       		.uleb128 0x3
+ 1856 014a 0E       		.uleb128 0xe
+ 1857 014b 3A       		.uleb128 0x3a
+ 1858 014c 0B       		.uleb128 0xb
+ 1859 014d 3B       		.uleb128 0x3b
+ 1860 014e 0B       		.uleb128 0xb
+ 1861 014f 49       		.uleb128 0x49
+ 1862 0150 13       		.uleb128 0x13
+ 1863 0151 1C       		.uleb128 0x1c
+ 1864 0152 0B       		.uleb128 0xb
+ 1865 0153 00       		.byte	0
+ 1866 0154 00       		.byte	0
+ 1867 0155 18       		.uleb128 0x18
+ 1868 0156 0B       		.uleb128 0xb
+ 1869 0157 01       		.byte	0x1
+ 1870 0158 11       		.uleb128 0x11
+ 1871 0159 01       		.uleb128 0x1
+ 1872 015a 12       		.uleb128 0x12
+ 1873 015b 01       		.uleb128 0x1
+ 1874 015c 01       		.uleb128 0x1
+ 1875 015d 13       		.uleb128 0x13
+ 1876 015e 00       		.byte	0
+ 1877 015f 00       		.byte	0
+ 1878 0160 19       		.uleb128 0x19
+ 1879 0161 0B       		.uleb128 0xb
+ 1880 0162 01       		.byte	0x1
+ 1881 0163 11       		.uleb128 0x11
+ 1882 0164 01       		.uleb128 0x1
+ 1883 0165 12       		.uleb128 0x12
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 44
+
+
+ 1884 0166 01       		.uleb128 0x1
+ 1885 0167 00       		.byte	0
+ 1886 0168 00       		.byte	0
+ 1887 0169 1A       		.uleb128 0x1a
+ 1888 016a 34       		.uleb128 0x34
+ 1889 016b 00       		.byte	0
+ 1890 016c 03       		.uleb128 0x3
+ 1891 016d 0E       		.uleb128 0xe
+ 1892 016e 3A       		.uleb128 0x3a
+ 1893 016f 0B       		.uleb128 0xb
+ 1894 0170 3B       		.uleb128 0x3b
+ 1895 0171 0B       		.uleb128 0xb
+ 1896 0172 49       		.uleb128 0x49
+ 1897 0173 13       		.uleb128 0x13
+ 1898 0174 02       		.uleb128 0x2
+ 1899 0175 0A       		.uleb128 0xa
+ 1900 0176 00       		.byte	0
+ 1901 0177 00       		.byte	0
+ 1902 0178 1B       		.uleb128 0x1b
+ 1903 0179 34       		.uleb128 0x34
+ 1904 017a 00       		.byte	0
+ 1905 017b 03       		.uleb128 0x3
+ 1906 017c 0E       		.uleb128 0xe
+ 1907 017d 3A       		.uleb128 0x3a
+ 1908 017e 0B       		.uleb128 0xb
+ 1909 017f 3B       		.uleb128 0x3b
+ 1910 0180 0B       		.uleb128 0xb
+ 1911 0181 49       		.uleb128 0x49
+ 1912 0182 13       		.uleb128 0x13
+ 1913 0183 3F       		.uleb128 0x3f
+ 1914 0184 0C       		.uleb128 0xc
+ 1915 0185 02       		.uleb128 0x2
+ 1916 0186 0A       		.uleb128 0xa
+ 1917 0187 00       		.byte	0
+ 1918 0188 00       		.byte	0
+ 1919 0189 1C       		.uleb128 0x1c
+ 1920 018a 34       		.uleb128 0x34
+ 1921 018b 00       		.byte	0
+ 1922 018c 03       		.uleb128 0x3
+ 1923 018d 08       		.uleb128 0x8
+ 1924 018e 3A       		.uleb128 0x3a
+ 1925 018f 0B       		.uleb128 0xb
+ 1926 0190 3B       		.uleb128 0x3b
+ 1927 0191 0B       		.uleb128 0xb
+ 1928 0192 49       		.uleb128 0x49
+ 1929 0193 13       		.uleb128 0x13
+ 1930 0194 3F       		.uleb128 0x3f
+ 1931 0195 0C       		.uleb128 0xc
+ 1932 0196 3C       		.uleb128 0x3c
+ 1933 0197 0C       		.uleb128 0xc
+ 1934 0198 00       		.byte	0
+ 1935 0199 00       		.byte	0
+ 1936 019a 1D       		.uleb128 0x1d
+ 1937 019b 35       		.uleb128 0x35
+ 1938 019c 00       		.byte	0
+ 1939 019d 49       		.uleb128 0x49
+ 1940 019e 13       		.uleb128 0x13
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 45
+
+
+ 1941 019f 00       		.byte	0
+ 1942 01a0 00       		.byte	0
+ 1943 01a1 00       		.byte	0
+ 1944              		.section	.debug_loc,"",%progbits
+ 1945              	.Ldebug_loc0:
+ 1946              	.LLST0:
+ 1947 0000 00000000 		.4byte	.LFB3-.Ltext0
+ 1948 0004 02000000 		.4byte	.LCFI0-.Ltext0
+ 1949 0008 0200     		.2byte	0x2
+ 1950 000a 7D       		.byte	0x7d
+ 1951 000b 00       		.sleb128 0
+ 1952 000c 02000000 		.4byte	.LCFI0-.Ltext0
+ 1953 0010 8C000000 		.4byte	.LFE3-.Ltext0
+ 1954 0014 0200     		.2byte	0x2
+ 1955 0016 7D       		.byte	0x7d
+ 1956 0017 04       		.sleb128 4
+ 1957 0018 00000000 		.4byte	0
+ 1958 001c 00000000 		.4byte	0
+ 1959              	.LLST1:
+ 1960 0020 8C000000 		.4byte	.LFB4-.Ltext0
+ 1961 0024 8E000000 		.4byte	.LCFI1-.Ltext0
+ 1962 0028 0200     		.2byte	0x2
+ 1963 002a 7D       		.byte	0x7d
+ 1964 002b 00       		.sleb128 0
+ 1965 002c 8E000000 		.4byte	.LCFI1-.Ltext0
+ 1966 0030 AE000000 		.4byte	.LFE4-.Ltext0
+ 1967 0034 0200     		.2byte	0x2
+ 1968 0036 7D       		.byte	0x7d
+ 1969 0037 08       		.sleb128 8
+ 1970 0038 00000000 		.4byte	0
+ 1971 003c 00000000 		.4byte	0
+ 1972              	.LLST2:
+ 1973 0040 8E000000 		.4byte	.LVL0-.Ltext0
+ 1974 0044 90000000 		.4byte	.LVL1-.Ltext0
+ 1975 0048 0100     		.2byte	0x1
+ 1976 004a 50       		.byte	0x50
+ 1977 004b 00000000 		.4byte	0
+ 1978 004f 00000000 		.4byte	0
+ 1979              	.LLST3:
+ 1980 0053 8E000000 		.4byte	.LVL0-.Ltext0
+ 1981 0057 92000000 		.4byte	.LVL2-.Ltext0
+ 1982 005b 0100     		.2byte	0x1
+ 1983 005d 51       		.byte	0x51
+ 1984 005e 00000000 		.4byte	0
+ 1985 0062 00000000 		.4byte	0
+ 1986              	.LLST4:
+ 1987 0066 8E000000 		.4byte	.LVL0-.Ltext0
+ 1988 006a 9C000000 		.4byte	.LVL3-.Ltext0
+ 1989 006e 0100     		.2byte	0x1
+ 1990 0070 52       		.byte	0x52
+ 1991 0071 00000000 		.4byte	0
+ 1992 0075 00000000 		.4byte	0
+ 1993              	.LLST5:
+ 1994 0079 AE000000 		.4byte	.LFB2-.Ltext0
+ 1995 007d B0000000 		.4byte	.LCFI2-.Ltext0
+ 1996 0081 0200     		.2byte	0x2
+ 1997 0083 7D       		.byte	0x7d
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 46
+
+
+ 1998 0084 00       		.sleb128 0
+ 1999 0085 B0000000 		.4byte	.LCFI2-.Ltext0
+ 2000 0089 B2000000 		.4byte	.LCFI3-.Ltext0
+ 2001 008d 0200     		.2byte	0x2
+ 2002 008f 7D       		.byte	0x7d
+ 2003 0090 14       		.sleb128 20
+ 2004 0091 B2000000 		.4byte	.LCFI3-.Ltext0
+ 2005 0095 A8010000 		.4byte	.LFE2-.Ltext0
+ 2006 0099 0200     		.2byte	0x2
+ 2007 009b 7D       		.byte	0x7d
+ 2008 009c 30       		.sleb128 48
+ 2009 009d 00000000 		.4byte	0
+ 2010 00a1 00000000 		.4byte	0
+ 2011              	.LLST6:
+ 2012 00a5 A8010000 		.4byte	.LFB1-.Ltext0
+ 2013 00a9 AA010000 		.4byte	.LCFI4-.Ltext0
+ 2014 00ad 0200     		.2byte	0x2
+ 2015 00af 7D       		.byte	0x7d
+ 2016 00b0 00       		.sleb128 0
+ 2017 00b1 AA010000 		.4byte	.LCFI4-.Ltext0
+ 2018 00b5 DC020000 		.4byte	.LFE1-.Ltext0
+ 2019 00b9 0200     		.2byte	0x2
+ 2020 00bb 7D       		.byte	0x7d
+ 2021 00bc 18       		.sleb128 24
+ 2022 00bd 00000000 		.4byte	0
+ 2023 00c1 00000000 		.4byte	0
+ 2024              	.LLST7:
+ 2025 00c5 FA010000 		.4byte	.LVL4-.Ltext0
+ 2026 00c9 02020000 		.4byte	.LVL5-.Ltext0
+ 2027 00cd 0200     		.2byte	0x2
+ 2028 00cf 30       		.byte	0x30
+ 2029 00d0 9F       		.byte	0x9f
+ 2030 00d1 20020000 		.4byte	.LVL9-.Ltext0
+ 2031 00d5 23020000 		.4byte	.LVL10-1-.Ltext0
+ 2032 00d9 0100     		.2byte	0x1
+ 2033 00db 50       		.byte	0x50
+ 2034 00dc 23020000 		.4byte	.LVL10-1-.Ltext0
+ 2035 00e0 38020000 		.4byte	.LVL12-.Ltext0
+ 2036 00e4 0100     		.2byte	0x1
+ 2037 00e6 57       		.byte	0x57
+ 2038 00e7 AC020000 		.4byte	.LVL21-.Ltext0
+ 2039 00eb B2020000 		.4byte	.LVL22-.Ltext0
+ 2040 00ef 0100     		.2byte	0x1
+ 2041 00f1 55       		.byte	0x55
+ 2042 00f2 B6020000 		.4byte	.LVL23-.Ltext0
+ 2043 00f6 BA020000 		.4byte	.LVL25-.Ltext0
+ 2044 00fa 0100     		.2byte	0x1
+ 2045 00fc 55       		.byte	0x55
+ 2046 00fd 00000000 		.4byte	0
+ 2047 0101 00000000 		.4byte	0
+ 2048              	.LLST8:
+ 2049 0105 06020000 		.4byte	.LVL6-.Ltext0
+ 2050 0109 10020000 		.4byte	.LVL7-.Ltext0
+ 2051 010d 0100     		.2byte	0x1
+ 2052 010f 51       		.byte	0x51
+ 2053 0110 10020000 		.4byte	.LVL7-.Ltext0
+ 2054 0114 14020000 		.4byte	.LVL8-.Ltext0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 47
+
+
+ 2055 0118 0200     		.2byte	0x2
+ 2056 011a 30       		.byte	0x30
+ 2057 011b 9F       		.byte	0x9f
+ 2058 011c 2A020000 		.4byte	.LVL11-.Ltext0
+ 2059 0120 42020000 		.4byte	.LVL14-.Ltext0
+ 2060 0124 0100     		.2byte	0x1
+ 2061 0126 50       		.byte	0x50
+ 2062 0127 42020000 		.4byte	.LVL14-.Ltext0
+ 2063 012b 44020000 		.4byte	.LVL15-.Ltext0
+ 2064 012f 0100     		.2byte	0x1
+ 2065 0131 51       		.byte	0x51
+ 2066 0132 A6020000 		.4byte	.LVL20-.Ltext0
+ 2067 0136 B2020000 		.4byte	.LVL22-.Ltext0
+ 2068 013a 0100     		.2byte	0x1
+ 2069 013c 54       		.byte	0x54
+ 2070 013d B2020000 		.4byte	.LVL22-.Ltext0
+ 2071 0141 B6020000 		.4byte	.LVL23-.Ltext0
+ 2072 0145 0200     		.2byte	0x2
+ 2073 0147 30       		.byte	0x30
+ 2074 0148 9F       		.byte	0x9f
+ 2075 0149 B6020000 		.4byte	.LVL23-.Ltext0
+ 2076 014d BA020000 		.4byte	.LVL24-.Ltext0
+ 2077 0151 0100     		.2byte	0x1
+ 2078 0153 54       		.byte	0x54
+ 2079 0154 00000000 		.4byte	0
+ 2080 0158 00000000 		.4byte	0
+ 2081              	.LLST9:
+ 2082 015c 14020000 		.4byte	.LVL8-.Ltext0
+ 2083 0160 42020000 		.4byte	.LVL14-.Ltext0
+ 2084 0164 0100     		.2byte	0x1
+ 2085 0166 55       		.byte	0x55
+ 2086 0167 44020000 		.4byte	.LVL15-.Ltext0
+ 2087 016b 54020000 		.4byte	.LVL16-.Ltext0
+ 2088 016f 0100     		.2byte	0x1
+ 2089 0171 55       		.byte	0x55
+ 2090 0172 5C020000 		.4byte	.LVL17-.Ltext0
+ 2091 0176 78020000 		.4byte	.LVL19-.Ltext0
+ 2092 017a 0100     		.2byte	0x1
+ 2093 017c 53       		.byte	0x53
+ 2094 017d 00000000 		.4byte	0
+ 2095 0181 00000000 		.4byte	0
+ 2096              	.LLST10:
+ 2097 0185 DC020000 		.4byte	.LFB0-.Ltext0
+ 2098 0189 DE020000 		.4byte	.LCFI5-.Ltext0
+ 2099 018d 0200     		.2byte	0x2
+ 2100 018f 7D       		.byte	0x7d
+ 2101 0190 00       		.sleb128 0
+ 2102 0191 DE020000 		.4byte	.LCFI5-.Ltext0
+ 2103 0195 E0020000 		.4byte	.LCFI6-.Ltext0
+ 2104 0199 0200     		.2byte	0x2
+ 2105 019b 7D       		.byte	0x7d
+ 2106 019c 14       		.sleb128 20
+ 2107 019d E0020000 		.4byte	.LCFI6-.Ltext0
+ 2108 01a1 08050000 		.4byte	.LFE0-.Ltext0
+ 2109 01a5 0300     		.2byte	0x3
+ 2110 01a7 7D       		.byte	0x7d
+ 2111 01a8 EC00     		.sleb128 108
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 48
+
+
+ 2112 01aa 00000000 		.4byte	0
+ 2113 01ae 00000000 		.4byte	0
+ 2114              	.LLST11:
+ 2115 01b2 C2030000 		.4byte	.LVL33-.Ltext0
+ 2116 01b6 DA040000 		.4byte	.LVL39-.Ltext0
+ 2117 01ba 0100     		.2byte	0x1
+ 2118 01bc 57       		.byte	0x57
+ 2119 01bd 00000000 		.4byte	0
+ 2120 01c1 00000000 		.4byte	0
+ 2121              	.LLST12:
+ 2122 01c5 3A030000 		.4byte	.LVL27-.Ltext0
+ 2123 01c9 46030000 		.4byte	.LVL28-.Ltext0
+ 2124 01cd 0200     		.2byte	0x2
+ 2125 01cf 31       		.byte	0x31
+ 2126 01d0 9F       		.byte	0x9f
+ 2127 01d1 46030000 		.4byte	.LVL28-.Ltext0
+ 2128 01d5 62030000 		.4byte	.LVL30-.Ltext0
+ 2129 01d9 0100     		.2byte	0x1
+ 2130 01db 53       		.byte	0x53
+ 2131 01dc 62030000 		.4byte	.LVL30-.Ltext0
+ 2132 01e0 6C030000 		.4byte	.LVL31-.Ltext0
+ 2133 01e4 0100     		.2byte	0x1
+ 2134 01e6 50       		.byte	0x50
+ 2135 01e7 6C030000 		.4byte	.LVL31-.Ltext0
+ 2136 01eb C2030000 		.4byte	.LVL33-.Ltext0
+ 2137 01ef 0200     		.2byte	0x2
+ 2138 01f1 91       		.byte	0x91
+ 2139 01f2 48       		.sleb128 -56
+ 2140 01f3 C2030000 		.4byte	.LVL33-.Ltext0
+ 2141 01f7 D0030000 		.4byte	.LVL34-.Ltext0
+ 2142 01fb 0200     		.2byte	0x2
+ 2143 01fd 30       		.byte	0x30
+ 2144 01fe 9F       		.byte	0x9f
+ 2145 01ff D0030000 		.4byte	.LVL34-.Ltext0
+ 2146 0203 19040000 		.4byte	.LVL38-1-.Ltext0
+ 2147 0207 0100     		.2byte	0x1
+ 2148 0209 50       		.byte	0x50
+ 2149 020a 00000000 		.4byte	0
+ 2150 020e 00000000 		.4byte	0
+ 2151              		.section	.debug_aranges,"",%progbits
+ 2152 0000 1C000000 		.4byte	0x1c
+ 2153 0004 0200     		.2byte	0x2
+ 2154 0006 00000000 		.4byte	.Ldebug_info0
+ 2155 000a 04       		.byte	0x4
+ 2156 000b 00       		.byte	0
+ 2157 000c 0000     		.2byte	0
+ 2158 000e 0000     		.2byte	0
+ 2159 0010 00000000 		.4byte	.Ltext0
+ 2160 0014 08050000 		.4byte	.Letext0-.Ltext0
+ 2161 0018 00000000 		.4byte	0
+ 2162 001c 00000000 		.4byte	0
+ 2163              		.section	.debug_line,"",%progbits
+ 2164              	.Ldebug_line0:
+ 2165 0000 FD010000 		.section	.debug_str,"MS",%progbits,1
+ 2165      02005E00 
+ 2165      00000201 
+ 2165      FB0E0D00 
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 49
+
+
+ 2165      01010101 
+ 2166              	.LASF33:
+ 2167 0000 6D656E75 		.ascii	"menu\000"
+ 2167      00
+ 2168              	.LASF17:
+ 2169 0005 6E6F4F66 		.ascii	"noOfChoices\000"
+ 2169      43686F69 
+ 2169      63657300 
+ 2170              	.LASF13:
+ 2171 0011 78506F73 		.ascii	"xPos\000"
+ 2171      00
+ 2172              	.LASF50:
+ 2173 0016 706C6179 		.ascii	"playSnake\000"
+ 2173      536E616B 
+ 2173      6500
+ 2174              	.LASF43:
+ 2175 0020 736E616B 		.ascii	"snake\000"
+ 2175      6500
+ 2176              	.LASF38:
+ 2177 0026 6C657665 		.ascii	"level\000"
+ 2177      6C00
+ 2178              	.LASF49:
+ 2179 002c 676F746F 		.ascii	"gotoxy\000"
+ 2179      787900
+ 2180              	.LASF19:
+ 2181 0033 70486561 		.ascii	"pHeaderText\000"
+ 2181      64657254 
+ 2181      65787400 
+ 2182              	.LASF42:
+ 2183 003f 64697265 		.ascii	"direction\000"
+ 2183      6374696F 
+ 2183      6E00
+ 2184              	.LASF25:
+ 2185 0049 63686F69 		.ascii	"choicesColor\000"
+ 2185      63657343 
+ 2185      6F6C6F72 
+ 2185      00
+ 2186              	.LASF22:
+ 2187 0056 6267436F 		.ascii	"bgColor\000"
+ 2187      6C6F7200 
+ 2188              	.LASF20:
+ 2189 005e 68656164 		.ascii	"headerTextXpos\000"
+ 2189      65725465 
+ 2189      78745870 
+ 2189      6F7300
+ 2190              	.LASF34:
+ 2191 006d 73636F72 		.ascii	"score\000"
+ 2191      6500
+ 2192              	.LASF6:
+ 2193 0073 74533332 		.ascii	"tS32\000"
+ 2193      00
+ 2194              	.LASF37:
+ 2195 0078 6F627374 		.ascii	"obstacles\000"
+ 2195      61636C65 
+ 2195      7300
+ 2196              	.LASF48:
+ 2197 0082 61646453 		.ascii	"addSegment\000"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 50
+
+
+ 2197      65676D65 
+ 2197      6E7400
+ 2198              	.LASF0:
+ 2199 008d 756E7369 		.ascii	"unsigned char\000"
+ 2199      676E6564 
+ 2199      20636861 
+ 2199      7200
+ 2200              	.LASF15:
+ 2201 009b 784C656E 		.ascii	"xLen\000"
+ 2201      00
+ 2202              	.LASF21:
+ 2203 00a0 7043686F 		.ascii	"pChoice\000"
+ 2203      69636500 
+ 2204              	.LASF8:
+ 2205 00a8 6C6F6E67 		.ascii	"long unsigned int\000"
+ 2205      20756E73 
+ 2205      69676E65 
+ 2205      6420696E 
+ 2205      7400
+ 2206              	.LASF1:
+ 2207 00ba 73686F72 		.ascii	"short unsigned int\000"
+ 2207      7420756E 
+ 2207      7369676E 
+ 2207      65642069 
+ 2207      6E7400
+ 2208              	.LASF44:
+ 2209 00cd 474E5520 		.ascii	"GNU C 4.6.3\000"
+ 2209      4320342E 
+ 2209      362E3300 
+ 2210              	.LASF45:
+ 2211 00d9 736E616B 		.ascii	"snake.c\000"
+ 2211      652E6300 
+ 2212              	.LASF30:
+ 2213 00e1 73657475 		.ascii	"setupLevel\000"
+ 2213      704C6576 
+ 2213      656C00
+ 2214              	.LASF31:
+ 2215 00ec 6B657970 		.ascii	"keypress\000"
+ 2215      72657373 
+ 2215      00
+ 2216              	.LASF28:
+ 2217 00f5 636F6C6F 		.ascii	"color\000"
+ 2217      7200
+ 2218              	.LASF18:
+ 2219 00fb 696E6974 		.ascii	"initialChoice\000"
+ 2219      69616C43 
+ 2219      686F6963 
+ 2219      6500
+ 2220              	.LASF46:
+ 2221 0109 433A5C55 		.ascii	"C:\\Users\\kozlovsky\\Downloads\\TicTac\\TicTac\000"
+ 2221      73657273 
+ 2221      5C6B6F7A 
+ 2221      6C6F7673 
+ 2221      6B795C44 
+ 2222              	.LASF16:
+ 2223 0134 794C656E 		.ascii	"yLen\000"
+ 2223      00
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 51
+
+
+ 2224              	.LASF41:
+ 2225 0139 73637265 		.ascii	"screenGrid\000"
+ 2225      656E4772 
+ 2225      696400
+ 2226              	.LASF3:
+ 2227 0144 756E7369 		.ascii	"unsigned int\000"
+ 2227      676E6564 
+ 2227      20696E74 
+ 2227      00
+ 2228              	.LASF24:
+ 2229 0151 68656164 		.ascii	"headerColor\000"
+ 2229      6572436F 
+ 2229      6C6F7200 
+ 2230              	.LASF39:
+ 2231 015d 66697273 		.ascii	"firstPress\000"
+ 2231      74507265 
+ 2231      737300
+ 2232              	.LASF10:
+ 2233 0168 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 2233      206C6F6E 
+ 2233      6720756E 
+ 2233      7369676E 
+ 2233      65642069 
+ 2234              	.LASF23:
+ 2235 017f 626F7264 		.ascii	"borderColor\000"
+ 2235      6572436F 
+ 2235      6C6F7200 
+ 2236              	.LASF27:
+ 2237 018b 744D656E 		.ascii	"tMenu\000"
+ 2237      7500
+ 2238              	.LASF35:
+ 2239 0191 736E616B 		.ascii	"snakeLength\000"
+ 2239      654C656E 
+ 2239      67746800 
+ 2240              	.LASF36:
+ 2241 019d 73706565 		.ascii	"speed\000"
+ 2241      6400
+ 2242              	.LASF47:
+ 2243 01a3 736E616B 		.ascii	"snakeSegment\000"
+ 2243      65536567 
+ 2243      6D656E74 
+ 2243      00
+ 2244              	.LASF9:
+ 2245 01b0 6C6F6E67 		.ascii	"long long int\000"
+ 2245      206C6F6E 
+ 2245      6720696E 
+ 2245      7400
+ 2246              	.LASF2:
+ 2247 01be 74553332 		.ascii	"tU32\000"
+ 2247      00
+ 2248              	.LASF12:
+ 2249 01c3 63686172 		.ascii	"char\000"
+ 2249      00
+ 2250              	.LASF5:
+ 2251 01c8 73686F72 		.ascii	"short int\000"
+ 2251      7420696E 
+ 2251      7400
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 52
+
+
+ 2252              	.LASF29:
+ 2253 01d2 73686F77 		.ascii	"showScore\000"
+ 2253      53636F72 
+ 2253      6500
+ 2254              	.LASF26:
+ 2255 01dc 73656C65 		.ascii	"selectedColor\000"
+ 2255      63746564 
+ 2255      436F6C6F 
+ 2255      7200
+ 2256              	.LASF11:
+ 2257 01ea 6C6F6E67 		.ascii	"long int\000"
+ 2257      20696E74 
+ 2257      00
+ 2258              	.LASF40:
+ 2259 01f3 68696768 		.ascii	"high_score\000"
+ 2259      5F73636F 
+ 2259      726500
+ 2260              	.LASF14:
+ 2261 01fe 79506F73 		.ascii	"yPos\000"
+ 2261      00
+ 2262              	.LASF4:
+ 2263 0203 7369676E 		.ascii	"signed char\000"
+ 2263      65642063 
+ 2263      68617200 
+ 2264              	.LASF7:
+ 2265 020f 74426F6F 		.ascii	"tBool\000"
+ 2265      6C00
+ 2266              	.LASF32:
+ 2267 0215 646F6E65 		.ascii	"done\000"
+ 2267      00
+ 2268              		.ident	"GCC: (GNU) 4.6.3"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s 			page 53
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 snake.c
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:6      .text:00000000 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:10     .text:00000000 addSegment
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:28     .text:00000012 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:36     .text:0000001a $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:108    .text:00000080 $d
+                            *COM*:00000320 snake
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:114    .text:0000008c $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:118    .text:0000008c gotoxy
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:158    .text:000000ae showScore
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:321    .text:0000019c $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:327    .text:000001a8 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:331    .text:000001a8 setupLevel
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:561    .text:000002c0 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:571    .text:000002dc $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:576    .text:000002dc playSnake
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:974    .text:000004e0 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:1001   .data:00000000 direction
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:1004   .bss:00000000 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:1010   .bss:00000000 snakeLength
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:1014   .bss:00000004 level
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:1018   .bss:00000008 score
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:1022   .bss:0000000c firstPress
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:1026   .bss:0000000d screenGrid
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:1031   .bss:0000027c obstacles
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:1035   .bss:00000280 speed
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccSDYAug.s:1039   .bss:00000284 high_score
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+__gnu_thumb1_case_uqi
+lcdRect
+__divsi3
+__modsi3
+lcdGotoxy
+lcdPuts
+lcdColor
+lcdClrscr
+rand
+srand
+osSleep
+checkKey
+drawMenu
+ms

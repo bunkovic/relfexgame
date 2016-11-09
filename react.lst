@@ -1,0 +1,2374 @@
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 1
+
+
+   1              		.code	16
+   2              		.file	"react.c"
+   3              		.text
+   4              	.Ltext0:
+   5              		.cfi_sections	.debug_frame
+   6              		.global	__modsi3
+   7              		.align	1
+   8              		.global	randomMove
+   9              		.code	16
+  10              		.thumb_func
+  11              		.type	randomMove, %function
+  12              	randomMove:
+  13              	.LFB1:
+  14              		.file 1 "react.c"
+   1:react.c       **** #include "../pre_emptive_os/api/osapi.h"
+   2:react.c       **** #include "../pre_emptive_os/api/general.h"
+   3:react.c       **** #include <printf_P.h>
+   4:react.c       **** #include <ea_init.h>
+   5:react.c       **** #include <stdlib.h>
+   6:react.c       **** 
+   7:react.c       **** #include "configAppl.h"
+   8:react.c       **** 
+   9:react.c       **** #include "lcd.h"
+  10:react.c       **** #include "key.h"
+  11:react.c       **** #include "react.h"
+  12:react.c       **** #include "hw.h"
+  13:react.c       **** 
+  14:react.c       **** #include "i2c.h"
+  15:react.c       **** #include "startup/config.h"
+  16:react.c       **** #include <framework.h>
+  17:react.c       **** #include <lpc2xxx.h>
+  18:react.c       **** 
+  19:react.c       **** static tU8 whichArrow;
+  20:react.c       **** 
+  21:react.c       **** #define GAME_NOT_STARTED 0
+  22:react.c       **** #define GAME_RUNNING     1
+  23:react.c       **** #define GAME_OVER        2
+  24:react.c       **** #define GAME_END         3
+  25:react.c       **** #define GAME_START 		 4
+  26:react.c       **** #define GAME_SCORED 	 5
+  27:react.c       **** #define GAME_NOT_SCORED  6
+  28:react.c       **** #define GAME_SHOW_SCORE  7
+  29:react.c       **** #define GAME_WON		 8
+  30:react.c       **** #define GAME_LOST        9
+  31:react.c       **** 
+  32:react.c       **** #define MODE_MOVING      0
+  33:react.c       **** #define MODE_SELECTING   1
+  34:react.c       **** 
+  35:react.c       **** #define SCREEN_WIDTH  ((tU8)130)
+  36:react.c       **** #define SCREEN_HEIGHT ((tU8)130)
+  37:react.c       **** #define NUM_COLS ((tU8)4)
+  38:react.c       **** #define NUM_ROWS ((tU8)4)
+  39:react.c       **** 
+  40:react.c       **** #define BORDER ((tU8)1)
+  41:react.c       **** #define BOARD_X_OFFSET  ((tU8)4)
+  42:react.c       **** #define BOARD_Y_OFFSET  ((tU8)4)
+  43:react.c       **** 
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 2
+
+
+  44:react.c       **** #define CELL_WIDTH   ((tU8)(130-(BOARD_X_OFFSET*2)-(NUM_COLS+1)*BORDER)/NUM_COLS)
+  45:react.c       **** #define CELL_HEIGHT  ((tU8)(130-(BOARD_Y_OFFSET*2)-(NUM_ROWS+1)*BORDER)/NUM_ROWS)
+  46:react.c       **** 
+  47:react.c       **** #define BOARD_WIDTH  ((tU8)((NUM_COLS+1)*BORDER+NUM_COLS*CELL_WIDTH))
+  48:react.c       **** #define BOARD_HEIGHT ((tU8)((NUM_ROWS+1)*BORDER+NUM_ROWS*CELL_HEIGHT))
+  49:react.c       **** 
+  50:react.c       **** #define BOARD_GRID_COLOR  ((tU8)0)    // black
+  51:react.c       **** #define BOARD_BKG_COLOR   ((tU8)0xff) // white
+  52:react.c       **** #define GAME_BKG_COLOR_OK    ((tU8)0x0c) // green
+  53:react.c       **** #define GAME_BKG_COLOR_ERR   ((tU8)0xe0) // red
+  54:react.c       **** 
+  55:react.c       **** #define SELECTED_BKG_COLOR  ((tU8)0xfc) // yellow
+  56:react.c       **** #define FONT_FIXED_COLOR    ((tU8)0xe0) // black
+  57:react.c       **** #define FONT_UNFIXED_COLOR  ((tU8)0x02) // blue
+  58:react.c       **** 
+  59:react.c       **** #define CELL_X_OFFSET(col)  (BOARD_X_OFFSET + BORDER + (col*BORDER) + ((col)*CELL_WIDTH))
+  60:react.c       **** #define CELL_Y_OFFSET(row)  (BOARD_Y_OFFSET + BORDER + (row*BORDER) + ((row)*CELL_WIDTH))
+  61:react.c       **** 
+  62:react.c       **** #define CELL_PAD_X  ((tU8)3)
+  63:react.c       **** #define CELL_PAD_Y  ((tU8)3)
+  64:react.c       **** 
+  65:react.c       **** #define CHAR_HEIGHT 14
+  66:react.c       **** #define CHAR_WIDTH   8
+  67:react.c       **** #define CENTER_X(numchars) ((SCREEN_WIDTH - numchars*CHAR_WIDTH)/2)
+  68:react.c       **** 
+  69:react.c       **** 
+  70:react.c       **** #define IS_SELECTED(row,col) (row==currRow && col==currCol)
+  71:react.c       **** 
+  72:react.c       **** static tU8 gameStatus;
+  73:react.c       **** static tU8 gameMode;
+  74:react.c       **** 
+  75:react.c       **** static tU8 currRow;
+  76:react.c       **** static tU8 currCol;
+  77:react.c       **** 
+  78:react.c       **** static tU8 selectedNum;
+  79:react.c       **** 
+  80:react.c       **** #define BOARD_SIZE               4
+  81:react.c       **** tU8 matrix[BOARD_SIZE][BOARD_SIZE];
+  82:react.c       **** 
+  83:react.c       **** // ------------------------------------
+  84:react.c       **** #include <lpc2xxx.h>
+  85:react.c       **** #include <printf_P.h>
+  86:react.c       **** #include <ea_init.h>
+  87:react.c       **** #include "startup/config.h"
+  88:react.c       **** 
+  89:react.c       **** 
+  90:react.c       **** 
+  91:react.c       **** // TIMER DEFINES
+  92:react.c       **** #define tU8   unsigned char
+  93:react.c       **** #define tU16  unsigned short
+  94:react.c       **** #define tU32  unsigned int
+  95:react.c       **** #define tS8   char
+  96:react.c       **** #define tS16  short
+  97:react.c       **** #define tS32  int
+  98:react.c       **** #define tBool unsigned char;
+  99:react.c       **** #define TRUE  1
+ 100:react.c       **** #define FALSE 0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 3
+
+
+ 101:react.c       **** 
+ 102:react.c       **** // --------------------------------------
+ 103:react.c       **** 
+ 104:react.c       **** static tBool arrow;
+ 105:react.c       **** static int score;
+ 106:react.c       **** static tU8 rounds;
+ 107:react.c       **** static tU8 currentRound;
+ 108:react.c       **** 
+ 109:react.c       **** #define LED_GREEN  1
+ 110:react.c       **** #define LED_RED    2
+ 111:react.c       **** 
+ 112:react.c       **** // --------------------------------------
+ 113:react.c       **** 
+ 114:react.c       **** void showPreStartupScreen(void){
+ 115:react.c       ****     // clear screen
+ 116:react.c       ****     lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
+ 117:react.c       ****     lcdClrscr();
+ 118:react.c       ****     lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
+ 119:react.c       ****     printf("setup screen method");
+ 120:react.c       **** 
+ 121:react.c       ****     // print message
+ 122:react.c       ****     lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+ 123:react.c       ****     lcdPuts("Welcome to the");
+ 124:react.c       ****     lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 -4);
+ 125:react.c       ****     lcdPuts("React Game");
+ 126:react.c       ****     lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 +12);
+ 127:react.c       ****     lcdPuts("Press Center");
+ 128:react.c       **** 
+ 129:react.c       **** }
+ 130:react.c       **** 
+ 131:react.c       **** tU8 randomMove() {
+  15              		.loc 1 131 0
+  16              		.cfi_startproc
+  17 0000 00B5     		push	{lr}
+  18              	.LCFI0:
+  19              		.cfi_def_cfa_offset 4
+  20              		.cfi_offset 14, -4
+ 132:react.c       ****     switch(rand() % 5) {
+  21              		.loc 1 132 0
+  22 0002 FFF7FEFF 		bl	rand
+  23 0006 0521     		mov	r1, #5
+  24 0008 FFF7FEFF 		bl	__modsi3
+  25 000c 0428     		cmp	r0, #4
+  26 000e 10D8     		bhi	.L2
+  27 0010 094B     		ldr	r3, .L11
+  28 0012 FFF7FEFF 		bl	__gnu_thumb1_case_uqi
+  29              	.L8:
+  30 0016 03       		.byte	(.L3-.L8)/2
+  31 0017 05       		.byte	(.L4-.L8)/2
+  32 0018 07       		.byte	(.L5-.L8)/2
+  33 0019 09       		.byte	(.L6-.L8)/2
+  34 001a 0B       		.byte	(.L7-.L8)/2
+  35 001b 00       		.align	1
+  36              	.L3:
+ 133:react.c       ****         case 0:
+ 134:react.c       ****             whichArrow = KEY_UP;
+  37              		.loc 1 134 0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 4
+
+
+  38 001c 0120     		mov	r0, #1
+  39 001e 06E0     		b	.L10
+  40              	.L4:
+ 135:react.c       ****             return KEY_UP;
+ 136:react.c       ****         case 1:
+ 137:react.c       ****             whichArrow = KEY_RIGHT;
+  41              		.loc 1 137 0
+  42 0020 0220     		mov	r0, #2
+  43 0022 04E0     		b	.L10
+  44              	.L5:
+ 138:react.c       ****             return KEY_RIGHT;
+ 139:react.c       ****         case 2:
+ 140:react.c       ****             whichArrow = KEY_DOWN;
+  45              		.loc 1 140 0
+  46 0024 0420     		mov	r0, #4
+  47 0026 02E0     		b	.L10
+  48              	.L6:
+ 141:react.c       ****             return KEY_DOWN;
+ 142:react.c       ****         case 3:
+ 143:react.c       ****             whichArrow = KEY_LEFT;
+  49              		.loc 1 143 0
+  50 0028 0820     		mov	r0, #8
+  51 002a 00E0     		b	.L10
+  52              	.L7:
+ 144:react.c       ****             return KEY_LEFT;
+ 145:react.c       ****         case 4:
+ 146:react.c       ****             whichArrow = KEY_CENTER;
+  53              		.loc 1 146 0
+  54 002c 1020     		mov	r0, #16
+  55              	.L10:
+  56 002e 1870     		strb	r0, [r3]
+ 147:react.c       ****             return KEY_CENTER;
+  57              		.loc 1 147 0
+  58 0030 FFE7     		b	.L1
+  59              	.L2:
+  60              	.L1:
+ 148:react.c       ****     }
+ 149:react.c       **** }
+  61              		.loc 1 149 0
+  62              		@ sp needed for prologue
+  63 0032 02BC     		pop	{r1}
+  64 0034 0847     		bx	r1
+  65              	.L12:
+  66 0036 C046     		.align	2
+  67              	.L11:
+  68 0038 00000000 		.word	.LANCHOR0
+  69              		.cfi_endproc
+  70              	.LFE1:
+  71              		.size	randomMove, .-randomMove
+  72              		.align	1
+  73              		.global	showRandomArrow
+  74              		.code	16
+  75              		.thumb_func
+  76              		.type	showRandomArrow, %function
+  77              	showRandomArrow:
+  78              	.LFB2:
+ 150:react.c       **** 
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 5
+
+
+ 151:react.c       **** void showRandomArrow(whichArrow) {
+  79              		.loc 1 151 0
+  80              		.cfi_startproc
+  81 003c 01B5     		push	{r0, lr}
+  82              	.LCFI1:
+  83              		.cfi_def_cfa_offset 8
+  84              		.cfi_offset 0, -8
+  85              		.cfi_offset 14, -4
+  86              	.LVL0:
+ 152:react.c       ****     switch(whichArrow) {
+  87              		.loc 1 152 0
+  88 003e 0138     		sub	r0, r0, #1
+  89              	.LVL1:
+  90 0040 0F28     		cmp	r0, #15
+  91 0042 59D8     		bhi	.L14
+  92 0044 FFF7FEFF 		bl	__gnu_thumb1_case_uqi
+  93              	.L20:
+  94 0048 58       		.byte	(.L14-.L20)/2
+  95 0049 08       		.byte	(.L16-.L20)/2
+  96 004a 58       		.byte	(.L14-.L20)/2
+  97 004b 1C       		.byte	(.L17-.L20)/2
+  98 004c 58       		.byte	(.L14-.L20)/2
+  99 004d 58       		.byte	(.L14-.L20)/2
+ 100 004e 58       		.byte	(.L14-.L20)/2
+ 101 004f 30       		.byte	(.L18-.L20)/2
+ 102 0050 58       		.byte	(.L14-.L20)/2
+ 103 0051 58       		.byte	(.L14-.L20)/2
+ 104 0052 58       		.byte	(.L14-.L20)/2
+ 105 0053 58       		.byte	(.L14-.L20)/2
+ 106 0054 58       		.byte	(.L14-.L20)/2
+ 107 0055 58       		.byte	(.L14-.L20)/2
+ 108 0056 58       		.byte	(.L14-.L20)/2
+ 109 0057 44       		.byte	(.L19-.L20)/2
+ 110              		.align	1
+ 111              	.L16:
+ 153:react.c       ****         case KEY_UP:
+ 154:react.c       ****             lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
+ 155:react.c       ****             lcdClrscr();
+ 156:react.c       ****             lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
+ 157:react.c       ****             lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+ 158:react.c       ****             lcdPuts("KEY_UP");
+ 159:react.c       ****             break;
+ 160:react.c       **** 
+ 161:react.c       ****         case KEY_RIGHT:
+ 162:react.c       ****             lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
+ 112              		.loc 1 162 0
+ 113 0058 0C20     		mov	r0, #12
+ 114              	.LVL2:
+ 115 005a 0021     		mov	r1, #0
+ 116 005c FFF7FEFF 		bl	lcdColor
+ 163:react.c       ****             lcdClrscr();
+ 117              		.loc 1 163 0
+ 118 0060 FFF7FEFF 		bl	lcdClrscr
+ 164:react.c       ****             lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
+ 119              		.loc 1 164 0
+ 120 0064 0020     		mov	r0, #0
+ 121 0066 8222     		mov	r2, #130
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 6
+
+
+ 122 0068 0C23     		mov	r3, #12
+ 123 006a 011C     		mov	r1, r0
+ 124 006c 0093     		str	r3, [sp]
+ 125 006e 131C     		mov	r3, r2
+ 126 0070 FFF7FEFF 		bl	lcdRect
+ 165:react.c       ****             lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+ 127              		.loc 1 165 0
+ 128 0074 1120     		mov	r0, #17
+ 129 0076 2B21     		mov	r1, #43
+ 130 0078 FFF7FEFF 		bl	lcdGotoxy
+ 166:react.c       ****             lcdPuts("KEY_RIGHT");
+ 131              		.loc 1 166 0
+ 132 007c 2A48     		ldr	r0, .L23
+ 133 007e 4EE0     		b	.L22
+ 134              	.LVL3:
+ 135              	.L17:
+ 167:react.c       ****             break;
+ 168:react.c       **** 
+ 169:react.c       ****         case KEY_DOWN:
+ 170:react.c       ****             lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
+ 136              		.loc 1 170 0
+ 137 0080 0C20     		mov	r0, #12
+ 138              	.LVL4:
+ 139 0082 0021     		mov	r1, #0
+ 140 0084 FFF7FEFF 		bl	lcdColor
+ 171:react.c       ****             lcdClrscr();
+ 141              		.loc 1 171 0
+ 142 0088 FFF7FEFF 		bl	lcdClrscr
+ 172:react.c       ****             lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
+ 143              		.loc 1 172 0
+ 144 008c 0020     		mov	r0, #0
+ 145 008e 8222     		mov	r2, #130
+ 146 0090 0C23     		mov	r3, #12
+ 147 0092 011C     		mov	r1, r0
+ 148 0094 0093     		str	r3, [sp]
+ 149 0096 131C     		mov	r3, r2
+ 150 0098 FFF7FEFF 		bl	lcdRect
+ 173:react.c       ****             lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+ 151              		.loc 1 173 0
+ 152 009c 1120     		mov	r0, #17
+ 153 009e 2B21     		mov	r1, #43
+ 154 00a0 FFF7FEFF 		bl	lcdGotoxy
+ 174:react.c       ****             lcdPuts("KEY_DOWN");
+ 155              		.loc 1 174 0
+ 156 00a4 2148     		ldr	r0, .L23+4
+ 157 00a6 3AE0     		b	.L22
+ 158              	.LVL5:
+ 159              	.L18:
+ 175:react.c       ****             break;
+ 176:react.c       **** 
+ 177:react.c       ****         case KEY_LEFT:
+ 178:react.c       ****             lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
+ 160              		.loc 1 178 0
+ 161 00a8 0C20     		mov	r0, #12
+ 162              	.LVL6:
+ 163 00aa 0021     		mov	r1, #0
+ 164 00ac FFF7FEFF 		bl	lcdColor
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 7
+
+
+ 179:react.c       ****             lcdClrscr();
+ 165              		.loc 1 179 0
+ 166 00b0 FFF7FEFF 		bl	lcdClrscr
+ 180:react.c       ****             lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
+ 167              		.loc 1 180 0
+ 168 00b4 0020     		mov	r0, #0
+ 169 00b6 8222     		mov	r2, #130
+ 170 00b8 0C23     		mov	r3, #12
+ 171 00ba 011C     		mov	r1, r0
+ 172 00bc 0093     		str	r3, [sp]
+ 173 00be 131C     		mov	r3, r2
+ 174 00c0 FFF7FEFF 		bl	lcdRect
+ 181:react.c       ****             lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+ 175              		.loc 1 181 0
+ 176 00c4 1120     		mov	r0, #17
+ 177 00c6 2B21     		mov	r1, #43
+ 178 00c8 FFF7FEFF 		bl	lcdGotoxy
+ 182:react.c       ****             lcdPuts("KEY_LEFT");
+ 179              		.loc 1 182 0
+ 180 00cc 1848     		ldr	r0, .L23+8
+ 181 00ce 26E0     		b	.L22
+ 182              	.LVL7:
+ 183              	.L19:
+ 183:react.c       ****             break;
+ 184:react.c       **** 
+ 185:react.c       ****         case KEY_CENTER:
+ 186:react.c       ****             lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
+ 184              		.loc 1 186 0
+ 185 00d0 0C20     		mov	r0, #12
+ 186              	.LVL8:
+ 187 00d2 0021     		mov	r1, #0
+ 188 00d4 FFF7FEFF 		bl	lcdColor
+ 187:react.c       ****             lcdClrscr();
+ 189              		.loc 1 187 0
+ 190 00d8 FFF7FEFF 		bl	lcdClrscr
+ 188:react.c       ****             lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
+ 191              		.loc 1 188 0
+ 192 00dc 0020     		mov	r0, #0
+ 193 00de 8222     		mov	r2, #130
+ 194 00e0 0C23     		mov	r3, #12
+ 195 00e2 011C     		mov	r1, r0
+ 196 00e4 0093     		str	r3, [sp]
+ 197 00e6 131C     		mov	r3, r2
+ 198 00e8 FFF7FEFF 		bl	lcdRect
+ 189:react.c       ****             lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+ 199              		.loc 1 189 0
+ 200 00ec 1120     		mov	r0, #17
+ 201 00ee 2B21     		mov	r1, #43
+ 202 00f0 FFF7FEFF 		bl	lcdGotoxy
+ 190:react.c       ****             lcdPuts("KEY_CENTER");
+ 203              		.loc 1 190 0
+ 204 00f4 0F48     		ldr	r0, .L23+12
+ 205 00f6 12E0     		b	.L22
+ 206              	.LVL9:
+ 207              	.L14:
+ 191:react.c       ****             break;
+ 192:react.c       **** 
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 8
+
+
+ 193:react.c       ****         default:
+ 194:react.c       ****             lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
+ 208              		.loc 1 194 0
+ 209 00f8 0C20     		mov	r0, #12
+ 210              	.LVL10:
+ 211 00fa 0021     		mov	r1, #0
+ 212 00fc FFF7FEFF 		bl	lcdColor
+ 195:react.c       ****             lcdClrscr();
+ 213              		.loc 1 195 0
+ 214 0100 FFF7FEFF 		bl	lcdClrscr
+ 196:react.c       ****             lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
+ 215              		.loc 1 196 0
+ 216 0104 0020     		mov	r0, #0
+ 217 0106 8222     		mov	r2, #130
+ 218 0108 0C23     		mov	r3, #12
+ 219 010a 011C     		mov	r1, r0
+ 220 010c 0093     		str	r3, [sp]
+ 221 010e 131C     		mov	r3, r2
+ 222 0110 FFF7FEFF 		bl	lcdRect
+ 197:react.c       ****             lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+ 223              		.loc 1 197 0
+ 224 0114 1120     		mov	r0, #17
+ 225 0116 2B21     		mov	r1, #43
+ 226 0118 FFF7FEFF 		bl	lcdGotoxy
+ 198:react.c       ****             lcdPuts("KEY_UP");
+ 227              		.loc 1 198 0
+ 228 011c 0648     		ldr	r0, .L23+16
+ 229              	.L22:
+ 230 011e FFF7FEFF 		bl	lcdPuts
+ 199:react.c       ****             break;
+ 200:react.c       ****     }
+ 201:react.c       **** }
+ 231              		.loc 1 201 0
+ 232 0122 01B0     		add	sp, sp, #4
+ 233              		@ sp needed for prologue
+ 234 0124 01BC     		pop	{r0}
+ 235 0126 0047     		bx	r0
+ 236              	.L24:
+ 237              		.align	2
+ 238              	.L23:
+ 239 0128 07000000 		.word	.LC3
+ 240 012c 11000000 		.word	.LC5
+ 241 0130 1A000000 		.word	.LC7
+ 242 0134 23000000 		.word	.LC9
+ 243 0138 00000000 		.word	.LC1
+ 244              		.cfi_endproc
+ 245              	.LFE2:
+ 246              		.size	showRandomArrow, .-showRandomArrow
+ 247              		.align	1
+ 248              		.global	useBuzzer
+ 249              		.code	16
+ 250              		.thumb_func
+ 251              		.type	useBuzzer, %function
+ 252              	useBuzzer:
+ 253              	.LFB3:
+ 202:react.c       **** 
+ 203:react.c       **** void useBuzzer(int MAX){
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 9
+
+
+ 254              		.loc 1 203 0
+ 255              		.cfi_startproc
+ 256 013c 30B5     		push	{r4, r5, lr}
+ 257              	.LCFI2:
+ 258              		.cfi_def_cfa_offset 12
+ 259              		.cfi_offset 4, -12
+ 260              		.cfi_offset 5, -8
+ 261              		.cfi_offset 14, -4
+ 262              	.LVL11:
+ 263              		.loc 1 203 0
+ 264 013e 051C     		mov	r5, r0
+ 204:react.c       ****     int j;
+ 205:react.c       ****     for (j = 0; j < MAX; j++) {
+ 265              		.loc 1 205 0
+ 266 0140 0024     		mov	r4, #0
+ 267 0142 0CE0     		b	.L26
+ 268              	.LVL12:
+ 269              	.L27:
+ 206:react.c       ****         setBuzzer(TRUE);
+ 270              		.loc 1 206 0 discriminator 2
+ 271 0144 0120     		mov	r0, #1
+ 272 0146 FFF7FEFF 		bl	setBuzzer
+ 207:react.c       ****         osSleep(20);
+ 273              		.loc 1 207 0 discriminator 2
+ 274 014a 1420     		mov	r0, #20
+ 275 014c FFF7FEFF 		bl	osSleep
+ 208:react.c       ****         setBuzzer(FALSE);
+ 276              		.loc 1 208 0 discriminator 2
+ 277 0150 0020     		mov	r0, #0
+ 278 0152 FFF7FEFF 		bl	setBuzzer
+ 209:react.c       ****         osSleep(20);
+ 279              		.loc 1 209 0 discriminator 2
+ 280 0156 1420     		mov	r0, #20
+ 281 0158 FFF7FEFF 		bl	osSleep
+ 205:react.c       ****     for (j = 0; j < MAX; j++) {
+ 282              		.loc 1 205 0 discriminator 2
+ 283 015c 0134     		add	r4, r4, #1
+ 284              	.LVL13:
+ 285              	.L26:
+ 205:react.c       ****     for (j = 0; j < MAX; j++) {
+ 286              		.loc 1 205 0 is_stmt 0 discriminator 1
+ 287 015e AC42     		cmp	r4, r5
+ 288 0160 F0DB     		blt	.L27
+ 210:react.c       ****     }
+ 211:react.c       **** }
+ 289              		.loc 1 211 0 is_stmt 1
+ 290              		@ sp needed for prologue
+ 291              	.LVL14:
+ 292              	.LVL15:
+ 293 0162 30BC     		pop	{r4, r5}
+ 294 0164 01BC     		pop	{r0}
+ 295 0166 0047     		bx	r0
+ 296              		.cfi_endproc
+ 297              	.LFE3:
+ 298              		.size	useBuzzer, .-useBuzzer
+ 299              		.global	__divsi3
+ 300              		.align	1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 10
+
+
+ 301              		.global	showScore
+ 302              		.code	16
+ 303              		.thumb_func
+ 304              		.type	showScore, %function
+ 305              	showScore:
+ 306              	.LFB4:
+ 212:react.c       **** 
+ 213:react.c       **** void showScore() {
+ 307              		.loc 1 213 0
+ 308              		.cfi_startproc
+ 309 0168 F0B5     		push	{r4, r5, r6, r7, lr}
+ 310              	.LCFI3:
+ 311              		.cfi_def_cfa_offset 20
+ 312              		.cfi_offset 4, -20
+ 313              		.cfi_offset 5, -16
+ 314              		.cfi_offset 6, -12
+ 315              		.cfi_offset 7, -8
+ 316              		.cfi_offset 14, -4
+ 214:react.c       **** 
+ 215:react.c       ****     tU8 str[13];
+ 216:react.c       **** 
+ 217:react.c       ****     str[0] = score / 100000 + '0';
+ 317              		.loc 1 217 0
+ 318 016a 354B     		ldr	r3, .L30
+ 319 016c 5C68     		ldr	r4, [r3, #4]
+ 213:react.c       **** void showScore() {
+ 320              		.loc 1 213 0
+ 321 016e 86B0     		sub	sp, sp, #24
+ 322              	.LCFI4:
+ 323              		.cfi_def_cfa_offset 44
+ 324              		.loc 1 217 0
+ 325 0170 3449     		ldr	r1, .L30+4
+ 326 0172 201C     		mov	r0, r4
+ 327 0174 FFF7FEFF 		bl	__divsi3
+ 328 0178 051C     		mov	r5, r0
+ 329 017a 3035     		add	r5, r5, #48
+ 330 017c 2D06     		lsl	r5, r5, #24
+ 331 017e 6A46     		mov	r2, sp
+ 332 0180 2D0E     		lsr	r5, r5, #24
+ 333 0182 1572     		strb	r5, [r2, #8]
+ 218:react.c       ****     str[1] = (score / 10000) % 10 + '0';
+ 334              		.loc 1 218 0
+ 335 0184 3049     		ldr	r1, .L30+8
+ 336 0186 201C     		mov	r0, r4
+ 337 0188 FFF7FEFF 		bl	__divsi3
+ 338 018c 0A21     		mov	r1, #10
+ 339 018e FFF7FEFF 		bl	__modsi3
+ 340 0192 061C     		mov	r6, r0
+ 341 0194 3036     		add	r6, r6, #48
+ 342 0196 3606     		lsl	r6, r6, #24
+ 343 0198 6B46     		mov	r3, sp
+ 344 019a 360E     		lsr	r6, r6, #24
+ 219:react.c       ****     str[2] = (score / 1000) % 10 + '0';
+ 345              		.loc 1 219 0
+ 346 019c FA21     		mov	r1, #250
+ 218:react.c       ****     str[1] = (score / 10000) % 10 + '0';
+ 347              		.loc 1 218 0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 11
+
+
+ 348 019e 5E72     		strb	r6, [r3, #9]
+ 349              		.loc 1 219 0
+ 350 01a0 8900     		lsl	r1, r1, #2
+ 351 01a2 201C     		mov	r0, r4
+ 352 01a4 FFF7FEFF 		bl	__divsi3
+ 353 01a8 0A21     		mov	r1, #10
+ 354 01aa FFF7FEFF 		bl	__modsi3
+ 355 01ae 071C     		mov	r7, r0
+ 356 01b0 3037     		add	r7, r7, #48
+ 357 01b2 3F06     		lsl	r7, r7, #24
+ 358 01b4 6A46     		mov	r2, sp
+ 359 01b6 3F0E     		lsr	r7, r7, #24
+ 360 01b8 9772     		strb	r7, [r2, #10]
+ 220:react.c       ****     str[3] = (score / 100) % 10 + '0';
+ 361              		.loc 1 220 0
+ 362 01ba 6421     		mov	r1, #100
+ 363 01bc 201C     		mov	r0, r4
+ 364 01be FFF7FEFF 		bl	__divsi3
+ 365 01c2 0A21     		mov	r1, #10
+ 366 01c4 FFF7FEFF 		bl	__modsi3
+ 367 01c8 3030     		add	r0, r0, #48
+ 368 01ca 0006     		lsl	r0, r0, #24
+ 369 01cc 030E     		lsr	r3, r0, #24
+ 370 01ce 6A46     		mov	r2, sp
+ 371 01d0 D372     		strb	r3, [r2, #11]
+ 221:react.c       ****     str[4] = (score / 10) % 10 + '0';
+ 372              		.loc 1 221 0
+ 373 01d2 0A21     		mov	r1, #10
+ 374 01d4 201C     		mov	r0, r4
+ 220:react.c       ****     str[3] = (score / 100) % 10 + '0';
+ 375              		.loc 1 220 0
+ 376 01d6 0093     		str	r3, [sp]
+ 377              		.loc 1 221 0
+ 378 01d8 FFF7FEFF 		bl	__divsi3
+ 379 01dc 0A21     		mov	r1, #10
+ 380 01de FFF7FEFF 		bl	__modsi3
+ 381 01e2 3030     		add	r0, r0, #48
+ 382 01e4 0006     		lsl	r0, r0, #24
+ 383 01e6 030E     		lsr	r3, r0, #24
+ 384 01e8 6A46     		mov	r2, sp
+ 385 01ea 1373     		strb	r3, [r2, #12]
+ 222:react.c       ****     str[5] = score % 10 + '0';
+ 386              		.loc 1 222 0
+ 387 01ec 201C     		mov	r0, r4
+ 388 01ee 0A21     		mov	r1, #10
+ 221:react.c       ****     str[4] = (score / 10) % 10 + '0';
+ 389              		.loc 1 221 0
+ 390 01f0 0193     		str	r3, [sp, #4]
+ 391              		.loc 1 222 0
+ 392 01f2 FFF7FEFF 		bl	__modsi3
+ 393 01f6 6A46     		mov	r2, sp
+ 394 01f8 3030     		add	r0, r0, #48
+ 223:react.c       ****     str[6] = 0;
+ 395              		.loc 1 223 0
+ 396 01fa 0023     		mov	r3, #0
+ 222:react.c       ****     str[5] = score % 10 + '0';
+ 397              		.loc 1 222 0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 12
+
+
+ 398 01fc 5073     		strb	r0, [r2, #13]
+ 399              		.loc 1 223 0
+ 400 01fe 9373     		strb	r3, [r2, #14]
+ 224:react.c       **** 
+ 225:react.c       ****     //remove leading zeroes
+ 226:react.c       ****     if (str[0] == '0') {
+ 401              		.loc 1 226 0
+ 402 0200 302D     		cmp	r5, #48
+ 403 0202 11D1     		bne	.L29
+ 227:react.c       ****         str[0] = ' ';
+ 404              		.loc 1 227 0
+ 405 0204 2023     		mov	r3, #32
+ 406 0206 1372     		strb	r3, [r2, #8]
+ 228:react.c       ****         if (str[1] == '0') {
+ 407              		.loc 1 228 0
+ 408 0208 302E     		cmp	r6, #48
+ 409 020a 0DD1     		bne	.L29
+ 229:react.c       ****             str[1] = ' ';
+ 410              		.loc 1 229 0
+ 411 020c 5372     		strb	r3, [r2, #9]
+ 230:react.c       ****             if (str[2] == '0') {
+ 412              		.loc 1 230 0
+ 413 020e 302F     		cmp	r7, #48
+ 414 0210 0AD1     		bne	.L29
+ 231:react.c       ****                 str[2] = ' ';
+ 415              		.loc 1 231 0
+ 416 0212 9372     		strb	r3, [r2, #10]
+ 232:react.c       ****                 if (str[3] == '0') {
+ 417              		.loc 1 232 0
+ 418 0214 009A     		ldr	r2, [sp]
+ 419 0216 302A     		cmp	r2, #48
+ 420 0218 06D1     		bne	.L29
+ 233:react.c       ****                     str[3] = ' ';
+ 421              		.loc 1 233 0
+ 422 021a 6A46     		mov	r2, sp
+ 423 021c D372     		strb	r3, [r2, #11]
+ 234:react.c       ****                     if (str[4] == '0') {
+ 424              		.loc 1 234 0
+ 425 021e 019A     		ldr	r2, [sp, #4]
+ 426 0220 302A     		cmp	r2, #48
+ 427 0222 01D1     		bne	.L29
+ 235:react.c       ****                         str[4] = ' ';
+ 428              		.loc 1 235 0
+ 429 0224 6A46     		mov	r2, sp
+ 430 0226 1373     		strb	r3, [r2, #12]
+ 431              	.L29:
+ 236:react.c       ****                     }
+ 237:react.c       ****                 }
+ 238:react.c       ****             }
+ 239:react.c       ****         }
+ 240:react.c       ****     }
+ 241:react.c       **** 
+ 242:react.c       ****     lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 -4);
+ 432              		.loc 1 242 0
+ 433 0228 3D21     		mov	r1, #61
+ 434 022a 1120     		mov	r0, #17
+ 435 022c FFF7FEFF 		bl	lcdGotoxy
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 13
+
+
+ 243:react.c       ****     lcdPuts(str);
+ 436              		.loc 1 243 0
+ 437 0230 02A8     		add	r0, sp, #8
+ 438 0232 FFF7FEFF 		bl	lcdPuts
+ 244:react.c       **** }
+ 439              		.loc 1 244 0
+ 440 0236 06B0     		add	sp, sp, #24
+ 441              		@ sp needed for prologue
+ 442 0238 F0BC     		pop	{r4, r5, r6, r7}
+ 443 023a 01BC     		pop	{r0}
+ 444 023c 0047     		bx	r0
+ 445              	.L31:
+ 446 023e C046     		.align	2
+ 447              	.L30:
+ 448 0240 00000000 		.word	.LANCHOR0
+ 449 0244 A0860100 		.word	100000
+ 450 0248 10270000 		.word	10000
+ 451              		.cfi_endproc
+ 452              	.LFE4:
+ 453              		.size	showScore, .-showScore
+ 454              		.align	1
+ 455              		.global	playReactGame
+ 456              		.code	16
+ 457              		.thumb_func
+ 458              		.type	playReactGame, %function
+ 459              	playReactGame:
+ 460              	.LFB5:
+ 245:react.c       **** 
+ 246:react.c       **** 
+ 247:react.c       **** void playReactGame(void){
+ 461              		.loc 1 247 0
+ 462              		.cfi_startproc
+ 463 024c 71B5     		push	{r0, r4, r5, r6, lr}
+ 464              	.LCFI5:
+ 465              		.cfi_def_cfa_offset 20
+ 466              		.cfi_offset 0, -20
+ 467              		.cfi_offset 4, -16
+ 468              		.cfi_offset 5, -12
+ 469              		.cfi_offset 6, -8
+ 470              		.cfi_offset 14, -4
+ 248:react.c       ****     printf("\nPlay React-Game works!\n");
+ 471              		.loc 1 248 0
+ 472 024e 8E48     		ldr	r0, .L54
+ 473 0250 FFF7FEFF 		bl	simplePrintf
+ 474              	.LBB5:
+ 475              	.LBB6:
+ 116:react.c       ****     lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
+ 476              		.loc 1 116 0
+ 477 0254 0C20     		mov	r0, #12
+ 478 0256 0021     		mov	r1, #0
+ 479 0258 FFF7FEFF 		bl	lcdColor
+ 117:react.c       ****     lcdClrscr();
+ 480              		.loc 1 117 0
+ 481 025c FFF7FEFF 		bl	lcdClrscr
+ 118:react.c       ****     lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
+ 482              		.loc 1 118 0
+ 483 0260 8222     		mov	r2, #130
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 14
+
+
+ 484 0262 0020     		mov	r0, #0
+ 485 0264 0C23     		mov	r3, #12
+ 486 0266 011C     		mov	r1, r0
+ 487 0268 0093     		str	r3, [sp]
+ 488 026a 131C     		mov	r3, r2
+ 489 026c FFF7FEFF 		bl	lcdRect
+ 119:react.c       ****     printf("setup screen method");
+ 490              		.loc 1 119 0
+ 491 0270 8648     		ldr	r0, .L54+4
+ 492 0272 FFF7FEFF 		bl	simplePrintf
+ 122:react.c       ****     lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+ 493              		.loc 1 122 0
+ 494 0276 2B21     		mov	r1, #43
+ 495 0278 1120     		mov	r0, #17
+ 496 027a FFF7FEFF 		bl	lcdGotoxy
+ 123:react.c       ****     lcdPuts("Welcome to the");
+ 497              		.loc 1 123 0
+ 498 027e 8448     		ldr	r0, .L54+8
+ 499 0280 FFF7FEFF 		bl	lcdPuts
+ 124:react.c       ****     lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 -4);
+ 500              		.loc 1 124 0
+ 501 0284 3D21     		mov	r1, #61
+ 502 0286 1120     		mov	r0, #17
+ 503 0288 FFF7FEFF 		bl	lcdGotoxy
+ 125:react.c       ****     lcdPuts("React Game");
+ 504              		.loc 1 125 0
+ 505 028c 8148     		ldr	r0, .L54+12
+ 506 028e FFF7FEFF 		bl	lcdPuts
+ 126:react.c       ****     lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 +12);
+ 507              		.loc 1 126 0
+ 508 0292 4D21     		mov	r1, #77
+ 509 0294 1120     		mov	r0, #17
+ 510 0296 FFF7FEFF 		bl	lcdGotoxy
+ 127:react.c       ****     lcdPuts("Press Center");
+ 511              		.loc 1 127 0
+ 512 029a 7F48     		ldr	r0, .L54+16
+ 513 029c FFF7FEFF 		bl	lcdPuts
+ 514              	.LBE6:
+ 515              	.LBE5:
+ 249:react.c       **** 
+ 250:react.c       ****     showPreStartupScreen();
+ 251:react.c       **** 
+ 252:react.c       ****     arrow = TRUE;
+ 516              		.loc 1 252 0
+ 517 02a0 7E4B     		ldr	r3, .L54+20
+ 253:react.c       ****     score = 0;
+ 518              		.loc 1 253 0
+ 519 02a2 7F4C     		ldr	r4, .L54+24
+ 252:react.c       ****     arrow = TRUE;
+ 520              		.loc 1 252 0
+ 521 02a4 0122     		mov	r2, #1
+ 522              		.loc 1 253 0
+ 523 02a6 0025     		mov	r5, #0
+ 252:react.c       ****     arrow = TRUE;
+ 524              		.loc 1 252 0
+ 525 02a8 1A60     		str	r2, [r3]
+ 254:react.c       ****     char strScore[16];
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 15
+
+
+ 255:react.c       ****     rounds = 6;
+ 526              		.loc 1 255 0
+ 527 02aa 0623     		mov	r3, #6
+ 253:react.c       ****     score = 0;
+ 528              		.loc 1 253 0
+ 529 02ac 6560     		str	r5, [r4, #4]
+ 530              		.loc 1 255 0
+ 531 02ae 2372     		strb	r3, [r4, #8]
+ 256:react.c       ****     currentRound = 0;
+ 532              		.loc 1 256 0
+ 533 02b0 6572     		strb	r5, [r4, #9]
+ 257:react.c       **** 
+ 258:react.c       ****     eaInit();
+ 534              		.loc 1 258 0
+ 535 02b2 FFF7FEFF 		bl	eaInit
+ 259:react.c       **** 
+ 260:react.c       ****     gameStatus = GAME_NOT_STARTED;
+ 536              		.loc 1 260 0
+ 537 02b6 A572     		strb	r5, [r4, #10]
+ 261:react.c       **** 
+ 262:react.c       ****     while(gameStatus != GAME_END)
+ 538              		.loc 1 262 0
+ 539 02b8 DEE0     		b	.L50
+ 540              	.L47:
+ 541              	.LBB7:
+ 263:react.c       ****     {
+ 264:react.c       ****         tU8 anyKey;
+ 265:react.c       **** 
+ 266:react.c       ****         anyKey = checkKey();
+ 542              		.loc 1 266 0
+ 543 02ba FFF7FEFF 		bl	checkKey
+ 544 02be 061C     		mov	r6, r0
+ 545              	.LVL16:
+ 267:react.c       **** 
+ 268:react.c       ****         switch(gameStatus){
+ 546              		.loc 1 268 0
+ 547 02c0 A07A     		ldrb	r0, [r4, #10]
+ 548              	.LVL17:
+ 549 02c2 0928     		cmp	r0, #9
+ 550 02c4 00D9     		bls	.LCB410
+ 551 02c6 D7E0     		b	.L50	@long jump
+ 552              	.LCB410:
+ 553 02c8 FFF7FEFF 		bl	__gnu_thumb1_case_uqi
+ 554              	.L42:
+ 555 02cc 05       		.byte	(.L35-.L42)/2
+ 556 02cd D6       		.byte	(.L50-.L42)/2
+ 557 02ce D6       		.byte	(.L50-.L42)/2
+ 558 02cf D6       		.byte	(.L50-.L42)/2
+ 559 02d0 0A       		.byte	(.L36-.L42)/2
+ 560 02d1 29       		.byte	(.L37-.L42)/2
+ 561 02d2 55       		.byte	(.L38-.L42)/2
+ 562 02d3 81       		.byte	(.L39-.L42)/2
+ 563 02d4 A9       		.byte	(.L40-.L42)/2
+ 564 02d5 BD       		.byte	(.L41-.L42)/2
+ 565              		.align	1
+ 566              	.L35:
+ 269:react.c       ****             case GAME_NOT_STARTED:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 16
+
+
+ 270:react.c       ****                 if (anyKey == KEY_CENTER){
+ 271:react.c       ****                     gameStatus = GAME_START;
+ 567              		.loc 1 271 0
+ 568 02d6 0423     		mov	r3, #4
+ 270:react.c       ****                 if (anyKey == KEY_CENTER){
+ 569              		.loc 1 270 0
+ 570 02d8 102E     		cmp	r6, #16
+ 571 02da 00D0     		beq	.LCB419
+ 572 02dc CCE0     		b	.L50	@long jump
+ 573              	.LCB419:
+ 574 02de 04E0     		b	.L51
+ 575              	.L36:
+ 272:react.c       ****                 }
+ 273:react.c       ****                 break;
+ 274:react.c       **** 
+ 275:react.c       ****             case GAME_START:
+ 276:react.c       ****                 if (currentRound == rounds){
+ 576              		.loc 1 276 0
+ 577 02e0 627A     		ldrb	r2, [r4, #9]
+ 578 02e2 237A     		ldrb	r3, [r4, #8]
+ 579 02e4 9A42     		cmp	r2, r3
+ 580 02e6 02D1     		bne	.L43
+ 277:react.c       ****                     gameStatus = GAME_SHOW_SCORE;
+ 581              		.loc 1 277 0
+ 582 02e8 0723     		mov	r3, #7
+ 583              	.L51:
+ 584 02ea A372     		strb	r3, [r4, #10]
+ 278:react.c       ****                     break;
+ 585              		.loc 1 278 0
+ 586 02ec C4E0     		b	.L50
+ 587              	.L43:
+ 279:react.c       ****                 }
+ 280:react.c       **** 
+ 281:react.c       ****                 if (arrow == TRUE){
+ 588              		.loc 1 281 0
+ 589 02ee 6B4D     		ldr	r5, .L54+20
+ 590 02f0 2B68     		ldr	r3, [r5]
+ 591 02f2 012B     		cmp	r3, #1
+ 592 02f4 06D1     		bne	.L44
+ 282:react.c       ****                     randomMove();
+ 593              		.loc 1 282 0
+ 594 02f6 FFF7FEFF 		bl	randomMove
+ 283:react.c       ****                     showRandomArrow(whichArrow);
+ 595              		.loc 1 283 0
+ 596 02fa 2078     		ldrb	r0, [r4]
+ 597 02fc FFF7FEFF 		bl	showRandomArrow
+ 284:react.c       ****                     arrow = FALSE;
+ 598              		.loc 1 284 0
+ 599 0300 0023     		mov	r3, #0
+ 600 0302 2B60     		str	r3, [r5]
+ 601              	.L44:
+ 285:react.c       ****                 }
+ 286:react.c       ****                 if( anyKey != KEY_NOTHING){
+ 602              		.loc 1 286 0
+ 603 0304 002E     		cmp	r6, #0
+ 604 0306 00D1     		bne	.LCB448
+ 605 0308 B6E0     		b	.L50	@long jump
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 17
+
+
+ 606              	.LCB448:
+ 287:react.c       ****                     if (anyKey == whichArrow){
+ 607              		.loc 1 287 0
+ 608 030a 654B     		ldr	r3, .L54+24
+ 609 030c 5A7A     		ldrb	r2, [r3, #9]
+ 610 030e 1978     		ldrb	r1, [r3]
+ 288:react.c       ****                         currentRound++;
+ 611              		.loc 1 288 0
+ 612 0310 0132     		add	r2, r2, #1
+ 613 0312 5A72     		strb	r2, [r3, #9]
+ 289:react.c       ****                         gameStatus = GAME_SCORED;
+ 614              		.loc 1 289 0
+ 615 0314 0522     		mov	r2, #5
+ 287:react.c       ****                     if (anyKey == whichArrow){
+ 616              		.loc 1 287 0
+ 617 0316 B142     		cmp	r1, r6
+ 618 0318 7FD0     		beq	.L53
+ 290:react.c       ****                     }
+ 291:react.c       ****                     else if (anyKey != whichArrow){
+ 292:react.c       ****                         currentRound++;
+ 293:react.c       ****                         gameStatus = GAME_NOT_SCORED;
+ 619              		.loc 1 293 0
+ 620 031a 0622     		mov	r2, #6
+ 621 031c 7DE0     		b	.L53
+ 622              	.L37:
+ 294:react.c       ****                     }
+ 295:react.c       ****                 }
+ 296:react.c       ****                 break;
+ 297:react.c       **** 
+ 298:react.c       ****             case GAME_SCORED:
+ 299:react.c       ****                 lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
+ 623              		.loc 1 299 0
+ 624 031e 0C20     		mov	r0, #12
+ 625 0320 0021     		mov	r1, #0
+ 626 0322 FFF7FEFF 		bl	lcdColor
+ 300:react.c       ****                 lcdClrscr();
+ 627              		.loc 1 300 0
+ 628 0326 FFF7FEFF 		bl	lcdClrscr
+ 301:react.c       ****                 lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
+ 629              		.loc 1 301 0
+ 630 032a 8222     		mov	r2, #130
+ 631 032c 0020     		mov	r0, #0
+ 632 032e 0C23     		mov	r3, #12
+ 633 0330 011C     		mov	r1, r0
+ 634 0332 0093     		str	r3, [sp]
+ 635 0334 131C     		mov	r3, r2
+ 636 0336 FFF7FEFF 		bl	lcdRect
+ 302:react.c       ****                 lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+ 637              		.loc 1 302 0
+ 638 033a 2B21     		mov	r1, #43
+ 639 033c 1120     		mov	r0, #17
+ 640 033e FFF7FEFF 		bl	lcdGotoxy
+ 303:react.c       ****                 lcdPuts("SCORED !");
+ 641              		.loc 1 303 0
+ 642 0342 5848     		ldr	r0, .L54+28
+ 643 0344 FFF7FEFF 		bl	lcdPuts
+ 304:react.c       ****                 useBuzzer(1);
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 18
+
+
+ 644              		.loc 1 304 0
+ 645 0348 0120     		mov	r0, #1
+ 646 034a FFF7FEFF 		bl	useBuzzer
+ 305:react.c       **** 
+ 306:react.c       ****                 setLED(LED_GREEN,TRUE);
+ 647              		.loc 1 306 0
+ 648 034e 0120     		mov	r0, #1
+ 649 0350 011C     		mov	r1, r0
+ 650 0352 FFF7FEFF 		bl	setLED
+ 307:react.c       ****                 osSleep(200);
+ 651              		.loc 1 307 0
+ 652 0356 C820     		mov	r0, #200
+ 653 0358 FFF7FEFF 		bl	osSleep
+ 308:react.c       ****                 setLED(LED_GREEN,FALSE);
+ 654              		.loc 1 308 0
+ 655 035c 0021     		mov	r1, #0
+ 656 035e 0120     		mov	r0, #1
+ 657 0360 FFF7FEFF 		bl	setLED
+ 309:react.c       **** 
+ 310:react.c       ****                 score++;
+ 658              		.loc 1 310 0
+ 659 0364 4E4B     		ldr	r3, .L54+24
+ 660 0366 5A68     		ldr	r2, [r3, #4]
+ 661 0368 0132     		add	r2, r2, #1
+ 662 036a 5A60     		str	r2, [r3, #4]
+ 311:react.c       ****                 arrow = TRUE;
+ 663              		.loc 1 311 0
+ 664 036c 4B4A     		ldr	r2, .L54+20
+ 665 036e 0121     		mov	r1, #1
+ 666 0370 1160     		str	r1, [r2]
+ 312:react.c       ****                 gameStatus = GAME_START;
+ 667              		.loc 1 312 0
+ 668 0372 0422     		mov	r2, #4
+ 669 0374 51E0     		b	.L53
+ 670              	.L38:
+ 313:react.c       ****                 break;
+ 314:react.c       **** 
+ 315:react.c       ****             case GAME_NOT_SCORED:
+ 316:react.c       ****                 TIMER1_MCR = 0x04;
+ 671              		.loc 1 316 0
+ 672 0376 4C4B     		ldr	r3, .L54+32
+ 673 0378 0425     		mov	r5, #4
+ 674 037a 1D60     		str	r5, [r3]
+ 317:react.c       **** 
+ 318:react.c       ****                 lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
+ 675              		.loc 1 318 0
+ 676 037c 0C20     		mov	r0, #12
+ 677 037e 0021     		mov	r1, #0
+ 678 0380 FFF7FEFF 		bl	lcdColor
+ 319:react.c       ****                 lcdClrscr();
+ 679              		.loc 1 319 0
+ 680 0384 FFF7FEFF 		bl	lcdClrscr
+ 320:react.c       ****                 lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
+ 681              		.loc 1 320 0
+ 682 0388 8222     		mov	r2, #130
+ 683 038a 0020     		mov	r0, #0
+ 684 038c 0C23     		mov	r3, #12
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 19
+
+
+ 685 038e 011C     		mov	r1, r0
+ 686 0390 0093     		str	r3, [sp]
+ 687 0392 131C     		mov	r3, r2
+ 688 0394 FFF7FEFF 		bl	lcdRect
+ 321:react.c       ****                 lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+ 689              		.loc 1 321 0
+ 690 0398 2B21     		mov	r1, #43
+ 691 039a 1120     		mov	r0, #17
+ 692 039c FFF7FEFF 		bl	lcdGotoxy
+ 322:react.c       ****                 lcdPuts("FAILED !");
+ 693              		.loc 1 322 0
+ 694 03a0 4248     		ldr	r0, .L54+36
+ 695 03a2 FFF7FEFF 		bl	lcdPuts
+ 323:react.c       ****                 useBuzzer(2);
+ 696              		.loc 1 323 0
+ 697 03a6 0220     		mov	r0, #2
+ 698 03a8 FFF7FEFF 		bl	useBuzzer
+ 324:react.c       **** 
+ 325:react.c       ****                 setLED(LED_RED,TRUE);
+ 699              		.loc 1 325 0
+ 700 03ac 0121     		mov	r1, #1
+ 701 03ae 0220     		mov	r0, #2
+ 702 03b0 FFF7FEFF 		bl	setLED
+ 326:react.c       ****                 osSleep(200);
+ 703              		.loc 1 326 0
+ 704 03b4 C820     		mov	r0, #200
+ 705 03b6 FFF7FEFF 		bl	osSleep
+ 327:react.c       ****                 setLED(LED_RED,FALSE);
+ 706              		.loc 1 327 0
+ 707 03ba 0220     		mov	r0, #2
+ 708 03bc 0021     		mov	r1, #0
+ 709 03be FFF7FEFF 		bl	setLED
+ 328:react.c       **** 
+ 329:react.c       ****                 arrow = TRUE;
+ 710              		.loc 1 329 0
+ 711 03c2 364B     		ldr	r3, .L54+20
+ 712 03c4 0122     		mov	r2, #1
+ 713 03c6 1A60     		str	r2, [r3]
+ 330:react.c       ****                 gameStatus = GAME_START;
+ 714              		.loc 1 330 0
+ 715 03c8 354B     		ldr	r3, .L54+24
+ 716 03ca 9D72     		strb	r5, [r3, #10]
+ 331:react.c       ****                 break;
+ 717              		.loc 1 331 0
+ 718 03cc 54E0     		b	.L50
+ 719              	.L39:
+ 332:react.c       **** 
+ 333:react.c       ****             case GAME_SHOW_SCORE:
+ 334:react.c       ****                 lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
+ 720              		.loc 1 334 0
+ 721 03ce 0C20     		mov	r0, #12
+ 722 03d0 0021     		mov	r1, #0
+ 723 03d2 FFF7FEFF 		bl	lcdColor
+ 335:react.c       ****                 lcdClrscr();
+ 724              		.loc 1 335 0
+ 725 03d6 FFF7FEFF 		bl	lcdClrscr
+ 336:react.c       ****                 lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 20
+
+
+ 726              		.loc 1 336 0
+ 727 03da 8222     		mov	r2, #130
+ 728 03dc 0020     		mov	r0, #0
+ 729 03de 0C23     		mov	r3, #12
+ 730 03e0 011C     		mov	r1, r0
+ 731 03e2 0093     		str	r3, [sp]
+ 732 03e4 131C     		mov	r3, r2
+ 733 03e6 FFF7FEFF 		bl	lcdRect
+ 337:react.c       ****                 lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+ 734              		.loc 1 337 0
+ 735 03ea 2B21     		mov	r1, #43
+ 736 03ec 1120     		mov	r0, #17
+ 737 03ee FFF7FEFF 		bl	lcdGotoxy
+ 338:react.c       ****                 lcdPuts("You scored: ");
+ 738              		.loc 1 338 0
+ 739 03f2 2F48     		ldr	r0, .L54+40
+ 740 03f4 FFF7FEFF 		bl	lcdPuts
+ 339:react.c       **** 
+ 340:react.c       ****                 lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 -4);
+ 741              		.loc 1 340 0
+ 742 03f8 1120     		mov	r0, #17
+ 743 03fa 3D21     		mov	r1, #61
+ 744 03fc FFF7FEFF 		bl	lcdGotoxy
+ 341:react.c       **** 
+ 342:react.c       ****                 showScore();
+ 745              		.loc 1 342 0
+ 746 0400 FFF7FEFF 		bl	showScore
+ 343:react.c       **** 
+ 344:react.c       ****                 osSleep(500);
+ 747              		.loc 1 344 0
+ 748 0404 FA20     		mov	r0, #250
+ 749 0406 4000     		lsl	r0, r0, #1
+ 750 0408 FFF7FEFF 		bl	osSleep
+ 345:react.c       ****                 if(score > 3){
+ 751              		.loc 1 345 0
+ 752 040c 244B     		ldr	r3, .L54+24
+ 753 040e 5A68     		ldr	r2, [r3, #4]
+ 754 0410 032A     		cmp	r2, #3
+ 755 0412 01DD     		ble	.L46
+ 346:react.c       ****                     gameStatus = GAME_WON;
+ 756              		.loc 1 346 0
+ 757 0414 0822     		mov	r2, #8
+ 758 0416 00E0     		b	.L53
+ 759              	.L46:
+ 347:react.c       ****                 }
+ 348:react.c       ****                 else if (score <= 3){
+ 349:react.c       ****                     gameStatus = GAME_LOST;
+ 760              		.loc 1 349 0
+ 761 0418 0922     		mov	r2, #9
+ 762              	.L53:
+ 763 041a 9A72     		strb	r2, [r3, #10]
+ 764 041c 2CE0     		b	.L50
+ 765              	.L40:
+ 350:react.c       ****                 }
+ 351:react.c       ****                 break;
+ 352:react.c       **** 
+ 353:react.c       ****             case GAME_WON:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 21
+
+
+ 354:react.c       **** 
+ 355:react.c       ****                 lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
+ 766              		.loc 1 355 0
+ 767 041e 0C20     		mov	r0, #12
+ 768 0420 0021     		mov	r1, #0
+ 769 0422 FFF7FEFF 		bl	lcdColor
+ 356:react.c       ****                 lcdClrscr();
+ 770              		.loc 1 356 0
+ 771 0426 FFF7FEFF 		bl	lcdClrscr
+ 357:react.c       ****                 lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
+ 772              		.loc 1 357 0
+ 773 042a 0020     		mov	r0, #0
+ 774 042c 8222     		mov	r2, #130
+ 775 042e 0C23     		mov	r3, #12
+ 776 0430 011C     		mov	r1, r0
+ 777 0432 0093     		str	r3, [sp]
+ 778 0434 131C     		mov	r3, r2
+ 779 0436 FFF7FEFF 		bl	lcdRect
+ 358:react.c       ****                 lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+ 780              		.loc 1 358 0
+ 781 043a 1120     		mov	r0, #17
+ 782 043c 2B21     		mov	r1, #43
+ 783 043e FFF7FEFF 		bl	lcdGotoxy
+ 359:react.c       ****                 lcdPuts("You won!");
+ 784              		.loc 1 359 0
+ 785 0442 1C48     		ldr	r0, .L54+44
+ 786 0444 12E0     		b	.L52
+ 787              	.L41:
+ 360:react.c       ****                 osSleep(500);
+ 361:react.c       ****                 break;
+ 362:react.c       **** 
+ 363:react.c       ****             case GAME_LOST:
+ 364:react.c       ****                 lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
+ 788              		.loc 1 364 0
+ 789 0446 0C20     		mov	r0, #12
+ 790 0448 0021     		mov	r1, #0
+ 791 044a FFF7FEFF 		bl	lcdColor
+ 365:react.c       ****                 lcdClrscr();
+ 792              		.loc 1 365 0
+ 793 044e FFF7FEFF 		bl	lcdClrscr
+ 366:react.c       ****                 lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
+ 794              		.loc 1 366 0
+ 795 0452 0020     		mov	r0, #0
+ 796 0454 8222     		mov	r2, #130
+ 797 0456 0C23     		mov	r3, #12
+ 798 0458 011C     		mov	r1, r0
+ 799 045a 0093     		str	r3, [sp]
+ 800 045c 131C     		mov	r3, r2
+ 801 045e FFF7FEFF 		bl	lcdRect
+ 367:react.c       ****                 lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+ 802              		.loc 1 367 0
+ 803 0462 1120     		mov	r0, #17
+ 804 0464 2B21     		mov	r1, #43
+ 805 0466 FFF7FEFF 		bl	lcdGotoxy
+ 368:react.c       ****                 lcdPuts("You lost!");
+ 806              		.loc 1 368 0
+ 807 046a 1348     		ldr	r0, .L54+48
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 22
+
+
+ 808              	.L52:
+ 809 046c FFF7FEFF 		bl	lcdPuts
+ 369:react.c       ****                 osSleep(500);
+ 810              		.loc 1 369 0
+ 811 0470 FA20     		mov	r0, #250
+ 812 0472 4000     		lsl	r0, r0, #1
+ 813 0474 FFF7FEFF 		bl	osSleep
+ 814              	.LVL18:
+ 815              	.L50:
+ 816              	.LBE7:
+ 262:react.c       ****     while(gameStatus != GAME_END)
+ 817              		.loc 1 262 0 discriminator 1
+ 818 0478 A37A     		ldrb	r3, [r4, #10]
+ 819 047a 032B     		cmp	r3, #3
+ 820 047c 00D0     		beq	.LCB624
+ 821 047e 1CE7     		b	.L47	@long jump
+ 822              	.LCB624:
+ 370:react.c       ****                 break;
+ 371:react.c       ****         }
+ 372:react.c       ****     }
+ 373:react.c       ****     return;
+ 374:react.c       **** }
+ 823              		.loc 1 374 0
+ 824              		@ sp needed for prologue
+ 825 0480 71BC     		pop	{r0, r4, r5, r6}
+ 826 0482 01BC     		pop	{r0}
+ 827 0484 0047     		bx	r0
+ 828              	.L55:
+ 829 0486 C046     		.align	2
+ 830              	.L54:
+ 831 0488 2E000000 		.word	.LC12
+ 832 048c 47000000 		.word	.LC14
+ 833 0490 5B000000 		.word	.LC16
+ 834 0494 6A000000 		.word	.LC18
+ 835 0498 75000000 		.word	.LC20
+ 836 049c 00000000 		.word	arrow
+ 837 04a0 00000000 		.word	.LANCHOR0
+ 838 04a4 82000000 		.word	.LC24
+ 839 04a8 148000E0 		.word	-536838124
+ 840 04ac 8B000000 		.word	.LC26
+ 841 04b0 94000000 		.word	.LC28
+ 842 04b4 A1000000 		.word	.LC30
+ 843 04b8 AA000000 		.word	.LC32
+ 844              		.cfi_endproc
+ 845              	.LFE5:
+ 846              		.size	playReactGame, .-playReactGame
+ 847              		.comm	arrow,4,4
+ 848              		.comm	matrix,16,1
+ 849              		.section	.rodata.str1.1,"aMS",%progbits,1
+ 850              	.LC1:
+ 851 0000 4B45595F 		.ascii	"KEY_UP\000"
+ 851      555000
+ 852              	.LC3:
+ 853 0007 4B45595F 		.ascii	"KEY_RIGHT\000"
+ 853      52494748 
+ 853      5400
+ 854              	.LC5:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 23
+
+
+ 855 0011 4B45595F 		.ascii	"KEY_DOWN\000"
+ 855      444F574E 
+ 855      00
+ 856              	.LC7:
+ 857 001a 4B45595F 		.ascii	"KEY_LEFT\000"
+ 857      4C454654 
+ 857      00
+ 858              	.LC9:
+ 859 0023 4B45595F 		.ascii	"KEY_CENTER\000"
+ 859      43454E54 
+ 859      455200
+ 860              	.LC12:
+ 861 002e 0A506C61 		.ascii	"\012Play React-Game works!\012\000"
+ 861      79205265 
+ 861      6163742D 
+ 861      47616D65 
+ 861      20776F72 
+ 862              	.LC14:
+ 863 0047 73657475 		.ascii	"setup screen method\000"
+ 863      70207363 
+ 863      7265656E 
+ 863      206D6574 
+ 863      686F6400 
+ 864              	.LC16:
+ 865 005b 57656C63 		.ascii	"Welcome to the\000"
+ 865      6F6D6520 
+ 865      746F2074 
+ 865      686500
+ 866              	.LC18:
+ 867 006a 52656163 		.ascii	"React Game\000"
+ 867      74204761 
+ 867      6D6500
+ 868              	.LC20:
+ 869 0075 50726573 		.ascii	"Press Center\000"
+ 869      73204365 
+ 869      6E746572 
+ 869      00
+ 870              	.LC24:
+ 871 0082 53434F52 		.ascii	"SCORED !\000"
+ 871      45442021 
+ 871      00
+ 872              	.LC26:
+ 873 008b 4641494C 		.ascii	"FAILED !\000"
+ 873      45442021 
+ 873      00
+ 874              	.LC28:
+ 875 0094 596F7520 		.ascii	"You scored: \000"
+ 875      73636F72 
+ 875      65643A20 
+ 875      00
+ 876              	.LC30:
+ 877 00a1 596F7520 		.ascii	"You won!\000"
+ 877      776F6E21 
+ 877      00
+ 878              	.LC32:
+ 879 00aa 596F7520 		.ascii	"You lost!\000"
+ 879      6C6F7374 
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 24
+
+
+ 879      2100
+ 880              		.bss
+ 881              		.align	2
+ 882              		.set	.LANCHOR0,. + 0
+ 883              		.type	whichArrow, %object
+ 884              		.size	whichArrow, 1
+ 885              	whichArrow:
+ 886 0000 00       		.space	1
+ 887 0001 000000   		.space	3
+ 888              		.type	score, %object
+ 889              		.size	score, 4
+ 890              	score:
+ 891 0004 00000000 		.space	4
+ 892              		.type	rounds, %object
+ 893              		.size	rounds, 1
+ 894              	rounds:
+ 895 0008 00       		.space	1
+ 896              		.type	currentRound, %object
+ 897              		.size	currentRound, 1
+ 898              	currentRound:
+ 899 0009 00       		.space	1
+ 900              		.type	gameStatus, %object
+ 901              		.size	gameStatus, 1
+ 902              	gameStatus:
+ 903 000a 00       		.space	1
+ 904 000b 00       		.text
+ 905              	.Letext0:
+ 906              		.file 2 "./startup/../pre_emptive_os/api/../api/general.h"
+ 907              		.section	.debug_info,"",%progbits
+ 908              	.Ldebug_info0:
+ 909 0000 49020000 		.4byte	0x249
+ 910 0004 0200     		.2byte	0x2
+ 911 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 912 000a 04       		.byte	0x4
+ 913 000b 01       		.uleb128 0x1
+ 914 000c 8F000000 		.4byte	.LASF27
+ 915 0010 01       		.byte	0x1
+ 916 0011 0B000000 		.4byte	.LASF28
+ 917 0015 C4000000 		.4byte	.LASF29
+ 918 0019 00000000 		.4byte	.Ltext0
+ 919 001d BC040000 		.4byte	.Letext0
+ 920 0021 00000000 		.4byte	.Ldebug_line0
+ 921 0025 02       		.uleb128 0x2
+ 922 0026 74553800 		.ascii	"tU8\000"
+ 923 002a 02       		.byte	0x2
+ 924 002b 47       		.byte	0x47
+ 925 002c 30000000 		.4byte	0x30
+ 926 0030 03       		.uleb128 0x3
+ 927 0031 01       		.byte	0x1
+ 928 0032 08       		.byte	0x8
+ 929 0033 9B000000 		.4byte	.LASF0
+ 930 0037 03       		.uleb128 0x3
+ 931 0038 02       		.byte	0x2
+ 932 0039 07       		.byte	0x7
+ 933 003a 70000000 		.4byte	.LASF1
+ 934 003e 03       		.uleb128 0x3
+ 935 003f 04       		.byte	0x4
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 25
+
+
+ 936 0040 07       		.byte	0x7
+ 937 0041 EF000000 		.4byte	.LASF2
+ 938 0045 03       		.uleb128 0x3
+ 939 0046 01       		.byte	0x1
+ 940 0047 06       		.byte	0x6
+ 941 0048 70010000 		.4byte	.LASF3
+ 942 004c 03       		.uleb128 0x3
+ 943 004d 02       		.byte	0x2
+ 944 004e 05       		.byte	0x5
+ 945 004f 31000000 		.4byte	.LASF4
+ 946 0053 04       		.uleb128 0x4
+ 947 0054 04       		.byte	0x4
+ 948 0055 05       		.byte	0x5
+ 949 0056 696E7400 		.ascii	"int\000"
+ 950 005a 03       		.uleb128 0x3
+ 951 005b 04       		.byte	0x4
+ 952 005c 07       		.byte	0x7
+ 953 005d 5E000000 		.4byte	.LASF5
+ 954 0061 03       		.uleb128 0x3
+ 955 0062 08       		.byte	0x8
+ 956 0063 05       		.byte	0x5
+ 957 0064 24010000 		.4byte	.LASF6
+ 958 0068 03       		.uleb128 0x3
+ 959 0069 08       		.byte	0x8
+ 960 006a 07       		.byte	0x7
+ 961 006b FC000000 		.4byte	.LASF7
+ 962 006f 03       		.uleb128 0x3
+ 963 0070 04       		.byte	0x4
+ 964 0071 05       		.byte	0x5
+ 965 0072 67010000 		.4byte	.LASF8
+ 966 0076 03       		.uleb128 0x3
+ 967 0077 01       		.byte	0x1
+ 968 0078 08       		.byte	0x8
+ 969 0079 3B010000 		.4byte	.LASF9
+ 970 007d 05       		.uleb128 0x5
+ 971 007e 49000000 		.4byte	.LASF30
+ 972 0082 01       		.byte	0x1
+ 973 0083 72       		.byte	0x72
+ 974 0084 01       		.byte	0x1
+ 975 0085 01       		.byte	0x1
+ 976 0086 06       		.uleb128 0x6
+ 977 0087 01       		.byte	0x1
+ 978 0088 47010000 		.4byte	.LASF31
+ 979 008c 01       		.byte	0x1
+ 980 008d 83       		.byte	0x83
+ 981 008e 30000000 		.4byte	0x30
+ 982 0092 00000000 		.4byte	.LFB1
+ 983 0096 3C000000 		.4byte	.LFE1
+ 984 009a 00000000 		.4byte	.LLST0
+ 985 009e 07       		.uleb128 0x7
+ 986 009f 01       		.byte	0x1
+ 987 00a0 7C010000 		.4byte	.LASF11
+ 988 00a4 01       		.byte	0x1
+ 989 00a5 97       		.byte	0x97
+ 990 00a6 3C000000 		.4byte	.LFB2
+ 991 00aa 3C010000 		.4byte	.LFE2
+ 992 00ae 20000000 		.4byte	.LLST1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 26
+
+
+ 993 00b2 C6000000 		.4byte	0xc6
+ 994 00b6 08       		.uleb128 0x8
+ 995 00b7 1C000000 		.4byte	.LASF10
+ 996 00bb 01       		.byte	0x1
+ 997 00bc 97       		.byte	0x97
+ 998 00bd 53000000 		.4byte	0x53
+ 999 00c1 40000000 		.4byte	.LLST2
+ 1000 00c5 00       		.byte	0
+ 1001 00c6 09       		.uleb128 0x9
+ 1002 00c7 01       		.byte	0x1
+ 1003 00c8 27000000 		.4byte	.LASF13
+ 1004 00cc 01       		.byte	0x1
+ 1005 00cd CB       		.byte	0xcb
+ 1006 00ce 01       		.byte	0x1
+ 1007 00cf 3C010000 		.4byte	.LFB3
+ 1008 00d3 68010000 		.4byte	.LFE3
+ 1009 00d7 94000000 		.4byte	.LLST3
+ 1010 00db FC000000 		.4byte	0xfc
+ 1011 00df 0A       		.uleb128 0xa
+ 1012 00e0 4D415800 		.ascii	"MAX\000"
+ 1013 00e4 01       		.byte	0x1
+ 1014 00e5 CB       		.byte	0xcb
+ 1015 00e6 53000000 		.4byte	0x53
+ 1016 00ea B4000000 		.4byte	.LLST4
+ 1017 00ee 0B       		.uleb128 0xb
+ 1018 00ef 6A00     		.ascii	"j\000"
+ 1019 00f1 01       		.byte	0x1
+ 1020 00f2 CC       		.byte	0xcc
+ 1021 00f3 53000000 		.4byte	0x53
+ 1022 00f7 D2000000 		.4byte	.LLST5
+ 1023 00fb 00       		.byte	0
+ 1024 00fc 07       		.uleb128 0x7
+ 1025 00fd 01       		.byte	0x1
+ 1026 00fe 1A010000 		.4byte	.LASF12
+ 1027 0102 01       		.byte	0x1
+ 1028 0103 D5       		.byte	0xd5
+ 1029 0104 68010000 		.4byte	.LFB4
+ 1030 0108 4C020000 		.4byte	.LFE4
+ 1031 010c F1000000 		.4byte	.LLST6
+ 1032 0110 23010000 		.4byte	0x123
+ 1033 0114 0C       		.uleb128 0xc
+ 1034 0115 73747200 		.ascii	"str\000"
+ 1035 0119 01       		.byte	0x1
+ 1036 011a D7       		.byte	0xd7
+ 1037 011b 23010000 		.4byte	0x123
+ 1038 011f 02       		.byte	0x2
+ 1039 0120 91       		.byte	0x91
+ 1040 0121 5C       		.sleb128 -36
+ 1041 0122 00       		.byte	0
+ 1042 0123 0D       		.uleb128 0xd
+ 1043 0124 30000000 		.4byte	0x30
+ 1044 0128 33010000 		.4byte	0x133
+ 1045 012c 0E       		.uleb128 0xe
+ 1046 012d 5A000000 		.4byte	0x5a
+ 1047 0131 0C       		.byte	0xc
+ 1048 0132 00       		.byte	0
+ 1049 0133 09       		.uleb128 0x9
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 27
+
+
+ 1050 0134 01       		.byte	0x1
+ 1051 0135 A9000000 		.4byte	.LASF14
+ 1052 0139 01       		.byte	0x1
+ 1053 013a F7       		.byte	0xf7
+ 1054 013b 01       		.byte	0x1
+ 1055 013c 4C020000 		.4byte	.LFB5
+ 1056 0140 BC040000 		.4byte	.LFE5
+ 1057 0144 1D010000 		.4byte	.LLST7
+ 1058 0148 81010000 		.4byte	0x181
+ 1059 014c 0F       		.uleb128 0xf
+ 1060 014d 32010000 		.4byte	.LASF17
+ 1061 0151 01       		.byte	0x1
+ 1062 0152 FE       		.byte	0xfe
+ 1063 0153 81010000 		.4byte	0x181
+ 1064 0157 10       		.uleb128 0x10
+ 1065 0158 7D000000 		.4byte	0x7d
+ 1066 015c 54020000 		.4byte	.LBB5
+ 1067 0160 A0020000 		.4byte	.LBE5
+ 1068 0164 01       		.byte	0x1
+ 1069 0165 FA       		.byte	0xfa
+ 1070 0166 11       		.uleb128 0x11
+ 1071 0167 BA020000 		.4byte	.LBB7
+ 1072 016b 78040000 		.4byte	.LBE7
+ 1073 016f 12       		.uleb128 0x12
+ 1074 0170 13010000 		.4byte	.LASF15
+ 1075 0174 01       		.byte	0x1
+ 1076 0175 0801     		.2byte	0x108
+ 1077 0177 30000000 		.4byte	0x30
+ 1078 017b 3D010000 		.4byte	.LLST8
+ 1079 017f 00       		.byte	0
+ 1080 0180 00       		.byte	0
+ 1081 0181 0D       		.uleb128 0xd
+ 1082 0182 76000000 		.4byte	0x76
+ 1083 0186 91010000 		.4byte	0x191
+ 1084 018a 0E       		.uleb128 0xe
+ 1085 018b 5A000000 		.4byte	0x5a
+ 1086 018f 0F       		.byte	0xf
+ 1087 0190 00       		.byte	0
+ 1088 0191 13       		.uleb128 0x13
+ 1089 0192 1C000000 		.4byte	.LASF10
+ 1090 0196 01       		.byte	0x1
+ 1091 0197 13       		.byte	0x13
+ 1092 0198 25000000 		.4byte	0x25
+ 1093 019c 05       		.byte	0x5
+ 1094 019d 03       		.byte	0x3
+ 1095 019e 00000000 		.4byte	whichArrow
+ 1096 01a2 13       		.uleb128 0x13
+ 1097 01a3 00000000 		.4byte	.LASF16
+ 1098 01a7 01       		.byte	0x1
+ 1099 01a8 48       		.byte	0x48
+ 1100 01a9 25000000 		.4byte	0x25
+ 1101 01ad 05       		.byte	0x5
+ 1102 01ae 03       		.byte	0x3
+ 1103 01af 0A000000 		.4byte	gameStatus
+ 1104 01b3 0F       		.uleb128 0xf
+ 1105 01b4 13000000 		.4byte	.LASF18
+ 1106 01b8 01       		.byte	0x1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 28
+
+
+ 1107 01b9 49       		.byte	0x49
+ 1108 01ba 25000000 		.4byte	0x25
+ 1109 01be 0F       		.uleb128 0xf
+ 1110 01bf 58010000 		.4byte	.LASF19
+ 1111 01c3 01       		.byte	0x1
+ 1112 01c4 4B       		.byte	0x4b
+ 1113 01c5 25000000 		.4byte	0x25
+ 1114 01c9 0F       		.uleb128 0xf
+ 1115 01ca 3B000000 		.4byte	.LASF20
+ 1116 01ce 01       		.byte	0x1
+ 1117 01cf 4C       		.byte	0x4c
+ 1118 01d0 25000000 		.4byte	0x25
+ 1119 01d4 0F       		.uleb128 0xf
+ 1120 01d5 83000000 		.4byte	.LASF21
+ 1121 01d9 01       		.byte	0x1
+ 1122 01da 4E       		.byte	0x4e
+ 1123 01db 25000000 		.4byte	0x25
+ 1124 01df 13       		.uleb128 0x13
+ 1125 01e0 43000000 		.4byte	.LASF22
+ 1126 01e4 01       		.byte	0x1
+ 1127 01e5 69       		.byte	0x69
+ 1128 01e6 53000000 		.4byte	0x53
+ 1129 01ea 05       		.byte	0x5
+ 1130 01eb 03       		.byte	0x3
+ 1131 01ec 04000000 		.4byte	score
+ 1132 01f0 13       		.uleb128 0x13
+ 1133 01f1 60010000 		.4byte	.LASF23
+ 1134 01f5 01       		.byte	0x1
+ 1135 01f6 6A       		.byte	0x6a
+ 1136 01f7 30000000 		.4byte	0x30
+ 1137 01fb 05       		.byte	0x5
+ 1138 01fc 03       		.byte	0x3
+ 1139 01fd 08000000 		.4byte	rounds
+ 1140 0201 13       		.uleb128 0x13
+ 1141 0202 B7000000 		.4byte	.LASF24
+ 1142 0206 01       		.byte	0x1
+ 1143 0207 6B       		.byte	0x6b
+ 1144 0208 30000000 		.4byte	0x30
+ 1145 020c 05       		.byte	0x5
+ 1146 020d 03       		.byte	0x3
+ 1147 020e 09000000 		.4byte	currentRound
+ 1148 0212 0D       		.uleb128 0xd
+ 1149 0213 25000000 		.4byte	0x25
+ 1150 0217 28020000 		.4byte	0x228
+ 1151 021b 0E       		.uleb128 0xe
+ 1152 021c 5A000000 		.4byte	0x5a
+ 1153 0220 03       		.byte	0x3
+ 1154 0221 0E       		.uleb128 0xe
+ 1155 0222 5A000000 		.4byte	0x5a
+ 1156 0226 03       		.byte	0x3
+ 1157 0227 00       		.byte	0
+ 1158 0228 14       		.uleb128 0x14
+ 1159 0229 40010000 		.4byte	.LASF25
+ 1160 022d 01       		.byte	0x1
+ 1161 022e 51       		.byte	0x51
+ 1162 022f 12020000 		.4byte	0x212
+ 1163 0233 01       		.byte	0x1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 29
+
+
+ 1164 0234 05       		.byte	0x5
+ 1165 0235 03       		.byte	0x3
+ 1166 0236 00000000 		.4byte	matrix
+ 1167 023a 14       		.uleb128 0x14
+ 1168 023b 52010000 		.4byte	.LASF26
+ 1169 023f 01       		.byte	0x1
+ 1170 0240 68       		.byte	0x68
+ 1171 0241 53000000 		.4byte	0x53
+ 1172 0245 01       		.byte	0x1
+ 1173 0246 05       		.byte	0x5
+ 1174 0247 03       		.byte	0x3
+ 1175 0248 00000000 		.4byte	arrow
+ 1176 024c 00       		.byte	0
+ 1177              		.section	.debug_abbrev,"",%progbits
+ 1178              	.Ldebug_abbrev0:
+ 1179 0000 01       		.uleb128 0x1
+ 1180 0001 11       		.uleb128 0x11
+ 1181 0002 01       		.byte	0x1
+ 1182 0003 25       		.uleb128 0x25
+ 1183 0004 0E       		.uleb128 0xe
+ 1184 0005 13       		.uleb128 0x13
+ 1185 0006 0B       		.uleb128 0xb
+ 1186 0007 03       		.uleb128 0x3
+ 1187 0008 0E       		.uleb128 0xe
+ 1188 0009 1B       		.uleb128 0x1b
+ 1189 000a 0E       		.uleb128 0xe
+ 1190 000b 11       		.uleb128 0x11
+ 1191 000c 01       		.uleb128 0x1
+ 1192 000d 12       		.uleb128 0x12
+ 1193 000e 01       		.uleb128 0x1
+ 1194 000f 10       		.uleb128 0x10
+ 1195 0010 06       		.uleb128 0x6
+ 1196 0011 00       		.byte	0
+ 1197 0012 00       		.byte	0
+ 1198 0013 02       		.uleb128 0x2
+ 1199 0014 16       		.uleb128 0x16
+ 1200 0015 00       		.byte	0
+ 1201 0016 03       		.uleb128 0x3
+ 1202 0017 08       		.uleb128 0x8
+ 1203 0018 3A       		.uleb128 0x3a
+ 1204 0019 0B       		.uleb128 0xb
+ 1205 001a 3B       		.uleb128 0x3b
+ 1206 001b 0B       		.uleb128 0xb
+ 1207 001c 49       		.uleb128 0x49
+ 1208 001d 13       		.uleb128 0x13
+ 1209 001e 00       		.byte	0
+ 1210 001f 00       		.byte	0
+ 1211 0020 03       		.uleb128 0x3
+ 1212 0021 24       		.uleb128 0x24
+ 1213 0022 00       		.byte	0
+ 1214 0023 0B       		.uleb128 0xb
+ 1215 0024 0B       		.uleb128 0xb
+ 1216 0025 3E       		.uleb128 0x3e
+ 1217 0026 0B       		.uleb128 0xb
+ 1218 0027 03       		.uleb128 0x3
+ 1219 0028 0E       		.uleb128 0xe
+ 1220 0029 00       		.byte	0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 30
+
+
+ 1221 002a 00       		.byte	0
+ 1222 002b 04       		.uleb128 0x4
+ 1223 002c 24       		.uleb128 0x24
+ 1224 002d 00       		.byte	0
+ 1225 002e 0B       		.uleb128 0xb
+ 1226 002f 0B       		.uleb128 0xb
+ 1227 0030 3E       		.uleb128 0x3e
+ 1228 0031 0B       		.uleb128 0xb
+ 1229 0032 03       		.uleb128 0x3
+ 1230 0033 08       		.uleb128 0x8
+ 1231 0034 00       		.byte	0
+ 1232 0035 00       		.byte	0
+ 1233 0036 05       		.uleb128 0x5
+ 1234 0037 2E       		.uleb128 0x2e
+ 1235 0038 00       		.byte	0
+ 1236 0039 03       		.uleb128 0x3
+ 1237 003a 0E       		.uleb128 0xe
+ 1238 003b 3A       		.uleb128 0x3a
+ 1239 003c 0B       		.uleb128 0xb
+ 1240 003d 3B       		.uleb128 0x3b
+ 1241 003e 0B       		.uleb128 0xb
+ 1242 003f 27       		.uleb128 0x27
+ 1243 0040 0C       		.uleb128 0xc
+ 1244 0041 20       		.uleb128 0x20
+ 1245 0042 0B       		.uleb128 0xb
+ 1246 0043 00       		.byte	0
+ 1247 0044 00       		.byte	0
+ 1248 0045 06       		.uleb128 0x6
+ 1249 0046 2E       		.uleb128 0x2e
+ 1250 0047 00       		.byte	0
+ 1251 0048 3F       		.uleb128 0x3f
+ 1252 0049 0C       		.uleb128 0xc
+ 1253 004a 03       		.uleb128 0x3
+ 1254 004b 0E       		.uleb128 0xe
+ 1255 004c 3A       		.uleb128 0x3a
+ 1256 004d 0B       		.uleb128 0xb
+ 1257 004e 3B       		.uleb128 0x3b
+ 1258 004f 0B       		.uleb128 0xb
+ 1259 0050 49       		.uleb128 0x49
+ 1260 0051 13       		.uleb128 0x13
+ 1261 0052 11       		.uleb128 0x11
+ 1262 0053 01       		.uleb128 0x1
+ 1263 0054 12       		.uleb128 0x12
+ 1264 0055 01       		.uleb128 0x1
+ 1265 0056 40       		.uleb128 0x40
+ 1266 0057 06       		.uleb128 0x6
+ 1267 0058 00       		.byte	0
+ 1268 0059 00       		.byte	0
+ 1269 005a 07       		.uleb128 0x7
+ 1270 005b 2E       		.uleb128 0x2e
+ 1271 005c 01       		.byte	0x1
+ 1272 005d 3F       		.uleb128 0x3f
+ 1273 005e 0C       		.uleb128 0xc
+ 1274 005f 03       		.uleb128 0x3
+ 1275 0060 0E       		.uleb128 0xe
+ 1276 0061 3A       		.uleb128 0x3a
+ 1277 0062 0B       		.uleb128 0xb
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 31
+
+
+ 1278 0063 3B       		.uleb128 0x3b
+ 1279 0064 0B       		.uleb128 0xb
+ 1280 0065 11       		.uleb128 0x11
+ 1281 0066 01       		.uleb128 0x1
+ 1282 0067 12       		.uleb128 0x12
+ 1283 0068 01       		.uleb128 0x1
+ 1284 0069 40       		.uleb128 0x40
+ 1285 006a 06       		.uleb128 0x6
+ 1286 006b 01       		.uleb128 0x1
+ 1287 006c 13       		.uleb128 0x13
+ 1288 006d 00       		.byte	0
+ 1289 006e 00       		.byte	0
+ 1290 006f 08       		.uleb128 0x8
+ 1291 0070 05       		.uleb128 0x5
+ 1292 0071 00       		.byte	0
+ 1293 0072 03       		.uleb128 0x3
+ 1294 0073 0E       		.uleb128 0xe
+ 1295 0074 3A       		.uleb128 0x3a
+ 1296 0075 0B       		.uleb128 0xb
+ 1297 0076 3B       		.uleb128 0x3b
+ 1298 0077 0B       		.uleb128 0xb
+ 1299 0078 49       		.uleb128 0x49
+ 1300 0079 13       		.uleb128 0x13
+ 1301 007a 02       		.uleb128 0x2
+ 1302 007b 06       		.uleb128 0x6
+ 1303 007c 00       		.byte	0
+ 1304 007d 00       		.byte	0
+ 1305 007e 09       		.uleb128 0x9
+ 1306 007f 2E       		.uleb128 0x2e
+ 1307 0080 01       		.byte	0x1
+ 1308 0081 3F       		.uleb128 0x3f
+ 1309 0082 0C       		.uleb128 0xc
+ 1310 0083 03       		.uleb128 0x3
+ 1311 0084 0E       		.uleb128 0xe
+ 1312 0085 3A       		.uleb128 0x3a
+ 1313 0086 0B       		.uleb128 0xb
+ 1314 0087 3B       		.uleb128 0x3b
+ 1315 0088 0B       		.uleb128 0xb
+ 1316 0089 27       		.uleb128 0x27
+ 1317 008a 0C       		.uleb128 0xc
+ 1318 008b 11       		.uleb128 0x11
+ 1319 008c 01       		.uleb128 0x1
+ 1320 008d 12       		.uleb128 0x12
+ 1321 008e 01       		.uleb128 0x1
+ 1322 008f 40       		.uleb128 0x40
+ 1323 0090 06       		.uleb128 0x6
+ 1324 0091 01       		.uleb128 0x1
+ 1325 0092 13       		.uleb128 0x13
+ 1326 0093 00       		.byte	0
+ 1327 0094 00       		.byte	0
+ 1328 0095 0A       		.uleb128 0xa
+ 1329 0096 05       		.uleb128 0x5
+ 1330 0097 00       		.byte	0
+ 1331 0098 03       		.uleb128 0x3
+ 1332 0099 08       		.uleb128 0x8
+ 1333 009a 3A       		.uleb128 0x3a
+ 1334 009b 0B       		.uleb128 0xb
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 32
+
+
+ 1335 009c 3B       		.uleb128 0x3b
+ 1336 009d 0B       		.uleb128 0xb
+ 1337 009e 49       		.uleb128 0x49
+ 1338 009f 13       		.uleb128 0x13
+ 1339 00a0 02       		.uleb128 0x2
+ 1340 00a1 06       		.uleb128 0x6
+ 1341 00a2 00       		.byte	0
+ 1342 00a3 00       		.byte	0
+ 1343 00a4 0B       		.uleb128 0xb
+ 1344 00a5 34       		.uleb128 0x34
+ 1345 00a6 00       		.byte	0
+ 1346 00a7 03       		.uleb128 0x3
+ 1347 00a8 08       		.uleb128 0x8
+ 1348 00a9 3A       		.uleb128 0x3a
+ 1349 00aa 0B       		.uleb128 0xb
+ 1350 00ab 3B       		.uleb128 0x3b
+ 1351 00ac 0B       		.uleb128 0xb
+ 1352 00ad 49       		.uleb128 0x49
+ 1353 00ae 13       		.uleb128 0x13
+ 1354 00af 02       		.uleb128 0x2
+ 1355 00b0 06       		.uleb128 0x6
+ 1356 00b1 00       		.byte	0
+ 1357 00b2 00       		.byte	0
+ 1358 00b3 0C       		.uleb128 0xc
+ 1359 00b4 34       		.uleb128 0x34
+ 1360 00b5 00       		.byte	0
+ 1361 00b6 03       		.uleb128 0x3
+ 1362 00b7 08       		.uleb128 0x8
+ 1363 00b8 3A       		.uleb128 0x3a
+ 1364 00b9 0B       		.uleb128 0xb
+ 1365 00ba 3B       		.uleb128 0x3b
+ 1366 00bb 0B       		.uleb128 0xb
+ 1367 00bc 49       		.uleb128 0x49
+ 1368 00bd 13       		.uleb128 0x13
+ 1369 00be 02       		.uleb128 0x2
+ 1370 00bf 0A       		.uleb128 0xa
+ 1371 00c0 00       		.byte	0
+ 1372 00c1 00       		.byte	0
+ 1373 00c2 0D       		.uleb128 0xd
+ 1374 00c3 01       		.uleb128 0x1
+ 1375 00c4 01       		.byte	0x1
+ 1376 00c5 49       		.uleb128 0x49
+ 1377 00c6 13       		.uleb128 0x13
+ 1378 00c7 01       		.uleb128 0x1
+ 1379 00c8 13       		.uleb128 0x13
+ 1380 00c9 00       		.byte	0
+ 1381 00ca 00       		.byte	0
+ 1382 00cb 0E       		.uleb128 0xe
+ 1383 00cc 21       		.uleb128 0x21
+ 1384 00cd 00       		.byte	0
+ 1385 00ce 49       		.uleb128 0x49
+ 1386 00cf 13       		.uleb128 0x13
+ 1387 00d0 2F       		.uleb128 0x2f
+ 1388 00d1 0B       		.uleb128 0xb
+ 1389 00d2 00       		.byte	0
+ 1390 00d3 00       		.byte	0
+ 1391 00d4 0F       		.uleb128 0xf
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 33
+
+
+ 1392 00d5 34       		.uleb128 0x34
+ 1393 00d6 00       		.byte	0
+ 1394 00d7 03       		.uleb128 0x3
+ 1395 00d8 0E       		.uleb128 0xe
+ 1396 00d9 3A       		.uleb128 0x3a
+ 1397 00da 0B       		.uleb128 0xb
+ 1398 00db 3B       		.uleb128 0x3b
+ 1399 00dc 0B       		.uleb128 0xb
+ 1400 00dd 49       		.uleb128 0x49
+ 1401 00de 13       		.uleb128 0x13
+ 1402 00df 00       		.byte	0
+ 1403 00e0 00       		.byte	0
+ 1404 00e1 10       		.uleb128 0x10
+ 1405 00e2 1D       		.uleb128 0x1d
+ 1406 00e3 00       		.byte	0
+ 1407 00e4 31       		.uleb128 0x31
+ 1408 00e5 13       		.uleb128 0x13
+ 1409 00e6 11       		.uleb128 0x11
+ 1410 00e7 01       		.uleb128 0x1
+ 1411 00e8 12       		.uleb128 0x12
+ 1412 00e9 01       		.uleb128 0x1
+ 1413 00ea 58       		.uleb128 0x58
+ 1414 00eb 0B       		.uleb128 0xb
+ 1415 00ec 59       		.uleb128 0x59
+ 1416 00ed 0B       		.uleb128 0xb
+ 1417 00ee 00       		.byte	0
+ 1418 00ef 00       		.byte	0
+ 1419 00f0 11       		.uleb128 0x11
+ 1420 00f1 0B       		.uleb128 0xb
+ 1421 00f2 01       		.byte	0x1
+ 1422 00f3 11       		.uleb128 0x11
+ 1423 00f4 01       		.uleb128 0x1
+ 1424 00f5 12       		.uleb128 0x12
+ 1425 00f6 01       		.uleb128 0x1
+ 1426 00f7 00       		.byte	0
+ 1427 00f8 00       		.byte	0
+ 1428 00f9 12       		.uleb128 0x12
+ 1429 00fa 34       		.uleb128 0x34
+ 1430 00fb 00       		.byte	0
+ 1431 00fc 03       		.uleb128 0x3
+ 1432 00fd 0E       		.uleb128 0xe
+ 1433 00fe 3A       		.uleb128 0x3a
+ 1434 00ff 0B       		.uleb128 0xb
+ 1435 0100 3B       		.uleb128 0x3b
+ 1436 0101 05       		.uleb128 0x5
+ 1437 0102 49       		.uleb128 0x49
+ 1438 0103 13       		.uleb128 0x13
+ 1439 0104 02       		.uleb128 0x2
+ 1440 0105 06       		.uleb128 0x6
+ 1441 0106 00       		.byte	0
+ 1442 0107 00       		.byte	0
+ 1443 0108 13       		.uleb128 0x13
+ 1444 0109 34       		.uleb128 0x34
+ 1445 010a 00       		.byte	0
+ 1446 010b 03       		.uleb128 0x3
+ 1447 010c 0E       		.uleb128 0xe
+ 1448 010d 3A       		.uleb128 0x3a
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 34
+
+
+ 1449 010e 0B       		.uleb128 0xb
+ 1450 010f 3B       		.uleb128 0x3b
+ 1451 0110 0B       		.uleb128 0xb
+ 1452 0111 49       		.uleb128 0x49
+ 1453 0112 13       		.uleb128 0x13
+ 1454 0113 02       		.uleb128 0x2
+ 1455 0114 0A       		.uleb128 0xa
+ 1456 0115 00       		.byte	0
+ 1457 0116 00       		.byte	0
+ 1458 0117 14       		.uleb128 0x14
+ 1459 0118 34       		.uleb128 0x34
+ 1460 0119 00       		.byte	0
+ 1461 011a 03       		.uleb128 0x3
+ 1462 011b 0E       		.uleb128 0xe
+ 1463 011c 3A       		.uleb128 0x3a
+ 1464 011d 0B       		.uleb128 0xb
+ 1465 011e 3B       		.uleb128 0x3b
+ 1466 011f 0B       		.uleb128 0xb
+ 1467 0120 49       		.uleb128 0x49
+ 1468 0121 13       		.uleb128 0x13
+ 1469 0122 3F       		.uleb128 0x3f
+ 1470 0123 0C       		.uleb128 0xc
+ 1471 0124 02       		.uleb128 0x2
+ 1472 0125 0A       		.uleb128 0xa
+ 1473 0126 00       		.byte	0
+ 1474 0127 00       		.byte	0
+ 1475 0128 00       		.byte	0
+ 1476              		.section	.debug_loc,"",%progbits
+ 1477              	.Ldebug_loc0:
+ 1478              	.LLST0:
+ 1479 0000 00000000 		.4byte	.LFB1-.Ltext0
+ 1480 0004 02000000 		.4byte	.LCFI0-.Ltext0
+ 1481 0008 0200     		.2byte	0x2
+ 1482 000a 7D       		.byte	0x7d
+ 1483 000b 00       		.sleb128 0
+ 1484 000c 02000000 		.4byte	.LCFI0-.Ltext0
+ 1485 0010 3C000000 		.4byte	.LFE1-.Ltext0
+ 1486 0014 0200     		.2byte	0x2
+ 1487 0016 7D       		.byte	0x7d
+ 1488 0017 04       		.sleb128 4
+ 1489 0018 00000000 		.4byte	0
+ 1490 001c 00000000 		.4byte	0
+ 1491              	.LLST1:
+ 1492 0020 3C000000 		.4byte	.LFB2-.Ltext0
+ 1493 0024 3E000000 		.4byte	.LCFI1-.Ltext0
+ 1494 0028 0200     		.2byte	0x2
+ 1495 002a 7D       		.byte	0x7d
+ 1496 002b 00       		.sleb128 0
+ 1497 002c 3E000000 		.4byte	.LCFI1-.Ltext0
+ 1498 0030 3C010000 		.4byte	.LFE2-.Ltext0
+ 1499 0034 0200     		.2byte	0x2
+ 1500 0036 7D       		.byte	0x7d
+ 1501 0037 08       		.sleb128 8
+ 1502 0038 00000000 		.4byte	0
+ 1503 003c 00000000 		.4byte	0
+ 1504              	.LLST2:
+ 1505 0040 3E000000 		.4byte	.LVL0-.Ltext0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 35
+
+
+ 1506 0044 40000000 		.4byte	.LVL1-.Ltext0
+ 1507 0048 0100     		.2byte	0x1
+ 1508 004a 50       		.byte	0x50
+ 1509 004b 40000000 		.4byte	.LVL1-.Ltext0
+ 1510 004f 5A000000 		.4byte	.LVL2-.Ltext0
+ 1511 0053 0300     		.2byte	0x3
+ 1512 0055 70       		.byte	0x70
+ 1513 0056 01       		.sleb128 1
+ 1514 0057 9F       		.byte	0x9f
+ 1515 0058 80000000 		.4byte	.LVL3-.Ltext0
+ 1516 005c 82000000 		.4byte	.LVL4-.Ltext0
+ 1517 0060 0300     		.2byte	0x3
+ 1518 0062 70       		.byte	0x70
+ 1519 0063 01       		.sleb128 1
+ 1520 0064 9F       		.byte	0x9f
+ 1521 0065 A8000000 		.4byte	.LVL5-.Ltext0
+ 1522 0069 AA000000 		.4byte	.LVL6-.Ltext0
+ 1523 006d 0300     		.2byte	0x3
+ 1524 006f 70       		.byte	0x70
+ 1525 0070 01       		.sleb128 1
+ 1526 0071 9F       		.byte	0x9f
+ 1527 0072 D0000000 		.4byte	.LVL7-.Ltext0
+ 1528 0076 D2000000 		.4byte	.LVL8-.Ltext0
+ 1529 007a 0300     		.2byte	0x3
+ 1530 007c 70       		.byte	0x70
+ 1531 007d 01       		.sleb128 1
+ 1532 007e 9F       		.byte	0x9f
+ 1533 007f F8000000 		.4byte	.LVL9-.Ltext0
+ 1534 0083 FA000000 		.4byte	.LVL10-.Ltext0
+ 1535 0087 0300     		.2byte	0x3
+ 1536 0089 70       		.byte	0x70
+ 1537 008a 01       		.sleb128 1
+ 1538 008b 9F       		.byte	0x9f
+ 1539 008c 00000000 		.4byte	0
+ 1540 0090 00000000 		.4byte	0
+ 1541              	.LLST3:
+ 1542 0094 3C010000 		.4byte	.LFB3-.Ltext0
+ 1543 0098 3E010000 		.4byte	.LCFI2-.Ltext0
+ 1544 009c 0200     		.2byte	0x2
+ 1545 009e 7D       		.byte	0x7d
+ 1546 009f 00       		.sleb128 0
+ 1547 00a0 3E010000 		.4byte	.LCFI2-.Ltext0
+ 1548 00a4 68010000 		.4byte	.LFE3-.Ltext0
+ 1549 00a8 0200     		.2byte	0x2
+ 1550 00aa 7D       		.byte	0x7d
+ 1551 00ab 0C       		.sleb128 12
+ 1552 00ac 00000000 		.4byte	0
+ 1553 00b0 00000000 		.4byte	0
+ 1554              	.LLST4:
+ 1555 00b4 3E010000 		.4byte	.LVL11-.Ltext0
+ 1556 00b8 44010000 		.4byte	.LVL12-.Ltext0
+ 1557 00bc 0100     		.2byte	0x1
+ 1558 00be 50       		.byte	0x50
+ 1559 00bf 44010000 		.4byte	.LVL12-.Ltext0
+ 1560 00c3 62010000 		.4byte	.LVL15-.Ltext0
+ 1561 00c7 0100     		.2byte	0x1
+ 1562 00c9 55       		.byte	0x55
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 36
+
+
+ 1563 00ca 00000000 		.4byte	0
+ 1564 00ce 00000000 		.4byte	0
+ 1565              	.LLST5:
+ 1566 00d2 3E010000 		.4byte	.LVL11-.Ltext0
+ 1567 00d6 44010000 		.4byte	.LVL12-.Ltext0
+ 1568 00da 0200     		.2byte	0x2
+ 1569 00dc 30       		.byte	0x30
+ 1570 00dd 9F       		.byte	0x9f
+ 1571 00de 44010000 		.4byte	.LVL12-.Ltext0
+ 1572 00e2 62010000 		.4byte	.LVL14-.Ltext0
+ 1573 00e6 0100     		.2byte	0x1
+ 1574 00e8 54       		.byte	0x54
+ 1575 00e9 00000000 		.4byte	0
+ 1576 00ed 00000000 		.4byte	0
+ 1577              	.LLST6:
+ 1578 00f1 68010000 		.4byte	.LFB4-.Ltext0
+ 1579 00f5 6A010000 		.4byte	.LCFI3-.Ltext0
+ 1580 00f9 0200     		.2byte	0x2
+ 1581 00fb 7D       		.byte	0x7d
+ 1582 00fc 00       		.sleb128 0
+ 1583 00fd 6A010000 		.4byte	.LCFI3-.Ltext0
+ 1584 0101 70010000 		.4byte	.LCFI4-.Ltext0
+ 1585 0105 0200     		.2byte	0x2
+ 1586 0107 7D       		.byte	0x7d
+ 1587 0108 14       		.sleb128 20
+ 1588 0109 70010000 		.4byte	.LCFI4-.Ltext0
+ 1589 010d 4C020000 		.4byte	.LFE4-.Ltext0
+ 1590 0111 0200     		.2byte	0x2
+ 1591 0113 7D       		.byte	0x7d
+ 1592 0114 2C       		.sleb128 44
+ 1593 0115 00000000 		.4byte	0
+ 1594 0119 00000000 		.4byte	0
+ 1595              	.LLST7:
+ 1596 011d 4C020000 		.4byte	.LFB5-.Ltext0
+ 1597 0121 4E020000 		.4byte	.LCFI5-.Ltext0
+ 1598 0125 0200     		.2byte	0x2
+ 1599 0127 7D       		.byte	0x7d
+ 1600 0128 00       		.sleb128 0
+ 1601 0129 4E020000 		.4byte	.LCFI5-.Ltext0
+ 1602 012d BC040000 		.4byte	.LFE5-.Ltext0
+ 1603 0131 0200     		.2byte	0x2
+ 1604 0133 7D       		.byte	0x7d
+ 1605 0134 14       		.sleb128 20
+ 1606 0135 00000000 		.4byte	0
+ 1607 0139 00000000 		.4byte	0
+ 1608              	.LLST8:
+ 1609 013d C0020000 		.4byte	.LVL16-.Ltext0
+ 1610 0141 C2020000 		.4byte	.LVL17-.Ltext0
+ 1611 0145 0100     		.2byte	0x1
+ 1612 0147 50       		.byte	0x50
+ 1613 0148 C2020000 		.4byte	.LVL17-.Ltext0
+ 1614 014c 78040000 		.4byte	.LVL18-.Ltext0
+ 1615 0150 0100     		.2byte	0x1
+ 1616 0152 56       		.byte	0x56
+ 1617 0153 00000000 		.4byte	0
+ 1618 0157 00000000 		.4byte	0
+ 1619              		.section	.debug_aranges,"",%progbits
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 37
+
+
+ 1620 0000 1C000000 		.4byte	0x1c
+ 1621 0004 0200     		.2byte	0x2
+ 1622 0006 00000000 		.4byte	.Ldebug_info0
+ 1623 000a 04       		.byte	0x4
+ 1624 000b 00       		.byte	0
+ 1625 000c 0000     		.2byte	0
+ 1626 000e 0000     		.2byte	0
+ 1627 0010 00000000 		.4byte	.Ltext0
+ 1628 0014 BC040000 		.4byte	.Letext0-.Ltext0
+ 1629 0018 00000000 		.4byte	0
+ 1630 001c 00000000 		.4byte	0
+ 1631              		.section	.debug_line,"",%progbits
+ 1632              	.Ldebug_line0:
+ 1633 0000 3B010000 		.section	.debug_str,"MS",%progbits,1
+ 1633      02005200 
+ 1633      00000201 
+ 1633      FB0E0D00 
+ 1633      01010101 
+ 1634              	.LASF16:
+ 1635 0000 67616D65 		.ascii	"gameStatus\000"
+ 1635      53746174 
+ 1635      757300
+ 1636              	.LASF28:
+ 1637 000b 72656163 		.ascii	"react.c\000"
+ 1637      742E6300 
+ 1638              	.LASF18:
+ 1639 0013 67616D65 		.ascii	"gameMode\000"
+ 1639      4D6F6465 
+ 1639      00
+ 1640              	.LASF10:
+ 1641 001c 77686963 		.ascii	"whichArrow\000"
+ 1641      68417272 
+ 1641      6F7700
+ 1642              	.LASF13:
+ 1643 0027 75736542 		.ascii	"useBuzzer\000"
+ 1643      757A7A65 
+ 1643      7200
+ 1644              	.LASF4:
+ 1645 0031 73686F72 		.ascii	"short int\000"
+ 1645      7420696E 
+ 1645      7400
+ 1646              	.LASF20:
+ 1647 003b 63757272 		.ascii	"currCol\000"
+ 1647      436F6C00 
+ 1648              	.LASF22:
+ 1649 0043 73636F72 		.ascii	"score\000"
+ 1649      6500
+ 1650              	.LASF30:
+ 1651 0049 73686F77 		.ascii	"showPreStartupScreen\000"
+ 1651      50726553 
+ 1651      74617274 
+ 1651      75705363 
+ 1651      7265656E 
+ 1652              	.LASF5:
+ 1653 005e 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1653      20756E73 
+ 1653      69676E65 
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 38
+
+
+ 1653      6420696E 
+ 1653      7400
+ 1654              	.LASF1:
+ 1655 0070 73686F72 		.ascii	"short unsigned int\000"
+ 1655      7420756E 
+ 1655      7369676E 
+ 1655      65642069 
+ 1655      6E7400
+ 1656              	.LASF21:
+ 1657 0083 73656C65 		.ascii	"selectedNum\000"
+ 1657      63746564 
+ 1657      4E756D00 
+ 1658              	.LASF27:
+ 1659 008f 474E5520 		.ascii	"GNU C 4.6.3\000"
+ 1659      4320342E 
+ 1659      362E3300 
+ 1660              	.LASF0:
+ 1661 009b 756E7369 		.ascii	"unsigned char\000"
+ 1661      676E6564 
+ 1661      20636861 
+ 1661      7200
+ 1662              	.LASF14:
+ 1663 00a9 706C6179 		.ascii	"playReactGame\000"
+ 1663      52656163 
+ 1663      7447616D 
+ 1663      6500
+ 1664              	.LASF24:
+ 1665 00b7 63757272 		.ascii	"currentRound\000"
+ 1665      656E7452 
+ 1665      6F756E64 
+ 1665      00
+ 1666              	.LASF29:
+ 1667 00c4 433A5C55 		.ascii	"C:\\Users\\kozlovsky\\Downloads\\TicTac\\TicTac\000"
+ 1667      73657273 
+ 1667      5C6B6F7A 
+ 1667      6C6F7673 
+ 1667      6B795C44 
+ 1668              	.LASF2:
+ 1669 00ef 756E7369 		.ascii	"unsigned int\000"
+ 1669      676E6564 
+ 1669      20696E74 
+ 1669      00
+ 1670              	.LASF7:
+ 1671 00fc 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1671      206C6F6E 
+ 1671      6720756E 
+ 1671      7369676E 
+ 1671      65642069 
+ 1672              	.LASF15:
+ 1673 0113 616E794B 		.ascii	"anyKey\000"
+ 1673      657900
+ 1674              	.LASF12:
+ 1675 011a 73686F77 		.ascii	"showScore\000"
+ 1675      53636F72 
+ 1675      6500
+ 1676              	.LASF6:
+ 1677 0124 6C6F6E67 		.ascii	"long long int\000"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 39
+
+
+ 1677      206C6F6E 
+ 1677      6720696E 
+ 1677      7400
+ 1678              	.LASF17:
+ 1679 0132 73747253 		.ascii	"strScore\000"
+ 1679      636F7265 
+ 1679      00
+ 1680              	.LASF9:
+ 1681 013b 63686172 		.ascii	"char\000"
+ 1681      00
+ 1682              	.LASF25:
+ 1683 0140 6D617472 		.ascii	"matrix\000"
+ 1683      697800
+ 1684              	.LASF31:
+ 1685 0147 72616E64 		.ascii	"randomMove\000"
+ 1685      6F6D4D6F 
+ 1685      766500
+ 1686              	.LASF26:
+ 1687 0152 6172726F 		.ascii	"arrow\000"
+ 1687      7700
+ 1688              	.LASF19:
+ 1689 0158 63757272 		.ascii	"currRow\000"
+ 1689      526F7700 
+ 1690              	.LASF23:
+ 1691 0160 726F756E 		.ascii	"rounds\000"
+ 1691      647300
+ 1692              	.LASF8:
+ 1693 0167 6C6F6E67 		.ascii	"long int\000"
+ 1693      20696E74 
+ 1693      00
+ 1694              	.LASF3:
+ 1695 0170 7369676E 		.ascii	"signed char\000"
+ 1695      65642063 
+ 1695      68617200 
+ 1696              	.LASF11:
+ 1697 017c 73686F77 		.ascii	"showRandomArrow\000"
+ 1697      52616E64 
+ 1697      6F6D4172 
+ 1697      726F7700 
+ 1698              		.ident	"GCC: (GNU) 4.6.3"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s 			page 40
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 react.c
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:7      .text:00000000 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:12     .text:00000000 randomMove
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:30     .text:00000016 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:68     .text:00000038 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:72     .text:0000003c $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:77     .text:0000003c showRandomArrow
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:94     .text:00000048 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:110    .text:00000058 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:239    .text:00000128 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:247    .text:0000013c $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:252    .text:0000013c useBuzzer
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:305    .text:00000168 showScore
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:448    .text:00000240 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:454    .text:0000024c $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:459    .text:0000024c playReactGame
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:555    .text:000002cc $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:565    .text:000002d6 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:831    .text:00000488 $d
+                            *COM*:00000004 arrow
+                            *COM*:00000010 matrix
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:881    .bss:00000000 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:885    .bss:00000000 whichArrow
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:890    .bss:00000004 score
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:894    .bss:00000008 rounds
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:898    .bss:00000009 currentRound
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:902    .bss:0000000a gameStatus
+                     .debug_frame:00000010 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:35     .text:0000001b $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccC5olIl.s:35     .text:0000001c $t
+
+UNDEFINED SYMBOLS
+__modsi3
+rand
+__gnu_thumb1_case_uqi
+lcdColor
+lcdClrscr
+lcdRect
+lcdGotoxy
+lcdPuts
+setBuzzer
+osSleep
+__divsi3
+simplePrintf
+eaInit
+checkKey
+setLED

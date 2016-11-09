@@ -1,0 +1,1752 @@
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 1
+
+
+   1              		.code	16
+   2              		.file	"key.c"
+   3              		.text
+   4              	.Ltext0:
+   5              		.cfi_sections	.debug_frame
+   6              		.align	1
+   7              		.global	checkKey
+   8              		.code	16
+   9              		.thumb_func
+  10              		.type	checkKey, %function
+  11              	checkKey:
+  12              	.LFB0:
+  13              		.file 1 "key.c"
+   1:key.c         **** /******************************************************************************
+   2:key.c         ****  *
+   3:key.c         ****  * Copyright:
+   4:key.c         ****  *    (C) 2006 Embedded Artists AB
+   5:key.c         ****  *
+   6:key.c         ****  * File:
+   7:key.c         ****  *    key.c
+   8:key.c         ****  *
+   9:key.c         ****  * Description:
+  10:key.c         ****  *    Implements sampling and handling of joystick key.
+  11:key.c         ****  *
+  12:key.c         ****  *****************************************************************************/
+  13:key.c         **** 
+  14:key.c         **** /******************************************************************************
+  15:key.c         ****  * Includes
+  16:key.c         ****  *****************************************************************************/
+  17:key.c         **** #include "../pre_emptive_os/api/osapi.h"
+  18:key.c         **** #include "../pre_emptive_os/api/general.h"
+  19:key.c         **** #include <printf_P.h>
+  20:key.c         **** #include "key.h"
+  21:key.c         **** #include "hw.h"
+  22:key.c         **** 
+  23:key.c         **** 
+  24:key.c         **** /******************************************************************************
+  25:key.c         ****  * Typedefs and defines
+  26:key.c         ****  *****************************************************************************/
+  27:key.c         **** #define FIRST_REPEAT  4
+  28:key.c         **** #define SECOND_REPEAT 3
+  29:key.c         **** 
+  30:key.c         **** #define KEYPROC_STACK_SIZE 300
+  31:key.c         **** 
+  32:key.c         **** 
+  33:key.c         **** /*****************************************************************************
+  34:key.c         ****  * Local variables
+  35:key.c         ****  ****************************************************************************/
+  36:key.c         **** static tU8 centerReleased = TRUE;
+  37:key.c         **** static tU8 keyUpReleased = TRUE;
+  38:key.c         **** static tU8 keyDownReleased = TRUE;
+  39:key.c         **** static tU8 keyLeftReleased = TRUE;
+  40:key.c         **** static tU8 keyRightReleased = TRUE;
+  41:key.c         **** static tU8 centerKeyCnt;
+  42:key.c         **** static tU8 upKeyCnt;
+  43:key.c         **** static tU8 downKeyCnt;
+  44:key.c         **** static tU8 leftKeyCnt;
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 2
+
+
+  45:key.c         **** static tU8 rightKeyCnt;
+  46:key.c         **** 
+  47:key.c         **** static volatile tU8 activeKey = KEY_NOTHING;
+  48:key.c         **** static volatile tU8 activeKey2 = KEY_NOTHING;
+  49:key.c         **** 
+  50:key.c         **** static tU8 keyProcStack[KEYPROC_STACK_SIZE];
+  51:key.c         **** static tU8 keyProcPid;
+  52:key.c         **** 
+  53:key.c         **** 
+  54:key.c         **** /*****************************************************************************
+  55:key.c         ****  *
+  56:key.c         ****  * Description:
+  57:key.c         ****  *    Function to check if any key press has been detected
+  58:key.c         ****  *
+  59:key.c         ****  ****************************************************************************/
+  60:key.c         **** tU8
+  61:key.c         **** checkKey(void)
+  62:key.c         **** {
+  14              		.loc 1 62 0
+  15              		.cfi_startproc
+  63:key.c         ****   tU8 retVal = activeKey;
+  16              		.loc 1 63 0
+  17 0000 024B     		ldr	r3, .L2
+  64:key.c         ****   activeKey = KEY_NOTHING;
+  18              		.loc 1 64 0
+  19 0002 0022     		mov	r2, #0
+  63:key.c         ****   tU8 retVal = activeKey;
+  20              		.loc 1 63 0
+  21 0004 1878     		ldrb	r0, [r3]
+  22              	.LVL0:
+  23              		.loc 1 64 0
+  24 0006 1A70     		strb	r2, [r3]
+  65:key.c         ****   return retVal;
+  66:key.c         **** }
+  25              		.loc 1 66 0
+  26              		@ sp needed for prologue
+  27 0008 7047     		bx	lr
+  28              	.L3:
+  29 000a C046     		.align	2
+  30              	.L2:
+  31 000c 00000000 		.word	.LANCHOR0
+  32              		.cfi_endproc
+  33              	.LFE0:
+  34              		.size	checkKey, .-checkKey
+  35              		.align	1
+  36              		.global	checkKey2
+  37              		.code	16
+  38              		.thumb_func
+  39              		.type	checkKey2, %function
+  40              	checkKey2:
+  41              	.LFB1:
+  67:key.c         **** 
+  68:key.c         **** /*****************************************************************************
+  69:key.c         ****  *
+  70:key.c         ****  * Description:
+  71:key.c         ****  *    Function to check current (instantaneous) key state
+  72:key.c         ****  *
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 3
+
+
+  73:key.c         ****  ****************************************************************************/
+  74:key.c         **** tU8
+  75:key.c         **** checkKey2(void)
+  76:key.c         **** {
+  42              		.loc 1 76 0
+  43              		.cfi_startproc
+  77:key.c         ****   return activeKey2;
+  44              		.loc 1 77 0
+  45 0010 014B     		ldr	r3, .L5
+  78:key.c         **** }
+  46              		.loc 1 78 0
+  47              		@ sp needed for prologue
+  77:key.c         ****   return activeKey2;
+  48              		.loc 1 77 0
+  49 0012 5878     		ldrb	r0, [r3, #1]
+  50              		.loc 1 78 0
+  51 0014 7047     		bx	lr
+  52              	.L6:
+  53 0016 C046     		.align	2
+  54              	.L5:
+  55 0018 00000000 		.word	.LANCHOR0
+  56              		.cfi_endproc
+  57              	.LFE1:
+  58              		.size	checkKey2, .-checkKey2
+  59              		.align	1
+  60              		.global	sampleKey
+  61              		.code	16
+  62              		.thumb_func
+  63              		.type	sampleKey, %function
+  64              	sampleKey:
+  65              	.LFB2:
+  79:key.c         **** 
+  80:key.c         **** /*****************************************************************************
+  81:key.c         ****  *
+  82:key.c         ****  * Description:
+  83:key.c         ****  *    Sample key states
+  84:key.c         ****  *
+  85:key.c         ****  ****************************************************************************/
+  86:key.c         **** void
+  87:key.c         **** sampleKey(void)
+  88:key.c         **** {
+  66              		.loc 1 88 0
+  67              		.cfi_startproc
+  68 001c 30B5     		push	{r4, r5, lr}
+  69              	.LCFI0:
+  70              		.cfi_def_cfa_offset 12
+  71              		.cfi_offset 4, -12
+  72              		.cfi_offset 5, -8
+  73              		.cfi_offset 14, -4
+  74              	.LVL1:
+  89:key.c         ****   tBool nothing = TRUE;
+  90:key.c         ****   tU8   readKeys;
+  91:key.c         ****   
+  92:key.c         ****   //get sample
+  93:key.c         ****   readKeys = getKeys();
+  75              		.loc 1 93 0
+  76 001e FFF7FEFF 		bl	getKeys
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 4
+
+
+  77              	.LVL2:
+  94:key.c         ****   
+  95:key.c         **** 
+  96:key.c         ****   //check center key
+  97:key.c         ****   if (readKeys & KEY_CENTER)
+  78              		.loc 1 97 0
+  79 0022 1021     		mov	r1, #16
+  80 0024 524C     		ldr	r4, .L37
+  81 0026 0842     		tst	r0, r1
+  82 0028 1AD0     		beq	.L8
+  83              	.LVL3:
+  98:key.c         ****   {
+  99:key.c         ****     nothing = FALSE;
+ 100:key.c         ****   	if (centerReleased == TRUE)
+  84              		.loc 1 100 0
+  85 002a 2378     		ldrb	r3, [r4]
+  86 002c 514A     		ldr	r2, .L37+4
+  87 002e 012B     		cmp	r3, #1
+  88 0030 03D1     		bne	.L9
+ 101:key.c         ****   	{
+ 102:key.c         ****   		centerReleased = FALSE;
+  89              		.loc 1 102 0
+  90 0032 0023     		mov	r3, #0
+  91 0034 2370     		strb	r3, [r4]
+ 103:key.c         ****   		centerKeyCnt = 0;
+  92              		.loc 1 103 0
+  93 0036 9370     		strb	r3, [r2, #2]
+  94 0038 0FE0     		b	.L32
+  95              	.L9:
+ 104:key.c         ****   		activeKey = KEY_CENTER;
+ 105:key.c         ****   		activeKey2 = KEY_CENTER;
+ 106:key.c         ****   	}
+ 107:key.c         ****   	else
+ 108:key.c         ****   	{
+ 109:key.c         ****   	  centerKeyCnt++;
+  96              		.loc 1 109 0
+  97 003a 9478     		ldrb	r4, [r2, #2]
+  98 003c 0134     		add	r4, r4, #1
+  99 003e 2406     		lsl	r4, r4, #24
+ 100 0040 240E     		lsr	r4, r4, #24
+ 101 0042 9470     		strb	r4, [r2, #2]
+ 110:key.c         ****   	  if (centerKeyCnt == FIRST_REPEAT)
+ 102              		.loc 1 110 0
+ 103 0044 042C     		cmp	r4, #4
+ 104 0046 03D1     		bne	.L11
+ 111:key.c         ****   	  {
+ 112:key.c         ****   		  activeKey = KEY_CENTER;
+ 105              		.loc 1 112 0
+ 106 0048 1170     		strb	r1, [r2]
+  99:key.c         ****     nothing = FALSE;
+ 107              		.loc 1 99 0
+ 108 004a 0023     		mov	r3, #0
+ 113:key.c         ****   		  activeKey2 = KEY_CENTER;
+ 109              		.loc 1 113 0
+ 110 004c 5170     		strb	r1, [r2, #1]
+ 111 004e 09E0     		b	.L10
+ 112              	.L11:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 5
+
+
+  99:key.c         ****     nothing = FALSE;
+ 113              		.loc 1 99 0
+ 114 0050 0023     		mov	r3, #0
+ 114:key.c         ****   	  }
+ 115:key.c         ****   	  else if (centerKeyCnt >= FIRST_REPEAT + SECOND_REPEAT)
+ 115              		.loc 1 115 0
+ 116 0052 062C     		cmp	r4, #6
+ 117 0054 06D9     		bls	.L10
+ 116:key.c         ****   	  {
+ 117:key.c         ****   		  centerKeyCnt = FIRST_REPEAT;
+ 118              		.loc 1 117 0
+ 119 0056 0424     		mov	r4, #4
+ 120 0058 9470     		strb	r4, [r2, #2]
+ 121              	.L32:
+ 118:key.c         ****   		  activeKey = KEY_CENTER;
+ 122              		.loc 1 118 0
+ 123 005a 1170     		strb	r1, [r2]
+ 119:key.c         ****   		  activeKey2 = KEY_CENTER;
+ 124              		.loc 1 119 0
+ 125 005c 5170     		strb	r1, [r2, #1]
+ 126 005e 01E0     		b	.L10
+ 127              	.LVL4:
+ 128              	.L8:
+ 120:key.c         ****   	  }
+ 121:key.c         ****   	}
+ 122:key.c         ****   }
+ 123:key.c         ****   else
+ 124:key.c         ****   	centerReleased = TRUE;
+ 129              		.loc 1 124 0
+ 130 0060 0123     		mov	r3, #1
+ 131 0062 2370     		strb	r3, [r4]
+ 132              	.LVL5:
+ 133              	.L10:
+ 125:key.c         **** 
+ 126:key.c         ****   //check up key
+ 127:key.c         ****   if (readKeys & KEY_UP)
+ 134              		.loc 1 127 0
+ 135 0064 0121     		mov	r1, #1
+ 136 0066 424C     		ldr	r4, .L37
+ 137 0068 0842     		tst	r0, r1
+ 138 006a 1CD0     		beq	.L12
+ 139              	.LVL6:
+ 128:key.c         ****   {
+ 129:key.c         ****     nothing = FALSE;
+ 130:key.c         ****   	if (keyUpReleased == TRUE)
+ 140              		.loc 1 130 0
+ 141 006c 6578     		ldrb	r5, [r4, #1]
+ 142 006e 414A     		ldr	r2, .L37+4
+ 143 0070 8D42     		cmp	r5, r1
+ 144 0072 05D1     		bne	.L13
+ 131:key.c         ****   	{
+ 132:key.c         ****   		keyUpReleased = FALSE;
+ 145              		.loc 1 132 0
+ 146 0074 0023     		mov	r3, #0
+ 133:key.c         ****   		upKeyCnt = 0;
+ 134:key.c         ****   		activeKey = KEY_UP;
+ 147              		.loc 1 134 0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 6
+
+
+ 148 0076 1570     		strb	r5, [r2]
+ 132:key.c         ****   		keyUpReleased = FALSE;
+ 149              		.loc 1 132 0
+ 150 0078 6370     		strb	r3, [r4, #1]
+ 133:key.c         ****   		upKeyCnt = 0;
+ 151              		.loc 1 133 0
+ 152 007a D370     		strb	r3, [r2, #3]
+ 135:key.c         ****   		activeKey2 = KEY_UP;
+ 153              		.loc 1 135 0
+ 154 007c 5570     		strb	r5, [r2, #1]
+ 155 007e 13E0     		b	.L14
+ 156              	.L13:
+ 136:key.c         ****   	}
+ 137:key.c         ****   	else
+ 138:key.c         ****   	{
+ 139:key.c         ****   	  upKeyCnt++;
+ 157              		.loc 1 139 0
+ 158 0080 D478     		ldrb	r4, [r2, #3]
+ 159 0082 0134     		add	r4, r4, #1
+ 160 0084 2406     		lsl	r4, r4, #24
+ 161 0086 240E     		lsr	r4, r4, #24
+ 162 0088 D470     		strb	r4, [r2, #3]
+ 140:key.c         ****   	  if (upKeyCnt == FIRST_REPEAT)
+ 163              		.loc 1 140 0
+ 164 008a 042C     		cmp	r4, #4
+ 165 008c 03D1     		bne	.L15
+ 141:key.c         ****   	  {
+ 142:key.c         ****   		  activeKey = KEY_UP;
+ 166              		.loc 1 142 0
+ 167 008e 1170     		strb	r1, [r2]
+ 129:key.c         ****     nothing = FALSE;
+ 168              		.loc 1 129 0
+ 169 0090 0023     		mov	r3, #0
+ 143:key.c         ****   		  activeKey2 = KEY_UP;
+ 170              		.loc 1 143 0
+ 171 0092 5170     		strb	r1, [r2, #1]
+ 172 0094 08E0     		b	.L14
+ 173              	.L15:
+ 129:key.c         ****     nothing = FALSE;
+ 174              		.loc 1 129 0
+ 175 0096 0023     		mov	r3, #0
+ 144:key.c         ****   	  }
+ 145:key.c         ****   	  else if (upKeyCnt >= FIRST_REPEAT + SECOND_REPEAT)
+ 176              		.loc 1 145 0
+ 177 0098 062C     		cmp	r4, #6
+ 178 009a 05D9     		bls	.L14
+ 146:key.c         ****   	  {
+ 147:key.c         ****   		  upKeyCnt = FIRST_REPEAT;
+ 179              		.loc 1 147 0
+ 180 009c 0424     		mov	r4, #4
+ 148:key.c         ****   		  activeKey = KEY_UP;
+ 181              		.loc 1 148 0
+ 182 009e 1170     		strb	r1, [r2]
+ 147:key.c         ****   		  upKeyCnt = FIRST_REPEAT;
+ 183              		.loc 1 147 0
+ 184 00a0 D470     		strb	r4, [r2, #3]
+ 149:key.c         ****   		  activeKey2 = KEY_UP;
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 7
+
+
+ 185              		.loc 1 149 0
+ 186 00a2 5170     		strb	r1, [r2, #1]
+ 187 00a4 00E0     		b	.L14
+ 188              	.LVL7:
+ 189              	.L12:
+ 150:key.c         ****   	  }
+ 151:key.c         ****   	}
+ 152:key.c         ****   }
+ 153:key.c         ****   else
+ 154:key.c         ****   	keyUpReleased = TRUE;
+ 190              		.loc 1 154 0
+ 191 00a6 6170     		strb	r1, [r4, #1]
+ 192              	.LVL8:
+ 193              	.L14:
+ 155:key.c         **** 
+ 156:key.c         ****   //check down key
+ 157:key.c         ****   if (readKeys & KEY_DOWN)
+ 194              		.loc 1 157 0
+ 195 00a8 0424     		mov	r4, #4
+ 196 00aa 3149     		ldr	r1, .L37
+ 197 00ac 2042     		tst	r0, r4
+ 198 00ae 19D0     		beq	.L16
+ 199              	.LVL9:
+ 158:key.c         ****   {
+ 159:key.c         ****     nothing = FALSE;
+ 160:key.c         ****   	if (keyDownReleased == TRUE)
+ 200              		.loc 1 160 0
+ 201 00b0 8B78     		ldrb	r3, [r1, #2]
+ 202 00b2 304A     		ldr	r2, .L37+4
+ 203 00b4 012B     		cmp	r3, #1
+ 204 00b6 03D1     		bne	.L17
+ 161:key.c         ****   	{
+ 162:key.c         ****   		keyDownReleased = FALSE;
+ 205              		.loc 1 162 0
+ 206 00b8 0023     		mov	r3, #0
+ 207 00ba 8B70     		strb	r3, [r1, #2]
+ 163:key.c         ****   		downKeyCnt = 0;
+ 208              		.loc 1 163 0
+ 209 00bc 1371     		strb	r3, [r2, #4]
+ 210 00be 0EE0     		b	.L33
+ 211              	.L17:
+ 164:key.c         ****   		activeKey = KEY_DOWN;
+ 165:key.c         ****   		activeKey2 = KEY_DOWN;
+ 166:key.c         ****   	}
+ 167:key.c         ****   	else
+ 168:key.c         ****   	{
+ 169:key.c         ****   	  downKeyCnt++;
+ 212              		.loc 1 169 0
+ 213 00c0 1179     		ldrb	r1, [r2, #4]
+ 214 00c2 0131     		add	r1, r1, #1
+ 215 00c4 0906     		lsl	r1, r1, #24
+ 216 00c6 090E     		lsr	r1, r1, #24
+ 217 00c8 1171     		strb	r1, [r2, #4]
+ 170:key.c         ****   	  if (downKeyCnt == FIRST_REPEAT)
+ 218              		.loc 1 170 0
+ 219 00ca 0429     		cmp	r1, #4
+ 220 00cc 03D1     		bne	.L19
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 8
+
+
+ 171:key.c         ****   	  {
+ 172:key.c         ****   		  activeKey = KEY_DOWN;
+ 221              		.loc 1 172 0
+ 222 00ce 1170     		strb	r1, [r2]
+ 159:key.c         ****     nothing = FALSE;
+ 223              		.loc 1 159 0
+ 224 00d0 0023     		mov	r3, #0
+ 173:key.c         ****   		  activeKey2 = KEY_DOWN;
+ 225              		.loc 1 173 0
+ 226 00d2 5170     		strb	r1, [r2, #1]
+ 227 00d4 08E0     		b	.L18
+ 228              	.L19:
+ 159:key.c         ****     nothing = FALSE;
+ 229              		.loc 1 159 0
+ 230 00d6 0023     		mov	r3, #0
+ 174:key.c         ****   	  }
+ 175:key.c         ****   	  else if (downKeyCnt >= FIRST_REPEAT + SECOND_REPEAT)
+ 231              		.loc 1 175 0
+ 232 00d8 0629     		cmp	r1, #6
+ 233 00da 05D9     		bls	.L18
+ 176:key.c         ****   	  {
+ 177:key.c         ****   		  downKeyCnt = FIRST_REPEAT;
+ 234              		.loc 1 177 0
+ 235 00dc 1471     		strb	r4, [r2, #4]
+ 236              	.L33:
+ 178:key.c         ****   		  activeKey = KEY_DOWN;
+ 237              		.loc 1 178 0
+ 238 00de 1470     		strb	r4, [r2]
+ 179:key.c         ****   		  activeKey2 = KEY_DOWN;
+ 239              		.loc 1 179 0
+ 240 00e0 5470     		strb	r4, [r2, #1]
+ 241 00e2 01E0     		b	.L18
+ 242              	.LVL10:
+ 243              	.L16:
+ 180:key.c         ****   	  }
+ 181:key.c         ****   	}
+ 182:key.c         ****   }
+ 183:key.c         ****   else
+ 184:key.c         ****   	keyDownReleased = TRUE;
+ 244              		.loc 1 184 0
+ 245 00e4 0122     		mov	r2, #1
+ 246 00e6 8A70     		strb	r2, [r1, #2]
+ 247              	.LVL11:
+ 248              	.L18:
+ 185:key.c         **** 
+ 186:key.c         ****   //check left key
+ 187:key.c         ****   if (readKeys & KEY_LEFT)
+ 249              		.loc 1 187 0
+ 250 00e8 0821     		mov	r1, #8
+ 251 00ea 214C     		ldr	r4, .L37
+ 252 00ec 0842     		tst	r0, r1
+ 253 00ee 1AD0     		beq	.L20
+ 254              	.LVL12:
+ 188:key.c         ****   {
+ 189:key.c         ****     nothing = FALSE;
+ 190:key.c         ****   	if (keyLeftReleased == TRUE)
+ 255              		.loc 1 190 0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 9
+
+
+ 256 00f0 E378     		ldrb	r3, [r4, #3]
+ 257 00f2 204A     		ldr	r2, .L37+4
+ 258 00f4 012B     		cmp	r3, #1
+ 259 00f6 03D1     		bne	.L21
+ 191:key.c         ****   	{
+ 192:key.c         ****   		keyLeftReleased = FALSE;
+ 260              		.loc 1 192 0
+ 261 00f8 0023     		mov	r3, #0
+ 262 00fa E370     		strb	r3, [r4, #3]
+ 193:key.c         ****   		leftKeyCnt = 0;
+ 263              		.loc 1 193 0
+ 264 00fc 5371     		strb	r3, [r2, #5]
+ 265 00fe 0FE0     		b	.L34
+ 266              	.L21:
+ 194:key.c         ****   		activeKey = KEY_LEFT;
+ 195:key.c         ****   		activeKey2 = KEY_LEFT;
+ 196:key.c         ****   	}
+ 197:key.c         ****   	else
+ 198:key.c         ****   	{
+ 199:key.c         ****   	  leftKeyCnt++;
+ 267              		.loc 1 199 0
+ 268 0100 5479     		ldrb	r4, [r2, #5]
+ 269 0102 0134     		add	r4, r4, #1
+ 270 0104 2406     		lsl	r4, r4, #24
+ 271 0106 240E     		lsr	r4, r4, #24
+ 272 0108 5471     		strb	r4, [r2, #5]
+ 200:key.c         ****   	  if (leftKeyCnt == FIRST_REPEAT)
+ 273              		.loc 1 200 0
+ 274 010a 042C     		cmp	r4, #4
+ 275 010c 03D1     		bne	.L23
+ 201:key.c         ****   	  {
+ 202:key.c         ****   		  activeKey = KEY_LEFT;
+ 276              		.loc 1 202 0
+ 277 010e 1170     		strb	r1, [r2]
+ 189:key.c         ****     nothing = FALSE;
+ 278              		.loc 1 189 0
+ 279 0110 0023     		mov	r3, #0
+ 203:key.c         ****   		  activeKey2 = KEY_LEFT;
+ 280              		.loc 1 203 0
+ 281 0112 5170     		strb	r1, [r2, #1]
+ 282 0114 09E0     		b	.L22
+ 283              	.L23:
+ 189:key.c         ****     nothing = FALSE;
+ 284              		.loc 1 189 0
+ 285 0116 0023     		mov	r3, #0
+ 204:key.c         ****   	  }
+ 205:key.c         ****   	  else if (leftKeyCnt >= FIRST_REPEAT + SECOND_REPEAT)
+ 286              		.loc 1 205 0
+ 287 0118 062C     		cmp	r4, #6
+ 288 011a 06D9     		bls	.L22
+ 206:key.c         ****   	  {
+ 207:key.c         ****   		  leftKeyCnt = FIRST_REPEAT;
+ 289              		.loc 1 207 0
+ 290 011c 0424     		mov	r4, #4
+ 291 011e 5471     		strb	r4, [r2, #5]
+ 292              	.L34:
+ 208:key.c         ****   		  activeKey = KEY_LEFT;
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 10
+
+
+ 293              		.loc 1 208 0
+ 294 0120 1170     		strb	r1, [r2]
+ 209:key.c         ****   		  activeKey2 = KEY_LEFT;
+ 295              		.loc 1 209 0
+ 296 0122 5170     		strb	r1, [r2, #1]
+ 297 0124 01E0     		b	.L22
+ 298              	.LVL13:
+ 299              	.L20:
+ 210:key.c         ****   	  }
+ 211:key.c         ****   	}
+ 212:key.c         ****   }
+ 213:key.c         ****   else
+ 214:key.c         ****   	keyLeftReleased = TRUE;
+ 300              		.loc 1 214 0
+ 301 0126 0122     		mov	r2, #1
+ 302 0128 E270     		strb	r2, [r4, #3]
+ 303              	.LVL14:
+ 304              	.L22:
+ 215:key.c         **** 
+ 216:key.c         ****   //check right key
+ 217:key.c         ****   if (readKeys & KEY_RIGHT)
+ 305              		.loc 1 217 0
+ 306 012a 0222     		mov	r2, #2
+ 307 012c 1040     		and	r0, r2
+ 308              	.LVL15:
+ 309 012e 1049     		ldr	r1, .L37
+ 310 0130 15D0     		beq	.L24
+ 311              	.LVL16:
+ 218:key.c         ****   {
+ 219:key.c         ****     nothing = FALSE;
+ 220:key.c         ****   	if (keyRightReleased == TRUE)
+ 312              		.loc 1 220 0
+ 313 0132 0879     		ldrb	r0, [r1, #4]
+ 314 0134 0F4B     		ldr	r3, .L37+4
+ 315 0136 0128     		cmp	r0, #1
+ 316 0138 03D1     		bne	.L25
+ 221:key.c         ****   	{
+ 222:key.c         ****   		keyRightReleased = FALSE;
+ 317              		.loc 1 222 0
+ 318 013a 0020     		mov	r0, #0
+ 319 013c 0871     		strb	r0, [r1, #4]
+ 223:key.c         ****   		rightKeyCnt = 0;
+ 320              		.loc 1 223 0
+ 321 013e 9871     		strb	r0, [r3, #6]
+ 322 0140 0AE0     		b	.L36
+ 323              	.L25:
+ 224:key.c         ****   		activeKey = KEY_RIGHT;
+ 225:key.c         ****   		activeKey2 = KEY_RIGHT;
+ 226:key.c         ****   	}
+ 227:key.c         ****   	else
+ 228:key.c         ****   	{
+ 229:key.c         ****   	  rightKeyCnt++;
+ 324              		.loc 1 229 0
+ 325 0142 9979     		ldrb	r1, [r3, #6]
+ 326 0144 0131     		add	r1, r1, #1
+ 327 0146 0906     		lsl	r1, r1, #24
+ 328 0148 090E     		lsr	r1, r1, #24
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 11
+
+
+ 329 014a 9971     		strb	r1, [r3, #6]
+ 230:key.c         ****   	  if (rightKeyCnt == FIRST_REPEAT)
+ 330              		.loc 1 230 0
+ 331 014c 0429     		cmp	r1, #4
+ 332 014e 03D0     		beq	.L36
+ 333              	.L27:
+ 231:key.c         ****   	  {
+ 232:key.c         ****   		  activeKey = KEY_RIGHT;
+ 233:key.c         ****   		  activeKey2 = KEY_RIGHT;
+ 234:key.c         ****   	  }
+ 235:key.c         ****   	  else if (rightKeyCnt >= FIRST_REPEAT + SECOND_REPEAT)
+ 334              		.loc 1 235 0
+ 335 0150 0629     		cmp	r1, #6
+ 336 0152 0AD9     		bls	.L7
+ 236:key.c         ****   	  {
+ 237:key.c         ****   		  rightKeyCnt = FIRST_REPEAT;
+ 337              		.loc 1 237 0
+ 338 0154 0421     		mov	r1, #4
+ 339 0156 9971     		strb	r1, [r3, #6]
+ 340              	.L36:
+ 238:key.c         ****   		  activeKey = KEY_RIGHT;
+ 341              		.loc 1 238 0
+ 342 0158 1A70     		strb	r2, [r3]
+ 239:key.c         ****   		  activeKey2 = KEY_RIGHT;
+ 343              		.loc 1 239 0
+ 344 015a 5A70     		strb	r2, [r3, #1]
+ 345 015c 05E0     		b	.L7
+ 346              	.LVL17:
+ 347              	.L24:
+ 240:key.c         ****   	  }
+ 241:key.c         ****   	}
+ 242:key.c         ****   }
+ 243:key.c         ****   else
+ 244:key.c         ****   	keyRightReleased = TRUE;
+ 348              		.loc 1 244 0
+ 349 015e 0122     		mov	r2, #1
+ 350 0160 0A71     		strb	r2, [r1, #4]
+ 245:key.c         ****   
+ 246:key.c         ****   if (nothing == TRUE)
+ 351              		.loc 1 246 0
+ 352 0162 9342     		cmp	r3, r2
+ 353 0164 01D1     		bne	.L7
+ 247:key.c         ****     activeKey2 = KEY_NOTHING;
+ 354              		.loc 1 247 0
+ 355 0166 034B     		ldr	r3, .L37+4
+ 356              	.LVL18:
+ 357 0168 5870     		strb	r0, [r3, #1]
+ 358              	.L7:
+ 248:key.c         **** }
+ 359              		.loc 1 248 0
+ 360              		@ sp needed for prologue
+ 361 016a 30BC     		pop	{r4, r5}
+ 362 016c 01BC     		pop	{r0}
+ 363 016e 0047     		bx	r0
+ 364              	.L38:
+ 365              		.align	2
+ 366              	.L37:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 12
+
+
+ 367 0170 00000000 		.word	.LANCHOR1
+ 368 0174 00000000 		.word	.LANCHOR0
+ 369              		.cfi_endproc
+ 370              	.LFE2:
+ 371              		.size	sampleKey, .-sampleKey
+ 372              		.align	1
+ 373              		.code	16
+ 374              		.thumb_func
+ 375              		.type	procKey, %function
+ 376              	procKey:
+ 377              	.LFB3:
+ 249:key.c         **** 
+ 250:key.c         **** 
+ 251:key.c         **** /*****************************************************************************
+ 252:key.c         ****  *
+ 253:key.c         ****  * Description:
+ 254:key.c         ****  *    A process entry function 
+ 255:key.c         ****  *
+ 256:key.c         ****  * Params:
+ 257:key.c         ****  *    [in] arg - This parameter is not used in this application. 
+ 258:key.c         ****  *
+ 259:key.c         ****  ****************************************************************************/
+ 260:key.c         **** static void
+ 261:key.c         **** procKey(void* arg)
+ 262:key.c         **** {
+ 378              		.loc 1 262 0
+ 379              		.cfi_startproc
+ 380 0178 00B5     		push	{lr}
+ 381              	.LCFI1:
+ 382              		.cfi_def_cfa_offset 4
+ 383              		.cfi_offset 14, -4
+ 384              	.L40:
+ 263:key.c         ****   //sample keys each 50 ms, i.e., 20 times per second
+ 264:key.c         ****   while(1)
+ 265:key.c         ****   {
+ 266:key.c         ****     sampleKey();
+ 385              		.loc 1 266 0 discriminator 1
+ 386 017a FFF7FEFF 		bl	sampleKey
+ 267:key.c         ****     osSleep(5);
+ 387              		.loc 1 267 0 discriminator 1
+ 388 017e 0520     		mov	r0, #5
+ 389 0180 FFF7FEFF 		bl	osSleep
+ 390 0184 F9E7     		b	.L40
+ 391              		.cfi_endproc
+ 392              	.LFE3:
+ 393              		.size	procKey, .-procKey
+ 394              		.align	1
+ 395              		.global	initKeyProc
+ 396              		.code	16
+ 397              		.thumb_func
+ 398              		.type	initKeyProc, %function
+ 399              	initKeyProc:
+ 400              	.LFB4:
+ 268:key.c         ****   }
+ 269:key.c         **** }
+ 270:key.c         **** 
+ 271:key.c         **** /*****************************************************************************
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 13
+
+
+ 272:key.c         ****  *
+ 273:key.c         ****  * Description:
+ 274:key.c         ****  *    Creates and starts the key sampling process. 
+ 275:key.c         ****  *
+ 276:key.c         ****  ****************************************************************************/
+ 277:key.c         **** void
+ 278:key.c         **** initKeyProc(void)
+ 279:key.c         **** {
+ 401              		.loc 1 279 0
+ 402              		.cfi_startproc
+ 403 0186 3FB5     		push	{r0, r1, r2, r3, r4, r5, lr}
+ 404              	.LCFI2:
+ 405              		.cfi_def_cfa_offset 28
+ 406              		.cfi_offset 0, -28
+ 407              		.cfi_offset 1, -24
+ 408              		.cfi_offset 2, -20
+ 409              		.cfi_offset 3, -16
+ 410              		.cfi_offset 4, -12
+ 411              		.cfi_offset 5, -8
+ 412              		.cfi_offset 14, -4
+ 280:key.c         ****   tU8 error;
+ 281:key.c         **** 
+ 282:key.c         ****   osCreateProcess(procKey, keyProcStack, KEYPROC_STACK_SIZE, &keyProcPid, 3, NULL, &error);
+ 413              		.loc 1 282 0
+ 414 0188 0B4C     		ldr	r4, .L42
+ 415 018a 0323     		mov	r3, #3
+ 416 018c 0B49     		ldr	r1, .L42+4
+ 417 018e 3334     		add	r4, r4, #51
+ 418 0190 0093     		str	r3, [sp]
+ 419 0192 6D46     		mov	r5, sp
+ 420 0194 0023     		mov	r3, #0
+ 421 0196 9622     		mov	r2, #150
+ 422 0198 0F35     		add	r5, r5, #15
+ 423 019a 0193     		str	r3, [sp, #4]
+ 424 019c 5200     		lsl	r2, r2, #1
+ 425 019e 231C     		mov	r3, r4
+ 426 01a0 0748     		ldr	r0, .L42+8
+ 427 01a2 0731     		add	r1, r1, #7
+ 428 01a4 0295     		str	r5, [sp, #8]
+ 429 01a6 FFF7FEFF 		bl	osCreateProcess
+ 283:key.c         ****   osStartProcess(keyProcPid, &error);
+ 430              		.loc 1 283 0
+ 431 01aa 291C     		mov	r1, r5
+ 432 01ac 2078     		ldrb	r0, [r4]
+ 433 01ae FFF7FEFF 		bl	osStartProcess
+ 284:key.c         **** }
+ 434              		.loc 1 284 0
+ 435              		@ sp needed for prologue
+ 436 01b2 3FBC     		pop	{r0, r1, r2, r3, r4, r5}
+ 437 01b4 01BC     		pop	{r0}
+ 438 01b6 0047     		bx	r0
+ 439              	.L43:
+ 440              		.align	2
+ 441              	.L42:
+ 442 01b8 00010000 		.word	.LANCHOR2
+ 443 01bc 00000000 		.word	.LANCHOR0
+ 444 01c0 00000000 		.word	procKey
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 14
+
+
+ 445              		.cfi_endproc
+ 446              	.LFE4:
+ 447              		.size	initKeyProc, .-initKeyProc
+ 448              		.data
+ 449              		.set	.LANCHOR1,. + 0
+ 450              		.type	centerReleased, %object
+ 451              		.size	centerReleased, 1
+ 452              	centerReleased:
+ 453 0000 01       		.byte	1
+ 454              		.type	keyUpReleased, %object
+ 455              		.size	keyUpReleased, 1
+ 456              	keyUpReleased:
+ 457 0001 01       		.byte	1
+ 458              		.type	keyDownReleased, %object
+ 459              		.size	keyDownReleased, 1
+ 460              	keyDownReleased:
+ 461 0002 01       		.byte	1
+ 462              		.type	keyLeftReleased, %object
+ 463              		.size	keyLeftReleased, 1
+ 464              	keyLeftReleased:
+ 465 0003 01       		.byte	1
+ 466              		.type	keyRightReleased, %object
+ 467              		.size	keyRightReleased, 1
+ 468              	keyRightReleased:
+ 469 0004 01       		.byte	1
+ 470              		.bss
+ 471              		.set	.LANCHOR0,. + 0
+ 472              		.set	.LANCHOR2,. + 256
+ 473              		.type	activeKey, %object
+ 474              		.size	activeKey, 1
+ 475              	activeKey:
+ 476 0000 00       		.space	1
+ 477              		.type	activeKey2, %object
+ 478              		.size	activeKey2, 1
+ 479              	activeKey2:
+ 480 0001 00       		.space	1
+ 481              		.type	centerKeyCnt, %object
+ 482              		.size	centerKeyCnt, 1
+ 483              	centerKeyCnt:
+ 484 0002 00       		.space	1
+ 485              		.type	upKeyCnt, %object
+ 486              		.size	upKeyCnt, 1
+ 487              	upKeyCnt:
+ 488 0003 00       		.space	1
+ 489              		.type	downKeyCnt, %object
+ 490              		.size	downKeyCnt, 1
+ 491              	downKeyCnt:
+ 492 0004 00       		.space	1
+ 493              		.type	leftKeyCnt, %object
+ 494              		.size	leftKeyCnt, 1
+ 495              	leftKeyCnt:
+ 496 0005 00       		.space	1
+ 497              		.type	rightKeyCnt, %object
+ 498              		.size	rightKeyCnt, 1
+ 499              	rightKeyCnt:
+ 500 0006 00       		.space	1
+ 501              		.type	keyProcStack, %object
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 15
+
+
+ 502              		.size	keyProcStack, 300
+ 503              	keyProcStack:
+ 504 0007 00000000 		.space	300
+ 504      00000000 
+ 504      00000000 
+ 504      00000000 
+ 504      00000000 
+ 505              		.type	keyProcPid, %object
+ 506              		.size	keyProcPid, 1
+ 507              	keyProcPid:
+ 508 0133 00       		.space	1
+ 509              		.text
+ 510              	.Letext0:
+ 511              		.file 2 "./startup/../pre_emptive_os/api/../api/general.h"
+ 512              		.section	.debug_info,"",%progbits
+ 513              	.Ldebug_info0:
+ 514 0000 3B020000 		.4byte	0x23b
+ 515 0004 0200     		.2byte	0x2
+ 516 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 517 000a 04       		.byte	0x4
+ 518 000b 01       		.uleb128 0x1
+ 519 000c C3000000 		.4byte	.LASF27
+ 520 0010 01       		.byte	0x1
+ 521 0011 00000000 		.4byte	.LASF28
+ 522 0015 D9000000 		.4byte	.LASF29
+ 523 0019 00000000 		.4byte	.Ltext0
+ 524 001d C4010000 		.4byte	.Letext0
+ 525 0021 00000000 		.4byte	.Ldebug_line0
+ 526 0025 02       		.uleb128 0x2
+ 527 0026 74553800 		.ascii	"tU8\000"
+ 528 002a 02       		.byte	0x2
+ 529 002b 47       		.byte	0x47
+ 530 002c 30000000 		.4byte	0x30
+ 531 0030 03       		.uleb128 0x3
+ 532 0031 01       		.byte	0x1
+ 533 0032 08       		.byte	0x8
+ 534 0033 7B000000 		.4byte	.LASF0
+ 535 0037 03       		.uleb128 0x3
+ 536 0038 02       		.byte	0x2
+ 537 0039 07       		.byte	0x7
+ 538 003a A3000000 		.4byte	.LASF1
+ 539 003e 03       		.uleb128 0x3
+ 540 003f 04       		.byte	0x4
+ 541 0040 07       		.byte	0x7
+ 542 0041 0D010000 		.4byte	.LASF2
+ 543 0045 03       		.uleb128 0x3
+ 544 0046 01       		.byte	0x1
+ 545 0047 06       		.byte	0x6
+ 546 0048 64010000 		.4byte	.LASF3
+ 547 004c 03       		.uleb128 0x3
+ 548 004d 02       		.byte	0x2
+ 549 004e 05       		.byte	0x5
+ 550 004f 4C010000 		.4byte	.LASF4
+ 551 0053 04       		.uleb128 0x4
+ 552 0054 04       		.byte	0x4
+ 553 0055 05       		.byte	0x5
+ 554 0056 696E7400 		.ascii	"int\000"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 16
+
+
+ 555 005a 05       		.uleb128 0x5
+ 556 005b 70010000 		.4byte	.LASF5
+ 557 005f 02       		.byte	0x2
+ 558 0060 4D       		.byte	0x4d
+ 559 0061 30000000 		.4byte	0x30
+ 560 0065 03       		.uleb128 0x3
+ 561 0066 04       		.byte	0x4
+ 562 0067 07       		.byte	0x7
+ 563 0068 89000000 		.4byte	.LASF6
+ 564 006c 06       		.uleb128 0x6
+ 565 006d 04       		.byte	0x4
+ 566 006e 07       		.uleb128 0x7
+ 567 006f 01       		.byte	0x1
+ 568 0070 1C000000 		.4byte	.LASF30
+ 569 0074 01       		.byte	0x1
+ 570 0075 3D       		.byte	0x3d
+ 571 0076 01       		.byte	0x1
+ 572 0077 25000000 		.4byte	0x25
+ 573 007b 00000000 		.4byte	.LFB0
+ 574 007f 10000000 		.4byte	.LFE0
+ 575 0083 02       		.byte	0x2
+ 576 0084 7D       		.byte	0x7d
+ 577 0085 00       		.sleb128 0
+ 578 0086 98000000 		.4byte	0x98
+ 579 008a 08       		.uleb128 0x8
+ 580 008b 45000000 		.4byte	.LASF7
+ 581 008f 01       		.byte	0x1
+ 582 0090 3F       		.byte	0x3f
+ 583 0091 25000000 		.4byte	0x25
+ 584 0095 01       		.byte	0x1
+ 585 0096 50       		.byte	0x50
+ 586 0097 00       		.byte	0
+ 587 0098 09       		.uleb128 0x9
+ 588 0099 01       		.byte	0x1
+ 589 009a 76010000 		.4byte	.LASF31
+ 590 009e 01       		.byte	0x1
+ 591 009f 4B       		.byte	0x4b
+ 592 00a0 01       		.byte	0x1
+ 593 00a1 25000000 		.4byte	0x25
+ 594 00a5 10000000 		.4byte	.LFB1
+ 595 00a9 1C000000 		.4byte	.LFE1
+ 596 00ad 02       		.byte	0x2
+ 597 00ae 7D       		.byte	0x7d
+ 598 00af 00       		.sleb128 0
+ 599 00b0 0A       		.uleb128 0xa
+ 600 00b1 01       		.byte	0x1
+ 601 00b2 80010000 		.4byte	.LASF10
+ 602 00b6 01       		.byte	0x1
+ 603 00b7 57       		.byte	0x57
+ 604 00b8 01       		.byte	0x1
+ 605 00b9 1C000000 		.4byte	.LFB2
+ 606 00bd 78010000 		.4byte	.LFE2
+ 607 00c1 00000000 		.4byte	.LLST0
+ 608 00c5 E8000000 		.4byte	0xe8
+ 609 00c9 0B       		.uleb128 0xb
+ 610 00ca 64000000 		.4byte	.LASF8
+ 611 00ce 01       		.byte	0x1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 17
+
+
+ 612 00cf 59       		.byte	0x59
+ 613 00d0 5A000000 		.4byte	0x5a
+ 614 00d4 20000000 		.4byte	.LLST1
+ 615 00d8 0B       		.uleb128 0xb
+ 616 00d9 1A010000 		.4byte	.LASF9
+ 617 00dd 01       		.byte	0x1
+ 618 00de 5A       		.byte	0x5a
+ 619 00df 25000000 		.4byte	0x25
+ 620 00e3 B3000000 		.4byte	.LLST2
+ 621 00e7 00       		.byte	0
+ 622 00e8 0C       		.uleb128 0xc
+ 623 00e9 9B000000 		.4byte	.LASF32
+ 624 00ed 01       		.byte	0x1
+ 625 00ee 0501     		.2byte	0x105
+ 626 00f0 01       		.byte	0x1
+ 627 00f1 78010000 		.4byte	.LFB3
+ 628 00f5 86010000 		.4byte	.LFE3
+ 629 00f9 C6000000 		.4byte	.LLST3
+ 630 00fd 10010000 		.4byte	0x110
+ 631 0101 0D       		.uleb128 0xd
+ 632 0102 61726700 		.ascii	"arg\000"
+ 633 0106 01       		.byte	0x1
+ 634 0107 0501     		.2byte	0x105
+ 635 0109 6C000000 		.4byte	0x6c
+ 636 010d 01       		.byte	0x1
+ 637 010e 50       		.byte	0x50
+ 638 010f 00       		.byte	0
+ 639 0110 0E       		.uleb128 0xe
+ 640 0111 01       		.byte	0x1
+ 641 0112 58000000 		.4byte	.LASF11
+ 642 0116 01       		.byte	0x1
+ 643 0117 1601     		.2byte	0x116
+ 644 0119 01       		.byte	0x1
+ 645 011a 86010000 		.4byte	.LFB4
+ 646 011e C4010000 		.4byte	.LFE4
+ 647 0122 E6000000 		.4byte	.LLST4
+ 648 0126 3A010000 		.4byte	0x13a
+ 649 012a 0F       		.uleb128 0xf
+ 650 012b 23010000 		.4byte	.LASF12
+ 651 012f 01       		.byte	0x1
+ 652 0130 1801     		.2byte	0x118
+ 653 0132 25000000 		.4byte	0x25
+ 654 0136 02       		.byte	0x2
+ 655 0137 91       		.byte	0x91
+ 656 0138 73       		.sleb128 -13
+ 657 0139 00       		.byte	0
+ 658 013a 08       		.uleb128 0x8
+ 659 013b 6C000000 		.4byte	.LASF13
+ 660 013f 01       		.byte	0x1
+ 661 0140 24       		.byte	0x24
+ 662 0141 25000000 		.4byte	0x25
+ 663 0145 05       		.byte	0x5
+ 664 0146 03       		.byte	0x3
+ 665 0147 00000000 		.4byte	centerReleased
+ 666 014b 08       		.uleb128 0x8
+ 667 014c 56010000 		.4byte	.LASF14
+ 668 0150 01       		.byte	0x1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 18
+
+
+ 669 0151 25       		.byte	0x25
+ 670 0152 25000000 		.4byte	0x25
+ 671 0156 05       		.byte	0x5
+ 672 0157 03       		.byte	0x3
+ 673 0158 01000000 		.4byte	keyUpReleased
+ 674 015c 08       		.uleb128 0x8
+ 675 015d 35000000 		.4byte	.LASF15
+ 676 0161 01       		.byte	0x1
+ 677 0162 26       		.byte	0x26
+ 678 0163 25000000 		.4byte	0x25
+ 679 0167 05       		.byte	0x5
+ 680 0168 03       		.byte	0x3
+ 681 0169 02000000 		.4byte	keyDownReleased
+ 682 016d 08       		.uleb128 0x8
+ 683 016e 25000000 		.4byte	.LASF16
+ 684 0172 01       		.byte	0x1
+ 685 0173 27       		.byte	0x27
+ 686 0174 25000000 		.4byte	0x25
+ 687 0178 05       		.byte	0x5
+ 688 0179 03       		.byte	0x3
+ 689 017a 03000000 		.4byte	keyLeftReleased
+ 690 017e 08       		.uleb128 0x8
+ 691 017f 8A010000 		.4byte	.LASF17
+ 692 0183 01       		.byte	0x1
+ 693 0184 28       		.byte	0x28
+ 694 0185 25000000 		.4byte	0x25
+ 695 0189 05       		.byte	0x5
+ 696 018a 03       		.byte	0x3
+ 697 018b 04000000 		.4byte	keyRightReleased
+ 698 018f 08       		.uleb128 0x8
+ 699 0190 29010000 		.4byte	.LASF18
+ 700 0194 01       		.byte	0x1
+ 701 0195 29       		.byte	0x29
+ 702 0196 25000000 		.4byte	0x25
+ 703 019a 05       		.byte	0x5
+ 704 019b 03       		.byte	0x3
+ 705 019c 02000000 		.4byte	centerKeyCnt
+ 706 01a0 08       		.uleb128 0x8
+ 707 01a1 04010000 		.4byte	.LASF19
+ 708 01a5 01       		.byte	0x1
+ 709 01a6 2A       		.byte	0x2a
+ 710 01a7 25000000 		.4byte	0x25
+ 711 01ab 05       		.byte	0x5
+ 712 01ac 03       		.byte	0x3
+ 713 01ad 03000000 		.4byte	upKeyCnt
+ 714 01b1 08       		.uleb128 0x8
+ 715 01b2 11000000 		.4byte	.LASF20
+ 716 01b6 01       		.byte	0x1
+ 717 01b7 2B       		.byte	0x2b
+ 718 01b8 25000000 		.4byte	0x25
+ 719 01bc 05       		.byte	0x5
+ 720 01bd 03       		.byte	0x3
+ 721 01be 04000000 		.4byte	downKeyCnt
+ 722 01c2 08       		.uleb128 0x8
+ 723 01c3 36010000 		.4byte	.LASF21
+ 724 01c7 01       		.byte	0x1
+ 725 01c8 2C       		.byte	0x2c
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 19
+
+
+ 726 01c9 25000000 		.4byte	0x25
+ 727 01cd 05       		.byte	0x5
+ 728 01ce 03       		.byte	0x3
+ 729 01cf 05000000 		.4byte	leftKeyCnt
+ 730 01d3 08       		.uleb128 0x8
+ 731 01d4 4C000000 		.4byte	.LASF22
+ 732 01d8 01       		.byte	0x1
+ 733 01d9 2D       		.byte	0x2d
+ 734 01da 25000000 		.4byte	0x25
+ 735 01de 05       		.byte	0x5
+ 736 01df 03       		.byte	0x3
+ 737 01e0 06000000 		.4byte	rightKeyCnt
+ 738 01e4 08       		.uleb128 0x8
+ 739 01e5 CF000000 		.4byte	.LASF23
+ 740 01e9 01       		.byte	0x1
+ 741 01ea 2F       		.byte	0x2f
+ 742 01eb F5010000 		.4byte	0x1f5
+ 743 01ef 05       		.byte	0x5
+ 744 01f0 03       		.byte	0x3
+ 745 01f1 00000000 		.4byte	activeKey
+ 746 01f5 10       		.uleb128 0x10
+ 747 01f6 25000000 		.4byte	0x25
+ 748 01fa 08       		.uleb128 0x8
+ 749 01fb 41010000 		.4byte	.LASF24
+ 750 01ff 01       		.byte	0x1
+ 751 0200 30       		.byte	0x30
+ 752 0201 F5010000 		.4byte	0x1f5
+ 753 0205 05       		.byte	0x5
+ 754 0206 03       		.byte	0x3
+ 755 0207 01000000 		.4byte	activeKey2
+ 756 020b 11       		.uleb128 0x11
+ 757 020c 25000000 		.4byte	0x25
+ 758 0210 1C020000 		.4byte	0x21c
+ 759 0214 12       		.uleb128 0x12
+ 760 0215 65000000 		.4byte	0x65
+ 761 0219 2B01     		.2byte	0x12b
+ 762 021b 00       		.byte	0
+ 763 021c 08       		.uleb128 0x8
+ 764 021d B6000000 		.4byte	.LASF25
+ 765 0221 01       		.byte	0x1
+ 766 0222 32       		.byte	0x32
+ 767 0223 0B020000 		.4byte	0x20b
+ 768 0227 05       		.byte	0x5
+ 769 0228 03       		.byte	0x3
+ 770 0229 07000000 		.4byte	keyProcStack
+ 771 022d 08       		.uleb128 0x8
+ 772 022e 06000000 		.4byte	.LASF26
+ 773 0232 01       		.byte	0x1
+ 774 0233 33       		.byte	0x33
+ 775 0234 25000000 		.4byte	0x25
+ 776 0238 05       		.byte	0x5
+ 777 0239 03       		.byte	0x3
+ 778 023a 33010000 		.4byte	keyProcPid
+ 779 023e 00       		.byte	0
+ 780              		.section	.debug_abbrev,"",%progbits
+ 781              	.Ldebug_abbrev0:
+ 782 0000 01       		.uleb128 0x1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 20
+
+
+ 783 0001 11       		.uleb128 0x11
+ 784 0002 01       		.byte	0x1
+ 785 0003 25       		.uleb128 0x25
+ 786 0004 0E       		.uleb128 0xe
+ 787 0005 13       		.uleb128 0x13
+ 788 0006 0B       		.uleb128 0xb
+ 789 0007 03       		.uleb128 0x3
+ 790 0008 0E       		.uleb128 0xe
+ 791 0009 1B       		.uleb128 0x1b
+ 792 000a 0E       		.uleb128 0xe
+ 793 000b 11       		.uleb128 0x11
+ 794 000c 01       		.uleb128 0x1
+ 795 000d 12       		.uleb128 0x12
+ 796 000e 01       		.uleb128 0x1
+ 797 000f 10       		.uleb128 0x10
+ 798 0010 06       		.uleb128 0x6
+ 799 0011 00       		.byte	0
+ 800 0012 00       		.byte	0
+ 801 0013 02       		.uleb128 0x2
+ 802 0014 16       		.uleb128 0x16
+ 803 0015 00       		.byte	0
+ 804 0016 03       		.uleb128 0x3
+ 805 0017 08       		.uleb128 0x8
+ 806 0018 3A       		.uleb128 0x3a
+ 807 0019 0B       		.uleb128 0xb
+ 808 001a 3B       		.uleb128 0x3b
+ 809 001b 0B       		.uleb128 0xb
+ 810 001c 49       		.uleb128 0x49
+ 811 001d 13       		.uleb128 0x13
+ 812 001e 00       		.byte	0
+ 813 001f 00       		.byte	0
+ 814 0020 03       		.uleb128 0x3
+ 815 0021 24       		.uleb128 0x24
+ 816 0022 00       		.byte	0
+ 817 0023 0B       		.uleb128 0xb
+ 818 0024 0B       		.uleb128 0xb
+ 819 0025 3E       		.uleb128 0x3e
+ 820 0026 0B       		.uleb128 0xb
+ 821 0027 03       		.uleb128 0x3
+ 822 0028 0E       		.uleb128 0xe
+ 823 0029 00       		.byte	0
+ 824 002a 00       		.byte	0
+ 825 002b 04       		.uleb128 0x4
+ 826 002c 24       		.uleb128 0x24
+ 827 002d 00       		.byte	0
+ 828 002e 0B       		.uleb128 0xb
+ 829 002f 0B       		.uleb128 0xb
+ 830 0030 3E       		.uleb128 0x3e
+ 831 0031 0B       		.uleb128 0xb
+ 832 0032 03       		.uleb128 0x3
+ 833 0033 08       		.uleb128 0x8
+ 834 0034 00       		.byte	0
+ 835 0035 00       		.byte	0
+ 836 0036 05       		.uleb128 0x5
+ 837 0037 16       		.uleb128 0x16
+ 838 0038 00       		.byte	0
+ 839 0039 03       		.uleb128 0x3
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 21
+
+
+ 840 003a 0E       		.uleb128 0xe
+ 841 003b 3A       		.uleb128 0x3a
+ 842 003c 0B       		.uleb128 0xb
+ 843 003d 3B       		.uleb128 0x3b
+ 844 003e 0B       		.uleb128 0xb
+ 845 003f 49       		.uleb128 0x49
+ 846 0040 13       		.uleb128 0x13
+ 847 0041 00       		.byte	0
+ 848 0042 00       		.byte	0
+ 849 0043 06       		.uleb128 0x6
+ 850 0044 0F       		.uleb128 0xf
+ 851 0045 00       		.byte	0
+ 852 0046 0B       		.uleb128 0xb
+ 853 0047 0B       		.uleb128 0xb
+ 854 0048 00       		.byte	0
+ 855 0049 00       		.byte	0
+ 856 004a 07       		.uleb128 0x7
+ 857 004b 2E       		.uleb128 0x2e
+ 858 004c 01       		.byte	0x1
+ 859 004d 3F       		.uleb128 0x3f
+ 860 004e 0C       		.uleb128 0xc
+ 861 004f 03       		.uleb128 0x3
+ 862 0050 0E       		.uleb128 0xe
+ 863 0051 3A       		.uleb128 0x3a
+ 864 0052 0B       		.uleb128 0xb
+ 865 0053 3B       		.uleb128 0x3b
+ 866 0054 0B       		.uleb128 0xb
+ 867 0055 27       		.uleb128 0x27
+ 868 0056 0C       		.uleb128 0xc
+ 869 0057 49       		.uleb128 0x49
+ 870 0058 13       		.uleb128 0x13
+ 871 0059 11       		.uleb128 0x11
+ 872 005a 01       		.uleb128 0x1
+ 873 005b 12       		.uleb128 0x12
+ 874 005c 01       		.uleb128 0x1
+ 875 005d 40       		.uleb128 0x40
+ 876 005e 0A       		.uleb128 0xa
+ 877 005f 01       		.uleb128 0x1
+ 878 0060 13       		.uleb128 0x13
+ 879 0061 00       		.byte	0
+ 880 0062 00       		.byte	0
+ 881 0063 08       		.uleb128 0x8
+ 882 0064 34       		.uleb128 0x34
+ 883 0065 00       		.byte	0
+ 884 0066 03       		.uleb128 0x3
+ 885 0067 0E       		.uleb128 0xe
+ 886 0068 3A       		.uleb128 0x3a
+ 887 0069 0B       		.uleb128 0xb
+ 888 006a 3B       		.uleb128 0x3b
+ 889 006b 0B       		.uleb128 0xb
+ 890 006c 49       		.uleb128 0x49
+ 891 006d 13       		.uleb128 0x13
+ 892 006e 02       		.uleb128 0x2
+ 893 006f 0A       		.uleb128 0xa
+ 894 0070 00       		.byte	0
+ 895 0071 00       		.byte	0
+ 896 0072 09       		.uleb128 0x9
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 22
+
+
+ 897 0073 2E       		.uleb128 0x2e
+ 898 0074 00       		.byte	0
+ 899 0075 3F       		.uleb128 0x3f
+ 900 0076 0C       		.uleb128 0xc
+ 901 0077 03       		.uleb128 0x3
+ 902 0078 0E       		.uleb128 0xe
+ 903 0079 3A       		.uleb128 0x3a
+ 904 007a 0B       		.uleb128 0xb
+ 905 007b 3B       		.uleb128 0x3b
+ 906 007c 0B       		.uleb128 0xb
+ 907 007d 27       		.uleb128 0x27
+ 908 007e 0C       		.uleb128 0xc
+ 909 007f 49       		.uleb128 0x49
+ 910 0080 13       		.uleb128 0x13
+ 911 0081 11       		.uleb128 0x11
+ 912 0082 01       		.uleb128 0x1
+ 913 0083 12       		.uleb128 0x12
+ 914 0084 01       		.uleb128 0x1
+ 915 0085 40       		.uleb128 0x40
+ 916 0086 0A       		.uleb128 0xa
+ 917 0087 00       		.byte	0
+ 918 0088 00       		.byte	0
+ 919 0089 0A       		.uleb128 0xa
+ 920 008a 2E       		.uleb128 0x2e
+ 921 008b 01       		.byte	0x1
+ 922 008c 3F       		.uleb128 0x3f
+ 923 008d 0C       		.uleb128 0xc
+ 924 008e 03       		.uleb128 0x3
+ 925 008f 0E       		.uleb128 0xe
+ 926 0090 3A       		.uleb128 0x3a
+ 927 0091 0B       		.uleb128 0xb
+ 928 0092 3B       		.uleb128 0x3b
+ 929 0093 0B       		.uleb128 0xb
+ 930 0094 27       		.uleb128 0x27
+ 931 0095 0C       		.uleb128 0xc
+ 932 0096 11       		.uleb128 0x11
+ 933 0097 01       		.uleb128 0x1
+ 934 0098 12       		.uleb128 0x12
+ 935 0099 01       		.uleb128 0x1
+ 936 009a 40       		.uleb128 0x40
+ 937 009b 06       		.uleb128 0x6
+ 938 009c 01       		.uleb128 0x1
+ 939 009d 13       		.uleb128 0x13
+ 940 009e 00       		.byte	0
+ 941 009f 00       		.byte	0
+ 942 00a0 0B       		.uleb128 0xb
+ 943 00a1 34       		.uleb128 0x34
+ 944 00a2 00       		.byte	0
+ 945 00a3 03       		.uleb128 0x3
+ 946 00a4 0E       		.uleb128 0xe
+ 947 00a5 3A       		.uleb128 0x3a
+ 948 00a6 0B       		.uleb128 0xb
+ 949 00a7 3B       		.uleb128 0x3b
+ 950 00a8 0B       		.uleb128 0xb
+ 951 00a9 49       		.uleb128 0x49
+ 952 00aa 13       		.uleb128 0x13
+ 953 00ab 02       		.uleb128 0x2
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 23
+
+
+ 954 00ac 06       		.uleb128 0x6
+ 955 00ad 00       		.byte	0
+ 956 00ae 00       		.byte	0
+ 957 00af 0C       		.uleb128 0xc
+ 958 00b0 2E       		.uleb128 0x2e
+ 959 00b1 01       		.byte	0x1
+ 960 00b2 03       		.uleb128 0x3
+ 961 00b3 0E       		.uleb128 0xe
+ 962 00b4 3A       		.uleb128 0x3a
+ 963 00b5 0B       		.uleb128 0xb
+ 964 00b6 3B       		.uleb128 0x3b
+ 965 00b7 05       		.uleb128 0x5
+ 966 00b8 27       		.uleb128 0x27
+ 967 00b9 0C       		.uleb128 0xc
+ 968 00ba 11       		.uleb128 0x11
+ 969 00bb 01       		.uleb128 0x1
+ 970 00bc 12       		.uleb128 0x12
+ 971 00bd 01       		.uleb128 0x1
+ 972 00be 40       		.uleb128 0x40
+ 973 00bf 06       		.uleb128 0x6
+ 974 00c0 01       		.uleb128 0x1
+ 975 00c1 13       		.uleb128 0x13
+ 976 00c2 00       		.byte	0
+ 977 00c3 00       		.byte	0
+ 978 00c4 0D       		.uleb128 0xd
+ 979 00c5 05       		.uleb128 0x5
+ 980 00c6 00       		.byte	0
+ 981 00c7 03       		.uleb128 0x3
+ 982 00c8 08       		.uleb128 0x8
+ 983 00c9 3A       		.uleb128 0x3a
+ 984 00ca 0B       		.uleb128 0xb
+ 985 00cb 3B       		.uleb128 0x3b
+ 986 00cc 05       		.uleb128 0x5
+ 987 00cd 49       		.uleb128 0x49
+ 988 00ce 13       		.uleb128 0x13
+ 989 00cf 02       		.uleb128 0x2
+ 990 00d0 0A       		.uleb128 0xa
+ 991 00d1 00       		.byte	0
+ 992 00d2 00       		.byte	0
+ 993 00d3 0E       		.uleb128 0xe
+ 994 00d4 2E       		.uleb128 0x2e
+ 995 00d5 01       		.byte	0x1
+ 996 00d6 3F       		.uleb128 0x3f
+ 997 00d7 0C       		.uleb128 0xc
+ 998 00d8 03       		.uleb128 0x3
+ 999 00d9 0E       		.uleb128 0xe
+ 1000 00da 3A       		.uleb128 0x3a
+ 1001 00db 0B       		.uleb128 0xb
+ 1002 00dc 3B       		.uleb128 0x3b
+ 1003 00dd 05       		.uleb128 0x5
+ 1004 00de 27       		.uleb128 0x27
+ 1005 00df 0C       		.uleb128 0xc
+ 1006 00e0 11       		.uleb128 0x11
+ 1007 00e1 01       		.uleb128 0x1
+ 1008 00e2 12       		.uleb128 0x12
+ 1009 00e3 01       		.uleb128 0x1
+ 1010 00e4 40       		.uleb128 0x40
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 24
+
+
+ 1011 00e5 06       		.uleb128 0x6
+ 1012 00e6 01       		.uleb128 0x1
+ 1013 00e7 13       		.uleb128 0x13
+ 1014 00e8 00       		.byte	0
+ 1015 00e9 00       		.byte	0
+ 1016 00ea 0F       		.uleb128 0xf
+ 1017 00eb 34       		.uleb128 0x34
+ 1018 00ec 00       		.byte	0
+ 1019 00ed 03       		.uleb128 0x3
+ 1020 00ee 0E       		.uleb128 0xe
+ 1021 00ef 3A       		.uleb128 0x3a
+ 1022 00f0 0B       		.uleb128 0xb
+ 1023 00f1 3B       		.uleb128 0x3b
+ 1024 00f2 05       		.uleb128 0x5
+ 1025 00f3 49       		.uleb128 0x49
+ 1026 00f4 13       		.uleb128 0x13
+ 1027 00f5 02       		.uleb128 0x2
+ 1028 00f6 0A       		.uleb128 0xa
+ 1029 00f7 00       		.byte	0
+ 1030 00f8 00       		.byte	0
+ 1031 00f9 10       		.uleb128 0x10
+ 1032 00fa 35       		.uleb128 0x35
+ 1033 00fb 00       		.byte	0
+ 1034 00fc 49       		.uleb128 0x49
+ 1035 00fd 13       		.uleb128 0x13
+ 1036 00fe 00       		.byte	0
+ 1037 00ff 00       		.byte	0
+ 1038 0100 11       		.uleb128 0x11
+ 1039 0101 01       		.uleb128 0x1
+ 1040 0102 01       		.byte	0x1
+ 1041 0103 49       		.uleb128 0x49
+ 1042 0104 13       		.uleb128 0x13
+ 1043 0105 01       		.uleb128 0x1
+ 1044 0106 13       		.uleb128 0x13
+ 1045 0107 00       		.byte	0
+ 1046 0108 00       		.byte	0
+ 1047 0109 12       		.uleb128 0x12
+ 1048 010a 21       		.uleb128 0x21
+ 1049 010b 00       		.byte	0
+ 1050 010c 49       		.uleb128 0x49
+ 1051 010d 13       		.uleb128 0x13
+ 1052 010e 2F       		.uleb128 0x2f
+ 1053 010f 05       		.uleb128 0x5
+ 1054 0110 00       		.byte	0
+ 1055 0111 00       		.byte	0
+ 1056 0112 00       		.byte	0
+ 1057              		.section	.debug_loc,"",%progbits
+ 1058              	.Ldebug_loc0:
+ 1059              	.LLST0:
+ 1060 0000 1C000000 		.4byte	.LFB2-.Ltext0
+ 1061 0004 1E000000 		.4byte	.LCFI0-.Ltext0
+ 1062 0008 0200     		.2byte	0x2
+ 1063 000a 7D       		.byte	0x7d
+ 1064 000b 00       		.sleb128 0
+ 1065 000c 1E000000 		.4byte	.LCFI0-.Ltext0
+ 1066 0010 78010000 		.4byte	.LFE2-.Ltext0
+ 1067 0014 0200     		.2byte	0x2
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 25
+
+
+ 1068 0016 7D       		.byte	0x7d
+ 1069 0017 0C       		.sleb128 12
+ 1070 0018 00000000 		.4byte	0
+ 1071 001c 00000000 		.4byte	0
+ 1072              	.LLST1:
+ 1073 0020 1E000000 		.4byte	.LVL1-.Ltext0
+ 1074 0024 2A000000 		.4byte	.LVL3-.Ltext0
+ 1075 0028 0200     		.2byte	0x2
+ 1076 002a 31       		.byte	0x31
+ 1077 002b 9F       		.byte	0x9f
+ 1078 002c 2A000000 		.4byte	.LVL3-.Ltext0
+ 1079 0030 60000000 		.4byte	.LVL4-.Ltext0
+ 1080 0034 0200     		.2byte	0x2
+ 1081 0036 30       		.byte	0x30
+ 1082 0037 9F       		.byte	0x9f
+ 1083 0038 60000000 		.4byte	.LVL4-.Ltext0
+ 1084 003c 64000000 		.4byte	.LVL5-.Ltext0
+ 1085 0040 0200     		.2byte	0x2
+ 1086 0042 31       		.byte	0x31
+ 1087 0043 9F       		.byte	0x9f
+ 1088 0044 64000000 		.4byte	.LVL5-.Ltext0
+ 1089 0048 6C000000 		.4byte	.LVL6-.Ltext0
+ 1090 004c 0100     		.2byte	0x1
+ 1091 004e 53       		.byte	0x53
+ 1092 004f 6C000000 		.4byte	.LVL6-.Ltext0
+ 1093 0053 A6000000 		.4byte	.LVL7-.Ltext0
+ 1094 0057 0200     		.2byte	0x2
+ 1095 0059 30       		.byte	0x30
+ 1096 005a 9F       		.byte	0x9f
+ 1097 005b A6000000 		.4byte	.LVL7-.Ltext0
+ 1098 005f B0000000 		.4byte	.LVL9-.Ltext0
+ 1099 0063 0100     		.2byte	0x1
+ 1100 0065 53       		.byte	0x53
+ 1101 0066 B0000000 		.4byte	.LVL9-.Ltext0
+ 1102 006a E4000000 		.4byte	.LVL10-.Ltext0
+ 1103 006e 0200     		.2byte	0x2
+ 1104 0070 30       		.byte	0x30
+ 1105 0071 9F       		.byte	0x9f
+ 1106 0072 E4000000 		.4byte	.LVL10-.Ltext0
+ 1107 0076 F0000000 		.4byte	.LVL12-.Ltext0
+ 1108 007a 0100     		.2byte	0x1
+ 1109 007c 53       		.byte	0x53
+ 1110 007d F0000000 		.4byte	.LVL12-.Ltext0
+ 1111 0081 26010000 		.4byte	.LVL13-.Ltext0
+ 1112 0085 0200     		.2byte	0x2
+ 1113 0087 30       		.byte	0x30
+ 1114 0088 9F       		.byte	0x9f
+ 1115 0089 26010000 		.4byte	.LVL13-.Ltext0
+ 1116 008d 32010000 		.4byte	.LVL16-.Ltext0
+ 1117 0091 0100     		.2byte	0x1
+ 1118 0093 53       		.byte	0x53
+ 1119 0094 32010000 		.4byte	.LVL16-.Ltext0
+ 1120 0098 5E010000 		.4byte	.LVL17-.Ltext0
+ 1121 009c 0200     		.2byte	0x2
+ 1122 009e 30       		.byte	0x30
+ 1123 009f 9F       		.byte	0x9f
+ 1124 00a0 5E010000 		.4byte	.LVL17-.Ltext0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 26
+
+
+ 1125 00a4 68010000 		.4byte	.LVL18-.Ltext0
+ 1126 00a8 0100     		.2byte	0x1
+ 1127 00aa 53       		.byte	0x53
+ 1128 00ab 00000000 		.4byte	0
+ 1129 00af 00000000 		.4byte	0
+ 1130              	.LLST2:
+ 1131 00b3 22000000 		.4byte	.LVL2-.Ltext0
+ 1132 00b7 2E010000 		.4byte	.LVL15-.Ltext0
+ 1133 00bb 0100     		.2byte	0x1
+ 1134 00bd 50       		.byte	0x50
+ 1135 00be 00000000 		.4byte	0
+ 1136 00c2 00000000 		.4byte	0
+ 1137              	.LLST3:
+ 1138 00c6 78010000 		.4byte	.LFB3-.Ltext0
+ 1139 00ca 7A010000 		.4byte	.LCFI1-.Ltext0
+ 1140 00ce 0200     		.2byte	0x2
+ 1141 00d0 7D       		.byte	0x7d
+ 1142 00d1 00       		.sleb128 0
+ 1143 00d2 7A010000 		.4byte	.LCFI1-.Ltext0
+ 1144 00d6 86010000 		.4byte	.LFE3-.Ltext0
+ 1145 00da 0200     		.2byte	0x2
+ 1146 00dc 7D       		.byte	0x7d
+ 1147 00dd 04       		.sleb128 4
+ 1148 00de 00000000 		.4byte	0
+ 1149 00e2 00000000 		.4byte	0
+ 1150              	.LLST4:
+ 1151 00e6 86010000 		.4byte	.LFB4-.Ltext0
+ 1152 00ea 88010000 		.4byte	.LCFI2-.Ltext0
+ 1153 00ee 0200     		.2byte	0x2
+ 1154 00f0 7D       		.byte	0x7d
+ 1155 00f1 00       		.sleb128 0
+ 1156 00f2 88010000 		.4byte	.LCFI2-.Ltext0
+ 1157 00f6 C4010000 		.4byte	.LFE4-.Ltext0
+ 1158 00fa 0200     		.2byte	0x2
+ 1159 00fc 7D       		.byte	0x7d
+ 1160 00fd 1C       		.sleb128 28
+ 1161 00fe 00000000 		.4byte	0
+ 1162 0102 00000000 		.4byte	0
+ 1163              		.section	.debug_aranges,"",%progbits
+ 1164 0000 1C000000 		.4byte	0x1c
+ 1165 0004 0200     		.2byte	0x2
+ 1166 0006 00000000 		.4byte	.Ldebug_info0
+ 1167 000a 04       		.byte	0x4
+ 1168 000b 00       		.byte	0
+ 1169 000c 0000     		.2byte	0
+ 1170 000e 0000     		.2byte	0
+ 1171 0010 00000000 		.4byte	.Ltext0
+ 1172 0014 C4010000 		.4byte	.Letext0-.Ltext0
+ 1173 0018 00000000 		.4byte	0
+ 1174 001c 00000000 		.4byte	0
+ 1175              		.section	.debug_line,"",%progbits
+ 1176              	.Ldebug_line0:
+ 1177 0000 F7000000 		.section	.debug_str,"MS",%progbits,1
+ 1177      02005000 
+ 1177      00000201 
+ 1177      FB0E0D00 
+ 1177      01010101 
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 27
+
+
+ 1178              	.LASF28:
+ 1179 0000 6B65792E 		.ascii	"key.c\000"
+ 1179      6300
+ 1180              	.LASF26:
+ 1181 0006 6B657950 		.ascii	"keyProcPid\000"
+ 1181      726F6350 
+ 1181      696400
+ 1182              	.LASF20:
+ 1183 0011 646F776E 		.ascii	"downKeyCnt\000"
+ 1183      4B657943 
+ 1183      6E7400
+ 1184              	.LASF30:
+ 1185 001c 63686563 		.ascii	"checkKey\000"
+ 1185      6B4B6579 
+ 1185      00
+ 1186              	.LASF16:
+ 1187 0025 6B65794C 		.ascii	"keyLeftReleased\000"
+ 1187      65667452 
+ 1187      656C6561 
+ 1187      73656400 
+ 1188              	.LASF15:
+ 1189 0035 6B657944 		.ascii	"keyDownReleased\000"
+ 1189      6F776E52 
+ 1189      656C6561 
+ 1189      73656400 
+ 1190              	.LASF7:
+ 1191 0045 72657456 		.ascii	"retVal\000"
+ 1191      616C00
+ 1192              	.LASF22:
+ 1193 004c 72696768 		.ascii	"rightKeyCnt\000"
+ 1193      744B6579 
+ 1193      436E7400 
+ 1194              	.LASF11:
+ 1195 0058 696E6974 		.ascii	"initKeyProc\000"
+ 1195      4B657950 
+ 1195      726F6300 
+ 1196              	.LASF8:
+ 1197 0064 6E6F7468 		.ascii	"nothing\000"
+ 1197      696E6700 
+ 1198              	.LASF13:
+ 1199 006c 63656E74 		.ascii	"centerReleased\000"
+ 1199      65725265 
+ 1199      6C656173 
+ 1199      656400
+ 1200              	.LASF0:
+ 1201 007b 756E7369 		.ascii	"unsigned char\000"
+ 1201      676E6564 
+ 1201      20636861 
+ 1201      7200
+ 1202              	.LASF6:
+ 1203 0089 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1203      20756E73 
+ 1203      69676E65 
+ 1203      6420696E 
+ 1203      7400
+ 1204              	.LASF32:
+ 1205 009b 70726F63 		.ascii	"procKey\000"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 28
+
+
+ 1205      4B657900 
+ 1206              	.LASF1:
+ 1207 00a3 73686F72 		.ascii	"short unsigned int\000"
+ 1207      7420756E 
+ 1207      7369676E 
+ 1207      65642069 
+ 1207      6E7400
+ 1208              	.LASF25:
+ 1209 00b6 6B657950 		.ascii	"keyProcStack\000"
+ 1209      726F6353 
+ 1209      7461636B 
+ 1209      00
+ 1210              	.LASF27:
+ 1211 00c3 474E5520 		.ascii	"GNU C 4.6.3\000"
+ 1211      4320342E 
+ 1211      362E3300 
+ 1212              	.LASF23:
+ 1213 00cf 61637469 		.ascii	"activeKey\000"
+ 1213      76654B65 
+ 1213      7900
+ 1214              	.LASF29:
+ 1215 00d9 433A5C55 		.ascii	"C:\\Users\\kozlovsky\\Downloads\\TicTac\\TicTac\000"
+ 1215      73657273 
+ 1215      5C6B6F7A 
+ 1215      6C6F7673 
+ 1215      6B795C44 
+ 1216              	.LASF19:
+ 1217 0104 75704B65 		.ascii	"upKeyCnt\000"
+ 1217      79436E74 
+ 1217      00
+ 1218              	.LASF2:
+ 1219 010d 756E7369 		.ascii	"unsigned int\000"
+ 1219      676E6564 
+ 1219      20696E74 
+ 1219      00
+ 1220              	.LASF9:
+ 1221 011a 72656164 		.ascii	"readKeys\000"
+ 1221      4B657973 
+ 1221      00
+ 1222              	.LASF12:
+ 1223 0123 6572726F 		.ascii	"error\000"
+ 1223      7200
+ 1224              	.LASF18:
+ 1225 0129 63656E74 		.ascii	"centerKeyCnt\000"
+ 1225      65724B65 
+ 1225      79436E74 
+ 1225      00
+ 1226              	.LASF21:
+ 1227 0136 6C656674 		.ascii	"leftKeyCnt\000"
+ 1227      4B657943 
+ 1227      6E7400
+ 1228              	.LASF24:
+ 1229 0141 61637469 		.ascii	"activeKey2\000"
+ 1229      76654B65 
+ 1229      793200
+ 1230              	.LASF4:
+ 1231 014c 73686F72 		.ascii	"short int\000"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 29
+
+
+ 1231      7420696E 
+ 1231      7400
+ 1232              	.LASF14:
+ 1233 0156 6B657955 		.ascii	"keyUpReleased\000"
+ 1233      7052656C 
+ 1233      65617365 
+ 1233      6400
+ 1234              	.LASF3:
+ 1235 0164 7369676E 		.ascii	"signed char\000"
+ 1235      65642063 
+ 1235      68617200 
+ 1236              	.LASF5:
+ 1237 0170 74426F6F 		.ascii	"tBool\000"
+ 1237      6C00
+ 1238              	.LASF31:
+ 1239 0176 63686563 		.ascii	"checkKey2\000"
+ 1239      6B4B6579 
+ 1239      3200
+ 1240              	.LASF10:
+ 1241 0180 73616D70 		.ascii	"sampleKey\000"
+ 1241      6C654B65 
+ 1241      7900
+ 1242              	.LASF17:
+ 1243 018a 6B657952 		.ascii	"keyRightReleased\000"
+ 1243      69676874 
+ 1243      52656C65 
+ 1243      61736564 
+ 1243      00
+ 1244              		.ident	"GCC: (GNU) 4.6.3"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s 			page 30
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 key.c
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:6      .text:00000000 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:11     .text:00000000 checkKey
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:31     .text:0000000c $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:35     .text:00000010 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:40     .text:00000010 checkKey2
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:55     .text:00000018 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:59     .text:0000001c $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:64     .text:0000001c sampleKey
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:367    .text:00000170 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:372    .text:00000178 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:376    .text:00000178 procKey
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:399    .text:00000186 initKeyProc
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:442    .text:000001b8 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:452    .data:00000000 centerReleased
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:456    .data:00000001 keyUpReleased
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:460    .data:00000002 keyDownReleased
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:464    .data:00000003 keyLeftReleased
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:468    .data:00000004 keyRightReleased
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:475    .bss:00000000 activeKey
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:476    .bss:00000000 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:479    .bss:00000001 activeKey2
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:483    .bss:00000002 centerKeyCnt
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:487    .bss:00000003 upKeyCnt
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:491    .bss:00000004 downKeyCnt
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:495    .bss:00000005 leftKeyCnt
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:499    .bss:00000006 rightKeyCnt
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:503    .bss:00000007 keyProcStack
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc92egIa.s:507    .bss:00000133 keyProcPid
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+getKeys
+osSleep
+osCreateProcess
+osStartProcess

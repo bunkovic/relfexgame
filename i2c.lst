@@ -1,0 +1,4024 @@
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 1
+
+
+   1              		.code	16
+   2              		.file	"i2c.c"
+   3              		.text
+   4              	.Ltext0:
+   5              		.cfi_sections	.debug_frame
+   6              		.align	1
+   7              		.global	getI2cLock
+   8              		.code	16
+   9              		.thumb_func
+  10              		.type	getI2cLock, %function
+  11              	getI2cLock:
+  12              	.LFB0:
+  13              		.file 1 "i2c.c"
+   1:i2c.c         **** /******************************************************************************
+   2:i2c.c         ****  *
+   3:i2c.c         ****  * Copyright:
+   4:i2c.c         ****  *    (C) 2006 Embedded Artists AB
+   5:i2c.c         ****  *
+   6:i2c.c         ****  * File:
+   7:i2c.c         ****  *    i2c.c
+   8:i2c.c         ****  *
+   9:i2c.c         ****  * Description:
+  10:i2c.c         ****  *    Implements low-level routines for the I2C bus
+  11:i2c.c         ****  *
+  12:i2c.c         ****  *****************************************************************************/
+  13:i2c.c         **** 
+  14:i2c.c         **** /******************************************************************************
+  15:i2c.c         ****  * Includes
+  16:i2c.c         ****  *****************************************************************************/
+  17:i2c.c         **** #include "../pre_emptive_os/api/osapi.h"
+  18:i2c.c         **** #include "../pre_emptive_os/api/general.h"
+  19:i2c.c         **** #include "i2c.h"
+  20:i2c.c         **** #include <lpc2xxx.h>
+  21:i2c.c         **** 
+  22:i2c.c         **** 
+  23:i2c.c         **** /*****************************************************************************
+  24:i2c.c         ****  * Local variables
+  25:i2c.c         ****  ****************************************************************************/
+  26:i2c.c         **** static tCntSem i2cSem;
+  27:i2c.c         **** 
+  28:i2c.c         **** 
+  29:i2c.c         **** /******************************************************************************
+  30:i2c.c         ****  * Defines and typedefs
+  31:i2c.c         ****  *****************************************************************************/
+  32:i2c.c         **** #define I2C_CONSET (*((volatile unsigned char *) 0xE001C000))
+  33:i2c.c         **** #define I2C_STAT   (*((volatile unsigned char *) 0xE001C004))
+  34:i2c.c         **** #define I2C_DATA   (*((volatile unsigned char *) 0xE001C008))
+  35:i2c.c         **** #define I2C_ADDR   (*((volatile unsigned char *) 0xE001C00C))
+  36:i2c.c         **** #define I2C_SCLH   (*((volatile unsigned short*) 0xE001C010))
+  37:i2c.c         **** #define I2C_SCLL   (*((volatile unsigned short*) 0xE001C014))
+  38:i2c.c         **** #define I2C_CONCLR (*((volatile unsigned char *) 0xE001C018))
+  39:i2c.c         **** 
+  40:i2c.c         **** 
+  41:i2c.c         **** #define I2C_REG_CONSET      0x00000040 /* Control Set Register         */
+  42:i2c.c         **** #define I2C_REG_CONSET_MASK 0x0000007C /* Used bits                    */
+  43:i2c.c         **** #define I2C_REG_DATA        0x00000000 /* Data register                */
+  44:i2c.c         **** #define I2C_REG_DATA_MASK   0x000000FF /* Used bits                    */
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 2
+
+
+  45:i2c.c         **** #define I2C_REG_ADDR        0x00000000 /* Slave address register       */
+  46:i2c.c         **** #define I2C_REG_ADDR_MASK   0x000000FF /* Used bits                    */
+  47:i2c.c         **** #define I2C_REG_SCLH        25         /* SCL Duty Cycle high register */
+  48:i2c.c         **** #define I2C_REG_SCLH_MASK   0x0000FFFF /* Used bits                    */
+  49:i2c.c         **** #define I2C_REG_SCLL        25         /* SCL Duty Cycle low register  */
+  50:i2c.c         **** #define I2C_REG_SCLL_MASK   0x0000FFFF /* Used bits                    */
+  51:i2c.c         **** 
+  52:i2c.c         **** 
+  53:i2c.c         **** void
+  54:i2c.c         **** getI2cLock(void)
+  55:i2c.c         **** {
+  14              		.loc 1 55 0
+  15              		.cfi_startproc
+  16 0000 01B5     		push	{r0, lr}
+  17              	.LCFI0:
+  18              		.cfi_def_cfa_offset 8
+  19              		.cfi_offset 0, -8
+  20              		.cfi_offset 14, -4
+  56:i2c.c         ****   tU8 error;
+  57:i2c.c         ****   osSemTake(&i2cSem, 0, &error);
+  21              		.loc 1 57 0
+  22 0002 6A46     		mov	r2, sp
+  23 0004 0021     		mov	r1, #0
+  24 0006 0332     		add	r2, r2, #3
+  25 0008 0248     		ldr	r0, .L2
+  26 000a FFF7FEFF 		bl	osSemTake
+  58:i2c.c         **** }
+  27              		.loc 1 58 0
+  28 000e 01B0     		add	sp, sp, #4
+  29              		@ sp needed for prologue
+  30 0010 01BC     		pop	{r0}
+  31 0012 0047     		bx	r0
+  32              	.L3:
+  33              		.align	2
+  34              	.L2:
+  35 0014 00000000 		.word	.LANCHOR0
+  36              		.cfi_endproc
+  37              	.LFE0:
+  38              		.size	getI2cLock, .-getI2cLock
+  39              		.align	1
+  40              		.global	releaseI2cLock
+  41              		.code	16
+  42              		.thumb_func
+  43              		.type	releaseI2cLock, %function
+  44              	releaseI2cLock:
+  45              	.LFB1:
+  59:i2c.c         **** 
+  60:i2c.c         **** void
+  61:i2c.c         **** releaseI2cLock(void)
+  62:i2c.c         **** {
+  46              		.loc 1 62 0
+  47              		.cfi_startproc
+  48 0018 01B5     		push	{r0, lr}
+  49              	.LCFI1:
+  50              		.cfi_def_cfa_offset 8
+  51              		.cfi_offset 0, -8
+  52              		.cfi_offset 14, -4
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 3
+
+
+  63:i2c.c         ****   tU8 error;
+  64:i2c.c         ****   osSemGive(&i2cSem, &error);
+  53              		.loc 1 64 0
+  54 001a 6946     		mov	r1, sp
+  55 001c 0348     		ldr	r0, .L5
+  56 001e 0331     		add	r1, r1, #3
+  57 0020 FFF7FEFF 		bl	osSemGive
+  65:i2c.c         **** }
+  58              		.loc 1 65 0
+  59 0024 01B0     		add	sp, sp, #4
+  60              		@ sp needed for prologue
+  61 0026 01BC     		pop	{r0}
+  62 0028 0047     		bx	r0
+  63              	.L6:
+  64 002a C046     		.align	2
+  65              	.L5:
+  66 002c 00000000 		.word	.LANCHOR0
+  67              		.cfi_endproc
+  68              	.LFE1:
+  69              		.size	releaseI2cLock, .-releaseI2cLock
+  70              		.align	1
+  71              		.global	i2cCheckStatus
+  72              		.code	16
+  73              		.thumb_func
+  74              		.type	i2cCheckStatus, %function
+  75              	i2cCheckStatus:
+  76              	.LFB2:
+  66:i2c.c         **** 
+  67:i2c.c         **** /******************************************************************************
+  68:i2c.c         ****  *
+  69:i2c.c         ****  * Description:
+  70:i2c.c         ****  *    Checks the I2C status.
+  71:i2c.c         ****  *
+  72:i2c.c         ****  *
+  73:i2c.c         ****  *  Returns:
+  74:i2c.c         ****  *      00h Bus error
+  75:i2c.c         ****  *      08h START condition transmitted
+  76:i2c.c         ****  *      10h Repeated START condition transmitted
+  77:i2c.c         ****  *      18h SLA + W transmitted, ACK received
+  78:i2c.c         ****  *      20h SLA + W transmitted, ACK not received
+  79:i2c.c         ****  *      28h Data byte transmitted, ACK received
+  80:i2c.c         ****  *      30h Data byte transmitted, ACK not received
+  81:i2c.c         ****  *      38h Arbitration lost
+  82:i2c.c         ****  *      40h SLA + R transmitted, ACK received
+  83:i2c.c         ****  *      48h SLA + R transmitted, ACK not received
+  84:i2c.c         ****  *      50h Data byte received in master mode, ACK transmitted
+  85:i2c.c         ****  *      58h Data byte received in master mode, ACK not transmitted
+  86:i2c.c         ****  *      60h SLA + W received, ACK transmitted
+  87:i2c.c         ****  *      68h Arbitration lost, SLA + W received, ACK transmitted
+  88:i2c.c         ****  *      70h General call address received, ACK transmitted
+  89:i2c.c         ****  *      78h Arbitration lost, general call addr received, ACK transmitted
+  90:i2c.c         ****  *      80h Data byte received with own SLA, ACK transmitted
+  91:i2c.c         ****  *      88h Data byte received with own SLA, ACK not transmitted
+  92:i2c.c         ****  *      90h Data byte received after general call, ACK transmitted
+  93:i2c.c         ****  *      98h Data byte received after general call, ACK not transmitted
+  94:i2c.c         ****  *      A0h STOP or repeated START condition received in slave mode
+  95:i2c.c         ****  *      A8h SLA + R received, ACK transmitted
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 4
+
+
+  96:i2c.c         ****  *      B0h Arbitration lost, SLA + R received, ACK transmitted
+  97:i2c.c         ****  *      B8h Data byte transmitted in slave mode, ACK received
+  98:i2c.c         ****  *      C0h Data byte transmitted in slave mode, ACK not received
+  99:i2c.c         ****  *      C8h Last byte transmitted in slave mode, ACK received
+ 100:i2c.c         ****  *      F8h No relevant status information, SI=0
+ 101:i2c.c         ****  *      FFh Channel error
+ 102:i2c.c         ****  *
+ 103:i2c.c         ****  *****************************************************************************/
+ 104:i2c.c         **** tU8
+ 105:i2c.c         **** i2cCheckStatus(void)
+ 106:i2c.c         **** {
+  77              		.loc 1 106 0
+  78              		.cfi_startproc
+  79              	.LVL0:
+ 107:i2c.c         ****   tU8 status = 0;
+ 108:i2c.c         **** 
+ 109:i2c.c         ****   /* wait for I2C Status changed */
+ 110:i2c.c         ****   while( (I2C_CONSET & 0x08)  == 0)   /* while SI == 0 */
+  80              		.loc 1 110 0
+  81 0030 034A     		ldr	r2, .L10
+  82 0032 0823     		mov	r3, #8
+  83              	.L8:
+  84              		.loc 1 110 0 is_stmt 0 discriminator 1
+  85 0034 1178     		ldrb	r1, [r2]
+  86 0036 1942     		tst	r1, r3
+  87 0038 FCD0     		beq	.L8
+ 111:i2c.c         ****   {
+ 112:i2c.c         ****     ;
+ 113:i2c.c         ****   }
+ 114:i2c.c         **** 
+ 115:i2c.c         ****   /* Read I2C State */
+ 116:i2c.c         ****   status = I2C_STAT;
+  88              		.loc 1 116 0 is_stmt 1
+  89 003a 024B     		ldr	r3, .L10+4
+ 117:i2c.c         **** 
+ 118:i2c.c         ****   /* NOTE! SI flag is not cleared here */
+ 119:i2c.c         **** 
+ 120:i2c.c         ****   return status;
+ 121:i2c.c         **** }
+  90              		.loc 1 121 0
+  91              		@ sp needed for prologue
+ 116:i2c.c         ****   status = I2C_STAT;
+  92              		.loc 1 116 0
+  93 003c 1878     		ldrb	r0, [r3]
+  94              	.LVL1:
+  95              		.loc 1 121 0
+  96 003e 7047     		bx	lr
+  97              	.L11:
+  98              		.align	2
+  99              	.L10:
+ 100 0040 00C001E0 		.word	-536756224
+ 101 0044 04C001E0 		.word	-536756220
+ 102              		.cfi_endproc
+ 103              	.LFE2:
+ 104              		.size	i2cCheckStatus, .-i2cCheckStatus
+ 105              		.align	1
+ 106              		.global	i2cInit
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 5
+
+
+ 107              		.code	16
+ 108              		.thumb_func
+ 109              		.type	i2cInit, %function
+ 110              	i2cInit:
+ 111              	.LFB3:
+ 122:i2c.c         **** 
+ 123:i2c.c         **** /******************************************************************************
+ 124:i2c.c         ****  *
+ 125:i2c.c         ****  * Description:
+ 126:i2c.c         ****  *    Reset the I2C module.
+ 127:i2c.c         ****  *
+ 128:i2c.c         ****  *****************************************************************************/
+ 129:i2c.c         **** void
+ 130:i2c.c         **** i2cInit(void)
+ 131:i2c.c         **** {
+ 112              		.loc 1 131 0
+ 113              		.cfi_startproc
+ 114 0048 00B5     		push	{lr}
+ 115              	.LCFI2:
+ 116              		.cfi_def_cfa_offset 4
+ 117              		.cfi_offset 14, -4
+ 132:i2c.c         ****   PINSEL0  |= 0x50;
+ 118              		.loc 1 132 0
+ 119 004a 104B     		ldr	r3, .L13
+ 120 004c 1A68     		ldr	r2, [r3]
+ 121 004e 5021     		mov	r1, #80
+ 122 0050 0A43     		orr	r2, r1
+ 123 0052 1A60     		str	r2, [r3]
+ 133:i2c.c         **** 
+ 134:i2c.c         ****   /* clear flags */
+ 135:i2c.c         ****   I2C_CONCLR = 0x6c;    
+ 124              		.loc 1 135 0
+ 125 0054 0E4B     		ldr	r3, .L13+4
+ 126 0056 6C22     		mov	r2, #108
+ 127 0058 1A70     		strb	r2, [r3]
+ 136:i2c.c         **** 
+ 137:i2c.c         ****   /* reset registers */
+ 138:i2c.c         ****   I2C_SCLL   = ( I2C_SCLL   & ~I2C_REG_SCLL_MASK )   | I2C_REG_SCLL;
+ 128              		.loc 1 138 0
+ 129 005a 0E4B     		ldr	r3, .L13+8
+ 130 005c 1A88     		ldrh	r2, [r3]
+ 131 005e 1922     		mov	r2, #25
+ 132 0060 1A80     		strh	r2, [r3]
+ 139:i2c.c         ****   I2C_SCLH   = ( I2C_SCLH   & ~I2C_REG_SCLH_MASK )   | I2C_REG_SCLH;
+ 133              		.loc 1 139 0
+ 134 0062 0D4B     		ldr	r3, .L13+12
+ 135 0064 1988     		ldrh	r1, [r3]
+ 136 0066 1A80     		strh	r2, [r3]
+ 140:i2c.c         ****   I2C_ADDR   = ( I2C_ADDR   & ~I2C_REG_ADDR_MASK )   | I2C_REG_ADDR;
+ 137              		.loc 1 140 0
+ 138 0068 0C4B     		ldr	r3, .L13+16
+ 139 006a 1A78     		ldrb	r2, [r3]
+ 140 006c 0022     		mov	r2, #0
+ 141 006e 1A70     		strb	r2, [r3]
+ 141:i2c.c         ****   I2C_CONSET = ( I2C_CONSET & ~I2C_REG_CONSET_MASK ) | I2C_REG_CONSET;
+ 142              		.loc 1 141 0
+ 143 0070 0B4B     		ldr	r3, .L13+20
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 6
+
+
+ 144 0072 1A78     		ldrb	r2, [r3]
+ 145 0074 7C21     		mov	r1, #124
+ 146 0076 8A43     		bic	r2, r1
+ 147 0078 4021     		mov	r1, #64
+ 148 007a 0A43     		orr	r2, r1
+ 149 007c 1A70     		strb	r2, [r3]
+ 142:i2c.c         ****   
+ 143:i2c.c         ****   //Init semaphore
+ 144:i2c.c         ****   osSemInit(&i2cSem, 1);
+ 150              		.loc 1 144 0
+ 151 007e 0948     		ldr	r0, .L13+24
+ 152 0080 0121     		mov	r1, #1
+ 153 0082 FFF7FEFF 		bl	osSemInit
+ 145:i2c.c         **** }
+ 154              		.loc 1 145 0
+ 155              		@ sp needed for prologue
+ 156 0086 01BC     		pop	{r0}
+ 157 0088 0047     		bx	r0
+ 158              	.L14:
+ 159 008a C046     		.align	2
+ 160              	.L13:
+ 161 008c 00C002E0 		.word	-536690688
+ 162 0090 18C001E0 		.word	-536756200
+ 163 0094 14C001E0 		.word	-536756204
+ 164 0098 10C001E0 		.word	-536756208
+ 165 009c 0CC001E0 		.word	-536756212
+ 166 00a0 00C001E0 		.word	-536756224
+ 167 00a4 00000000 		.word	.LANCHOR0
+ 168              		.cfi_endproc
+ 169              	.LFE3:
+ 170              		.size	i2cInit, .-i2cInit
+ 171              		.align	1
+ 172              		.global	i2cStart
+ 173              		.code	16
+ 174              		.thumb_func
+ 175              		.type	i2cStart, %function
+ 176              	i2cStart:
+ 177              	.LFB4:
+ 146:i2c.c         **** 
+ 147:i2c.c         **** /******************************************************************************
+ 148:i2c.c         ****  *
+ 149:i2c.c         ****  * Description:
+ 150:i2c.c         ****  *    Generates a start condition on I2C when bus is free.
+ 151:i2c.c         ****  *    Master mode will also automatically be entered.
+ 152:i2c.c         ****  *
+ 153:i2c.c         ****  *    Note: After a stop condition, you may need a bus free time before you 
+ 154:i2c.c         ****  *          can generate a new start condition.
+ 155:i2c.c         ****  *
+ 156:i2c.c         ****  * Returns:
+ 157:i2c.c         ****  *    I2C_CODE_OK or I2C status code
+ 158:i2c.c         ****  *
+ 159:i2c.c         ****  *****************************************************************************/
+ 160:i2c.c         **** tS8
+ 161:i2c.c         **** i2cStart(void)
+ 162:i2c.c         **** {
+ 178              		.loc 1 162 0
+ 179              		.cfi_startproc
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 7
+
+
+ 180 00a8 30B5     		push	{r4, r5, lr}
+ 181              	.LCFI3:
+ 182              		.cfi_def_cfa_offset 12
+ 183              		.cfi_offset 4, -12
+ 184              		.cfi_offset 5, -8
+ 185              		.cfi_offset 14, -4
+ 186              	.LVL2:
+ 163:i2c.c         ****   tU8   status  = 0;
+ 164:i2c.c         ****   tS8   retCode = 0;
+ 165:i2c.c         **** 
+ 166:i2c.c         ****   /* issue a start condition */
+ 167:i2c.c         ****   I2C_CONSET |= 0x20; /* STA = 1, set start flag */
+ 187              		.loc 1 167 0
+ 188 00aa 0E4B     		ldr	r3, .L20
+ 189 00ac 1A78     		ldrb	r2, [r3]
+ 190 00ae 2021     		mov	r1, #32
+ 191 00b0 0A43     		orr	r2, r1
+ 192 00b2 1A70     		strb	r2, [r3]
+ 193 00b4 0C4C     		ldr	r4, .L20+4
+ 168:i2c.c         **** 
+ 169:i2c.c         ****   /* wait until START transmitted */
+ 170:i2c.c         ****   while(1)
+ 171:i2c.c         ****   {
+ 172:i2c.c         ****     status = i2cCheckStatus();
+ 173:i2c.c         **** 
+ 174:i2c.c         ****     /* start transmitted */
+ 175:i2c.c         ****     if((status == 0x08) || (status == 0x10))
+ 176:i2c.c         ****     {
+ 177:i2c.c         ****       retCode = I2C_CODE_OK;
+ 178:i2c.c         ****       break;
+ 179:i2c.c         ****     }
+ 180:i2c.c         **** 
+ 181:i2c.c         ****     /* error */
+ 182:i2c.c         ****     else if(status != 0xf8)
+ 183:i2c.c         ****     {
+ 184:i2c.c         ****       retCode = (tS8) status;
+ 185:i2c.c         ****       break;
+ 186:i2c.c         ****     }
+ 187:i2c.c         **** 
+ 188:i2c.c         ****     else
+ 189:i2c.c         ****     {
+ 190:i2c.c         ****       /* clear SI flag */
+ 191:i2c.c         ****       I2C_CONCLR = 0x08;
+ 194              		.loc 1 191 0
+ 195 00b6 0825     		mov	r5, #8
+ 196              	.LVL3:
+ 197              	.L18:
+ 172:i2c.c         ****     status = i2cCheckStatus();
+ 198              		.loc 1 172 0
+ 199 00b8 FFF7FEFF 		bl	i2cCheckStatus
+ 200              	.LVL4:
+ 175:i2c.c         ****     if((status == 0x08) || (status == 0x10))
+ 201              		.loc 1 175 0
+ 202 00bc 1028     		cmp	r0, #16
+ 203 00be 08D0     		beq	.L19
+ 204 00c0 0828     		cmp	r0, #8
+ 205 00c2 06D0     		beq	.L19
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 8
+
+
+ 182:i2c.c         ****     else if(status != 0xf8)
+ 206              		.loc 1 182 0
+ 207 00c4 F828     		cmp	r0, #248
+ 208 00c6 02D0     		beq	.L17
+ 184:i2c.c         ****       retCode = (tS8) status;
+ 209              		.loc 1 184 0
+ 210 00c8 0006     		lsl	r0, r0, #24
+ 211              	.LVL5:
+ 212 00ca 000E     		lsr	r0, r0, #24
+ 213              	.LVL6:
+ 185:i2c.c         ****       break;
+ 214              		.loc 1 185 0
+ 215 00cc 02E0     		b	.L16
+ 216              	.LVL7:
+ 217              	.L17:
+ 218              		.loc 1 191 0
+ 219 00ce 2570     		strb	r5, [r4]
+ 192:i2c.c         ****     }    
+ 193:i2c.c         ****   }
+ 220              		.loc 1 193 0
+ 221 00d0 F2E7     		b	.L18
+ 222              	.L19:
+ 177:i2c.c         ****       retCode = I2C_CODE_OK;
+ 223              		.loc 1 177 0
+ 224 00d2 0120     		mov	r0, #1
+ 225              	.LVL8:
+ 226              	.L16:
+ 194:i2c.c         **** 
+ 195:i2c.c         ****   /* clear start flag */
+ 196:i2c.c         ****   I2C_CONCLR = 0x20;
+ 227              		.loc 1 196 0
+ 228 00d4 044B     		ldr	r3, .L20+4
+ 229 00d6 2022     		mov	r2, #32
+ 197:i2c.c         **** 
+ 198:i2c.c         ****   return retCode;
+ 230              		.loc 1 198 0
+ 231 00d8 0006     		lsl	r0, r0, #24
+ 232              	.LVL9:
+ 233 00da 0016     		asr	r0, r0, #24
+ 196:i2c.c         ****   I2C_CONCLR = 0x20;
+ 234              		.loc 1 196 0
+ 235 00dc 1A70     		strb	r2, [r3]
+ 199:i2c.c         **** }
+ 236              		.loc 1 199 0
+ 237              		@ sp needed for prologue
+ 238 00de 30BC     		pop	{r4, r5}
+ 239 00e0 02BC     		pop	{r1}
+ 240 00e2 0847     		bx	r1
+ 241              	.L21:
+ 242              		.align	2
+ 243              	.L20:
+ 244 00e4 00C001E0 		.word	-536756224
+ 245 00e8 18C001E0 		.word	-536756200
+ 246              		.cfi_endproc
+ 247              	.LFE4:
+ 248              		.size	i2cStart, .-i2cStart
+ 249              		.align	1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 9
+
+
+ 250              		.global	i2cRepeatStart
+ 251              		.code	16
+ 252              		.thumb_func
+ 253              		.type	i2cRepeatStart, %function
+ 254              	i2cRepeatStart:
+ 255              	.LFB5:
+ 200:i2c.c         **** 
+ 201:i2c.c         **** /******************************************************************************
+ 202:i2c.c         ****  *
+ 203:i2c.c         ****  * Description:
+ 204:i2c.c         ****  *    Generates a start condition on I2C when bus is free.
+ 205:i2c.c         ****  *    Master mode will also automatically be entered.
+ 206:i2c.c         ****  *
+ 207:i2c.c         ****  *    Note: After a stop condition, you may need a bus free time before you 
+ 208:i2c.c         ****  *          can generate a new start condition.
+ 209:i2c.c         ****  *
+ 210:i2c.c         ****  * Returns:
+ 211:i2c.c         ****  *    I2C_CODE_OK or I2C status code
+ 212:i2c.c         ****  *
+ 213:i2c.c         ****  *****************************************************************************/
+ 214:i2c.c         **** tS8
+ 215:i2c.c         **** i2cRepeatStart(void)
+ 216:i2c.c         **** {
+ 256              		.loc 1 216 0
+ 257              		.cfi_startproc
+ 258 00ec 30B5     		push	{r4, r5, lr}
+ 259              	.LCFI4:
+ 260              		.cfi_def_cfa_offset 12
+ 261              		.cfi_offset 4, -12
+ 262              		.cfi_offset 5, -8
+ 263              		.cfi_offset 14, -4
+ 264              	.LVL10:
+ 217:i2c.c         ****   tU8   status  = 0;
+ 218:i2c.c         ****   tS8   retCode = 0;
+ 219:i2c.c         **** 
+ 220:i2c.c         ****   /* issue a start condition */
+ 221:i2c.c         ****   I2C_CONSET |= 0x20; /* STA = 1, set start flag */
+ 265              		.loc 1 221 0
+ 266 00ee 0D4B     		ldr	r3, .L28
+ 267 00f0 1A78     		ldrb	r2, [r3]
+ 268 00f2 2021     		mov	r1, #32
+ 269 00f4 0A43     		orr	r2, r1
+ 270 00f6 1A70     		strb	r2, [r3]
+ 222:i2c.c         ****   I2C_CONCLR = 0x08;  /* clear SI flag           */
+ 271              		.loc 1 222 0
+ 272 00f8 0B4C     		ldr	r4, .L28+4
+ 273 00fa 0825     		mov	r5, #8
+ 274              	.LVL11:
+ 275              	.L27:
+ 276 00fc 2570     		strb	r5, [r4]
+ 223:i2c.c         **** 
+ 224:i2c.c         ****   /* wait until START transmitted */
+ 225:i2c.c         ****   while(1)
+ 226:i2c.c         ****   {
+ 227:i2c.c         ****     status = i2cCheckStatus();
+ 277              		.loc 1 227 0
+ 278 00fe FFF7FEFF 		bl	i2cCheckStatus
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 10
+
+
+ 279              	.LVL12:
+ 228:i2c.c         **** 
+ 229:i2c.c         ****     /* start transmitted */
+ 230:i2c.c         ****     if((status == 0x08) || (status == 0x10))
+ 280              		.loc 1 230 0
+ 281 0102 1028     		cmp	r0, #16
+ 282 0104 06D0     		beq	.L26
+ 283 0106 0828     		cmp	r0, #8
+ 284 0108 04D0     		beq	.L26
+ 231:i2c.c         ****     {
+ 232:i2c.c         ****       retCode = I2C_CODE_OK;
+ 233:i2c.c         ****       break;
+ 234:i2c.c         ****     }
+ 235:i2c.c         **** 
+ 236:i2c.c         ****     /* error */
+ 237:i2c.c         ****     else if(status != 0xf8)
+ 285              		.loc 1 237 0
+ 286 010a F828     		cmp	r0, #248
+ 287 010c F6D0     		beq	.L27
+ 238:i2c.c         ****     {
+ 239:i2c.c         ****       retCode = (tS8) status;
+ 288              		.loc 1 239 0
+ 289 010e 0006     		lsl	r0, r0, #24
+ 290              	.LVL13:
+ 291 0110 000E     		lsr	r0, r0, #24
+ 292              	.LVL14:
+ 240:i2c.c         ****       break;
+ 293              		.loc 1 240 0
+ 294 0112 00E0     		b	.L23
+ 295              	.LVL15:
+ 296              	.L26:
+ 232:i2c.c         ****       retCode = I2C_CODE_OK;
+ 297              		.loc 1 232 0
+ 298 0114 0120     		mov	r0, #1
+ 299              	.LVL16:
+ 300              	.L23:
+ 241:i2c.c         ****     }
+ 242:i2c.c         **** 
+ 243:i2c.c         ****     else
+ 244:i2c.c         ****     {
+ 245:i2c.c         ****       /* clear SI flag */
+ 246:i2c.c         ****       I2C_CONCLR = 0x08;
+ 247:i2c.c         ****     }    
+ 248:i2c.c         ****   }
+ 249:i2c.c         **** 
+ 250:i2c.c         ****   /* clear start flag */
+ 251:i2c.c         ****   I2C_CONCLR = 0x20;
+ 301              		.loc 1 251 0
+ 302 0116 2023     		mov	r3, #32
+ 252:i2c.c         **** 
+ 253:i2c.c         ****   return retCode;
+ 303              		.loc 1 253 0
+ 304 0118 0006     		lsl	r0, r0, #24
+ 305              	.LVL17:
+ 306 011a 0016     		asr	r0, r0, #24
+ 251:i2c.c         ****   I2C_CONCLR = 0x20;
+ 307              		.loc 1 251 0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 11
+
+
+ 308 011c 2370     		strb	r3, [r4]
+ 254:i2c.c         **** }
+ 309              		.loc 1 254 0
+ 310              		@ sp needed for prologue
+ 311 011e 30BC     		pop	{r4, r5}
+ 312 0120 02BC     		pop	{r1}
+ 313 0122 0847     		bx	r1
+ 314              	.L29:
+ 315              		.align	2
+ 316              	.L28:
+ 317 0124 00C001E0 		.word	-536756224
+ 318 0128 18C001E0 		.word	-536756200
+ 319              		.cfi_endproc
+ 320              	.LFE5:
+ 321              		.size	i2cRepeatStart, .-i2cRepeatStart
+ 322              		.align	1
+ 323              		.global	i2cStop
+ 324              		.code	16
+ 325              		.thumb_func
+ 326              		.type	i2cStop, %function
+ 327              	i2cStop:
+ 328              	.LFB6:
+ 255:i2c.c         **** 
+ 256:i2c.c         **** /******************************************************************************
+ 257:i2c.c         ****  *
+ 258:i2c.c         ****  * Description:
+ 259:i2c.c         ****  *    Generates a stop condition in master mode or recovers from an error
+ 260:i2c.c         ****  *    condition in slave mode.
+ 261:i2c.c         ****  *
+ 262:i2c.c         ****  *    Note: After this function is run, you may need a bus free time before
+ 263:i2c.c         ****  *          you can generate a new start condition.
+ 264:i2c.c         ****  *
+ 265:i2c.c         ****  * Returns:
+ 266:i2c.c         ****  *    I2C_CODE_OK
+ 267:i2c.c         ****  *
+ 268:i2c.c         ****  *****************************************************************************/
+ 269:i2c.c         **** tS8
+ 270:i2c.c         **** i2cStop(void)
+ 271:i2c.c         **** {
+ 329              		.loc 1 271 0
+ 330              		.cfi_startproc
+ 272:i2c.c         ****   I2C_CONSET |= 0x10; /* STO = 1, set stop flag */ 
+ 331              		.loc 1 272 0
+ 332 012c 064B     		ldr	r3, .L33
+ 333 012e 1978     		ldrb	r1, [r3]
+ 334 0130 1022     		mov	r2, #16
+ 335 0132 1143     		orr	r1, r2
+ 336 0134 1970     		strb	r1, [r3]
+ 273:i2c.c         ****   I2C_CONCLR = 0x08;  /* clear SI flag          */ 
+ 337              		.loc 1 273 0
+ 338 0136 0549     		ldr	r1, .L33+4
+ 339 0138 0820     		mov	r0, #8
+ 340 013a 0870     		strb	r0, [r1]
+ 341              	.L31:
+ 274:i2c.c         **** 
+ 275:i2c.c         ****   /* wait for STOP detected (while STO = 1) */
+ 276:i2c.c         ****   while((I2C_CONSET & 0x10) == 0x10 )
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 12
+
+
+ 342              		.loc 1 276 0 discriminator 1
+ 343 013c 1978     		ldrb	r1, [r3]
+ 344 013e 1142     		tst	r1, r2
+ 345 0140 FCD1     		bne	.L31
+ 277:i2c.c         ****   {
+ 278:i2c.c         ****     /* do nothing */
+ 279:i2c.c         ****     ;
+ 280:i2c.c         ****   }
+ 281:i2c.c         **** 
+ 282:i2c.c         ****   return I2C_CODE_OK;
+ 283:i2c.c         **** }
+ 346              		.loc 1 283 0
+ 347 0142 0120     		mov	r0, #1
+ 348              		@ sp needed for prologue
+ 349 0144 7047     		bx	lr
+ 350              	.L34:
+ 351 0146 C046     		.align	2
+ 352              	.L33:
+ 353 0148 00C001E0 		.word	-536756224
+ 354 014c 18C001E0 		.word	-536756200
+ 355              		.cfi_endproc
+ 356              	.LFE6:
+ 357              		.size	i2cStop, .-i2cStop
+ 358              		.align	1
+ 359              		.global	i2cPutChar
+ 360              		.code	16
+ 361              		.thumb_func
+ 362              		.type	i2cPutChar, %function
+ 363              	i2cPutChar:
+ 364              	.LFB7:
+ 284:i2c.c         **** 
+ 285:i2c.c         **** /******************************************************************************
+ 286:i2c.c         ****  *
+ 287:i2c.c         ****  * Description:
+ 288:i2c.c         ****  *    Sends a character on the I2C network
+ 289:i2c.c         ****  *
+ 290:i2c.c         ****  * Params:
+ 291:i2c.c         ****  *    [in] data - the character to send
+ 292:i2c.c         ****  *
+ 293:i2c.c         ****  * Returns:
+ 294:i2c.c         ****  *    I2C_CODE_OK   - successful
+ 295:i2c.c         ****  *    I2C_CODE_BUSY - data register is not ready -> byte was not sent
+ 296:i2c.c         ****  *
+ 297:i2c.c         ****  *****************************************************************************/
+ 298:i2c.c         **** tS8
+ 299:i2c.c         **** i2cPutChar(tU8 data)
+ 300:i2c.c         **** {
+ 365              		.loc 1 300 0
+ 366              		.cfi_startproc
+ 367              	.LVL18:
+ 301:i2c.c         ****   tS8 retCode = 0;
+ 302:i2c.c         **** 
+ 303:i2c.c         ****   /* check if I2C Data register can be accessed */
+ 304:i2c.c         ****   if((I2C_CONSET & 0x08) != 0)  /* if SI = 1 */
+ 368              		.loc 1 304 0
+ 369 0150 074B     		ldr	r3, .L38
+ 370 0152 1978     		ldrb	r1, [r3]
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 13
+
+
+ 300:i2c.c         **** {
+ 371              		.loc 1 300 0
+ 372 0154 0006     		lsl	r0, r0, #24
+ 373              	.LVL19:
+ 374              		.loc 1 304 0
+ 375 0156 0822     		mov	r2, #8
+ 300:i2c.c         **** {
+ 376              		.loc 1 300 0
+ 377 0158 000E     		lsr	r0, r0, #24
+ 305:i2c.c         ****   {
+ 306:i2c.c         ****     /* send data */
+ 307:i2c.c         ****     I2C_DATA   = data;
+ 308:i2c.c         ****     I2C_CONCLR = 0x08; /* clear SI flag */ 
+ 309:i2c.c         ****     retCode    = I2C_CODE_OK;
+ 310:i2c.c         ****   }
+ 311:i2c.c         ****   else
+ 312:i2c.c         ****   {
+ 313:i2c.c         ****     /* data register not ready */
+ 314:i2c.c         ****     retCode = I2C_CODE_BUSY;
+ 378              		.loc 1 314 0
+ 379 015a FC23     		mov	r3, #252
+ 304:i2c.c         ****   if((I2C_CONSET & 0x08) != 0)  /* if SI = 1 */
+ 380              		.loc 1 304 0
+ 381 015c 1142     		tst	r1, r2
+ 382 015e 04D0     		beq	.L36
+ 307:i2c.c         ****     I2C_DATA   = data;
+ 383              		.loc 1 307 0
+ 384 0160 044B     		ldr	r3, .L38+4
+ 385 0162 1870     		strb	r0, [r3]
+ 308:i2c.c         ****     I2C_CONCLR = 0x08; /* clear SI flag */ 
+ 386              		.loc 1 308 0
+ 387 0164 044B     		ldr	r3, .L38+8
+ 388 0166 1A70     		strb	r2, [r3]
+ 389              	.LVL20:
+ 309:i2c.c         ****     retCode    = I2C_CODE_OK;
+ 390              		.loc 1 309 0
+ 391 0168 0123     		mov	r3, #1
+ 392              	.LVL21:
+ 393              	.L36:
+ 315:i2c.c         ****   }
+ 316:i2c.c         **** 
+ 317:i2c.c         ****   return retCode;
+ 394              		.loc 1 317 0
+ 395 016a 1B06     		lsl	r3, r3, #24
+ 396              	.LVL22:
+ 397 016c 1816     		asr	r0, r3, #24
+ 318:i2c.c         **** }
+ 398              		.loc 1 318 0
+ 399              		@ sp needed for prologue
+ 400 016e 7047     		bx	lr
+ 401              	.L39:
+ 402              		.align	2
+ 403              	.L38:
+ 404 0170 00C001E0 		.word	-536756224
+ 405 0174 08C001E0 		.word	-536756216
+ 406 0178 18C001E0 		.word	-536756200
+ 407              		.cfi_endproc
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 14
+
+
+ 408              	.LFE7:
+ 409              		.size	i2cPutChar, .-i2cPutChar
+ 410              		.align	1
+ 411              		.global	i2cGetChar
+ 412              		.code	16
+ 413              		.thumb_func
+ 414              		.type	i2cGetChar, %function
+ 415              	i2cGetChar:
+ 416              	.LFB8:
+ 319:i2c.c         **** 
+ 320:i2c.c         **** /******************************************************************************
+ 321:i2c.c         ****  *
+ 322:i2c.c         ****  * Description:
+ 323:i2c.c         ****  *    Read a character. I2C master mode is used.
+ 324:i2c.c         ****  *    This function is also used to prepare if the master shall generate
+ 325:i2c.c         ****  *    acknowledge or not acknowledge.
+ 326:i2c.c         ****  *
+ 327:i2c.c         ****  * Params:
+ 328:i2c.c         ****  *    [in]  mode  - I2C_MODE_ACK0 Set ACK=0. Slave sends next byte
+ 329:i2c.c         ****  *                  I2C_MODE_ACK1 Set ACK=1. Slave sends last byte
+ 330:i2c.c         ****  *                  I2C_MODE_READ Read data from data register
+ 331:i2c.c         ****  *    [out] pData - a pointer to where the data shall be saved.
+ 332:i2c.c         ****  *
+ 333:i2c.c         ****  * Returns:
+ 334:i2c.c         ****  *    I2C_CODE_OK    - successful
+ 335:i2c.c         ****  *    I2C_CODE_EMPTY - no data is available
+ 336:i2c.c         ****  *
+ 337:i2c.c         ****  *****************************************************************************/
+ 338:i2c.c         **** tS8
+ 339:i2c.c         **** i2cGetChar(tU8  mode,
+ 340:i2c.c         ****            tU8* pData)
+ 341:i2c.c         **** {
+ 417              		.loc 1 341 0
+ 418              		.cfi_startproc
+ 419              	.LVL23:
+ 420              		.loc 1 341 0
+ 421 017c 0006     		lsl	r0, r0, #24
+ 422              	.LVL24:
+ 423 017e 000E     		lsr	r0, r0, #24
+ 342:i2c.c         ****   tS8 retCode = I2C_CODE_OK;
+ 343:i2c.c         **** 
+ 344:i2c.c         ****   if(mode == I2C_MODE_ACK0)
+ 424              		.loc 1 344 0
+ 425 0180 08D1     		bne	.L41
+ 345:i2c.c         ****   {
+ 346:i2c.c         ****     /* the operation mode is changed from master transmit to master receive */
+ 347:i2c.c         **** 
+ 348:i2c.c         ****     /* set ACK=0 (informs slave to send next byte) */
+ 349:i2c.c         **** 
+ 350:i2c.c         ****     I2C_CONSET |= 0x04; /* AA=1          */
+ 426              		.loc 1 350 0
+ 427 0182 104B     		ldr	r3, .L48
+ 428 0184 1A78     		ldrb	r2, [r3]
+ 429 0186 0421     		mov	r1, #4
+ 430              	.LVL25:
+ 431 0188 0A43     		orr	r2, r1
+ 432 018a 1A70     		strb	r2, [r3]
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 15
+
+
+ 351:i2c.c         ****     I2C_CONCLR = 0x08;  /* clear SI flag */   
+ 433              		.loc 1 351 0
+ 434 018c 0E4B     		ldr	r3, .L48+4
+ 435 018e 0822     		mov	r2, #8
+ 436 0190 1A70     		strb	r2, [r3]
+ 437 0192 13E0     		b	.L47
+ 438              	.LVL26:
+ 439              	.L41:
+ 352:i2c.c         ****   }
+ 353:i2c.c         ****   else if(mode == I2C_MODE_ACK1)
+ 440              		.loc 1 353 0
+ 441 0194 0128     		cmp	r0, #1
+ 442 0196 06D1     		bne	.L43
+ 354:i2c.c         ****   {
+ 355:i2c.c         ****     /* set ACK=1 (informs slave to send last byte) */
+ 356:i2c.c         ****     I2C_CONCLR = 0x04;     
+ 443              		.loc 1 356 0
+ 444 0198 0B4B     		ldr	r3, .L48+4
+ 445 019a 0422     		mov	r2, #4
+ 446 019c 1A70     		strb	r2, [r3]
+ 357:i2c.c         ****     I2C_CONCLR = 0x08; /* clear SI flag */ 
+ 447              		.loc 1 357 0
+ 448 019e 0822     		mov	r2, #8
+ 449 01a0 1A70     		strb	r2, [r3]
+ 342:i2c.c         ****   tS8 retCode = I2C_CODE_OK;
+ 450              		.loc 1 342 0
+ 451 01a2 031C     		mov	r3, r0
+ 452 01a4 0BE0     		b	.L42
+ 453              	.L43:
+ 454 01a6 0123     		mov	r3, #1
+ 358:i2c.c         ****   }
+ 359:i2c.c         ****   else if(mode == I2C_MODE_READ)
+ 455              		.loc 1 359 0
+ 456 01a8 0228     		cmp	r0, #2
+ 457 01aa 08D1     		bne	.L42
+ 458              	.LVL27:
+ 459              	.LBB4:
+ 460              	.LBB5:
+ 360:i2c.c         ****   {
+ 361:i2c.c         ****     /* check if I2C Data register can be accessed */
+ 362:i2c.c         ****     if((I2C_CONSET & 0x08) != 0)  /* SI = 1 */
+ 461              		.loc 1 362 0
+ 462 01ac 054B     		ldr	r3, .L48
+ 463 01ae 1A78     		ldrb	r2, [r3]
+ 363:i2c.c         ****     {
+ 364:i2c.c         ****       /* read data  */
+ 365:i2c.c         ****       *pData = (tU8) I2C_DATA;
+ 366:i2c.c         ****     }
+ 367:i2c.c         ****     else
+ 368:i2c.c         ****     {
+ 369:i2c.c         ****       /* No data available */
+ 370:i2c.c         ****       retCode = I2C_CODE_EMPTY;
+ 464              		.loc 1 370 0
+ 465 01b0 FD23     		mov	r3, #253
+ 362:i2c.c         ****     if((I2C_CONSET & 0x08) != 0)  /* SI = 1 */
+ 466              		.loc 1 362 0
+ 467 01b2 1007     		lsl	r0, r2, #28
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 16
+
+
+ 468 01b4 03D5     		bpl	.L42
+ 469              	.LVL28:
+ 365:i2c.c         ****       *pData = (tU8) I2C_DATA;
+ 470              		.loc 1 365 0
+ 471 01b6 054B     		ldr	r3, .L48+8
+ 472 01b8 1B78     		ldrb	r3, [r3]
+ 473 01ba 0B70     		strb	r3, [r1]
+ 474              	.LVL29:
+ 475              	.L47:
+ 342:i2c.c         ****   tS8 retCode = I2C_CODE_OK;
+ 476              		.loc 1 342 0
+ 477 01bc 0123     		mov	r3, #1
+ 478              	.L42:
+ 479              	.LVL30:
+ 480              	.LBE5:
+ 481              	.LBE4:
+ 371:i2c.c         ****     }
+ 372:i2c.c         ****   }
+ 373:i2c.c         **** 
+ 374:i2c.c         ****   return retCode;
+ 482              		.loc 1 374 0
+ 483 01be 1B06     		lsl	r3, r3, #24
+ 484              	.LVL31:
+ 485 01c0 1816     		asr	r0, r3, #24
+ 375:i2c.c         **** }
+ 486              		.loc 1 375 0
+ 487              		@ sp needed for prologue
+ 488 01c2 7047     		bx	lr
+ 489              	.L49:
+ 490              		.align	2
+ 491              	.L48:
+ 492 01c4 00C001E0 		.word	-536756224
+ 493 01c8 18C001E0 		.word	-536756200
+ 494 01cc 08C001E0 		.word	-536756216
+ 495              		.cfi_endproc
+ 496              	.LFE8:
+ 497              		.size	i2cGetChar, .-i2cGetChar
+ 498              		.align	1
+ 499              		.global	i2cWrite
+ 500              		.code	16
+ 501              		.thumb_func
+ 502              		.type	i2cWrite, %function
+ 503              	i2cWrite:
+ 504              	.LFB9:
+ 376:i2c.c         **** 
+ 377:i2c.c         **** /******************************************************************************
+ 378:i2c.c         ****  *
+ 379:i2c.c         ****  * Description:
+ 380:i2c.c         ****  *    Sends data on the I2C network
+ 381:i2c.c         ****  *
+ 382:i2c.c         ****  *    Note: After this function is run, you may need a bus free time before a 
+ 383:i2c.c         ****  *          new data transfer can be initiated.
+ 384:i2c.c         ****  *
+ 385:i2c.c         ****  * Params:
+ 386:i2c.c         ****  *    [in] addr  - address
+ 387:i2c.c         ****  *    [in] pData - data to transmit
+ 388:i2c.c         ****  *    [in] len   - number of bytes to transmit
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 17
+
+
+ 389:i2c.c         ****  *
+ 390:i2c.c         ****  * Returns:
+ 391:i2c.c         ****  *    I2C_CODE_OK    - successful
+ 392:i2c.c         ****  *    I2C_CODE_ERROR - an error occured
+ 393:i2c.c         ****  *
+ 394:i2c.c         ****  *****************************************************************************/
+ 395:i2c.c         **** tS8
+ 396:i2c.c         **** i2cWrite(tU8  addr,
+ 397:i2c.c         ****          tU8* pData,
+ 398:i2c.c         ****          tU16 len)
+ 399:i2c.c         **** {
+ 505              		.loc 1 399 0
+ 506              		.cfi_startproc
+ 507 01d0 F1B5     		push	{r0, r4, r5, r6, r7, lr}
+ 508              	.LCFI5:
+ 509              		.cfi_def_cfa_offset 24
+ 510              		.cfi_offset 0, -24
+ 511              		.cfi_offset 4, -20
+ 512              		.cfi_offset 5, -16
+ 513              		.cfi_offset 6, -12
+ 514              		.cfi_offset 7, -8
+ 515              		.cfi_offset 14, -4
+ 516              	.LVL32:
+ 517              		.loc 1 399 0
+ 518 01d2 0506     		lsl	r5, r0, #24
+ 519 01d4 1704     		lsl	r7, r2, #16
+ 520 01d6 0E1C     		mov	r6, r1
+ 400:i2c.c         ****   tS8 retCode = 0;
+ 401:i2c.c         ****   tU8 status  = 0;
+ 402:i2c.c         ****   tU8 i       = 0;
+ 403:i2c.c         **** 
+ 404:i2c.c         ****   /* generate Start condition */
+ 405:i2c.c         ****   retCode = i2cStart();
+ 521              		.loc 1 405 0
+ 522 01d8 FFF7FEFF 		bl	i2cStart
+ 523              	.LVL33:
+ 399:i2c.c         **** {
+ 524              		.loc 1 399 0
+ 525 01dc 2D0E     		lsr	r5, r5, #24
+ 526 01de 3F0C     		lsr	r7, r7, #16
+ 527              		.loc 1 405 0
+ 528 01e0 041C     		mov	r4, r0
+ 529              	.LVL34:
+ 406:i2c.c         **** 
+ 407:i2c.c         ****   /* Transmit address */
+ 408:i2c.c         ****   if(retCode == I2C_CODE_OK)
+ 530              		.loc 1 408 0
+ 531 01e2 0128     		cmp	r0, #1
+ 532 01e4 27D1     		bne	.L65
+ 533              	.LVL35:
+ 534              	.L53:
+ 409:i2c.c         ****   {
+ 410:i2c.c         ****     /* write SLA+W */
+ 411:i2c.c         ****     retCode = i2cPutChar(addr);
+ 412:i2c.c         ****     while(retCode == I2C_CODE_BUSY)
+ 413:i2c.c         ****     {
+ 414:i2c.c         ****       retCode = i2cPutChar(addr);
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 18
+
+
+ 535              		.loc 1 414 0
+ 536 01e6 281C     		mov	r0, r5
+ 537 01e8 FFF7FEFF 		bl	i2cPutChar
+ 412:i2c.c         ****     while(retCode == I2C_CODE_BUSY)
+ 538              		.loc 1 412 0
+ 539 01ec 0306     		lsl	r3, r0, #24
+ 540 01ee 1B16     		asr	r3, r3, #24
+ 541              		.loc 1 414 0
+ 542 01f0 041C     		mov	r4, r0
+ 543              	.LVL36:
+ 412:i2c.c         ****     while(retCode == I2C_CODE_BUSY)
+ 544              		.loc 1 412 0
+ 545 01f2 1A1D     		add	r2, r3, #4
+ 546 01f4 F7D0     		beq	.L53
+ 415:i2c.c         ****     }
+ 416:i2c.c         ****   }
+ 417:i2c.c         **** 
+ 418:i2c.c         ****   if(retCode == I2C_CODE_OK)
+ 419:i2c.c         ****   {
+ 420:i2c.c         ****     /* wait until address transmitted and transmit data */
+ 421:i2c.c         ****     for(i = 0; i < len; i++)
+ 422:i2c.c         ****     {
+ 423:i2c.c         ****       /* wait until data transmitted */
+ 424:i2c.c         **** 
+ 425:i2c.c         ****       while(1)
+ 426:i2c.c         ****       {
+ 427:i2c.c         ****         /* get new status */
+ 428:i2c.c         ****         status = i2cCheckStatus();
+ 429:i2c.c         **** 
+ 430:i2c.c         ****         /* 
+ 431:i2c.c         ****          * SLA+W transmitted, ACK received or
+ 432:i2c.c         ****          * data byte transmitted, ACK received
+ 433:i2c.c         ****          */
+ 434:i2c.c         ****         if( (status == 0x18) || (status == 0x28) )
+ 435:i2c.c         ****         {
+ 436:i2c.c         ****           /* Data transmitted and ACK received */
+ 437:i2c.c         **** 
+ 438:i2c.c         ****           /* write data */
+ 439:i2c.c         ****           retCode = i2cPutChar(*pData);
+ 440:i2c.c         ****           while(retCode == I2C_CODE_BUSY)
+ 441:i2c.c         ****           {
+ 442:i2c.c         ****             retCode = i2cPutChar(*pData);
+ 443:i2c.c         ****           }
+ 444:i2c.c         ****           pData++;
+ 445:i2c.c         **** 
+ 446:i2c.c         ****           break;
+ 447:i2c.c         ****         }
+ 448:i2c.c         **** 
+ 449:i2c.c         ****         /* no relevant status information */
+ 450:i2c.c         ****         else if( status != 0xf8 )
+ 451:i2c.c         ****         {
+ 452:i2c.c         ****           /* error */
+ 453:i2c.c         ****           i = len;
+ 547              		.loc 1 453 0
+ 548 01f6 3A06     		lsl	r2, r7, #24
+ 549 01f8 120E     		lsr	r2, r2, #24
+ 418:i2c.c         ****   if(retCode == I2C_CODE_OK)
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 19
+
+
+ 550              		.loc 1 418 0
+ 551 01fa 0025     		mov	r5, #0
+ 552              		.loc 1 453 0
+ 553 01fc 0092     		str	r2, [sp]
+ 418:i2c.c         ****   if(retCode == I2C_CODE_OK)
+ 554              		.loc 1 418 0
+ 555 01fe 012B     		cmp	r3, #1
+ 556 0200 16D0     		beq	.L69
+ 557 0202 18E0     		b	.L65
+ 558              	.LVL37:
+ 559              	.L66:
+ 428:i2c.c         ****         status = i2cCheckStatus();
+ 560              		.loc 1 428 0
+ 561 0204 FFF7FEFF 		bl	i2cCheckStatus
+ 562              	.LVL38:
+ 434:i2c.c         ****         if( (status == 0x18) || (status == 0x28) )
+ 563              		.loc 1 434 0
+ 564 0208 2828     		cmp	r0, #40
+ 565 020a 01D0     		beq	.L58
+ 566 020c 1828     		cmp	r0, #24
+ 567 020e 08D1     		bne	.L55
+ 568              	.LVL39:
+ 569              	.L58:
+ 442:i2c.c         ****             retCode = i2cPutChar(*pData);
+ 570              		.loc 1 442 0
+ 571 0210 3078     		ldrb	r0, [r6]
+ 572 0212 FFF7FEFF 		bl	i2cPutChar
+ 573              	.LVL40:
+ 440:i2c.c         ****           while(retCode == I2C_CODE_BUSY)
+ 574              		.loc 1 440 0
+ 575 0216 0306     		lsl	r3, r0, #24
+ 576 0218 1B16     		asr	r3, r3, #24
+ 577 021a 0433     		add	r3, r3, #4
+ 578 021c F8D0     		beq	.L58
+ 444:i2c.c         ****           pData++;
+ 579              		.loc 1 444 0
+ 580 021e 0136     		add	r6, r6, #1
+ 581              	.LVL41:
+ 446:i2c.c         ****           break;
+ 582              		.loc 1 446 0
+ 583 0220 03E0     		b	.L59
+ 584              	.LVL42:
+ 585              	.L55:
+ 450:i2c.c         ****         else if( status != 0xf8 )
+ 586              		.loc 1 450 0
+ 587 0222 F828     		cmp	r0, #248
+ 588 0224 EED0     		beq	.L66
+ 589              		.loc 1 453 0
+ 590 0226 009D     		ldr	r5, [sp]
+ 591              	.LVL43:
+ 454:i2c.c         ****           retCode = I2C_CODE_ERROR;
+ 592              		.loc 1 454 0
+ 593 0228 FF20     		mov	r0, #255
+ 594              	.LVL44:
+ 595              	.L59:
+ 421:i2c.c         ****     for(i = 0; i < len; i++)
+ 596              		.loc 1 421 0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 20
+
+
+ 597 022a 0135     		add	r5, r5, #1
+ 598              	.LVL45:
+ 599 022c 2D06     		lsl	r5, r5, #24
+ 600              	.LVL46:
+ 601 022e 2D0E     		lsr	r5, r5, #24
+ 602              	.LVL47:
+ 603              	.L69:
+ 421:i2c.c         ****     for(i = 0; i < len; i++)
+ 604              		.loc 1 421 0 is_stmt 0 discriminator 1
+ 605 0230 BD42     		cmp	r5, r7
+ 606 0232 E7D3     		bcc	.L66
+ 421:i2c.c         ****     for(i = 0; i < len; i++)
+ 607              		.loc 1 421 0
+ 608 0234 041C     		mov	r4, r0
+ 609              	.LVL48:
+ 610              	.L65:
+ 455:i2c.c         ****           break;
+ 456:i2c.c         ****         }
+ 457:i2c.c         ****       }
+ 458:i2c.c         ****     }
+ 459:i2c.c         ****   }
+ 460:i2c.c         **** 
+ 461:i2c.c         ****   /* wait until data transmitted */
+ 462:i2c.c         ****   while(1)
+ 463:i2c.c         ****   {
+ 464:i2c.c         ****     /* get new status */
+ 465:i2c.c         ****     status = i2cCheckStatus();
+ 611              		.loc 1 465 0 is_stmt 1
+ 612 0236 FFF7FEFF 		bl	i2cCheckStatus
+ 613              	.LVL49:
+ 466:i2c.c         **** 
+ 467:i2c.c         ****     /* 
+ 468:i2c.c         ****      * SLA+W transmitted, ACK received or
+ 469:i2c.c         ****      * data byte transmitted, ACK received
+ 470:i2c.c         ****      */
+ 471:i2c.c         ****     if( (status == 0x18) || (status == 0x28) )
+ 614              		.loc 1 471 0
+ 615 023a 2828     		cmp	r0, #40
+ 616 023c 04D0     		beq	.L61
+ 617 023e 1828     		cmp	r0, #24
+ 618 0240 02D0     		beq	.L61
+ 472:i2c.c         ****     {
+ 473:i2c.c         ****       /* data transmitted and ACK received */
+ 474:i2c.c         ****       break;
+ 475:i2c.c         ****     }
+ 476:i2c.c         **** 
+ 477:i2c.c         ****     /* no relevant status information */
+ 478:i2c.c         ****     else if(status != 0xf8 )
+ 619              		.loc 1 478 0
+ 620 0242 F828     		cmp	r0, #248
+ 621 0244 F7D0     		beq	.L65
+ 479:i2c.c         ****     {
+ 480:i2c.c         ****       /* error */
+ 481:i2c.c         ****       i = len;
+ 482:i2c.c         ****       retCode = I2C_CODE_ERROR;
+ 622              		.loc 1 482 0
+ 623 0246 FF24     		mov	r4, #255
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 21
+
+
+ 624              	.LVL50:
+ 625              	.L61:
+ 483:i2c.c         ****       break;
+ 484:i2c.c         ****     }
+ 485:i2c.c         ****   }
+ 486:i2c.c         **** 
+ 487:i2c.c         ****   /* generate Stop condition */
+ 488:i2c.c         ****   i2cStop();
+ 489:i2c.c         **** 
+ 490:i2c.c         ****   return retCode;
+ 626              		.loc 1 490 0
+ 627 0248 2406     		lsl	r4, r4, #24
+ 628              	.LVL51:
+ 488:i2c.c         ****   i2cStop();
+ 629              		.loc 1 488 0
+ 630 024a FFF7FEFF 		bl	i2cStop
+ 631              	.LVL52:
+ 491:i2c.c         **** }
+ 632              		.loc 1 491 0
+ 633              		@ sp needed for prologue
+ 490:i2c.c         ****   return retCode;
+ 634              		.loc 1 490 0
+ 635 024e 2016     		asr	r0, r4, #24
+ 636              	.LVL53:
+ 637              		.loc 1 491 0
+ 638 0250 F2BC     		pop	{r1, r4, r5, r6, r7}
+ 639 0252 02BC     		pop	{r1}
+ 640 0254 0847     		bx	r1
+ 641              		.cfi_endproc
+ 642              	.LFE9:
+ 643              		.size	i2cWrite, .-i2cWrite
+ 644              		.align	1
+ 645              		.global	i2cWaitTransmit
+ 646              		.code	16
+ 647              		.thumb_func
+ 648              		.type	i2cWaitTransmit, %function
+ 649              	i2cWaitTransmit:
+ 650              	.LFB10:
+ 492:i2c.c         **** 
+ 493:i2c.c         **** tS8
+ 494:i2c.c         **** i2cWaitTransmit(void)
+ 495:i2c.c         **** {
+ 651              		.loc 1 495 0
+ 652              		.cfi_startproc
+ 653 0256 00B5     		push	{lr}
+ 654              	.LCFI6:
+ 655              		.cfi_def_cfa_offset 4
+ 656              		.cfi_offset 14, -4
+ 657              	.L72:
+ 496:i2c.c         ****   tU8 status = 0;
+ 497:i2c.c         **** 
+ 498:i2c.c         ****   /* wait until data transmitted */
+ 499:i2c.c         ****   while(1)
+ 500:i2c.c         ****   {
+ 501:i2c.c         ****     /* get new status */
+ 502:i2c.c         ****     status = i2cCheckStatus();
+ 658              		.loc 1 502 0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 22
+
+
+ 659 0258 FFF7FEFF 		bl	i2cCheckStatus
+ 660              	.LVL54:
+ 503:i2c.c         **** 
+ 504:i2c.c         ****     /* 
+ 505:i2c.c         ****      * SLA+W transmitted, ACK received or
+ 506:i2c.c         ****      * data byte transmitted, ACK received
+ 507:i2c.c         ****      */
+ 508:i2c.c         ****     if( (status == 0x18) || (status == 0x28) )
+ 661              		.loc 1 508 0
+ 662 025c 2828     		cmp	r0, #40
+ 663 025e 05D0     		beq	.L73
+ 664 0260 1828     		cmp	r0, #24
+ 665 0262 03D0     		beq	.L73
+ 509:i2c.c         ****     {
+ 510:i2c.c         ****       /* data transmitted and ACK received */
+ 511:i2c.c         ****       return I2C_CODE_OK;
+ 512:i2c.c         ****     }
+ 513:i2c.c         **** 
+ 514:i2c.c         ****     /* no relevant status information */
+ 515:i2c.c         ****     else if(status != 0xf8 )
+ 666              		.loc 1 515 0
+ 667 0264 F828     		cmp	r0, #248
+ 668 0266 F7D0     		beq	.L72
+ 516:i2c.c         ****     {
+ 517:i2c.c         ****       /* error */
+ 518:i2c.c         **** 
+ 519:i2c.c         ****       return I2C_CODE_ERROR;
+ 669              		.loc 1 519 0
+ 670 0268 FF20     		mov	r0, #255
+ 671              	.LVL55:
+ 672 026a 00E0     		b	.L71
+ 673              	.LVL56:
+ 674              	.L73:
+ 511:i2c.c         ****       return I2C_CODE_OK;
+ 675              		.loc 1 511 0
+ 676 026c 0120     		mov	r0, #1
+ 677              	.LVL57:
+ 678              	.L71:
+ 515:i2c.c         ****     else if(status != 0xf8 )
+ 679              		.loc 1 515 0
+ 680 026e 0006     		lsl	r0, r0, #24
+ 681 0270 0016     		asr	r0, r0, #24
+ 520:i2c.c         ****     }
+ 521:i2c.c         ****   }
+ 522:i2c.c         **** }
+ 682              		.loc 1 522 0
+ 683              		@ sp needed for prologue
+ 684 0272 02BC     		pop	{r1}
+ 685 0274 0847     		bx	r1
+ 686              		.cfi_endproc
+ 687              	.LFE10:
+ 688              		.size	i2cWaitTransmit, .-i2cWaitTransmit
+ 689              		.align	1
+ 690              		.global	i2cWriteWithWait
+ 691              		.code	16
+ 692              		.thumb_func
+ 693              		.type	i2cWriteWithWait, %function
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 23
+
+
+ 694              	i2cWriteWithWait:
+ 695              	.LFB11:
+ 523:i2c.c         **** 
+ 524:i2c.c         **** tS8
+ 525:i2c.c         **** i2cWriteWithWait(tU8 data)
+ 526:i2c.c         **** {
+ 696              		.loc 1 526 0
+ 697              		.cfi_startproc
+ 698 0276 10B5     		push	{r4, lr}
+ 699              	.LCFI7:
+ 700              		.cfi_def_cfa_offset 8
+ 701              		.cfi_offset 4, -8
+ 702              		.cfi_offset 14, -4
+ 703              	.LVL58:
+ 704 0278 0406     		lsl	r4, r0, #24
+ 705 027a 240E     		lsr	r4, r4, #24
+ 706              	.LVL59:
+ 707              	.L77:
+ 527:i2c.c         ****   tS8 retCode = 0;
+ 528:i2c.c         ****   
+ 529:i2c.c         ****   retCode = i2cPutChar(data);
+ 530:i2c.c         ****   while(retCode == I2C_CODE_BUSY)
+ 531:i2c.c         ****   {
+ 532:i2c.c         ****     retCode = i2cPutChar(data);
+ 708              		.loc 1 532 0
+ 709 027c 201C     		mov	r0, r4
+ 710 027e FFF7FEFF 		bl	i2cPutChar
+ 711              	.LVL60:
+ 530:i2c.c         ****   while(retCode == I2C_CODE_BUSY)
+ 712              		.loc 1 530 0
+ 713 0282 0306     		lsl	r3, r0, #24
+ 714 0284 1B16     		asr	r3, r3, #24
+ 715 0286 1A1D     		add	r2, r3, #4
+ 716 0288 F8D0     		beq	.L77
+ 533:i2c.c         ****   }
+ 534:i2c.c         **** 
+ 535:i2c.c         ****   if(retCode == I2C_CODE_OK)
+ 717              		.loc 1 535 0
+ 718 028a 012B     		cmp	r3, #1
+ 719 028c 01D1     		bne	.L78
+ 536:i2c.c         ****     retCode = i2cWaitTransmit();
+ 720              		.loc 1 536 0
+ 721 028e FFF7FEFF 		bl	i2cWaitTransmit
+ 722              	.LVL61:
+ 723              	.L78:
+ 537:i2c.c         **** 
+ 538:i2c.c         ****   return retCode;
+ 724              		.loc 1 538 0
+ 725 0292 0006     		lsl	r0, r0, #24
+ 726              	.LVL62:
+ 727 0294 0016     		asr	r0, r0, #24
+ 539:i2c.c         **** }
+ 728              		.loc 1 539 0
+ 729              		@ sp needed for prologue
+ 730 0296 10BC     		pop	{r4}
+ 731 0298 02BC     		pop	{r1}
+ 732 029a 0847     		bx	r1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 24
+
+
+ 733              		.cfi_endproc
+ 734              	.LFE11:
+ 735              		.size	i2cWriteWithWait, .-i2cWriteWithWait
+ 736              		.align	1
+ 737              		.global	i2cMyWrite
+ 738              		.code	16
+ 739              		.thumb_func
+ 740              		.type	i2cMyWrite, %function
+ 741              	i2cMyWrite:
+ 742              	.LFB12:
+ 540:i2c.c         **** 
+ 541:i2c.c         **** tS8
+ 542:i2c.c         **** i2cMyWrite(tU8  addr,
+ 543:i2c.c         ****            tU8* pData,
+ 544:i2c.c         ****            tU16 len)
+ 545:i2c.c         **** {
+ 743              		.loc 1 545 0
+ 744              		.cfi_startproc
+ 745 029c F0B5     		push	{r4, r5, r6, r7, lr}
+ 746              	.LCFI8:
+ 747              		.cfi_def_cfa_offset 20
+ 748              		.cfi_offset 4, -20
+ 749              		.cfi_offset 5, -16
+ 750              		.cfi_offset 6, -12
+ 751              		.cfi_offset 7, -8
+ 752              		.cfi_offset 14, -4
+ 753              	.LVL63:
+ 754              		.loc 1 545 0
+ 755 029e 0506     		lsl	r5, r0, #24
+ 756 02a0 1604     		lsl	r6, r2, #16
+ 757 02a2 0F1C     		mov	r7, r1
+ 546:i2c.c         ****   tS8 retCode = 0;
+ 547:i2c.c         ****   tU8 i       = 0;
+ 548:i2c.c         **** 
+ 549:i2c.c         ****   do
+ 550:i2c.c         ****   {
+ 551:i2c.c         ****     /* generate Start condition */
+ 552:i2c.c         ****     retCode = i2cStart();
+ 758              		.loc 1 552 0
+ 759 02a4 FFF7FEFF 		bl	i2cStart
+ 760              	.LVL64:
+ 545:i2c.c         **** {
+ 761              		.loc 1 545 0
+ 762 02a8 2D0E     		lsr	r5, r5, #24
+ 763 02aa 360C     		lsr	r6, r6, #16
+ 764              		.loc 1 552 0
+ 765 02ac 041C     		mov	r4, r0
+ 766              	.LVL65:
+ 553:i2c.c         ****     if(retCode != I2C_CODE_OK)
+ 767              		.loc 1 553 0
+ 768 02ae 0128     		cmp	r0, #1
+ 769 02b0 13D1     		bne	.L80
+ 554:i2c.c         ****       break;
+ 555:i2c.c         **** 
+ 556:i2c.c         ****     /* write address */
+ 557:i2c.c         ****     retCode = i2cWriteWithWait(addr);
+ 770              		.loc 1 557 0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 25
+
+
+ 771 02b2 281C     		mov	r0, r5
+ 772              	.LVL66:
+ 773 02b4 FFF7FEFF 		bl	i2cWriteWithWait
+ 558:i2c.c         ****     if(retCode != I2C_CODE_OK)
+ 774              		.loc 1 558 0
+ 775 02b8 0025     		mov	r5, #0
+ 557:i2c.c         ****     retCode = i2cWriteWithWait(addr);
+ 776              		.loc 1 557 0
+ 777 02ba 041C     		mov	r4, r0
+ 778              	.LVL67:
+ 779              		.loc 1 558 0
+ 780 02bc 0128     		cmp	r0, #1
+ 781 02be 0CD1     		bne	.L80
+ 782 02c0 05E0     		b	.L81
+ 783              	.LVL68:
+ 784              	.L82:
+ 559:i2c.c         ****       break;
+ 560:i2c.c         **** 
+ 561:i2c.c         ****     for(i = 0; i <len; i++)
+ 562:i2c.c         ****     {
+ 563:i2c.c         ****       retCode = i2cWriteWithWait(*pData);
+ 785              		.loc 1 563 0
+ 786 02c2 785D     		ldrb	r0, [r7, r5]
+ 787 02c4 FFF7FEFF 		bl	i2cWriteWithWait
+ 788              	.LVL69:
+ 789 02c8 0135     		add	r5, r5, #1
+ 790              	.LVL70:
+ 564:i2c.c         ****       if(retCode != I2C_CODE_OK)
+ 791              		.loc 1 564 0
+ 792 02ca 0128     		cmp	r0, #1
+ 793 02cc 04D1     		bne	.L83
+ 794              	.LVL71:
+ 795              	.L81:
+ 561:i2c.c         ****     for(i = 0; i <len; i++)
+ 796              		.loc 1 561 0 discriminator 1
+ 797 02ce 2B06     		lsl	r3, r5, #24
+ 798 02d0 1B0E     		lsr	r3, r3, #24
+ 799 02d2 B342     		cmp	r3, r6
+ 800 02d4 F5D3     		bcc	.L82
+ 801 02d6 00E0     		b	.L80
+ 802              	.LVL72:
+ 803              	.L83:
+ 563:i2c.c         ****       retCode = i2cWriteWithWait(*pData);
+ 804              		.loc 1 563 0
+ 805 02d8 041C     		mov	r4, r0
+ 806              	.LVL73:
+ 807              	.L80:
+ 565:i2c.c         ****         break;
+ 566:i2c.c         **** 
+ 567:i2c.c         ****       pData++;
+ 568:i2c.c         ****     }
+ 569:i2c.c         **** 
+ 570:i2c.c         ****   } while(0);
+ 571:i2c.c         **** 
+ 572:i2c.c         ****   /* generate Stop condition */
+ 573:i2c.c         ****   i2cStop();
+ 574:i2c.c         **** 
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 26
+
+
+ 575:i2c.c         **** 
+ 576:i2c.c         ****   return retCode;
+ 808              		.loc 1 576 0
+ 809 02da 2406     		lsl	r4, r4, #24
+ 810              	.LVL74:
+ 573:i2c.c         ****   i2cStop();
+ 811              		.loc 1 573 0
+ 812 02dc FFF7FEFF 		bl	i2cStop
+ 577:i2c.c         **** }
+ 813              		.loc 1 577 0
+ 814              		@ sp needed for prologue
+ 576:i2c.c         ****   return retCode;
+ 815              		.loc 1 576 0
+ 816 02e0 2016     		asr	r0, r4, #24
+ 817              		.loc 1 577 0
+ 818 02e2 F0BC     		pop	{r4, r5, r6, r7}
+ 819 02e4 02BC     		pop	{r1}
+ 820 02e6 0847     		bx	r1
+ 821              		.cfi_endproc
+ 822              	.LFE12:
+ 823              		.size	i2cMyWrite, .-i2cMyWrite
+ 824              		.align	1
+ 825              		.global	i2cRead
+ 826              		.code	16
+ 827              		.thumb_func
+ 828              		.type	i2cRead, %function
+ 829              	i2cRead:
+ 830              	.LFB13:
+ 578:i2c.c         **** 
+ 579:i2c.c         **** 
+ 580:i2c.c         **** /******************************************************************************
+ 581:i2c.c         ****  *
+ 582:i2c.c         ****  * Description:
+ 583:i2c.c         ****  *    Read a specified number of bytes from the I2C network.
+ 584:i2c.c         ****  *
+ 585:i2c.c         ****  *    Note: After this function is run, you may need a bus free time before a 
+ 586:i2c.c         ****  *          new data transfer can be initiated.
+ 587:i2c.c         ****  *
+ 588:i2c.c         ****  * Params:
+ 589:i2c.c         ****  *    [in] addr - address
+ 590:i2c.c         ****  *    [in] pBuf - receive buffer
+ 591:i2c.c         ****  *    [in] len  - number of bytes to receive
+ 592:i2c.c         ****  *
+ 593:i2c.c         ****  * Returns:
+ 594:i2c.c         ****  *    I2C_CODE_OK or I2C status code
+ 595:i2c.c         ****  *
+ 596:i2c.c         ****  *****************************************************************************/
+ 597:i2c.c         **** tS8
+ 598:i2c.c         **** i2cRead(tU8  addr,
+ 599:i2c.c         ****         tU8* pBuf,
+ 600:i2c.c         ****         tU16 len)
+ 601:i2c.c         **** {
+ 831              		.loc 1 601 0
+ 832              		.cfi_startproc
+ 833 02e8 F1B5     		push	{r0, r4, r5, r6, r7, lr}
+ 834              	.LCFI9:
+ 835              		.cfi_def_cfa_offset 24
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 27
+
+
+ 836              		.cfi_offset 0, -24
+ 837              		.cfi_offset 4, -20
+ 838              		.cfi_offset 5, -16
+ 839              		.cfi_offset 6, -12
+ 840              		.cfi_offset 7, -8
+ 841              		.cfi_offset 14, -4
+ 842              	.LVL75:
+ 843              		.loc 1 601 0
+ 844 02ea 0506     		lsl	r5, r0, #24
+ 845 02ec 1704     		lsl	r7, r2, #16
+ 846 02ee 0E1C     		mov	r6, r1
+ 602:i2c.c         ****   tS8 retCode = 0;
+ 603:i2c.c         ****   tU8 status  = 0;
+ 604:i2c.c         ****   tU8 i       = 0;
+ 605:i2c.c         **** 
+ 606:i2c.c         ****   /* Generate Start condition */
+ 607:i2c.c         ****   retCode = i2cStart();
+ 847              		.loc 1 607 0
+ 848 02f0 FFF7FEFF 		bl	i2cStart
+ 849              	.LVL76:
+ 601:i2c.c         **** {
+ 850              		.loc 1 601 0
+ 851 02f4 2D0E     		lsr	r5, r5, #24
+ 852 02f6 3F0C     		lsr	r7, r7, #16
+ 853              		.loc 1 607 0
+ 854 02f8 041C     		mov	r4, r0
+ 855              	.LVL77:
+ 608:i2c.c         **** 
+ 609:i2c.c         ****   /* Transmit address */
+ 610:i2c.c         ****   if(retCode == I2C_CODE_OK )
+ 856              		.loc 1 610 0
+ 857 02fa 0128     		cmp	r0, #1
+ 858 02fc 31D1     		bne	.L85
+ 859              	.LVL78:
+ 860              	.L87:
+ 611:i2c.c         ****   {
+ 612:i2c.c         ****     /* write SLA+R */
+ 613:i2c.c         ****     retCode = i2cPutChar(addr);
+ 614:i2c.c         ****     while(retCode == I2C_CODE_BUSY)
+ 615:i2c.c         ****     {
+ 616:i2c.c         ****       retCode = i2cPutChar(addr);
+ 861              		.loc 1 616 0
+ 862 02fe 281C     		mov	r0, r5
+ 863 0300 FFF7FEFF 		bl	i2cPutChar
+ 614:i2c.c         ****     while(retCode == I2C_CODE_BUSY)
+ 864              		.loc 1 614 0
+ 865 0304 0306     		lsl	r3, r0, #24
+ 866 0306 1B16     		asr	r3, r3, #24
+ 867              		.loc 1 616 0
+ 868 0308 041C     		mov	r4, r0
+ 869              	.LVL79:
+ 614:i2c.c         ****     while(retCode == I2C_CODE_BUSY)
+ 870              		.loc 1 614 0
+ 871 030a 1A1D     		add	r2, r3, #4
+ 872 030c F7D0     		beq	.L87
+ 617:i2c.c         ****     }
+ 618:i2c.c         ****   }
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 28
+
+
+ 619:i2c.c         **** 
+ 620:i2c.c         ****   if(retCode == I2C_CODE_OK )
+ 873              		.loc 1 620 0
+ 874 030e 1D1C     		mov	r5, r3
+ 621:i2c.c         ****   {
+ 622:i2c.c         ****     /* wait until address transmitted and receive data */
+ 623:i2c.c         ****     for(i = 1; i <= len; i++ )
+ 624:i2c.c         ****     {
+ 625:i2c.c         ****       /* wait until data transmitted */
+ 626:i2c.c         ****       while(1)
+ 627:i2c.c         ****       {
+ 628:i2c.c         ****         /* get new status */
+ 629:i2c.c         ****         status = i2cCheckStatus();
+ 630:i2c.c         **** 
+ 631:i2c.c         ****         /*
+ 632:i2c.c         ****          * SLA+R transmitted, ACK received or
+ 633:i2c.c         ****          * SLA+R transmitted, ACK not received
+ 634:i2c.c         ****          * data byte received in master mode, ACK transmitted
+ 635:i2c.c         ****          */
+ 636:i2c.c         ****         if((status == 0x40 ) || (status == 0x48 ) || (status == 0x50 ))
+ 637:i2c.c         ****         {
+ 638:i2c.c         ****           /* data received */
+ 639:i2c.c         **** 
+ 640:i2c.c         ****           if(i == len)
+ 641:i2c.c         ****           {
+ 642:i2c.c         ****             /* Set generate NACK */
+ 643:i2c.c         ****             retCode = i2cGetChar(I2C_MODE_ACK1, pBuf);
+ 644:i2c.c         ****           }
+ 645:i2c.c         ****           else
+ 646:i2c.c         ****           {
+ 647:i2c.c         ****             retCode = i2cGetChar(I2C_MODE_ACK0, pBuf);
+ 648:i2c.c         ****           }
+ 649:i2c.c         **** 
+ 650:i2c.c         ****           /* Read data */
+ 651:i2c.c         ****           retCode = i2cGetChar(I2C_MODE_READ, pBuf);
+ 652:i2c.c         ****           while(retCode == I2C_CODE_EMPTY)
+ 653:i2c.c         ****           {
+ 654:i2c.c         ****             retCode = i2cGetChar(I2C_MODE_READ, pBuf);
+ 655:i2c.c         ****           }
+ 656:i2c.c         ****           pBuf++;
+ 657:i2c.c         **** 
+ 658:i2c.c         ****           break;
+ 659:i2c.c         ****         }
+ 660:i2c.c         **** 
+ 661:i2c.c         ****         /* no relevant status information */
+ 662:i2c.c         ****         else if(status != 0xf8 )
+ 663:i2c.c         ****         {
+ 664:i2c.c         ****           /* error */
+ 665:i2c.c         ****           i = len;
+ 875              		.loc 1 665 0
+ 876 0310 3B06     		lsl	r3, r7, #24
+ 877 0312 1B0E     		lsr	r3, r3, #24
+ 878 0314 0093     		str	r3, [sp]
+ 620:i2c.c         ****   if(retCode == I2C_CODE_OK )
+ 879              		.loc 1 620 0
+ 880 0316 012D     		cmp	r5, #1
+ 881 0318 21D0     		beq	.L100
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 29
+
+
+ 882 031a 22E0     		b	.L85
+ 883              	.LVL80:
+ 884              	.L98:
+ 629:i2c.c         ****         status = i2cCheckStatus();
+ 885              		.loc 1 629 0
+ 886 031c FFF7FEFF 		bl	i2cCheckStatus
+ 887              	.LVL81:
+ 636:i2c.c         ****         if((status == 0x40 ) || (status == 0x48 ) || (status == 0x50 ))
+ 888              		.loc 1 636 0
+ 889 0320 4828     		cmp	r0, #72
+ 890 0322 03D0     		beq	.L89
+ 891 0324 4028     		cmp	r0, #64
+ 892 0326 01D0     		beq	.L89
+ 636:i2c.c         ****         if((status == 0x40 ) || (status == 0x48 ) || (status == 0x50 ))
+ 893              		.loc 1 636 0 is_stmt 0 discriminator 1
+ 894 0328 5028     		cmp	r0, #80
+ 895 032a 11D1     		bne	.L90
+ 896              	.L89:
+ 643:i2c.c         ****             retCode = i2cGetChar(I2C_MODE_ACK1, pBuf);
+ 897              		.loc 1 643 0 is_stmt 1
+ 898 032c 0120     		mov	r0, #1
+ 899              	.LVL82:
+ 640:i2c.c         ****           if(i == len)
+ 900              		.loc 1 640 0
+ 901 032e BD42     		cmp	r5, r7
+ 902 0330 00D0     		beq	.L101
+ 647:i2c.c         ****             retCode = i2cGetChar(I2C_MODE_ACK0, pBuf);
+ 903              		.loc 1 647 0
+ 904 0332 0020     		mov	r0, #0
+ 905              	.L101:
+ 906 0334 311C     		mov	r1, r6
+ 907 0336 FFF7FEFF 		bl	i2cGetChar
+ 908              	.LVL83:
+ 909              	.L94:
+ 654:i2c.c         ****             retCode = i2cGetChar(I2C_MODE_READ, pBuf);
+ 910              		.loc 1 654 0
+ 911 033a 0220     		mov	r0, #2
+ 912 033c 311C     		mov	r1, r6
+ 913 033e FFF7FEFF 		bl	i2cGetChar
+ 652:i2c.c         ****           while(retCode == I2C_CODE_EMPTY)
+ 914              		.loc 1 652 0
+ 915 0342 0306     		lsl	r3, r0, #24
+ 916 0344 1B16     		asr	r3, r3, #24
+ 654:i2c.c         ****             retCode = i2cGetChar(I2C_MODE_READ, pBuf);
+ 917              		.loc 1 654 0
+ 918 0346 041C     		mov	r4, r0
+ 919              	.LVL84:
+ 652:i2c.c         ****           while(retCode == I2C_CODE_EMPTY)
+ 920              		.loc 1 652 0
+ 921 0348 0333     		add	r3, r3, #3
+ 922 034a F6D0     		beq	.L94
+ 656:i2c.c         ****           pBuf++;
+ 923              		.loc 1 656 0
+ 924 034c 0136     		add	r6, r6, #1
+ 925              	.LVL85:
+ 658:i2c.c         ****           break;
+ 926              		.loc 1 658 0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 30
+
+
+ 927 034e 03E0     		b	.L95
+ 928              	.LVL86:
+ 929              	.L90:
+ 662:i2c.c         ****         else if(status != 0xf8 )
+ 930              		.loc 1 662 0
+ 931 0350 F828     		cmp	r0, #248
+ 932 0352 E3D0     		beq	.L98
+ 933              		.loc 1 665 0
+ 934 0354 009D     		ldr	r5, [sp]
+ 935              	.LVL87:
+ 666:i2c.c         ****           retCode = I2C_CODE_ERROR;
+ 936              		.loc 1 666 0
+ 937 0356 FF24     		mov	r4, #255
+ 938              	.LVL88:
+ 939              	.L95:
+ 623:i2c.c         ****     for(i = 1; i <= len; i++ )
+ 940              		.loc 1 623 0
+ 941 0358 0135     		add	r5, r5, #1
+ 942              	.LVL89:
+ 943 035a 2D06     		lsl	r5, r5, #24
+ 944              	.LVL90:
+ 945 035c 2D0E     		lsr	r5, r5, #24
+ 946              	.LVL91:
+ 947              	.L100:
+ 623:i2c.c         ****     for(i = 1; i <= len; i++ )
+ 948              		.loc 1 623 0 is_stmt 0 discriminator 1
+ 949 035e BD42     		cmp	r5, r7
+ 950 0360 DCD9     		bls	.L98
+ 951              	.LVL92:
+ 952              	.L85:
+ 667:i2c.c         ****           break;
+ 668:i2c.c         ****         }
+ 669:i2c.c         ****       }
+ 670:i2c.c         ****     }
+ 671:i2c.c         ****   }
+ 672:i2c.c         **** 
+ 673:i2c.c         ****   /*--- Generate Stop condition ---*/
+ 674:i2c.c         ****   i2cStop();
+ 675:i2c.c         **** 
+ 676:i2c.c         ****   return retCode;
+ 953              		.loc 1 676 0 is_stmt 1
+ 954 0362 2406     		lsl	r4, r4, #24
+ 955              	.LVL93:
+ 674:i2c.c         ****   i2cStop();
+ 956              		.loc 1 674 0
+ 957 0364 FFF7FEFF 		bl	i2cStop
+ 677:i2c.c         **** }
+ 958              		.loc 1 677 0
+ 959              		@ sp needed for prologue
+ 676:i2c.c         ****   return retCode;
+ 960              		.loc 1 676 0
+ 961 0368 2016     		asr	r0, r4, #24
+ 962              	.LVL94:
+ 963              		.loc 1 677 0
+ 964 036a F2BC     		pop	{r1, r4, r5, r6, r7}
+ 965 036c 02BC     		pop	{r1}
+ 966 036e 0847     		bx	r1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 31
+
+
+ 967              		.cfi_endproc
+ 968              	.LFE13:
+ 969              		.size	i2cRead, .-i2cRead
+ 970              		.bss
+ 971              		.align	2
+ 972              		.set	.LANCHOR0,. + 0
+ 973              		.type	i2cSem, %object
+ 974              		.size	i2cSem, 28
+ 975              	i2cSem:
+ 976 0000 00000000 		.space	28
+ 976      00000000 
+ 976      00000000 
+ 976      00000000 
+ 976      00000000 
+ 977              		.text
+ 978              	.Letext0:
+ 979              		.file 2 "./startup/../pre_emptive_os/api/../api/general.h"
+ 980              		.file 3 "./startup/../pre_emptive_os/api/osapi.h"
+ 981              		.section	.debug_info,"",%progbits
+ 982              	.Ldebug_info0:
+ 983 0000 CA050000 		.4byte	0x5ca
+ 984 0004 0200     		.2byte	0x2
+ 985 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 986 000a 04       		.byte	0x4
+ 987 000b 01       		.uleb128 0x1
+ 988 000c D9000000 		.4byte	.LASF50
+ 989 0010 01       		.byte	0x1
+ 990 0011 F6000000 		.4byte	.LASF51
+ 991 0015 28010000 		.4byte	.LASF52
+ 992 0019 00000000 		.4byte	.Ltext0
+ 993 001d 70030000 		.4byte	.Letext0
+ 994 0021 00000000 		.4byte	.Ldebug_line0
+ 995 0025 02       		.uleb128 0x2
+ 996 0026 74553800 		.ascii	"tU8\000"
+ 997 002a 02       		.byte	0x2
+ 998 002b 47       		.byte	0x47
+ 999 002c 30000000 		.4byte	0x30
+ 1000 0030 03       		.uleb128 0x3
+ 1001 0031 01       		.byte	0x1
+ 1002 0032 08       		.byte	0x8
+ 1003 0033 64000000 		.4byte	.LASF1
+ 1004 0037 04       		.uleb128 0x4
+ 1005 0038 DB010000 		.4byte	.LASF0
+ 1006 003c 02       		.byte	0x2
+ 1007 003d 48       		.byte	0x48
+ 1008 003e 42000000 		.4byte	0x42
+ 1009 0042 03       		.uleb128 0x3
+ 1010 0043 02       		.byte	0x2
+ 1011 0044 07       		.byte	0x7
+ 1012 0045 96000000 		.4byte	.LASF2
+ 1013 0049 04       		.uleb128 0x4
+ 1014 004a E0010000 		.4byte	.LASF3
+ 1015 004e 02       		.byte	0x2
+ 1016 004f 49       		.byte	0x49
+ 1017 0050 54000000 		.4byte	0x54
+ 1018 0054 03       		.uleb128 0x3
+ 1019 0055 04       		.byte	0x4
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 32
+
+
+ 1020 0056 07       		.byte	0x7
+ 1021 0057 6C010000 		.4byte	.LASF4
+ 1022 005b 02       		.uleb128 0x2
+ 1023 005c 74533800 		.ascii	"tS8\000"
+ 1024 0060 02       		.byte	0x2
+ 1025 0061 4A       		.byte	0x4a
+ 1026 0062 66000000 		.4byte	0x66
+ 1027 0066 03       		.uleb128 0x3
+ 1028 0067 01       		.byte	0x1
+ 1029 0068 06       		.byte	0x6
+ 1030 0069 47020000 		.4byte	.LASF5
+ 1031 006d 03       		.uleb128 0x3
+ 1032 006e 02       		.byte	0x2
+ 1033 006f 05       		.byte	0x5
+ 1034 0070 10020000 		.4byte	.LASF6
+ 1035 0074 05       		.uleb128 0x5
+ 1036 0075 04       		.byte	0x4
+ 1037 0076 05       		.byte	0x5
+ 1038 0077 696E7400 		.ascii	"int\000"
+ 1039 007b 06       		.uleb128 0x6
+ 1040 007c EC000000 		.4byte	.LASF19
+ 1041 0080 28       		.byte	0x28
+ 1042 0081 03       		.byte	0x3
+ 1043 0082 57       		.byte	0x57
+ 1044 0083 30010000 		.4byte	0x130
+ 1045 0087 07       		.uleb128 0x7
+ 1046 0088 05000000 		.4byte	.LASF7
+ 1047 008c 03       		.byte	0x3
+ 1048 008d 59       		.byte	0x59
+ 1049 008e 30010000 		.4byte	0x130
+ 1050 0092 02       		.byte	0x2
+ 1051 0093 23       		.byte	0x23
+ 1052 0094 00       		.uleb128 0
+ 1053 0095 07       		.uleb128 0x7
+ 1054 0096 01010000 		.4byte	.LASF8
+ 1055 009a 03       		.byte	0x3
+ 1056 009b 5A       		.byte	0x5a
+ 1057 009c 36010000 		.4byte	0x136
+ 1058 00a0 02       		.byte	0x2
+ 1059 00a1 23       		.byte	0x23
+ 1060 00a2 04       		.uleb128 0x4
+ 1061 00a3 07       		.uleb128 0x7
+ 1062 00a4 BA000000 		.4byte	.LASF9
+ 1063 00a8 03       		.byte	0x3
+ 1064 00a9 5B       		.byte	0x5b
+ 1065 00aa 36010000 		.4byte	0x136
+ 1066 00ae 02       		.byte	0x2
+ 1067 00af 23       		.byte	0x23
+ 1068 00b0 08       		.uleb128 0x8
+ 1069 00b1 07       		.uleb128 0x7
+ 1070 00b2 58010000 		.4byte	.LASF10
+ 1071 00b6 03       		.byte	0x3
+ 1072 00b7 5C       		.byte	0x5c
+ 1073 00b8 36010000 		.4byte	0x136
+ 1074 00bc 02       		.byte	0x2
+ 1075 00bd 23       		.byte	0x23
+ 1076 00be 0C       		.uleb128 0xc
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 33
+
+
+ 1077 00bf 07       		.uleb128 0x7
+ 1078 00c0 B2010000 		.4byte	.LASF11
+ 1079 00c4 03       		.byte	0x3
+ 1080 00c5 5D       		.byte	0x5d
+ 1081 00c6 36010000 		.4byte	0x136
+ 1082 00ca 02       		.byte	0x2
+ 1083 00cb 23       		.byte	0x23
+ 1084 00cc 10       		.uleb128 0x10
+ 1085 00cd 07       		.uleb128 0x7
+ 1086 00ce 38020000 		.4byte	.LASF12
+ 1087 00d2 03       		.byte	0x3
+ 1088 00d3 5E       		.byte	0x5e
+ 1089 00d4 36010000 		.4byte	0x136
+ 1090 00d8 02       		.byte	0x2
+ 1091 00d9 23       		.byte	0x23
+ 1092 00da 14       		.uleb128 0x14
+ 1093 00db 08       		.uleb128 0x8
+ 1094 00dc 70696400 		.ascii	"pid\000"
+ 1095 00e0 03       		.byte	0x3
+ 1096 00e1 5F       		.byte	0x5f
+ 1097 00e2 25000000 		.4byte	0x25
+ 1098 00e6 02       		.byte	0x2
+ 1099 00e7 23       		.byte	0x23
+ 1100 00e8 18       		.uleb128 0x18
+ 1101 00e9 07       		.uleb128 0x7
+ 1102 00ea 00000000 		.4byte	.LASF13
+ 1103 00ee 03       		.byte	0x3
+ 1104 00ef 60       		.byte	0x60
+ 1105 00f0 25000000 		.4byte	0x25
+ 1106 00f4 02       		.byte	0x2
+ 1107 00f5 23       		.byte	0x23
+ 1108 00f6 19       		.uleb128 0x19
+ 1109 00f7 07       		.uleb128 0x7
+ 1110 00f8 53010000 		.4byte	.LASF14
+ 1111 00fc 03       		.byte	0x3
+ 1112 00fd 61       		.byte	0x61
+ 1113 00fe 25000000 		.4byte	0x25
+ 1114 0102 02       		.byte	0x2
+ 1115 0103 23       		.byte	0x23
+ 1116 0104 1A       		.uleb128 0x1a
+ 1117 0105 07       		.uleb128 0x7
+ 1118 0106 53020000 		.4byte	.LASF15
+ 1119 010a 03       		.byte	0x3
+ 1120 010b 62       		.byte	0x62
+ 1121 010c 49000000 		.4byte	0x49
+ 1122 0110 02       		.byte	0x2
+ 1123 0111 23       		.byte	0x23
+ 1124 0112 1C       		.uleb128 0x1c
+ 1125 0113 07       		.uleb128 0x7
+ 1126 0114 CE010000 		.4byte	.LASF16
+ 1127 0118 03       		.byte	0x3
+ 1128 0119 65       		.byte	0x65
+ 1129 011a 30010000 		.4byte	0x130
+ 1130 011e 02       		.byte	0x2
+ 1131 011f 23       		.byte	0x23
+ 1132 0120 20       		.uleb128 0x20
+ 1133 0121 07       		.uleb128 0x7
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 34
+
+
+ 1134 0122 79010000 		.4byte	.LASF17
+ 1135 0126 03       		.byte	0x3
+ 1136 0127 66       		.byte	0x66
+ 1137 0128 37000000 		.4byte	0x37
+ 1138 012c 02       		.byte	0x2
+ 1139 012d 23       		.byte	0x23
+ 1140 012e 24       		.uleb128 0x24
+ 1141 012f 00       		.byte	0
+ 1142 0130 09       		.uleb128 0x9
+ 1143 0131 04       		.byte	0x4
+ 1144 0132 25000000 		.4byte	0x25
+ 1145 0136 09       		.uleb128 0x9
+ 1146 0137 04       		.byte	0x4
+ 1147 0138 7B000000 		.4byte	0x7b
+ 1148 013c 04       		.uleb128 0x4
+ 1149 013d 72000000 		.4byte	.LASF18
+ 1150 0141 03       		.byte	0x3
+ 1151 0142 68       		.byte	0x68
+ 1152 0143 7B000000 		.4byte	0x7b
+ 1153 0147 06       		.uleb128 0x6
+ 1154 0148 52000000 		.4byte	.LASF20
+ 1155 014c 18       		.byte	0x18
+ 1156 014d 03       		.byte	0x3
+ 1157 014e 6F       		.byte	0x6f
+ 1158 014f 70010000 		.4byte	0x170
+ 1159 0153 07       		.uleb128 0x7
+ 1160 0154 14000000 		.4byte	.LASF21
+ 1161 0158 03       		.byte	0x3
+ 1162 0159 71       		.byte	0x71
+ 1163 015a 70010000 		.4byte	0x170
+ 1164 015e 02       		.byte	0x2
+ 1165 015f 23       		.byte	0x23
+ 1166 0160 00       		.uleb128 0
+ 1167 0161 07       		.uleb128 0x7
+ 1168 0162 1E000000 		.4byte	.LASF22
+ 1169 0166 03       		.byte	0x3
+ 1170 0167 72       		.byte	0x72
+ 1171 0168 87010000 		.4byte	0x187
+ 1172 016c 02       		.byte	0x2
+ 1173 016d 23       		.byte	0x23
+ 1174 016e 14       		.uleb128 0x14
+ 1175 016f 00       		.byte	0
+ 1176 0170 0A       		.uleb128 0xa
+ 1177 0171 87010000 		.4byte	0x187
+ 1178 0175 80010000 		.4byte	0x180
+ 1179 0179 0B       		.uleb128 0xb
+ 1180 017a 80010000 		.4byte	0x180
+ 1181 017e 04       		.byte	0x4
+ 1182 017f 00       		.byte	0
+ 1183 0180 03       		.uleb128 0x3
+ 1184 0181 04       		.byte	0x4
+ 1185 0182 07       		.byte	0x7
+ 1186 0183 84000000 		.4byte	.LASF23
+ 1187 0187 09       		.uleb128 0x9
+ 1188 0188 04       		.byte	0x4
+ 1189 0189 3C010000 		.4byte	0x13c
+ 1190 018d 04       		.uleb128 0x4
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 35
+
+
+ 1191 018e 79000000 		.4byte	.LASF24
+ 1192 0192 03       		.byte	0x3
+ 1193 0193 73       		.byte	0x73
+ 1194 0194 47010000 		.4byte	0x147
+ 1195 0198 06       		.uleb128 0x6
+ 1196 0199 05020000 		.4byte	.LASF25
+ 1197 019d 18       		.byte	0x18
+ 1198 019e 03       		.byte	0x3
+ 1199 019f 75       		.byte	0x75
+ 1200 01a0 B3010000 		.4byte	0x1b3
+ 1201 01a4 07       		.uleb128 0x7
+ 1202 01a5 AC010000 		.4byte	.LASF26
+ 1203 01a9 03       		.byte	0x3
+ 1204 01aa 77       		.byte	0x77
+ 1205 01ab 8D010000 		.4byte	0x18d
+ 1206 01af 02       		.byte	0x2
+ 1207 01b0 23       		.byte	0x23
+ 1208 01b1 00       		.uleb128 0
+ 1209 01b2 00       		.byte	0
+ 1210 01b3 04       		.uleb128 0x4
+ 1211 01b4 FC010000 		.4byte	.LASF27
+ 1212 01b8 03       		.byte	0x3
+ 1213 01b9 78       		.byte	0x78
+ 1214 01ba 98010000 		.4byte	0x198
+ 1215 01be 06       		.uleb128 0x6
+ 1216 01bf 0A000000 		.4byte	.LASF28
+ 1217 01c3 1C       		.byte	0x1c
+ 1218 01c4 03       		.byte	0x3
+ 1219 01c5 7A       		.byte	0x7a
+ 1220 01c6 E6010000 		.4byte	0x1e6
+ 1221 01ca 08       		.uleb128 0x8
+ 1222 01cb 657600   		.ascii	"ev\000"
+ 1223 01ce 03       		.byte	0x3
+ 1224 01cf 7C       		.byte	0x7c
+ 1225 01d0 B3010000 		.4byte	0x1b3
+ 1226 01d4 02       		.byte	0x2
+ 1227 01d5 23       		.byte	0x23
+ 1228 01d6 00       		.uleb128 0
+ 1229 01d7 08       		.uleb128 0x8
+ 1230 01d8 636E7400 		.ascii	"cnt\000"
+ 1231 01dc 03       		.byte	0x3
+ 1232 01dd 7D       		.byte	0x7d
+ 1233 01de 37000000 		.4byte	0x37
+ 1234 01e2 02       		.byte	0x2
+ 1235 01e3 23       		.byte	0x23
+ 1236 01e4 18       		.uleb128 0x18
+ 1237 01e5 00       		.byte	0
+ 1238 01e6 04       		.uleb128 0x4
+ 1239 01e7 34000000 		.4byte	.LASF29
+ 1240 01eb 03       		.byte	0x3
+ 1241 01ec 7F       		.byte	0x7f
+ 1242 01ed BE010000 		.4byte	0x1be
+ 1243 01f1 0C       		.uleb128 0xc
+ 1244 01f2 01       		.byte	0x1
+ 1245 01f3 15010000 		.4byte	.LASF53
+ 1246 01f7 01       		.byte	0x1
+ 1247 01f8 5301     		.2byte	0x153
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 36
+
+
+ 1248 01fa 01       		.byte	0x1
+ 1249 01fb 5B000000 		.4byte	0x5b
+ 1250 01ff 01       		.byte	0x1
+ 1251 0200 29020000 		.4byte	0x229
+ 1252 0204 0D       		.uleb128 0xd
+ 1253 0205 D6010000 		.4byte	.LASF30
+ 1254 0209 01       		.byte	0x1
+ 1255 020a 5301     		.2byte	0x153
+ 1256 020c 25000000 		.4byte	0x25
+ 1257 0210 0D       		.uleb128 0xd
+ 1258 0211 3C000000 		.4byte	.LASF31
+ 1259 0215 01       		.byte	0x1
+ 1260 0216 5401     		.2byte	0x154
+ 1261 0218 30010000 		.4byte	0x130
+ 1262 021c 0E       		.uleb128 0xe
+ 1263 021d C6010000 		.4byte	.LASF38
+ 1264 0221 01       		.byte	0x1
+ 1265 0222 5601     		.2byte	0x156
+ 1266 0224 5B000000 		.4byte	0x5b
+ 1267 0228 00       		.byte	0
+ 1268 0229 0F       		.uleb128 0xf
+ 1269 022a 01       		.byte	0x1
+ 1270 022b 92010000 		.4byte	.LASF32
+ 1271 022f 01       		.byte	0x1
+ 1272 0230 36       		.byte	0x36
+ 1273 0231 01       		.byte	0x1
+ 1274 0232 00000000 		.4byte	.LFB0
+ 1275 0236 18000000 		.4byte	.LFE0
+ 1276 023a 00000000 		.4byte	.LLST0
+ 1277 023e 51020000 		.4byte	0x251
+ 1278 0242 10       		.uleb128 0x10
+ 1279 0243 1A020000 		.4byte	.LASF34
+ 1280 0247 01       		.byte	0x1
+ 1281 0248 38       		.byte	0x38
+ 1282 0249 25000000 		.4byte	0x25
+ 1283 024d 02       		.byte	0x2
+ 1284 024e 91       		.byte	0x91
+ 1285 024f 7B       		.sleb128 -5
+ 1286 0250 00       		.byte	0
+ 1287 0251 0F       		.uleb128 0xf
+ 1288 0252 01       		.byte	0x1
+ 1289 0253 9D010000 		.4byte	.LASF33
+ 1290 0257 01       		.byte	0x1
+ 1291 0258 3D       		.byte	0x3d
+ 1292 0259 01       		.byte	0x1
+ 1293 025a 18000000 		.4byte	.LFB1
+ 1294 025e 30000000 		.4byte	.LFE1
+ 1295 0262 20000000 		.4byte	.LLST1
+ 1296 0266 79020000 		.4byte	0x279
+ 1297 026a 10       		.uleb128 0x10
+ 1298 026b 1A020000 		.4byte	.LASF34
+ 1299 026f 01       		.byte	0x1
+ 1300 0270 3F       		.byte	0x3f
+ 1301 0271 25000000 		.4byte	0x25
+ 1302 0275 02       		.byte	0x2
+ 1303 0276 91       		.byte	0x91
+ 1304 0277 7B       		.sleb128 -5
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 37
+
+
+ 1305 0278 00       		.byte	0
+ 1306 0279 11       		.uleb128 0x11
+ 1307 027a 01       		.byte	0x1
+ 1308 027b 83010000 		.4byte	.LASF36
+ 1309 027f 01       		.byte	0x1
+ 1310 0280 69       		.byte	0x69
+ 1311 0281 01       		.byte	0x1
+ 1312 0282 25000000 		.4byte	0x25
+ 1313 0286 30000000 		.4byte	.LFB2
+ 1314 028a 48000000 		.4byte	.LFE2
+ 1315 028e 02       		.byte	0x2
+ 1316 028f 7D       		.byte	0x7d
+ 1317 0290 00       		.sleb128 0
+ 1318 0291 A5020000 		.4byte	0x2a5
+ 1319 0295 12       		.uleb128 0x12
+ 1320 0296 2D000000 		.4byte	.LASF35
+ 1321 029a 01       		.byte	0x1
+ 1322 029b 6B       		.byte	0x6b
+ 1323 029c 25000000 		.4byte	0x25
+ 1324 02a0 40000000 		.4byte	.LLST2
+ 1325 02a4 00       		.byte	0
+ 1326 02a5 13       		.uleb128 0x13
+ 1327 02a6 01       		.byte	0x1
+ 1328 02a7 20010000 		.4byte	.LASF54
+ 1329 02ab 01       		.byte	0x1
+ 1330 02ac 82       		.byte	0x82
+ 1331 02ad 01       		.byte	0x1
+ 1332 02ae 48000000 		.4byte	.LFB3
+ 1333 02b2 A8000000 		.4byte	.LFE3
+ 1334 02b6 5F000000 		.4byte	.LLST3
+ 1335 02ba 14       		.uleb128 0x14
+ 1336 02bb 01       		.byte	0x1
+ 1337 02bc 59020000 		.4byte	.LASF37
+ 1338 02c0 01       		.byte	0x1
+ 1339 02c1 A1       		.byte	0xa1
+ 1340 02c2 01       		.byte	0x1
+ 1341 02c3 5B000000 		.4byte	0x5b
+ 1342 02c7 A8000000 		.4byte	.LFB4
+ 1343 02cb EC000000 		.4byte	.LFE4
+ 1344 02cf 7F000000 		.4byte	.LLST4
+ 1345 02d3 F6020000 		.4byte	0x2f6
+ 1346 02d7 12       		.uleb128 0x12
+ 1347 02d8 2D000000 		.4byte	.LASF35
+ 1348 02dc 01       		.byte	0x1
+ 1349 02dd A3       		.byte	0xa3
+ 1350 02de 25000000 		.4byte	0x25
+ 1351 02e2 9F000000 		.4byte	.LLST5
+ 1352 02e6 12       		.uleb128 0x12
+ 1353 02e7 C6010000 		.4byte	.LASF38
+ 1354 02eb 01       		.byte	0x1
+ 1355 02ec A4       		.byte	0xa4
+ 1356 02ed 5B000000 		.4byte	0x5b
+ 1357 02f1 C9000000 		.4byte	.LLST6
+ 1358 02f5 00       		.byte	0
+ 1359 02f6 14       		.uleb128 0x14
+ 1360 02f7 01       		.byte	0x1
+ 1361 02f8 E5010000 		.4byte	.LASF39
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 38
+
+
+ 1362 02fc 01       		.byte	0x1
+ 1363 02fd D7       		.byte	0xd7
+ 1364 02fe 01       		.byte	0x1
+ 1365 02ff 5B000000 		.4byte	0x5b
+ 1366 0303 EC000000 		.4byte	.LFB5
+ 1367 0307 2C010000 		.4byte	.LFE5
+ 1368 030b FF000000 		.4byte	.LLST7
+ 1369 030f 32030000 		.4byte	0x332
+ 1370 0313 12       		.uleb128 0x12
+ 1371 0314 2D000000 		.4byte	.LASF35
+ 1372 0318 01       		.byte	0x1
+ 1373 0319 D9       		.byte	0xd9
+ 1374 031a 25000000 		.4byte	0x25
+ 1375 031e 1F010000 		.4byte	.LLST8
+ 1376 0322 12       		.uleb128 0x12
+ 1377 0323 C6010000 		.4byte	.LASF38
+ 1378 0327 01       		.byte	0x1
+ 1379 0328 DA       		.byte	0xda
+ 1380 0329 5B000000 		.4byte	0x5b
+ 1381 032d 49010000 		.4byte	.LLST9
+ 1382 0331 00       		.byte	0
+ 1383 0332 15       		.uleb128 0x15
+ 1384 0333 01       		.byte	0x1
+ 1385 0334 F4010000 		.4byte	.LASF55
+ 1386 0338 01       		.byte	0x1
+ 1387 0339 0E01     		.2byte	0x10e
+ 1388 033b 01       		.byte	0x1
+ 1389 033c 5B000000 		.4byte	0x5b
+ 1390 0340 2C010000 		.4byte	.LFB6
+ 1391 0344 50010000 		.4byte	.LFE6
+ 1392 0348 02       		.byte	0x2
+ 1393 0349 7D       		.byte	0x7d
+ 1394 034a 00       		.sleb128 0
+ 1395 034b 16       		.uleb128 0x16
+ 1396 034c 01       		.byte	0x1
+ 1397 034d 42000000 		.4byte	.LASF40
+ 1398 0351 01       		.byte	0x1
+ 1399 0352 2B01     		.2byte	0x12b
+ 1400 0354 01       		.byte	0x1
+ 1401 0355 5B000000 		.4byte	0x5b
+ 1402 0359 50010000 		.4byte	.LFB7
+ 1403 035d 7C010000 		.4byte	.LFE7
+ 1404 0361 02       		.byte	0x2
+ 1405 0362 7D       		.byte	0x7d
+ 1406 0363 00       		.sleb128 0
+ 1407 0364 89030000 		.4byte	0x389
+ 1408 0368 17       		.uleb128 0x17
+ 1409 0369 5F000000 		.4byte	.LASF42
+ 1410 036d 01       		.byte	0x1
+ 1411 036e 2B01     		.2byte	0x12b
+ 1412 0370 25000000 		.4byte	0x25
+ 1413 0374 7F010000 		.4byte	.LLST10
+ 1414 0378 18       		.uleb128 0x18
+ 1415 0379 C6010000 		.4byte	.LASF38
+ 1416 037d 01       		.byte	0x1
+ 1417 037e 2D01     		.2byte	0x12d
+ 1418 0380 5B000000 		.4byte	0x5b
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 39
+
+
+ 1419 0384 92010000 		.4byte	.LLST11
+ 1420 0388 00       		.byte	0
+ 1421 0389 19       		.uleb128 0x19
+ 1422 038a F1010000 		.4byte	0x1f1
+ 1423 038e 7C010000 		.4byte	.LFB8
+ 1424 0392 D0010000 		.4byte	.LFE8
+ 1425 0396 02       		.byte	0x2
+ 1426 0397 7D       		.byte	0x7d
+ 1427 0398 00       		.sleb128 0
+ 1428 0399 E7030000 		.4byte	0x3e7
+ 1429 039d 1A       		.uleb128 0x1a
+ 1430 039e 04020000 		.4byte	0x204
+ 1431 03a2 BD010000 		.4byte	.LLST12
+ 1432 03a6 1A       		.uleb128 0x1a
+ 1433 03a7 10020000 		.4byte	0x210
+ 1434 03ab D0010000 		.4byte	.LLST13
+ 1435 03af 1B       		.uleb128 0x1b
+ 1436 03b0 1C020000 		.4byte	0x21c
+ 1437 03b4 EE010000 		.4byte	.LLST14
+ 1438 03b8 1C       		.uleb128 0x1c
+ 1439 03b9 F1010000 		.4byte	0x1f1
+ 1440 03bd AC010000 		.4byte	.LBB4
+ 1441 03c1 BE010000 		.4byte	.LBE4
+ 1442 03c5 01       		.byte	0x1
+ 1443 03c6 5301     		.2byte	0x153
+ 1444 03c8 1A       		.uleb128 0x1a
+ 1445 03c9 10020000 		.4byte	0x210
+ 1446 03cd 0D020000 		.4byte	.LLST15
+ 1447 03d1 1D       		.uleb128 0x1d
+ 1448 03d2 AC010000 		.4byte	.LBB5
+ 1449 03d6 BE010000 		.4byte	.LBE5
+ 1450 03da 1E       		.uleb128 0x1e
+ 1451 03db 1C020000 		.4byte	0x21c
+ 1452 03df 1F       		.uleb128 0x1f
+ 1453 03e0 04020000 		.4byte	0x204
+ 1454 03e4 00       		.byte	0
+ 1455 03e5 00       		.byte	0
+ 1456 03e6 00       		.byte	0
+ 1457 03e7 20       		.uleb128 0x20
+ 1458 03e8 01       		.byte	0x1
+ 1459 03e9 24000000 		.4byte	.LASF41
+ 1460 03ed 01       		.byte	0x1
+ 1461 03ee 8C01     		.2byte	0x18c
+ 1462 03f0 01       		.byte	0x1
+ 1463 03f1 5B000000 		.4byte	0x5b
+ 1464 03f5 D0010000 		.4byte	.LFB9
+ 1465 03f9 56020000 		.4byte	.LFE9
+ 1466 03fd 20020000 		.4byte	.LLST16
+ 1467 0401 64040000 		.4byte	0x464
+ 1468 0405 17       		.uleb128 0x17
+ 1469 0406 4D000000 		.4byte	.LASF43
+ 1470 040a 01       		.byte	0x1
+ 1471 040b 8C01     		.2byte	0x18c
+ 1472 040d 25000000 		.4byte	0x25
+ 1473 0411 40020000 		.4byte	.LLST17
+ 1474 0415 17       		.uleb128 0x17
+ 1475 0416 3C000000 		.4byte	.LASF31
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 40
+
+
+ 1476 041a 01       		.byte	0x1
+ 1477 041b 8D01     		.2byte	0x18d
+ 1478 041d 30010000 		.4byte	0x130
+ 1479 0421 53020000 		.4byte	.LLST18
+ 1480 0425 21       		.uleb128 0x21
+ 1481 0426 6C656E00 		.ascii	"len\000"
+ 1482 042a 01       		.byte	0x1
+ 1483 042b 8E01     		.2byte	0x18e
+ 1484 042d 37000000 		.4byte	0x37
+ 1485 0431 71020000 		.4byte	.LLST19
+ 1486 0435 18       		.uleb128 0x18
+ 1487 0436 C6010000 		.4byte	.LASF38
+ 1488 043a 01       		.byte	0x1
+ 1489 043b 9001     		.2byte	0x190
+ 1490 043d 5B000000 		.4byte	0x5b
+ 1491 0441 84020000 		.4byte	.LLST20
+ 1492 0445 18       		.uleb128 0x18
+ 1493 0446 2D000000 		.4byte	.LASF35
+ 1494 044a 01       		.byte	0x1
+ 1495 044b 9101     		.2byte	0x191
+ 1496 044d 25000000 		.4byte	0x25
+ 1497 0451 DC020000 		.4byte	.LLST21
+ 1498 0455 22       		.uleb128 0x22
+ 1499 0456 6900     		.ascii	"i\000"
+ 1500 0458 01       		.byte	0x1
+ 1501 0459 9201     		.2byte	0x192
+ 1502 045b 25000000 		.4byte	0x25
+ 1503 045f 11030000 		.4byte	.LLST22
+ 1504 0463 00       		.byte	0
+ 1505 0464 20       		.uleb128 0x20
+ 1506 0465 01       		.byte	0x1
+ 1507 0466 28020000 		.4byte	.LASF44
+ 1508 046a 01       		.byte	0x1
+ 1509 046b EE01     		.2byte	0x1ee
+ 1510 046d 01       		.byte	0x1
+ 1511 046e 5B000000 		.4byte	0x5b
+ 1512 0472 56020000 		.4byte	.LFB10
+ 1513 0476 76020000 		.4byte	.LFE10
+ 1514 047a 5F030000 		.4byte	.LLST23
+ 1515 047e 93040000 		.4byte	0x493
+ 1516 0482 18       		.uleb128 0x18
+ 1517 0483 2D000000 		.4byte	.LASF35
+ 1518 0487 01       		.byte	0x1
+ 1519 0488 F001     		.2byte	0x1f0
+ 1520 048a 25000000 		.4byte	0x25
+ 1521 048e 7F030000 		.4byte	.LLST24
+ 1522 0492 00       		.byte	0
+ 1523 0493 20       		.uleb128 0x20
+ 1524 0494 01       		.byte	0x1
+ 1525 0495 A9000000 		.4byte	.LASF45
+ 1526 0499 01       		.byte	0x1
+ 1527 049a 0D02     		.2byte	0x20d
+ 1528 049c 01       		.byte	0x1
+ 1529 049d 5B000000 		.4byte	0x5b
+ 1530 04a1 76020000 		.4byte	.LFB11
+ 1531 04a5 9C020000 		.4byte	.LFE11
+ 1532 04a9 9D030000 		.4byte	.LLST25
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 41
+
+
+ 1533 04ad D2040000 		.4byte	0x4d2
+ 1534 04b1 17       		.uleb128 0x17
+ 1535 04b2 5F000000 		.4byte	.LASF42
+ 1536 04b6 01       		.byte	0x1
+ 1537 04b7 0D02     		.2byte	0x20d
+ 1538 04b9 25000000 		.4byte	0x25
+ 1539 04bd BD030000 		.4byte	.LLST26
+ 1540 04c1 18       		.uleb128 0x18
+ 1541 04c2 C6010000 		.4byte	.LASF38
+ 1542 04c6 01       		.byte	0x1
+ 1543 04c7 0F02     		.2byte	0x20f
+ 1544 04c9 5B000000 		.4byte	0x5b
+ 1545 04cd D0030000 		.4byte	.LLST27
+ 1546 04d1 00       		.byte	0
+ 1547 04d2 20       		.uleb128 0x20
+ 1548 04d3 01       		.byte	0x1
+ 1549 04d4 CE000000 		.4byte	.LASF46
+ 1550 04d8 01       		.byte	0x1
+ 1551 04d9 1E02     		.2byte	0x21e
+ 1552 04db 01       		.byte	0x1
+ 1553 04dc 5B000000 		.4byte	0x5b
+ 1554 04e0 9C020000 		.4byte	.LFB12
+ 1555 04e4 E8020000 		.4byte	.LFE12
+ 1556 04e8 EE030000 		.4byte	.LLST28
+ 1557 04ec 3F050000 		.4byte	0x53f
+ 1558 04f0 17       		.uleb128 0x17
+ 1559 04f1 4D000000 		.4byte	.LASF43
+ 1560 04f5 01       		.byte	0x1
+ 1561 04f6 1E02     		.2byte	0x21e
+ 1562 04f8 25000000 		.4byte	0x25
+ 1563 04fc 0E040000 		.4byte	.LLST29
+ 1564 0500 17       		.uleb128 0x17
+ 1565 0501 3C000000 		.4byte	.LASF31
+ 1566 0505 01       		.byte	0x1
+ 1567 0506 1F02     		.2byte	0x21f
+ 1568 0508 30010000 		.4byte	0x130
+ 1569 050c 21040000 		.4byte	.LLST30
+ 1570 0510 21       		.uleb128 0x21
+ 1571 0511 6C656E00 		.ascii	"len\000"
+ 1572 0515 01       		.byte	0x1
+ 1573 0516 2002     		.2byte	0x220
+ 1574 0518 37000000 		.4byte	0x37
+ 1575 051c 3F040000 		.4byte	.LLST31
+ 1576 0520 18       		.uleb128 0x18
+ 1577 0521 C6010000 		.4byte	.LASF38
+ 1578 0525 01       		.byte	0x1
+ 1579 0526 2202     		.2byte	0x222
+ 1580 0528 5B000000 		.4byte	0x5b
+ 1581 052c 52040000 		.4byte	.LLST32
+ 1582 0530 22       		.uleb128 0x22
+ 1583 0531 6900     		.ascii	"i\000"
+ 1584 0533 01       		.byte	0x1
+ 1585 0534 2302     		.2byte	0x223
+ 1586 0536 25000000 		.4byte	0x25
+ 1587 053a C0040000 		.4byte	.LLST33
+ 1588 053e 00       		.byte	0
+ 1589 053f 20       		.uleb128 0x20
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 42
+
+
+ 1590 0540 01       		.byte	0x1
+ 1591 0541 20020000 		.4byte	.LASF47
+ 1592 0545 01       		.byte	0x1
+ 1593 0546 5602     		.2byte	0x256
+ 1594 0548 01       		.byte	0x1
+ 1595 0549 5B000000 		.4byte	0x5b
+ 1596 054d E8020000 		.4byte	.LFB13
+ 1597 0551 70030000 		.4byte	.LFE13
+ 1598 0555 04050000 		.4byte	.LLST34
+ 1599 0559 BC050000 		.4byte	0x5bc
+ 1600 055d 17       		.uleb128 0x17
+ 1601 055e 4D000000 		.4byte	.LASF43
+ 1602 0562 01       		.byte	0x1
+ 1603 0563 5602     		.2byte	0x256
+ 1604 0565 25000000 		.4byte	0x25
+ 1605 0569 24050000 		.4byte	.LLST35
+ 1606 056d 17       		.uleb128 0x17
+ 1607 056e FC000000 		.4byte	.LASF48
+ 1608 0572 01       		.byte	0x1
+ 1609 0573 5702     		.2byte	0x257
+ 1610 0575 30010000 		.4byte	0x130
+ 1611 0579 37050000 		.4byte	.LLST36
+ 1612 057d 21       		.uleb128 0x21
+ 1613 057e 6C656E00 		.ascii	"len\000"
+ 1614 0582 01       		.byte	0x1
+ 1615 0583 5802     		.2byte	0x258
+ 1616 0585 37000000 		.4byte	0x37
+ 1617 0589 55050000 		.4byte	.LLST37
+ 1618 058d 18       		.uleb128 0x18
+ 1619 058e C6010000 		.4byte	.LASF38
+ 1620 0592 01       		.byte	0x1
+ 1621 0593 5A02     		.2byte	0x25a
+ 1622 0595 5B000000 		.4byte	0x5b
+ 1623 0599 68050000 		.4byte	.LLST38
+ 1624 059d 18       		.uleb128 0x18
+ 1625 059e 2D000000 		.4byte	.LASF35
+ 1626 05a2 01       		.byte	0x1
+ 1627 05a3 5B02     		.2byte	0x25b
+ 1628 05a5 25000000 		.4byte	0x25
+ 1629 05a9 CB050000 		.4byte	.LLST39
+ 1630 05ad 22       		.uleb128 0x22
+ 1631 05ae 6900     		.ascii	"i\000"
+ 1632 05b0 01       		.byte	0x1
+ 1633 05b1 5C02     		.2byte	0x25c
+ 1634 05b3 25000000 		.4byte	0x25
+ 1635 05b7 F5050000 		.4byte	.LLST40
+ 1636 05bb 00       		.byte	0
+ 1637 05bc 10       		.uleb128 0x10
+ 1638 05bd E5000000 		.4byte	.LASF49
+ 1639 05c1 01       		.byte	0x1
+ 1640 05c2 1A       		.byte	0x1a
+ 1641 05c3 E6010000 		.4byte	0x1e6
+ 1642 05c7 05       		.byte	0x5
+ 1643 05c8 03       		.byte	0x3
+ 1644 05c9 00000000 		.4byte	i2cSem
+ 1645 05cd 00       		.byte	0
+ 1646              		.section	.debug_abbrev,"",%progbits
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 43
+
+
+ 1647              	.Ldebug_abbrev0:
+ 1648 0000 01       		.uleb128 0x1
+ 1649 0001 11       		.uleb128 0x11
+ 1650 0002 01       		.byte	0x1
+ 1651 0003 25       		.uleb128 0x25
+ 1652 0004 0E       		.uleb128 0xe
+ 1653 0005 13       		.uleb128 0x13
+ 1654 0006 0B       		.uleb128 0xb
+ 1655 0007 03       		.uleb128 0x3
+ 1656 0008 0E       		.uleb128 0xe
+ 1657 0009 1B       		.uleb128 0x1b
+ 1658 000a 0E       		.uleb128 0xe
+ 1659 000b 11       		.uleb128 0x11
+ 1660 000c 01       		.uleb128 0x1
+ 1661 000d 12       		.uleb128 0x12
+ 1662 000e 01       		.uleb128 0x1
+ 1663 000f 10       		.uleb128 0x10
+ 1664 0010 06       		.uleb128 0x6
+ 1665 0011 00       		.byte	0
+ 1666 0012 00       		.byte	0
+ 1667 0013 02       		.uleb128 0x2
+ 1668 0014 16       		.uleb128 0x16
+ 1669 0015 00       		.byte	0
+ 1670 0016 03       		.uleb128 0x3
+ 1671 0017 08       		.uleb128 0x8
+ 1672 0018 3A       		.uleb128 0x3a
+ 1673 0019 0B       		.uleb128 0xb
+ 1674 001a 3B       		.uleb128 0x3b
+ 1675 001b 0B       		.uleb128 0xb
+ 1676 001c 49       		.uleb128 0x49
+ 1677 001d 13       		.uleb128 0x13
+ 1678 001e 00       		.byte	0
+ 1679 001f 00       		.byte	0
+ 1680 0020 03       		.uleb128 0x3
+ 1681 0021 24       		.uleb128 0x24
+ 1682 0022 00       		.byte	0
+ 1683 0023 0B       		.uleb128 0xb
+ 1684 0024 0B       		.uleb128 0xb
+ 1685 0025 3E       		.uleb128 0x3e
+ 1686 0026 0B       		.uleb128 0xb
+ 1687 0027 03       		.uleb128 0x3
+ 1688 0028 0E       		.uleb128 0xe
+ 1689 0029 00       		.byte	0
+ 1690 002a 00       		.byte	0
+ 1691 002b 04       		.uleb128 0x4
+ 1692 002c 16       		.uleb128 0x16
+ 1693 002d 00       		.byte	0
+ 1694 002e 03       		.uleb128 0x3
+ 1695 002f 0E       		.uleb128 0xe
+ 1696 0030 3A       		.uleb128 0x3a
+ 1697 0031 0B       		.uleb128 0xb
+ 1698 0032 3B       		.uleb128 0x3b
+ 1699 0033 0B       		.uleb128 0xb
+ 1700 0034 49       		.uleb128 0x49
+ 1701 0035 13       		.uleb128 0x13
+ 1702 0036 00       		.byte	0
+ 1703 0037 00       		.byte	0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 44
+
+
+ 1704 0038 05       		.uleb128 0x5
+ 1705 0039 24       		.uleb128 0x24
+ 1706 003a 00       		.byte	0
+ 1707 003b 0B       		.uleb128 0xb
+ 1708 003c 0B       		.uleb128 0xb
+ 1709 003d 3E       		.uleb128 0x3e
+ 1710 003e 0B       		.uleb128 0xb
+ 1711 003f 03       		.uleb128 0x3
+ 1712 0040 08       		.uleb128 0x8
+ 1713 0041 00       		.byte	0
+ 1714 0042 00       		.byte	0
+ 1715 0043 06       		.uleb128 0x6
+ 1716 0044 13       		.uleb128 0x13
+ 1717 0045 01       		.byte	0x1
+ 1718 0046 03       		.uleb128 0x3
+ 1719 0047 0E       		.uleb128 0xe
+ 1720 0048 0B       		.uleb128 0xb
+ 1721 0049 0B       		.uleb128 0xb
+ 1722 004a 3A       		.uleb128 0x3a
+ 1723 004b 0B       		.uleb128 0xb
+ 1724 004c 3B       		.uleb128 0x3b
+ 1725 004d 0B       		.uleb128 0xb
+ 1726 004e 01       		.uleb128 0x1
+ 1727 004f 13       		.uleb128 0x13
+ 1728 0050 00       		.byte	0
+ 1729 0051 00       		.byte	0
+ 1730 0052 07       		.uleb128 0x7
+ 1731 0053 0D       		.uleb128 0xd
+ 1732 0054 00       		.byte	0
+ 1733 0055 03       		.uleb128 0x3
+ 1734 0056 0E       		.uleb128 0xe
+ 1735 0057 3A       		.uleb128 0x3a
+ 1736 0058 0B       		.uleb128 0xb
+ 1737 0059 3B       		.uleb128 0x3b
+ 1738 005a 0B       		.uleb128 0xb
+ 1739 005b 49       		.uleb128 0x49
+ 1740 005c 13       		.uleb128 0x13
+ 1741 005d 38       		.uleb128 0x38
+ 1742 005e 0A       		.uleb128 0xa
+ 1743 005f 00       		.byte	0
+ 1744 0060 00       		.byte	0
+ 1745 0061 08       		.uleb128 0x8
+ 1746 0062 0D       		.uleb128 0xd
+ 1747 0063 00       		.byte	0
+ 1748 0064 03       		.uleb128 0x3
+ 1749 0065 08       		.uleb128 0x8
+ 1750 0066 3A       		.uleb128 0x3a
+ 1751 0067 0B       		.uleb128 0xb
+ 1752 0068 3B       		.uleb128 0x3b
+ 1753 0069 0B       		.uleb128 0xb
+ 1754 006a 49       		.uleb128 0x49
+ 1755 006b 13       		.uleb128 0x13
+ 1756 006c 38       		.uleb128 0x38
+ 1757 006d 0A       		.uleb128 0xa
+ 1758 006e 00       		.byte	0
+ 1759 006f 00       		.byte	0
+ 1760 0070 09       		.uleb128 0x9
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 45
+
+
+ 1761 0071 0F       		.uleb128 0xf
+ 1762 0072 00       		.byte	0
+ 1763 0073 0B       		.uleb128 0xb
+ 1764 0074 0B       		.uleb128 0xb
+ 1765 0075 49       		.uleb128 0x49
+ 1766 0076 13       		.uleb128 0x13
+ 1767 0077 00       		.byte	0
+ 1768 0078 00       		.byte	0
+ 1769 0079 0A       		.uleb128 0xa
+ 1770 007a 01       		.uleb128 0x1
+ 1771 007b 01       		.byte	0x1
+ 1772 007c 49       		.uleb128 0x49
+ 1773 007d 13       		.uleb128 0x13
+ 1774 007e 01       		.uleb128 0x1
+ 1775 007f 13       		.uleb128 0x13
+ 1776 0080 00       		.byte	0
+ 1777 0081 00       		.byte	0
+ 1778 0082 0B       		.uleb128 0xb
+ 1779 0083 21       		.uleb128 0x21
+ 1780 0084 00       		.byte	0
+ 1781 0085 49       		.uleb128 0x49
+ 1782 0086 13       		.uleb128 0x13
+ 1783 0087 2F       		.uleb128 0x2f
+ 1784 0088 0B       		.uleb128 0xb
+ 1785 0089 00       		.byte	0
+ 1786 008a 00       		.byte	0
+ 1787 008b 0C       		.uleb128 0xc
+ 1788 008c 2E       		.uleb128 0x2e
+ 1789 008d 01       		.byte	0x1
+ 1790 008e 3F       		.uleb128 0x3f
+ 1791 008f 0C       		.uleb128 0xc
+ 1792 0090 03       		.uleb128 0x3
+ 1793 0091 0E       		.uleb128 0xe
+ 1794 0092 3A       		.uleb128 0x3a
+ 1795 0093 0B       		.uleb128 0xb
+ 1796 0094 3B       		.uleb128 0x3b
+ 1797 0095 05       		.uleb128 0x5
+ 1798 0096 27       		.uleb128 0x27
+ 1799 0097 0C       		.uleb128 0xc
+ 1800 0098 49       		.uleb128 0x49
+ 1801 0099 13       		.uleb128 0x13
+ 1802 009a 20       		.uleb128 0x20
+ 1803 009b 0B       		.uleb128 0xb
+ 1804 009c 01       		.uleb128 0x1
+ 1805 009d 13       		.uleb128 0x13
+ 1806 009e 00       		.byte	0
+ 1807 009f 00       		.byte	0
+ 1808 00a0 0D       		.uleb128 0xd
+ 1809 00a1 05       		.uleb128 0x5
+ 1810 00a2 00       		.byte	0
+ 1811 00a3 03       		.uleb128 0x3
+ 1812 00a4 0E       		.uleb128 0xe
+ 1813 00a5 3A       		.uleb128 0x3a
+ 1814 00a6 0B       		.uleb128 0xb
+ 1815 00a7 3B       		.uleb128 0x3b
+ 1816 00a8 05       		.uleb128 0x5
+ 1817 00a9 49       		.uleb128 0x49
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 46
+
+
+ 1818 00aa 13       		.uleb128 0x13
+ 1819 00ab 00       		.byte	0
+ 1820 00ac 00       		.byte	0
+ 1821 00ad 0E       		.uleb128 0xe
+ 1822 00ae 34       		.uleb128 0x34
+ 1823 00af 00       		.byte	0
+ 1824 00b0 03       		.uleb128 0x3
+ 1825 00b1 0E       		.uleb128 0xe
+ 1826 00b2 3A       		.uleb128 0x3a
+ 1827 00b3 0B       		.uleb128 0xb
+ 1828 00b4 3B       		.uleb128 0x3b
+ 1829 00b5 05       		.uleb128 0x5
+ 1830 00b6 49       		.uleb128 0x49
+ 1831 00b7 13       		.uleb128 0x13
+ 1832 00b8 00       		.byte	0
+ 1833 00b9 00       		.byte	0
+ 1834 00ba 0F       		.uleb128 0xf
+ 1835 00bb 2E       		.uleb128 0x2e
+ 1836 00bc 01       		.byte	0x1
+ 1837 00bd 3F       		.uleb128 0x3f
+ 1838 00be 0C       		.uleb128 0xc
+ 1839 00bf 03       		.uleb128 0x3
+ 1840 00c0 0E       		.uleb128 0xe
+ 1841 00c1 3A       		.uleb128 0x3a
+ 1842 00c2 0B       		.uleb128 0xb
+ 1843 00c3 3B       		.uleb128 0x3b
+ 1844 00c4 0B       		.uleb128 0xb
+ 1845 00c5 27       		.uleb128 0x27
+ 1846 00c6 0C       		.uleb128 0xc
+ 1847 00c7 11       		.uleb128 0x11
+ 1848 00c8 01       		.uleb128 0x1
+ 1849 00c9 12       		.uleb128 0x12
+ 1850 00ca 01       		.uleb128 0x1
+ 1851 00cb 40       		.uleb128 0x40
+ 1852 00cc 06       		.uleb128 0x6
+ 1853 00cd 01       		.uleb128 0x1
+ 1854 00ce 13       		.uleb128 0x13
+ 1855 00cf 00       		.byte	0
+ 1856 00d0 00       		.byte	0
+ 1857 00d1 10       		.uleb128 0x10
+ 1858 00d2 34       		.uleb128 0x34
+ 1859 00d3 00       		.byte	0
+ 1860 00d4 03       		.uleb128 0x3
+ 1861 00d5 0E       		.uleb128 0xe
+ 1862 00d6 3A       		.uleb128 0x3a
+ 1863 00d7 0B       		.uleb128 0xb
+ 1864 00d8 3B       		.uleb128 0x3b
+ 1865 00d9 0B       		.uleb128 0xb
+ 1866 00da 49       		.uleb128 0x49
+ 1867 00db 13       		.uleb128 0x13
+ 1868 00dc 02       		.uleb128 0x2
+ 1869 00dd 0A       		.uleb128 0xa
+ 1870 00de 00       		.byte	0
+ 1871 00df 00       		.byte	0
+ 1872 00e0 11       		.uleb128 0x11
+ 1873 00e1 2E       		.uleb128 0x2e
+ 1874 00e2 01       		.byte	0x1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 47
+
+
+ 1875 00e3 3F       		.uleb128 0x3f
+ 1876 00e4 0C       		.uleb128 0xc
+ 1877 00e5 03       		.uleb128 0x3
+ 1878 00e6 0E       		.uleb128 0xe
+ 1879 00e7 3A       		.uleb128 0x3a
+ 1880 00e8 0B       		.uleb128 0xb
+ 1881 00e9 3B       		.uleb128 0x3b
+ 1882 00ea 0B       		.uleb128 0xb
+ 1883 00eb 27       		.uleb128 0x27
+ 1884 00ec 0C       		.uleb128 0xc
+ 1885 00ed 49       		.uleb128 0x49
+ 1886 00ee 13       		.uleb128 0x13
+ 1887 00ef 11       		.uleb128 0x11
+ 1888 00f0 01       		.uleb128 0x1
+ 1889 00f1 12       		.uleb128 0x12
+ 1890 00f2 01       		.uleb128 0x1
+ 1891 00f3 40       		.uleb128 0x40
+ 1892 00f4 0A       		.uleb128 0xa
+ 1893 00f5 01       		.uleb128 0x1
+ 1894 00f6 13       		.uleb128 0x13
+ 1895 00f7 00       		.byte	0
+ 1896 00f8 00       		.byte	0
+ 1897 00f9 12       		.uleb128 0x12
+ 1898 00fa 34       		.uleb128 0x34
+ 1899 00fb 00       		.byte	0
+ 1900 00fc 03       		.uleb128 0x3
+ 1901 00fd 0E       		.uleb128 0xe
+ 1902 00fe 3A       		.uleb128 0x3a
+ 1903 00ff 0B       		.uleb128 0xb
+ 1904 0100 3B       		.uleb128 0x3b
+ 1905 0101 0B       		.uleb128 0xb
+ 1906 0102 49       		.uleb128 0x49
+ 1907 0103 13       		.uleb128 0x13
+ 1908 0104 02       		.uleb128 0x2
+ 1909 0105 06       		.uleb128 0x6
+ 1910 0106 00       		.byte	0
+ 1911 0107 00       		.byte	0
+ 1912 0108 13       		.uleb128 0x13
+ 1913 0109 2E       		.uleb128 0x2e
+ 1914 010a 00       		.byte	0
+ 1915 010b 3F       		.uleb128 0x3f
+ 1916 010c 0C       		.uleb128 0xc
+ 1917 010d 03       		.uleb128 0x3
+ 1918 010e 0E       		.uleb128 0xe
+ 1919 010f 3A       		.uleb128 0x3a
+ 1920 0110 0B       		.uleb128 0xb
+ 1921 0111 3B       		.uleb128 0x3b
+ 1922 0112 0B       		.uleb128 0xb
+ 1923 0113 27       		.uleb128 0x27
+ 1924 0114 0C       		.uleb128 0xc
+ 1925 0115 11       		.uleb128 0x11
+ 1926 0116 01       		.uleb128 0x1
+ 1927 0117 12       		.uleb128 0x12
+ 1928 0118 01       		.uleb128 0x1
+ 1929 0119 40       		.uleb128 0x40
+ 1930 011a 06       		.uleb128 0x6
+ 1931 011b 00       		.byte	0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 48
+
+
+ 1932 011c 00       		.byte	0
+ 1933 011d 14       		.uleb128 0x14
+ 1934 011e 2E       		.uleb128 0x2e
+ 1935 011f 01       		.byte	0x1
+ 1936 0120 3F       		.uleb128 0x3f
+ 1937 0121 0C       		.uleb128 0xc
+ 1938 0122 03       		.uleb128 0x3
+ 1939 0123 0E       		.uleb128 0xe
+ 1940 0124 3A       		.uleb128 0x3a
+ 1941 0125 0B       		.uleb128 0xb
+ 1942 0126 3B       		.uleb128 0x3b
+ 1943 0127 0B       		.uleb128 0xb
+ 1944 0128 27       		.uleb128 0x27
+ 1945 0129 0C       		.uleb128 0xc
+ 1946 012a 49       		.uleb128 0x49
+ 1947 012b 13       		.uleb128 0x13
+ 1948 012c 11       		.uleb128 0x11
+ 1949 012d 01       		.uleb128 0x1
+ 1950 012e 12       		.uleb128 0x12
+ 1951 012f 01       		.uleb128 0x1
+ 1952 0130 40       		.uleb128 0x40
+ 1953 0131 06       		.uleb128 0x6
+ 1954 0132 01       		.uleb128 0x1
+ 1955 0133 13       		.uleb128 0x13
+ 1956 0134 00       		.byte	0
+ 1957 0135 00       		.byte	0
+ 1958 0136 15       		.uleb128 0x15
+ 1959 0137 2E       		.uleb128 0x2e
+ 1960 0138 00       		.byte	0
+ 1961 0139 3F       		.uleb128 0x3f
+ 1962 013a 0C       		.uleb128 0xc
+ 1963 013b 03       		.uleb128 0x3
+ 1964 013c 0E       		.uleb128 0xe
+ 1965 013d 3A       		.uleb128 0x3a
+ 1966 013e 0B       		.uleb128 0xb
+ 1967 013f 3B       		.uleb128 0x3b
+ 1968 0140 05       		.uleb128 0x5
+ 1969 0141 27       		.uleb128 0x27
+ 1970 0142 0C       		.uleb128 0xc
+ 1971 0143 49       		.uleb128 0x49
+ 1972 0144 13       		.uleb128 0x13
+ 1973 0145 11       		.uleb128 0x11
+ 1974 0146 01       		.uleb128 0x1
+ 1975 0147 12       		.uleb128 0x12
+ 1976 0148 01       		.uleb128 0x1
+ 1977 0149 40       		.uleb128 0x40
+ 1978 014a 0A       		.uleb128 0xa
+ 1979 014b 00       		.byte	0
+ 1980 014c 00       		.byte	0
+ 1981 014d 16       		.uleb128 0x16
+ 1982 014e 2E       		.uleb128 0x2e
+ 1983 014f 01       		.byte	0x1
+ 1984 0150 3F       		.uleb128 0x3f
+ 1985 0151 0C       		.uleb128 0xc
+ 1986 0152 03       		.uleb128 0x3
+ 1987 0153 0E       		.uleb128 0xe
+ 1988 0154 3A       		.uleb128 0x3a
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 49
+
+
+ 1989 0155 0B       		.uleb128 0xb
+ 1990 0156 3B       		.uleb128 0x3b
+ 1991 0157 05       		.uleb128 0x5
+ 1992 0158 27       		.uleb128 0x27
+ 1993 0159 0C       		.uleb128 0xc
+ 1994 015a 49       		.uleb128 0x49
+ 1995 015b 13       		.uleb128 0x13
+ 1996 015c 11       		.uleb128 0x11
+ 1997 015d 01       		.uleb128 0x1
+ 1998 015e 12       		.uleb128 0x12
+ 1999 015f 01       		.uleb128 0x1
+ 2000 0160 40       		.uleb128 0x40
+ 2001 0161 0A       		.uleb128 0xa
+ 2002 0162 01       		.uleb128 0x1
+ 2003 0163 13       		.uleb128 0x13
+ 2004 0164 00       		.byte	0
+ 2005 0165 00       		.byte	0
+ 2006 0166 17       		.uleb128 0x17
+ 2007 0167 05       		.uleb128 0x5
+ 2008 0168 00       		.byte	0
+ 2009 0169 03       		.uleb128 0x3
+ 2010 016a 0E       		.uleb128 0xe
+ 2011 016b 3A       		.uleb128 0x3a
+ 2012 016c 0B       		.uleb128 0xb
+ 2013 016d 3B       		.uleb128 0x3b
+ 2014 016e 05       		.uleb128 0x5
+ 2015 016f 49       		.uleb128 0x49
+ 2016 0170 13       		.uleb128 0x13
+ 2017 0171 02       		.uleb128 0x2
+ 2018 0172 06       		.uleb128 0x6
+ 2019 0173 00       		.byte	0
+ 2020 0174 00       		.byte	0
+ 2021 0175 18       		.uleb128 0x18
+ 2022 0176 34       		.uleb128 0x34
+ 2023 0177 00       		.byte	0
+ 2024 0178 03       		.uleb128 0x3
+ 2025 0179 0E       		.uleb128 0xe
+ 2026 017a 3A       		.uleb128 0x3a
+ 2027 017b 0B       		.uleb128 0xb
+ 2028 017c 3B       		.uleb128 0x3b
+ 2029 017d 05       		.uleb128 0x5
+ 2030 017e 49       		.uleb128 0x49
+ 2031 017f 13       		.uleb128 0x13
+ 2032 0180 02       		.uleb128 0x2
+ 2033 0181 06       		.uleb128 0x6
+ 2034 0182 00       		.byte	0
+ 2035 0183 00       		.byte	0
+ 2036 0184 19       		.uleb128 0x19
+ 2037 0185 2E       		.uleb128 0x2e
+ 2038 0186 01       		.byte	0x1
+ 2039 0187 31       		.uleb128 0x31
+ 2040 0188 13       		.uleb128 0x13
+ 2041 0189 11       		.uleb128 0x11
+ 2042 018a 01       		.uleb128 0x1
+ 2043 018b 12       		.uleb128 0x12
+ 2044 018c 01       		.uleb128 0x1
+ 2045 018d 40       		.uleb128 0x40
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 50
+
+
+ 2046 018e 0A       		.uleb128 0xa
+ 2047 018f 01       		.uleb128 0x1
+ 2048 0190 13       		.uleb128 0x13
+ 2049 0191 00       		.byte	0
+ 2050 0192 00       		.byte	0
+ 2051 0193 1A       		.uleb128 0x1a
+ 2052 0194 05       		.uleb128 0x5
+ 2053 0195 00       		.byte	0
+ 2054 0196 31       		.uleb128 0x31
+ 2055 0197 13       		.uleb128 0x13
+ 2056 0198 02       		.uleb128 0x2
+ 2057 0199 06       		.uleb128 0x6
+ 2058 019a 00       		.byte	0
+ 2059 019b 00       		.byte	0
+ 2060 019c 1B       		.uleb128 0x1b
+ 2061 019d 34       		.uleb128 0x34
+ 2062 019e 00       		.byte	0
+ 2063 019f 31       		.uleb128 0x31
+ 2064 01a0 13       		.uleb128 0x13
+ 2065 01a1 02       		.uleb128 0x2
+ 2066 01a2 06       		.uleb128 0x6
+ 2067 01a3 00       		.byte	0
+ 2068 01a4 00       		.byte	0
+ 2069 01a5 1C       		.uleb128 0x1c
+ 2070 01a6 1D       		.uleb128 0x1d
+ 2071 01a7 01       		.byte	0x1
+ 2072 01a8 31       		.uleb128 0x31
+ 2073 01a9 13       		.uleb128 0x13
+ 2074 01aa 11       		.uleb128 0x11
+ 2075 01ab 01       		.uleb128 0x1
+ 2076 01ac 12       		.uleb128 0x12
+ 2077 01ad 01       		.uleb128 0x1
+ 2078 01ae 58       		.uleb128 0x58
+ 2079 01af 0B       		.uleb128 0xb
+ 2080 01b0 59       		.uleb128 0x59
+ 2081 01b1 05       		.uleb128 0x5
+ 2082 01b2 00       		.byte	0
+ 2083 01b3 00       		.byte	0
+ 2084 01b4 1D       		.uleb128 0x1d
+ 2085 01b5 0B       		.uleb128 0xb
+ 2086 01b6 01       		.byte	0x1
+ 2087 01b7 11       		.uleb128 0x11
+ 2088 01b8 01       		.uleb128 0x1
+ 2089 01b9 12       		.uleb128 0x12
+ 2090 01ba 01       		.uleb128 0x1
+ 2091 01bb 00       		.byte	0
+ 2092 01bc 00       		.byte	0
+ 2093 01bd 1E       		.uleb128 0x1e
+ 2094 01be 34       		.uleb128 0x34
+ 2095 01bf 00       		.byte	0
+ 2096 01c0 31       		.uleb128 0x31
+ 2097 01c1 13       		.uleb128 0x13
+ 2098 01c2 00       		.byte	0
+ 2099 01c3 00       		.byte	0
+ 2100 01c4 1F       		.uleb128 0x1f
+ 2101 01c5 05       		.uleb128 0x5
+ 2102 01c6 00       		.byte	0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 51
+
+
+ 2103 01c7 31       		.uleb128 0x31
+ 2104 01c8 13       		.uleb128 0x13
+ 2105 01c9 00       		.byte	0
+ 2106 01ca 00       		.byte	0
+ 2107 01cb 20       		.uleb128 0x20
+ 2108 01cc 2E       		.uleb128 0x2e
+ 2109 01cd 01       		.byte	0x1
+ 2110 01ce 3F       		.uleb128 0x3f
+ 2111 01cf 0C       		.uleb128 0xc
+ 2112 01d0 03       		.uleb128 0x3
+ 2113 01d1 0E       		.uleb128 0xe
+ 2114 01d2 3A       		.uleb128 0x3a
+ 2115 01d3 0B       		.uleb128 0xb
+ 2116 01d4 3B       		.uleb128 0x3b
+ 2117 01d5 05       		.uleb128 0x5
+ 2118 01d6 27       		.uleb128 0x27
+ 2119 01d7 0C       		.uleb128 0xc
+ 2120 01d8 49       		.uleb128 0x49
+ 2121 01d9 13       		.uleb128 0x13
+ 2122 01da 11       		.uleb128 0x11
+ 2123 01db 01       		.uleb128 0x1
+ 2124 01dc 12       		.uleb128 0x12
+ 2125 01dd 01       		.uleb128 0x1
+ 2126 01de 40       		.uleb128 0x40
+ 2127 01df 06       		.uleb128 0x6
+ 2128 01e0 01       		.uleb128 0x1
+ 2129 01e1 13       		.uleb128 0x13
+ 2130 01e2 00       		.byte	0
+ 2131 01e3 00       		.byte	0
+ 2132 01e4 21       		.uleb128 0x21
+ 2133 01e5 05       		.uleb128 0x5
+ 2134 01e6 00       		.byte	0
+ 2135 01e7 03       		.uleb128 0x3
+ 2136 01e8 08       		.uleb128 0x8
+ 2137 01e9 3A       		.uleb128 0x3a
+ 2138 01ea 0B       		.uleb128 0xb
+ 2139 01eb 3B       		.uleb128 0x3b
+ 2140 01ec 05       		.uleb128 0x5
+ 2141 01ed 49       		.uleb128 0x49
+ 2142 01ee 13       		.uleb128 0x13
+ 2143 01ef 02       		.uleb128 0x2
+ 2144 01f0 06       		.uleb128 0x6
+ 2145 01f1 00       		.byte	0
+ 2146 01f2 00       		.byte	0
+ 2147 01f3 22       		.uleb128 0x22
+ 2148 01f4 34       		.uleb128 0x34
+ 2149 01f5 00       		.byte	0
+ 2150 01f6 03       		.uleb128 0x3
+ 2151 01f7 08       		.uleb128 0x8
+ 2152 01f8 3A       		.uleb128 0x3a
+ 2153 01f9 0B       		.uleb128 0xb
+ 2154 01fa 3B       		.uleb128 0x3b
+ 2155 01fb 05       		.uleb128 0x5
+ 2156 01fc 49       		.uleb128 0x49
+ 2157 01fd 13       		.uleb128 0x13
+ 2158 01fe 02       		.uleb128 0x2
+ 2159 01ff 06       		.uleb128 0x6
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 52
+
+
+ 2160 0200 00       		.byte	0
+ 2161 0201 00       		.byte	0
+ 2162 0202 00       		.byte	0
+ 2163              		.section	.debug_loc,"",%progbits
+ 2164              	.Ldebug_loc0:
+ 2165              	.LLST0:
+ 2166 0000 00000000 		.4byte	.LFB0-.Ltext0
+ 2167 0004 02000000 		.4byte	.LCFI0-.Ltext0
+ 2168 0008 0200     		.2byte	0x2
+ 2169 000a 7D       		.byte	0x7d
+ 2170 000b 00       		.sleb128 0
+ 2171 000c 02000000 		.4byte	.LCFI0-.Ltext0
+ 2172 0010 18000000 		.4byte	.LFE0-.Ltext0
+ 2173 0014 0200     		.2byte	0x2
+ 2174 0016 7D       		.byte	0x7d
+ 2175 0017 08       		.sleb128 8
+ 2176 0018 00000000 		.4byte	0
+ 2177 001c 00000000 		.4byte	0
+ 2178              	.LLST1:
+ 2179 0020 18000000 		.4byte	.LFB1-.Ltext0
+ 2180 0024 1A000000 		.4byte	.LCFI1-.Ltext0
+ 2181 0028 0200     		.2byte	0x2
+ 2182 002a 7D       		.byte	0x7d
+ 2183 002b 00       		.sleb128 0
+ 2184 002c 1A000000 		.4byte	.LCFI1-.Ltext0
+ 2185 0030 30000000 		.4byte	.LFE1-.Ltext0
+ 2186 0034 0200     		.2byte	0x2
+ 2187 0036 7D       		.byte	0x7d
+ 2188 0037 08       		.sleb128 8
+ 2189 0038 00000000 		.4byte	0
+ 2190 003c 00000000 		.4byte	0
+ 2191              	.LLST2:
+ 2192 0040 30000000 		.4byte	.LVL0-.Ltext0
+ 2193 0044 3E000000 		.4byte	.LVL1-.Ltext0
+ 2194 0048 0200     		.2byte	0x2
+ 2195 004a 30       		.byte	0x30
+ 2196 004b 9F       		.byte	0x9f
+ 2197 004c 3E000000 		.4byte	.LVL1-.Ltext0
+ 2198 0050 48000000 		.4byte	.LFE2-.Ltext0
+ 2199 0054 0100     		.2byte	0x1
+ 2200 0056 50       		.byte	0x50
+ 2201 0057 00000000 		.4byte	0
+ 2202 005b 00000000 		.4byte	0
+ 2203              	.LLST3:
+ 2204 005f 48000000 		.4byte	.LFB3-.Ltext0
+ 2205 0063 4A000000 		.4byte	.LCFI2-.Ltext0
+ 2206 0067 0200     		.2byte	0x2
+ 2207 0069 7D       		.byte	0x7d
+ 2208 006a 00       		.sleb128 0
+ 2209 006b 4A000000 		.4byte	.LCFI2-.Ltext0
+ 2210 006f A8000000 		.4byte	.LFE3-.Ltext0
+ 2211 0073 0200     		.2byte	0x2
+ 2212 0075 7D       		.byte	0x7d
+ 2213 0076 04       		.sleb128 4
+ 2214 0077 00000000 		.4byte	0
+ 2215 007b 00000000 		.4byte	0
+ 2216              	.LLST4:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 53
+
+
+ 2217 007f A8000000 		.4byte	.LFB4-.Ltext0
+ 2218 0083 AA000000 		.4byte	.LCFI3-.Ltext0
+ 2219 0087 0200     		.2byte	0x2
+ 2220 0089 7D       		.byte	0x7d
+ 2221 008a 00       		.sleb128 0
+ 2222 008b AA000000 		.4byte	.LCFI3-.Ltext0
+ 2223 008f EC000000 		.4byte	.LFE4-.Ltext0
+ 2224 0093 0200     		.2byte	0x2
+ 2225 0095 7D       		.byte	0x7d
+ 2226 0096 0C       		.sleb128 12
+ 2227 0097 00000000 		.4byte	0
+ 2228 009b 00000000 		.4byte	0
+ 2229              	.LLST5:
+ 2230 009f AA000000 		.4byte	.LVL2-.Ltext0
+ 2231 00a3 B8000000 		.4byte	.LVL3-.Ltext0
+ 2232 00a7 0200     		.2byte	0x2
+ 2233 00a9 30       		.byte	0x30
+ 2234 00aa 9F       		.byte	0x9f
+ 2235 00ab BC000000 		.4byte	.LVL4-.Ltext0
+ 2236 00af CA000000 		.4byte	.LVL5-.Ltext0
+ 2237 00b3 0100     		.2byte	0x1
+ 2238 00b5 50       		.byte	0x50
+ 2239 00b6 CE000000 		.4byte	.LVL7-.Ltext0
+ 2240 00ba D4000000 		.4byte	.LVL8-.Ltext0
+ 2241 00be 0100     		.2byte	0x1
+ 2242 00c0 50       		.byte	0x50
+ 2243 00c1 00000000 		.4byte	0
+ 2244 00c5 00000000 		.4byte	0
+ 2245              	.LLST6:
+ 2246 00c9 AA000000 		.4byte	.LVL2-.Ltext0
+ 2247 00cd CC000000 		.4byte	.LVL6-.Ltext0
+ 2248 00d1 0200     		.2byte	0x2
+ 2249 00d3 30       		.byte	0x30
+ 2250 00d4 9F       		.byte	0x9f
+ 2251 00d5 CC000000 		.4byte	.LVL6-.Ltext0
+ 2252 00d9 CE000000 		.4byte	.LVL7-.Ltext0
+ 2253 00dd 0100     		.2byte	0x1
+ 2254 00df 50       		.byte	0x50
+ 2255 00e0 CE000000 		.4byte	.LVL7-.Ltext0
+ 2256 00e4 D4000000 		.4byte	.LVL8-.Ltext0
+ 2257 00e8 0200     		.2byte	0x2
+ 2258 00ea 30       		.byte	0x30
+ 2259 00eb 9F       		.byte	0x9f
+ 2260 00ec D4000000 		.4byte	.LVL8-.Ltext0
+ 2261 00f0 DA000000 		.4byte	.LVL9-.Ltext0
+ 2262 00f4 0100     		.2byte	0x1
+ 2263 00f6 50       		.byte	0x50
+ 2264 00f7 00000000 		.4byte	0
+ 2265 00fb 00000000 		.4byte	0
+ 2266              	.LLST7:
+ 2267 00ff EC000000 		.4byte	.LFB5-.Ltext0
+ 2268 0103 EE000000 		.4byte	.LCFI4-.Ltext0
+ 2269 0107 0200     		.2byte	0x2
+ 2270 0109 7D       		.byte	0x7d
+ 2271 010a 00       		.sleb128 0
+ 2272 010b EE000000 		.4byte	.LCFI4-.Ltext0
+ 2273 010f 2C010000 		.4byte	.LFE5-.Ltext0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 54
+
+
+ 2274 0113 0200     		.2byte	0x2
+ 2275 0115 7D       		.byte	0x7d
+ 2276 0116 0C       		.sleb128 12
+ 2277 0117 00000000 		.4byte	0
+ 2278 011b 00000000 		.4byte	0
+ 2279              	.LLST8:
+ 2280 011f EE000000 		.4byte	.LVL10-.Ltext0
+ 2281 0123 FC000000 		.4byte	.LVL11-.Ltext0
+ 2282 0127 0200     		.2byte	0x2
+ 2283 0129 30       		.byte	0x30
+ 2284 012a 9F       		.byte	0x9f
+ 2285 012b 02010000 		.4byte	.LVL12-.Ltext0
+ 2286 012f 10010000 		.4byte	.LVL13-.Ltext0
+ 2287 0133 0100     		.2byte	0x1
+ 2288 0135 50       		.byte	0x50
+ 2289 0136 14010000 		.4byte	.LVL15-.Ltext0
+ 2290 013a 16010000 		.4byte	.LVL16-.Ltext0
+ 2291 013e 0100     		.2byte	0x1
+ 2292 0140 50       		.byte	0x50
+ 2293 0141 00000000 		.4byte	0
+ 2294 0145 00000000 		.4byte	0
+ 2295              	.LLST9:
+ 2296 0149 EE000000 		.4byte	.LVL10-.Ltext0
+ 2297 014d 12010000 		.4byte	.LVL14-.Ltext0
+ 2298 0151 0200     		.2byte	0x2
+ 2299 0153 30       		.byte	0x30
+ 2300 0154 9F       		.byte	0x9f
+ 2301 0155 12010000 		.4byte	.LVL14-.Ltext0
+ 2302 0159 14010000 		.4byte	.LVL15-.Ltext0
+ 2303 015d 0100     		.2byte	0x1
+ 2304 015f 50       		.byte	0x50
+ 2305 0160 14010000 		.4byte	.LVL15-.Ltext0
+ 2306 0164 16010000 		.4byte	.LVL16-.Ltext0
+ 2307 0168 0200     		.2byte	0x2
+ 2308 016a 30       		.byte	0x30
+ 2309 016b 9F       		.byte	0x9f
+ 2310 016c 16010000 		.4byte	.LVL16-.Ltext0
+ 2311 0170 1A010000 		.4byte	.LVL17-.Ltext0
+ 2312 0174 0100     		.2byte	0x1
+ 2313 0176 50       		.byte	0x50
+ 2314 0177 00000000 		.4byte	0
+ 2315 017b 00000000 		.4byte	0
+ 2316              	.LLST10:
+ 2317 017f 50010000 		.4byte	.LVL18-.Ltext0
+ 2318 0183 56010000 		.4byte	.LVL19-.Ltext0
+ 2319 0187 0100     		.2byte	0x1
+ 2320 0189 50       		.byte	0x50
+ 2321 018a 00000000 		.4byte	0
+ 2322 018e 00000000 		.4byte	0
+ 2323              	.LLST11:
+ 2324 0192 50010000 		.4byte	.LVL18-.Ltext0
+ 2325 0196 68010000 		.4byte	.LVL20-.Ltext0
+ 2326 019a 0200     		.2byte	0x2
+ 2327 019c 30       		.byte	0x30
+ 2328 019d 9F       		.byte	0x9f
+ 2329 019e 68010000 		.4byte	.LVL20-.Ltext0
+ 2330 01a2 6A010000 		.4byte	.LVL21-.Ltext0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 55
+
+
+ 2331 01a6 0200     		.2byte	0x2
+ 2332 01a8 31       		.byte	0x31
+ 2333 01a9 9F       		.byte	0x9f
+ 2334 01aa 6A010000 		.4byte	.LVL21-.Ltext0
+ 2335 01ae 6C010000 		.4byte	.LVL22-.Ltext0
+ 2336 01b2 0100     		.2byte	0x1
+ 2337 01b4 53       		.byte	0x53
+ 2338 01b5 00000000 		.4byte	0
+ 2339 01b9 00000000 		.4byte	0
+ 2340              	.LLST12:
+ 2341 01bd 7C010000 		.4byte	.LVL23-.Ltext0
+ 2342 01c1 7E010000 		.4byte	.LVL24-.Ltext0
+ 2343 01c5 0100     		.2byte	0x1
+ 2344 01c7 50       		.byte	0x50
+ 2345 01c8 00000000 		.4byte	0
+ 2346 01cc 00000000 		.4byte	0
+ 2347              	.LLST13:
+ 2348 01d0 7C010000 		.4byte	.LVL23-.Ltext0
+ 2349 01d4 88010000 		.4byte	.LVL25-.Ltext0
+ 2350 01d8 0100     		.2byte	0x1
+ 2351 01da 51       		.byte	0x51
+ 2352 01db 94010000 		.4byte	.LVL26-.Ltext0
+ 2353 01df B6010000 		.4byte	.LVL28-.Ltext0
+ 2354 01e3 0100     		.2byte	0x1
+ 2355 01e5 51       		.byte	0x51
+ 2356 01e6 00000000 		.4byte	0
+ 2357 01ea 00000000 		.4byte	0
+ 2358              	.LLST14:
+ 2359 01ee 7C010000 		.4byte	.LVL23-.Ltext0
+ 2360 01f2 BE010000 		.4byte	.LVL30-.Ltext0
+ 2361 01f6 0200     		.2byte	0x2
+ 2362 01f8 31       		.byte	0x31
+ 2363 01f9 9F       		.byte	0x9f
+ 2364 01fa BE010000 		.4byte	.LVL30-.Ltext0
+ 2365 01fe C0010000 		.4byte	.LVL31-.Ltext0
+ 2366 0202 0100     		.2byte	0x1
+ 2367 0204 53       		.byte	0x53
+ 2368 0205 00000000 		.4byte	0
+ 2369 0209 00000000 		.4byte	0
+ 2370              	.LLST15:
+ 2371 020d AC010000 		.4byte	.LVL27-.Ltext0
+ 2372 0211 BC010000 		.4byte	.LVL29-.Ltext0
+ 2373 0215 0100     		.2byte	0x1
+ 2374 0217 51       		.byte	0x51
+ 2375 0218 00000000 		.4byte	0
+ 2376 021c 00000000 		.4byte	0
+ 2377              	.LLST16:
+ 2378 0220 D0010000 		.4byte	.LFB9-.Ltext0
+ 2379 0224 D2010000 		.4byte	.LCFI5-.Ltext0
+ 2380 0228 0200     		.2byte	0x2
+ 2381 022a 7D       		.byte	0x7d
+ 2382 022b 00       		.sleb128 0
+ 2383 022c D2010000 		.4byte	.LCFI5-.Ltext0
+ 2384 0230 56020000 		.4byte	.LFE9-.Ltext0
+ 2385 0234 0200     		.2byte	0x2
+ 2386 0236 7D       		.byte	0x7d
+ 2387 0237 18       		.sleb128 24
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 56
+
+
+ 2388 0238 00000000 		.4byte	0
+ 2389 023c 00000000 		.4byte	0
+ 2390              	.LLST17:
+ 2391 0240 D2010000 		.4byte	.LVL32-.Ltext0
+ 2392 0244 DB010000 		.4byte	.LVL33-1-.Ltext0
+ 2393 0248 0100     		.2byte	0x1
+ 2394 024a 50       		.byte	0x50
+ 2395 024b 00000000 		.4byte	0
+ 2396 024f 00000000 		.4byte	0
+ 2397              	.LLST18:
+ 2398 0253 D2010000 		.4byte	.LVL32-.Ltext0
+ 2399 0257 DB010000 		.4byte	.LVL33-1-.Ltext0
+ 2400 025b 0100     		.2byte	0x1
+ 2401 025d 51       		.byte	0x51
+ 2402 025e DB010000 		.4byte	.LVL33-1-.Ltext0
+ 2403 0262 50020000 		.4byte	.LVL53-.Ltext0
+ 2404 0266 0100     		.2byte	0x1
+ 2405 0268 56       		.byte	0x56
+ 2406 0269 00000000 		.4byte	0
+ 2407 026d 00000000 		.4byte	0
+ 2408              	.LLST19:
+ 2409 0271 D2010000 		.4byte	.LVL32-.Ltext0
+ 2410 0275 DB010000 		.4byte	.LVL33-1-.Ltext0
+ 2411 0279 0100     		.2byte	0x1
+ 2412 027b 52       		.byte	0x52
+ 2413 027c 00000000 		.4byte	0
+ 2414 0280 00000000 		.4byte	0
+ 2415              	.LLST20:
+ 2416 0284 D2010000 		.4byte	.LVL32-.Ltext0
+ 2417 0288 E2010000 		.4byte	.LVL34-.Ltext0
+ 2418 028c 0200     		.2byte	0x2
+ 2419 028e 30       		.byte	0x30
+ 2420 028f 9F       		.byte	0x9f
+ 2421 0290 E2010000 		.4byte	.LVL34-.Ltext0
+ 2422 0294 E6010000 		.4byte	.LVL35-.Ltext0
+ 2423 0298 0100     		.2byte	0x1
+ 2424 029a 50       		.byte	0x50
+ 2425 029b F2010000 		.4byte	.LVL36-.Ltext0
+ 2426 029f 04020000 		.4byte	.LVL37-.Ltext0
+ 2427 02a3 0100     		.2byte	0x1
+ 2428 02a5 50       		.byte	0x50
+ 2429 02a6 16020000 		.4byte	.LVL40-.Ltext0
+ 2430 02aa 22020000 		.4byte	.LVL42-.Ltext0
+ 2431 02ae 0100     		.2byte	0x1
+ 2432 02b0 50       		.byte	0x50
+ 2433 02b1 28020000 		.4byte	.LVL43-.Ltext0
+ 2434 02b5 2A020000 		.4byte	.LVL44-.Ltext0
+ 2435 02b9 0300     		.2byte	0x3
+ 2436 02bb 09       		.byte	0x9
+ 2437 02bc FF       		.byte	0xff
+ 2438 02bd 9F       		.byte	0x9f
+ 2439 02be 2A020000 		.4byte	.LVL44-.Ltext0
+ 2440 02c2 36020000 		.4byte	.LVL48-.Ltext0
+ 2441 02c6 0100     		.2byte	0x1
+ 2442 02c8 50       		.byte	0x50
+ 2443 02c9 36020000 		.4byte	.LVL48-.Ltext0
+ 2444 02cd 4A020000 		.4byte	.LVL51-.Ltext0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 57
+
+
+ 2445 02d1 0100     		.2byte	0x1
+ 2446 02d3 54       		.byte	0x54
+ 2447 02d4 00000000 		.4byte	0
+ 2448 02d8 00000000 		.4byte	0
+ 2449              	.LLST21:
+ 2450 02dc D2010000 		.4byte	.LVL32-.Ltext0
+ 2451 02e0 04020000 		.4byte	.LVL37-.Ltext0
+ 2452 02e4 0200     		.2byte	0x2
+ 2453 02e6 30       		.byte	0x30
+ 2454 02e7 9F       		.byte	0x9f
+ 2455 02e8 08020000 		.4byte	.LVL38-.Ltext0
+ 2456 02ec 10020000 		.4byte	.LVL39-.Ltext0
+ 2457 02f0 0100     		.2byte	0x1
+ 2458 02f2 50       		.byte	0x50
+ 2459 02f3 22020000 		.4byte	.LVL42-.Ltext0
+ 2460 02f7 2A020000 		.4byte	.LVL44-.Ltext0
+ 2461 02fb 0100     		.2byte	0x1
+ 2462 02fd 50       		.byte	0x50
+ 2463 02fe 3A020000 		.4byte	.LVL49-.Ltext0
+ 2464 0302 4D020000 		.4byte	.LVL52-1-.Ltext0
+ 2465 0306 0100     		.2byte	0x1
+ 2466 0308 50       		.byte	0x50
+ 2467 0309 00000000 		.4byte	0
+ 2468 030d 00000000 		.4byte	0
+ 2469              	.LLST22:
+ 2470 0311 D2010000 		.4byte	.LVL32-.Ltext0
+ 2471 0315 04020000 		.4byte	.LVL37-.Ltext0
+ 2472 0319 0200     		.2byte	0x2
+ 2473 031b 30       		.byte	0x30
+ 2474 031c 9F       		.byte	0x9f
+ 2475 031d 04020000 		.4byte	.LVL37-.Ltext0
+ 2476 0321 28020000 		.4byte	.LVL43-.Ltext0
+ 2477 0325 0100     		.2byte	0x1
+ 2478 0327 55       		.byte	0x55
+ 2479 0328 28020000 		.4byte	.LVL43-.Ltext0
+ 2480 032c 2A020000 		.4byte	.LVL44-.Ltext0
+ 2481 0330 0200     		.2byte	0x2
+ 2482 0332 91       		.byte	0x91
+ 2483 0333 00       		.sleb128 0
+ 2484 0334 2A020000 		.4byte	.LVL44-.Ltext0
+ 2485 0338 2C020000 		.4byte	.LVL45-.Ltext0
+ 2486 033c 0100     		.2byte	0x1
+ 2487 033e 55       		.byte	0x55
+ 2488 033f 2C020000 		.4byte	.LVL45-.Ltext0
+ 2489 0343 2E020000 		.4byte	.LVL46-.Ltext0
+ 2490 0347 0300     		.2byte	0x3
+ 2491 0349 75       		.byte	0x75
+ 2492 034a 7F       		.sleb128 -1
+ 2493 034b 9F       		.byte	0x9f
+ 2494 034c 30020000 		.4byte	.LVL47-.Ltext0
+ 2495 0350 36020000 		.4byte	.LVL48-.Ltext0
+ 2496 0354 0100     		.2byte	0x1
+ 2497 0356 55       		.byte	0x55
+ 2498 0357 00000000 		.4byte	0
+ 2499 035b 00000000 		.4byte	0
+ 2500              	.LLST23:
+ 2501 035f 56020000 		.4byte	.LFB10-.Ltext0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 58
+
+
+ 2502 0363 58020000 		.4byte	.LCFI6-.Ltext0
+ 2503 0367 0200     		.2byte	0x2
+ 2504 0369 7D       		.byte	0x7d
+ 2505 036a 00       		.sleb128 0
+ 2506 036b 58020000 		.4byte	.LCFI6-.Ltext0
+ 2507 036f 76020000 		.4byte	.LFE10-.Ltext0
+ 2508 0373 0200     		.2byte	0x2
+ 2509 0375 7D       		.byte	0x7d
+ 2510 0376 04       		.sleb128 4
+ 2511 0377 00000000 		.4byte	0
+ 2512 037b 00000000 		.4byte	0
+ 2513              	.LLST24:
+ 2514 037f 5C020000 		.4byte	.LVL54-.Ltext0
+ 2515 0383 6A020000 		.4byte	.LVL55-.Ltext0
+ 2516 0387 0100     		.2byte	0x1
+ 2517 0389 50       		.byte	0x50
+ 2518 038a 6C020000 		.4byte	.LVL56-.Ltext0
+ 2519 038e 6E020000 		.4byte	.LVL57-.Ltext0
+ 2520 0392 0100     		.2byte	0x1
+ 2521 0394 50       		.byte	0x50
+ 2522 0395 00000000 		.4byte	0
+ 2523 0399 00000000 		.4byte	0
+ 2524              	.LLST25:
+ 2525 039d 76020000 		.4byte	.LFB11-.Ltext0
+ 2526 03a1 78020000 		.4byte	.LCFI7-.Ltext0
+ 2527 03a5 0200     		.2byte	0x2
+ 2528 03a7 7D       		.byte	0x7d
+ 2529 03a8 00       		.sleb128 0
+ 2530 03a9 78020000 		.4byte	.LCFI7-.Ltext0
+ 2531 03ad 9C020000 		.4byte	.LFE11-.Ltext0
+ 2532 03b1 0200     		.2byte	0x2
+ 2533 03b3 7D       		.byte	0x7d
+ 2534 03b4 08       		.sleb128 8
+ 2535 03b5 00000000 		.4byte	0
+ 2536 03b9 00000000 		.4byte	0
+ 2537              	.LLST26:
+ 2538 03bd 78020000 		.4byte	.LVL58-.Ltext0
+ 2539 03c1 7C020000 		.4byte	.LVL59-.Ltext0
+ 2540 03c5 0100     		.2byte	0x1
+ 2541 03c7 50       		.byte	0x50
+ 2542 03c8 00000000 		.4byte	0
+ 2543 03cc 00000000 		.4byte	0
+ 2544              	.LLST27:
+ 2545 03d0 82020000 		.4byte	.LVL60-.Ltext0
+ 2546 03d4 91020000 		.4byte	.LVL61-1-.Ltext0
+ 2547 03d8 0100     		.2byte	0x1
+ 2548 03da 50       		.byte	0x50
+ 2549 03db 92020000 		.4byte	.LVL61-.Ltext0
+ 2550 03df 94020000 		.4byte	.LVL62-.Ltext0
+ 2551 03e3 0100     		.2byte	0x1
+ 2552 03e5 50       		.byte	0x50
+ 2553 03e6 00000000 		.4byte	0
+ 2554 03ea 00000000 		.4byte	0
+ 2555              	.LLST28:
+ 2556 03ee 9C020000 		.4byte	.LFB12-.Ltext0
+ 2557 03f2 9E020000 		.4byte	.LCFI8-.Ltext0
+ 2558 03f6 0200     		.2byte	0x2
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 59
+
+
+ 2559 03f8 7D       		.byte	0x7d
+ 2560 03f9 00       		.sleb128 0
+ 2561 03fa 9E020000 		.4byte	.LCFI8-.Ltext0
+ 2562 03fe E8020000 		.4byte	.LFE12-.Ltext0
+ 2563 0402 0200     		.2byte	0x2
+ 2564 0404 7D       		.byte	0x7d
+ 2565 0405 14       		.sleb128 20
+ 2566 0406 00000000 		.4byte	0
+ 2567 040a 00000000 		.4byte	0
+ 2568              	.LLST29:
+ 2569 040e 9E020000 		.4byte	.LVL63-.Ltext0
+ 2570 0412 A7020000 		.4byte	.LVL64-1-.Ltext0
+ 2571 0416 0100     		.2byte	0x1
+ 2572 0418 50       		.byte	0x50
+ 2573 0419 00000000 		.4byte	0
+ 2574 041d 00000000 		.4byte	0
+ 2575              	.LLST30:
+ 2576 0421 9E020000 		.4byte	.LVL63-.Ltext0
+ 2577 0425 A7020000 		.4byte	.LVL64-1-.Ltext0
+ 2578 0429 0100     		.2byte	0x1
+ 2579 042b 51       		.byte	0x51
+ 2580 042c A7020000 		.4byte	.LVL64-1-.Ltext0
+ 2581 0430 C2020000 		.4byte	.LVL68-.Ltext0
+ 2582 0434 0100     		.2byte	0x1
+ 2583 0436 57       		.byte	0x57
+ 2584 0437 00000000 		.4byte	0
+ 2585 043b 00000000 		.4byte	0
+ 2586              	.LLST31:
+ 2587 043f 9E020000 		.4byte	.LVL63-.Ltext0
+ 2588 0443 A7020000 		.4byte	.LVL64-1-.Ltext0
+ 2589 0447 0100     		.2byte	0x1
+ 2590 0449 52       		.byte	0x52
+ 2591 044a 00000000 		.4byte	0
+ 2592 044e 00000000 		.4byte	0
+ 2593              	.LLST32:
+ 2594 0452 9E020000 		.4byte	.LVL63-.Ltext0
+ 2595 0456 AE020000 		.4byte	.LVL65-.Ltext0
+ 2596 045a 0200     		.2byte	0x2
+ 2597 045c 30       		.byte	0x30
+ 2598 045d 9F       		.byte	0x9f
+ 2599 045e AE020000 		.4byte	.LVL65-.Ltext0
+ 2600 0462 B4020000 		.4byte	.LVL66-.Ltext0
+ 2601 0466 0100     		.2byte	0x1
+ 2602 0468 50       		.byte	0x50
+ 2603 0469 B4020000 		.4byte	.LVL66-.Ltext0
+ 2604 046d BC020000 		.4byte	.LVL67-.Ltext0
+ 2605 0471 0100     		.2byte	0x1
+ 2606 0473 54       		.byte	0x54
+ 2607 0474 BC020000 		.4byte	.LVL67-.Ltext0
+ 2608 0478 C2020000 		.4byte	.LVL68-.Ltext0
+ 2609 047c 0100     		.2byte	0x1
+ 2610 047e 50       		.byte	0x50
+ 2611 047f C2020000 		.4byte	.LVL68-.Ltext0
+ 2612 0483 C8020000 		.4byte	.LVL69-.Ltext0
+ 2613 0487 0200     		.2byte	0x2
+ 2614 0489 31       		.byte	0x31
+ 2615 048a 9F       		.byte	0x9f
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 60
+
+
+ 2616 048b C8020000 		.4byte	.LVL69-.Ltext0
+ 2617 048f CE020000 		.4byte	.LVL71-.Ltext0
+ 2618 0493 0100     		.2byte	0x1
+ 2619 0495 50       		.byte	0x50
+ 2620 0496 CE020000 		.4byte	.LVL71-.Ltext0
+ 2621 049a D8020000 		.4byte	.LVL72-.Ltext0
+ 2622 049e 0200     		.2byte	0x2
+ 2623 04a0 31       		.byte	0x31
+ 2624 04a1 9F       		.byte	0x9f
+ 2625 04a2 D8020000 		.4byte	.LVL72-.Ltext0
+ 2626 04a6 DA020000 		.4byte	.LVL73-.Ltext0
+ 2627 04aa 0100     		.2byte	0x1
+ 2628 04ac 50       		.byte	0x50
+ 2629 04ad DA020000 		.4byte	.LVL73-.Ltext0
+ 2630 04b1 DC020000 		.4byte	.LVL74-.Ltext0
+ 2631 04b5 0100     		.2byte	0x1
+ 2632 04b7 54       		.byte	0x54
+ 2633 04b8 00000000 		.4byte	0
+ 2634 04bc 00000000 		.4byte	0
+ 2635              	.LLST33:
+ 2636 04c0 9E020000 		.4byte	.LVL63-.Ltext0
+ 2637 04c4 C2020000 		.4byte	.LVL68-.Ltext0
+ 2638 04c8 0200     		.2byte	0x2
+ 2639 04ca 30       		.byte	0x30
+ 2640 04cb 9F       		.byte	0x9f
+ 2641 04cc C2020000 		.4byte	.LVL68-.Ltext0
+ 2642 04d0 CA020000 		.4byte	.LVL70-.Ltext0
+ 2643 04d4 0100     		.2byte	0x1
+ 2644 04d6 55       		.byte	0x55
+ 2645 04d7 CA020000 		.4byte	.LVL70-.Ltext0
+ 2646 04db CE020000 		.4byte	.LVL71-.Ltext0
+ 2647 04df 0300     		.2byte	0x3
+ 2648 04e1 75       		.byte	0x75
+ 2649 04e2 7F       		.sleb128 -1
+ 2650 04e3 9F       		.byte	0x9f
+ 2651 04e4 CE020000 		.4byte	.LVL71-.Ltext0
+ 2652 04e8 D8020000 		.4byte	.LVL72-.Ltext0
+ 2653 04ec 0100     		.2byte	0x1
+ 2654 04ee 55       		.byte	0x55
+ 2655 04ef D8020000 		.4byte	.LVL72-.Ltext0
+ 2656 04f3 DA020000 		.4byte	.LVL73-.Ltext0
+ 2657 04f7 0300     		.2byte	0x3
+ 2658 04f9 75       		.byte	0x75
+ 2659 04fa 7F       		.sleb128 -1
+ 2660 04fb 9F       		.byte	0x9f
+ 2661 04fc 00000000 		.4byte	0
+ 2662 0500 00000000 		.4byte	0
+ 2663              	.LLST34:
+ 2664 0504 E8020000 		.4byte	.LFB13-.Ltext0
+ 2665 0508 EA020000 		.4byte	.LCFI9-.Ltext0
+ 2666 050c 0200     		.2byte	0x2
+ 2667 050e 7D       		.byte	0x7d
+ 2668 050f 00       		.sleb128 0
+ 2669 0510 EA020000 		.4byte	.LCFI9-.Ltext0
+ 2670 0514 70030000 		.4byte	.LFE13-.Ltext0
+ 2671 0518 0200     		.2byte	0x2
+ 2672 051a 7D       		.byte	0x7d
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 61
+
+
+ 2673 051b 18       		.sleb128 24
+ 2674 051c 00000000 		.4byte	0
+ 2675 0520 00000000 		.4byte	0
+ 2676              	.LLST35:
+ 2677 0524 EA020000 		.4byte	.LVL75-.Ltext0
+ 2678 0528 F3020000 		.4byte	.LVL76-1-.Ltext0
+ 2679 052c 0100     		.2byte	0x1
+ 2680 052e 50       		.byte	0x50
+ 2681 052f 00000000 		.4byte	0
+ 2682 0533 00000000 		.4byte	0
+ 2683              	.LLST36:
+ 2684 0537 EA020000 		.4byte	.LVL75-.Ltext0
+ 2685 053b F3020000 		.4byte	.LVL76-1-.Ltext0
+ 2686 053f 0100     		.2byte	0x1
+ 2687 0541 51       		.byte	0x51
+ 2688 0542 F3020000 		.4byte	.LVL76-1-.Ltext0
+ 2689 0546 6A030000 		.4byte	.LVL94-.Ltext0
+ 2690 054a 0100     		.2byte	0x1
+ 2691 054c 56       		.byte	0x56
+ 2692 054d 00000000 		.4byte	0
+ 2693 0551 00000000 		.4byte	0
+ 2694              	.LLST37:
+ 2695 0555 EA020000 		.4byte	.LVL75-.Ltext0
+ 2696 0559 F3020000 		.4byte	.LVL76-1-.Ltext0
+ 2697 055d 0100     		.2byte	0x1
+ 2698 055f 52       		.byte	0x52
+ 2699 0560 00000000 		.4byte	0
+ 2700 0564 00000000 		.4byte	0
+ 2701              	.LLST38:
+ 2702 0568 EA020000 		.4byte	.LVL75-.Ltext0
+ 2703 056c FA020000 		.4byte	.LVL77-.Ltext0
+ 2704 0570 0200     		.2byte	0x2
+ 2705 0572 30       		.byte	0x30
+ 2706 0573 9F       		.byte	0x9f
+ 2707 0574 FA020000 		.4byte	.LVL77-.Ltext0
+ 2708 0578 FE020000 		.4byte	.LVL78-.Ltext0
+ 2709 057c 0100     		.2byte	0x1
+ 2710 057e 50       		.byte	0x50
+ 2711 057f 0A030000 		.4byte	.LVL79-.Ltext0
+ 2712 0583 1C030000 		.4byte	.LVL80-.Ltext0
+ 2713 0587 0100     		.2byte	0x1
+ 2714 0589 50       		.byte	0x50
+ 2715 058a 1C030000 		.4byte	.LVL80-.Ltext0
+ 2716 058e 3A030000 		.4byte	.LVL83-.Ltext0
+ 2717 0592 0100     		.2byte	0x1
+ 2718 0594 54       		.byte	0x54
+ 2719 0595 48030000 		.4byte	.LVL84-.Ltext0
+ 2720 0599 50030000 		.4byte	.LVL86-.Ltext0
+ 2721 059d 0100     		.2byte	0x1
+ 2722 059f 50       		.byte	0x50
+ 2723 05a0 50030000 		.4byte	.LVL86-.Ltext0
+ 2724 05a4 56030000 		.4byte	.LVL87-.Ltext0
+ 2725 05a8 0100     		.2byte	0x1
+ 2726 05aa 54       		.byte	0x54
+ 2727 05ab 56030000 		.4byte	.LVL87-.Ltext0
+ 2728 05af 58030000 		.4byte	.LVL88-.Ltext0
+ 2729 05b3 0300     		.2byte	0x3
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 62
+
+
+ 2730 05b5 09       		.byte	0x9
+ 2731 05b6 FF       		.byte	0xff
+ 2732 05b7 9F       		.byte	0x9f
+ 2733 05b8 58030000 		.4byte	.LVL88-.Ltext0
+ 2734 05bc 64030000 		.4byte	.LVL93-.Ltext0
+ 2735 05c0 0100     		.2byte	0x1
+ 2736 05c2 54       		.byte	0x54
+ 2737 05c3 00000000 		.4byte	0
+ 2738 05c7 00000000 		.4byte	0
+ 2739              	.LLST39:
+ 2740 05cb EA020000 		.4byte	.LVL75-.Ltext0
+ 2741 05cf 1C030000 		.4byte	.LVL80-.Ltext0
+ 2742 05d3 0200     		.2byte	0x2
+ 2743 05d5 30       		.byte	0x30
+ 2744 05d6 9F       		.byte	0x9f
+ 2745 05d7 20030000 		.4byte	.LVL81-.Ltext0
+ 2746 05db 2E030000 		.4byte	.LVL82-.Ltext0
+ 2747 05df 0100     		.2byte	0x1
+ 2748 05e1 50       		.byte	0x50
+ 2749 05e2 50030000 		.4byte	.LVL86-.Ltext0
+ 2750 05e6 58030000 		.4byte	.LVL88-.Ltext0
+ 2751 05ea 0100     		.2byte	0x1
+ 2752 05ec 50       		.byte	0x50
+ 2753 05ed 00000000 		.4byte	0
+ 2754 05f1 00000000 		.4byte	0
+ 2755              	.LLST40:
+ 2756 05f5 EA020000 		.4byte	.LVL75-.Ltext0
+ 2757 05f9 1C030000 		.4byte	.LVL80-.Ltext0
+ 2758 05fd 0200     		.2byte	0x2
+ 2759 05ff 30       		.byte	0x30
+ 2760 0600 9F       		.byte	0x9f
+ 2761 0601 1C030000 		.4byte	.LVL80-.Ltext0
+ 2762 0605 56030000 		.4byte	.LVL87-.Ltext0
+ 2763 0609 0100     		.2byte	0x1
+ 2764 060b 55       		.byte	0x55
+ 2765 060c 56030000 		.4byte	.LVL87-.Ltext0
+ 2766 0610 58030000 		.4byte	.LVL88-.Ltext0
+ 2767 0614 0200     		.2byte	0x2
+ 2768 0616 91       		.byte	0x91
+ 2769 0617 00       		.sleb128 0
+ 2770 0618 58030000 		.4byte	.LVL88-.Ltext0
+ 2771 061c 5A030000 		.4byte	.LVL89-.Ltext0
+ 2772 0620 0100     		.2byte	0x1
+ 2773 0622 55       		.byte	0x55
+ 2774 0623 5A030000 		.4byte	.LVL89-.Ltext0
+ 2775 0627 5C030000 		.4byte	.LVL90-.Ltext0
+ 2776 062b 0300     		.2byte	0x3
+ 2777 062d 75       		.byte	0x75
+ 2778 062e 7F       		.sleb128 -1
+ 2779 062f 9F       		.byte	0x9f
+ 2780 0630 5E030000 		.4byte	.LVL91-.Ltext0
+ 2781 0634 62030000 		.4byte	.LVL92-.Ltext0
+ 2782 0638 0100     		.2byte	0x1
+ 2783 063a 55       		.byte	0x55
+ 2784 063b 00000000 		.4byte	0
+ 2785 063f 00000000 		.4byte	0
+ 2786              		.section	.debug_aranges,"",%progbits
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 63
+
+
+ 2787 0000 1C000000 		.4byte	0x1c
+ 2788 0004 0200     		.2byte	0x2
+ 2789 0006 00000000 		.4byte	.Ldebug_info0
+ 2790 000a 04       		.byte	0x4
+ 2791 000b 00       		.byte	0
+ 2792 000c 0000     		.2byte	0
+ 2793 000e 0000     		.2byte	0
+ 2794 0010 00000000 		.4byte	.Ltext0
+ 2795 0014 70030000 		.4byte	.Letext0-.Ltext0
+ 2796 0018 00000000 		.4byte	0
+ 2797 001c 00000000 		.4byte	0
+ 2798              		.section	.debug_line,"",%progbits
+ 2799              	.Ldebug_line0:
+ 2800 0000 BA010000 		.section	.debug_str,"MS",%progbits,1
+ 2800      02007B00 
+ 2800      00000201 
+ 2800      FB0E0D00 
+ 2800      01010101 
+ 2801              	.LASF13:
+ 2802 0000 7072696F 		.ascii	"prio\000"
+ 2802      00
+ 2803              	.LASF7:
+ 2804 0005 7053746B 		.ascii	"pStk\000"
+ 2804      00
+ 2805              	.LASF28:
+ 2806 000a 5F74436E 		.ascii	"_tCntSem_\000"
+ 2806      7453656D 
+ 2806      5F00
+ 2807              	.LASF21:
+ 2808 0014 70507269 		.ascii	"pPrioList\000"
+ 2808      6F4C6973 
+ 2808      7400
+ 2809              	.LASF22:
+ 2810 001e 70504342 		.ascii	"pPCBs\000"
+ 2810      7300
+ 2811              	.LASF41:
+ 2812 0024 69326357 		.ascii	"i2cWrite\000"
+ 2812      72697465 
+ 2812      00
+ 2813              	.LASF35:
+ 2814 002d 73746174 		.ascii	"status\000"
+ 2814      757300
+ 2815              	.LASF29:
+ 2816 0034 74436E74 		.ascii	"tCntSem\000"
+ 2816      53656D00 
+ 2817              	.LASF31:
+ 2818 003c 70446174 		.ascii	"pData\000"
+ 2818      6100
+ 2819              	.LASF40:
+ 2820 0042 69326350 		.ascii	"i2cPutChar\000"
+ 2820      75744368 
+ 2820      617200
+ 2821              	.LASF43:
+ 2822 004d 61646472 		.ascii	"addr\000"
+ 2822      00
+ 2823              	.LASF20:
+ 2824 0052 5F745072 		.ascii	"_tPrioQueue_\000"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 64
+
+
+ 2824      696F5175 
+ 2824      6575655F 
+ 2824      00
+ 2825              	.LASF42:
+ 2826 005f 64617461 		.ascii	"data\000"
+ 2826      00
+ 2827              	.LASF1:
+ 2828 0064 756E7369 		.ascii	"unsigned char\000"
+ 2828      676E6564 
+ 2828      20636861 
+ 2828      7200
+ 2829              	.LASF18:
+ 2830 0072 744F5350 		.ascii	"tOSPCB\000"
+ 2830      434200
+ 2831              	.LASF24:
+ 2832 0079 74507269 		.ascii	"tPrioQueue\000"
+ 2832      6F517565 
+ 2832      756500
+ 2833              	.LASF23:
+ 2834 0084 6C6F6E67 		.ascii	"long unsigned int\000"
+ 2834      20756E73 
+ 2834      69676E65 
+ 2834      6420696E 
+ 2834      7400
+ 2835              	.LASF2:
+ 2836 0096 73686F72 		.ascii	"short unsigned int\000"
+ 2836      7420756E 
+ 2836      7369676E 
+ 2836      65642069 
+ 2836      6E7400
+ 2837              	.LASF45:
+ 2838 00a9 69326357 		.ascii	"i2cWriteWithWait\000"
+ 2838      72697465 
+ 2838      57697468 
+ 2838      57616974 
+ 2838      00
+ 2839              	.LASF9:
+ 2840 00ba 70507265 		.ascii	"pPrevPrioQueueReady\000"
+ 2840      76507269 
+ 2840      6F517565 
+ 2840      75655265 
+ 2840      61647900 
+ 2841              	.LASF46:
+ 2842 00ce 6932634D 		.ascii	"i2cMyWrite\000"
+ 2842      79577269 
+ 2842      746500
+ 2843              	.LASF50:
+ 2844 00d9 474E5520 		.ascii	"GNU C 4.6.3\000"
+ 2844      4320342E 
+ 2844      362E3300 
+ 2845              	.LASF49:
+ 2846 00e5 69326353 		.ascii	"i2cSem\000"
+ 2846      656D00
+ 2847              	.LASF19:
+ 2848 00ec 5F744F53 		.ascii	"_tOSPCB__\000"
+ 2848      5043425F 
+ 2848      5F00
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 65
+
+
+ 2849              	.LASF51:
+ 2850 00f6 6932632E 		.ascii	"i2c.c\000"
+ 2850      6300
+ 2851              	.LASF48:
+ 2852 00fc 70427566 		.ascii	"pBuf\000"
+ 2852      00
+ 2853              	.LASF8:
+ 2854 0101 704E6578 		.ascii	"pNextPrioQueueReady\000"
+ 2854      74507269 
+ 2854      6F517565 
+ 2854      75655265 
+ 2854      61647900 
+ 2855              	.LASF53:
+ 2856 0115 69326347 		.ascii	"i2cGetChar\000"
+ 2856      65744368 
+ 2856      617200
+ 2857              	.LASF54:
+ 2858 0120 69326349 		.ascii	"i2cInit\000"
+ 2858      6E697400 
+ 2859              	.LASF52:
+ 2860 0128 433A5C55 		.ascii	"C:\\Users\\kozlovsky\\Downloads\\TicTac\\TicTac\000"
+ 2860      73657273 
+ 2860      5C6B6F7A 
+ 2860      6C6F7673 
+ 2860      6B795C44 
+ 2861              	.LASF14:
+ 2862 0153 666C6167 		.ascii	"flag\000"
+ 2862      00
+ 2863              	.LASF10:
+ 2864 0158 704E6578 		.ascii	"pNextPrioQueueEvent\000"
+ 2864      74507269 
+ 2864      6F517565 
+ 2864      75654576 
+ 2864      656E7400 
+ 2865              	.LASF4:
+ 2866 016c 756E7369 		.ascii	"unsigned int\000"
+ 2866      676E6564 
+ 2866      20696E74 
+ 2866      00
+ 2867              	.LASF17:
+ 2868 0179 73746163 		.ascii	"stackSize\000"
+ 2868      6B53697A 
+ 2868      6500
+ 2869              	.LASF36:
+ 2870 0183 69326343 		.ascii	"i2cCheckStatus\000"
+ 2870      6865636B 
+ 2870      53746174 
+ 2870      757300
+ 2871              	.LASF32:
+ 2872 0192 67657449 		.ascii	"getI2cLock\000"
+ 2872      32634C6F 
+ 2872      636B00
+ 2873              	.LASF33:
+ 2874 019d 72656C65 		.ascii	"releaseI2cLock\000"
+ 2874      61736549 
+ 2874      32634C6F 
+ 2874      636B00
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 66
+
+
+ 2875              	.LASF26:
+ 2876 01ac 77616974 		.ascii	"waitQ\000"
+ 2876      5100
+ 2877              	.LASF11:
+ 2878 01b2 70507265 		.ascii	"pPrevPrioQueueEvent\000"
+ 2878      76507269 
+ 2878      6F517565 
+ 2878      75654576 
+ 2878      656E7400 
+ 2879              	.LASF38:
+ 2880 01c6 72657443 		.ascii	"retCode\000"
+ 2880      6F646500 
+ 2881              	.LASF16:
+ 2882 01ce 7053746B 		.ascii	"pStkOrg\000"
+ 2882      4F726700 
+ 2883              	.LASF30:
+ 2884 01d6 6D6F6465 		.ascii	"mode\000"
+ 2884      00
+ 2885              	.LASF0:
+ 2886 01db 74553136 		.ascii	"tU16\000"
+ 2886      00
+ 2887              	.LASF3:
+ 2888 01e0 74553332 		.ascii	"tU32\000"
+ 2888      00
+ 2889              	.LASF39:
+ 2890 01e5 69326352 		.ascii	"i2cRepeatStart\000"
+ 2890      65706561 
+ 2890      74537461 
+ 2890      727400
+ 2891              	.LASF55:
+ 2892 01f4 69326353 		.ascii	"i2cStop\000"
+ 2892      746F7000 
+ 2893              	.LASF27:
+ 2894 01fc 744F5345 		.ascii	"tOSEvent\000"
+ 2894      76656E74 
+ 2894      00
+ 2895              	.LASF25:
+ 2896 0205 5F744F53 		.ascii	"_tOSEvent_\000"
+ 2896      4576656E 
+ 2896      745F00
+ 2897              	.LASF6:
+ 2898 0210 73686F72 		.ascii	"short int\000"
+ 2898      7420696E 
+ 2898      7400
+ 2899              	.LASF34:
+ 2900 021a 6572726F 		.ascii	"error\000"
+ 2900      7200
+ 2901              	.LASF47:
+ 2902 0220 69326352 		.ascii	"i2cRead\000"
+ 2902      65616400 
+ 2903              	.LASF44:
+ 2904 0228 69326357 		.ascii	"i2cWaitTransmit\000"
+ 2904      61697454 
+ 2904      72616E73 
+ 2904      6D697400 
+ 2905              	.LASF12:
+ 2906 0238 704E6578 		.ascii	"pNextTimeQueue\000"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 67
+
+
+ 2906      7454696D 
+ 2906      65517565 
+ 2906      756500
+ 2907              	.LASF5:
+ 2908 0247 7369676E 		.ascii	"signed char\000"
+ 2908      65642063 
+ 2908      68617200 
+ 2909              	.LASF15:
+ 2910 0253 736C6565 		.ascii	"sleep\000"
+ 2910      7000
+ 2911              	.LASF37:
+ 2912 0259 69326353 		.ascii	"i2cStart\000"
+ 2912      74617274 
+ 2912      00
+ 2913              		.ident	"GCC: (GNU) 4.6.3"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s 			page 68
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 i2c.c
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:6      .text:00000000 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:11     .text:00000000 getI2cLock
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:35     .text:00000014 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:39     .text:00000018 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:44     .text:00000018 releaseI2cLock
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:66     .text:0000002c $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:70     .text:00000030 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:75     .text:00000030 i2cCheckStatus
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:100    .text:00000040 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:105    .text:00000048 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:110    .text:00000048 i2cInit
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:161    .text:0000008c $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:171    .text:000000a8 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:176    .text:000000a8 i2cStart
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:244    .text:000000e4 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:249    .text:000000ec $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:254    .text:000000ec i2cRepeatStart
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:317    .text:00000124 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:322    .text:0000012c $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:327    .text:0000012c i2cStop
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:353    .text:00000148 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:358    .text:00000150 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:363    .text:00000150 i2cPutChar
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:404    .text:00000170 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:410    .text:0000017c $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:415    .text:0000017c i2cGetChar
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:492    .text:000001c4 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:498    .text:000001d0 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:503    .text:000001d0 i2cWrite
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:649    .text:00000256 i2cWaitTransmit
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:694    .text:00000276 i2cWriteWithWait
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:741    .text:0000029c i2cMyWrite
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:829    .text:000002e8 i2cRead
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:971    .bss:00000000 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc6vxhng.s:975    .bss:00000000 i2cSem
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+osSemTake
+osSemGive
+osSemInit

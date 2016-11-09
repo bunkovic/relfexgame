@@ -1,0 +1,2145 @@
+Archive member included because of file (symbol)
+
+startup/libea_startup_thumb.a(consol.o)
+                              main.o (simplePrintf)
+startup/libea_startup_thumb.a(framework.o)
+                              main.o (eaInit)
+startup/libea_startup_thumb.a(startup.o)
+                              (_startup)
+irq_code/irqUart.a(irqUart.o)
+                              uart.o (uart1ISR)
+gcc_files/libm.a(s_cos.o)     pong.o (cos)
+gcc_files/libm.a(s_floor.o)   pong.o (floor)
+gcc_files/libm.a(s_sin.o)     pong.o (sin)
+gcc_files/libm.a(w_sqrt.o)    pong.o (sqrt)
+gcc_files/libm.a(e_rem_pio2.o)
+                              gcc_files/libm.a(s_cos.o) (__ieee754_rem_pio2)
+gcc_files/libm.a(e_sqrt.o)    gcc_files/libm.a(w_sqrt.o) (__ieee754_sqrt)
+gcc_files/libm.a(k_cos.o)     gcc_files/libm.a(s_cos.o) (__kernel_cos)
+gcc_files/libm.a(k_rem_pio2.o)
+                              gcc_files/libm.a(e_rem_pio2.o) (__kernel_rem_pio2)
+gcc_files/libm.a(k_sin.o)     gcc_files/libm.a(s_cos.o) (__kernel_sin)
+gcc_files/libm.a(s_fabs.o)    gcc_files/libm.a(e_rem_pio2.o) (fabs)
+gcc_files/libm.a(s_isnan.o)   gcc_files/libm.a(w_sqrt.o) (isnan)
+gcc_files/libm.a(s_lib_ver.o)
+                              gcc_files/libm.a(w_sqrt.o) (__fdlib_version)
+gcc_files/libm.a(s_matherr.o)
+                              gcc_files/libm.a(w_sqrt.o) (matherr)
+gcc_files/libm.a(s_scalbn.o)  gcc_files/libm.a(k_rem_pio2.o) (scalbn)
+gcc_files/libm.a(s_copysign.o)
+                              gcc_files/libm.a(s_scalbn.o) (copysign)
+pre_emptive_os/pre_emptive_os.a(kernel.o)
+                              main.o (osInit)
+pre_emptive_os/pre_emptive_os.a(prioqueue.o)
+                              pre_emptive_os/pre_emptive_os.a(kernel.o) (initPrioQueue)
+pre_emptive_os/pre_emptive_os.a(count_sem.o)
+                              uart.o (osSemInit)
+pre_emptive_os/pre_emptive_os.a(timer.o)
+                              pre_emptive_os/pre_emptive_os.a(kernel.o) (timerTick)
+pre_emptive_os/pre_emptive_os.a(stack_usage.o)
+                              pre_emptive_os/pre_emptive_os.a(kernel.o) (createStackPattern)
+pre_emptive_os/pre_emptive_os.a(a7hal.o)
+                              pre_emptive_os/pre_emptive_os.a(kernel.o) (stkFrameInit_oshal)
+pre_emptive_os/pre_emptive_os.a(a7hal_a.o)
+                              pre_emptive_os/pre_emptive_os.a(kernel.o) (startHighProc_oshal)
+pre_emptive_os/pre_emptive_os.a(event.o)
+                              pre_emptive_os/pre_emptive_os.a(count_sem.o) (eventInit)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_thumb1_case_uqi.o)
+                              main.o (__gnu_thumb1_case_uqi)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_thumb1_case_uhi.o)
+                              startupDisplay.o (__gnu_thumb1_case_uhi)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_udivsi3.o)
+                              bt.o (__udivsi3)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_divsi3.o)
+                              snake.o (__divsi3)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_umodsi3.o)
+                              bt.o (__umodsi3)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_modsi3.o)
+                              tic-tac-toe.o (__modsi3)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_dvmd_tls.o)
+                              c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_udivsi3.o) (__div0)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+                              pre_emptive_os/pre_emptive_os.a(timer.o) (_call_via_r4)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+                              pong.o (__subdf3)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_muldivdf3.o)
+                              pong.o (__muldf3)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+                              pong.o (__gtdf2)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixdfsi.o)
+                              gcc_files/libm.a(e_rem_pio2.o) (__fixdfsi)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixunsdfsi.o)
+                              pong.o (__fixunsdfsi)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-atoi.o)
+                              startup/libea_startup_thumb.a(consol.o) (atoi)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-errno.o)
+                              gcc_files/libm.a(w_sqrt.o) (__errno)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-impure.o)
+                              c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-errno.o) (_impure_ptr)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcmp.o)
+                              bt.o (memcmp)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcpy-stub.o)
+                              bt.o (memcpy)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-rand.o)
+                              snake.o (srand)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strchr.o)
+                              bt.o (strchr)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strcpy.o)
+                              pong.o (strcpy)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strlen.o)
+                              startup/libea_startup_thumb.a(consol.o) (strlen)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strncmp.o)
+                              pong.o (strncmp)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strtol.o)
+                              c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-atoi.o) (_strtol_r)
+c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-ctype_.o)
+                              c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strtol.o) (__ctype_ptr__)
+
+Allocating common symbols
+Common symbol       size              file
+
+snake               0x320             snake.o
+uart1RxBuf          0x400             uart.o
+receiveSem          0x1c              uart.o
+arrow               0x4               react.o
+ms                  0x4               main.o
+ver1_1              0x1               hw.o
+pHeapEnd            0x4               startup/libea_startup_thumb.a(framework.o)
+pHeapStart          0x4               startup/libea_startup_thumb.a(framework.o)
+matrix              0x10              tic-tac-toe.o
+uart1TxBuf          0x100             uart.o
+ver1_0              0x1               hw.o
+processControlBlocks
+                    0xc8              pre_emptive_os/pre_emptive_os.a(kernel.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+FLASH            0x00000000         0x00020000         xr
+RAM              0x40000000         0x00004000         rw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD main.o
+LOAD lcd.o
+LOAD startupDisplay.o
+LOAD key.o
+LOAD select.o
+LOAD tic-tac-toe.o
+LOAD uart.o
+LOAD bt.o
+LOAD snake.o
+LOAD exampleGame.o
+LOAD pong.o
+LOAD eeprom.o
+LOAD i2c.o
+LOAD hw.o
+LOAD react.o
+LOAD startup/libea_startup_thumb.a
+LOAD irq_code/irqUart.a
+LOAD gcc_files/libm.a
+LOAD pre_emptive_os/pre_emptive_os.a
+START GROUP
+LOAD c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a
+LOAD c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a
+END GROUP
+
+.text           0x00000000     0xa660
+ *startup.o(.text)
+ .text          0x00000000      0x1d8 startup/libea_startup_thumb.a(startup.o)
+                0x00000000                _startup
+ *(.text)
+ .text          0x000001d8      0x2bc main.o
+                0x00000484                appTick
+ .text          0x00000494      0x584 lcd.o
+                0x00000494                lcdColor
+                0x000004a0                lcdWrcmd
+                0x000004b0                lcdWrdata
+                0x000004c0                lcdData
+                0x00000570                lcdPutchar
+                0x000005c4                lcdPuts
+                0x00000628                lcdWindow
+                0x00000658                lcdGotoxy
+                0x00000678                lcdIcon
+                0x00000716                lcdRectBrd
+                0x000007c4                lcdRect
+                0x00000820                lcdLine
+                0x000008a2                lcdContrast
+                0x000008c6                lcdClrscr
+                0x0000090c                lcdOff
+                0x00000928                lcdInit
+ .text          0x00000a18      0xa6c startupDisplay.o
+                0x00000a18                displayStartupSequence
+ .text          0x00001484      0x1c4 key.o
+                0x00001484                checkKey
+                0x00001494                checkKey2
+                0x000014a0                sampleKey
+                0x0000160a                initKeyProc
+ .text          0x00001648      0x164 select.o
+                0x000016b4                drawMenu
+ .text          0x000017ac      0x4a8 tic-tac-toe.o
+                0x00001874                init_matrix
+                0x00001950                get_computer_move
+                0x000019d4                disp_matrix
+                0x00001a1c                check
+                0x00001a7c                playTicTacToe
+ .text          0x00001c54      0x230 uart.o
+                0x00001c54                initUart1
+                0x00001d30                uart1SendChar
+                0x00001d9c                uart1SendCh
+                0x00001db8                uart1SendString
+                0x00001dd0                uart1SendChars
+                0x00001dee                uart1GetChar
+                0x00001e44                uart1GetCh
+                0x00001e5c                uart1GetChSem
+ .text          0x00001e84     0x107c bt.o
+                0x00002212                initBtProc
+                0x0000225c                handleBt
+                0x00002eb8                blockBtProc
+                0x00002ed0                activateBtProc
+ .text          0x00002f00      0x508 snake.o
+                0x000031dc                playSnake
+ .text          0x00003408      0x4e8 exampleGame.o
+                0x0000378c                playExample
+ .text          0x000038f0     0x15fc pong.o
+                0x00003de4                playPong
+ .text          0x00004eec      0x326 eeprom.o
+                0x00004eec                eepromPoll
+                0x00004f42                eepromStartRead
+                0x00004fd2                eepromPageRead
+                0x0000504e                eepromWrite
+                0x000050ba                lm75Read
+                0x00005136                pca9532
+ *fill*         0x00005212        0x2 00000000
+ .text          0x00005214      0x370 i2c.o
+                0x00005214                getI2cLock
+                0x0000522c                releaseI2cLock
+                0x00005244                i2cCheckStatus
+                0x0000525c                i2cInit
+                0x000052bc                i2cStart
+                0x00005300                i2cRepeatStart
+                0x00005340                i2cStop
+                0x00005364                i2cPutChar
+                0x00005390                i2cGetChar
+                0x000053e4                i2cWrite
+                0x0000546a                i2cWaitTransmit
+                0x0000548a                i2cWriteWithWait
+                0x000054b0                i2cMyWrite
+                0x000054fc                i2cRead
+ .text          0x00005584      0x3c8 hw.o
+                0x00005584                immediateIoInit
+                0x00005630                resetLCD
+                0x00005698                resetBT
+                0x00005704                setBuzzer
+                0x00005724                setLED
+                0x000057bc                getKeys
+                0x0000584c                selectLCD
+                0x0000587c                sendToLCD
+                0x000058f4                initSpiForLcd
+ .text          0x0000594c      0x4bc react.o
+                0x0000594c                randomMove
+                0x00005988                showRandomArrow
+                0x00005a88                useBuzzer
+                0x00005ab4                showScore
+                0x00005b98                playReactGame
+ .text          0x00005e08      0x618 startup/libea_startup_thumb.a(consol.o)
+                0x00005e08                consolInit
+                0x00005e58                consolSendChar
+                0x00005e7c                consolSendCh
+                0x00005f14                consolSendString
+                0x00005f38                consolSendNumber
+                0x00006054                simplePrintf
+                0x000061d0                consolGetCh
+                0x000061f4                consolGetChar
+                0x00006218                consolGetString
+                0x00006278                consolGetIntNum
+                0x00006358                consolScanf
+ .text          0x00006420      0x2b4 startup/libea_startup_thumb.a(framework.o)
+                0x00006558                exceptionHandlerInit
+                0x000065d0                lowLevelInit
+                0x0000667c                eaInit
+ .text          0x000066d4      0x280 irq_code/irqUart.a(irqUart.o)
+                0x000066d4                uart1ISR
+                0x0000692c                disIrq
+                0x0000694c                restoreIrq
+ .text          0x00006954       0xb4 gcc_files/libm.a(s_cos.o)
+                0x00006954                cos
+ .text          0x00006a08      0x144 gcc_files/libm.a(s_floor.o)
+                0x00006a08                floor
+ .text          0x00006b4c       0xbc gcc_files/libm.a(s_sin.o)
+                0x00006b4c                sin
+ .text          0x00006c08       0xc8 gcc_files/libm.a(w_sqrt.o)
+                0x00006c08                sqrt
+ .text          0x00006cd0      0x4a0 gcc_files/libm.a(e_rem_pio2.o)
+                0x00006cd0                __ieee754_rem_pio2
+ .text          0x00007170      0x1e8 gcc_files/libm.a(e_sqrt.o)
+                0x00007170                __ieee754_sqrt
+ .text          0x00007358      0x1e8 gcc_files/libm.a(k_cos.o)
+                0x00007358                __kernel_cos
+ .text          0x00007540      0x7ec gcc_files/libm.a(k_rem_pio2.o)
+                0x00007540                __kernel_rem_pio2
+ .text          0x00007d2c      0x15c gcc_files/libm.a(k_sin.o)
+                0x00007d2c                __kernel_sin
+ .text          0x00007e88       0x20 gcc_files/libm.a(s_fabs.o)
+                0x00007e88                fabs
+ .text          0x00007ea8       0x28 gcc_files/libm.a(s_isnan.o)
+                0x00007ea8                isnan
+ .text          0x00007ed0        0x0 gcc_files/libm.a(s_lib_ver.o)
+ .text          0x00007ed0        0x4 gcc_files/libm.a(s_matherr.o)
+                0x00007ed0                matherr
+ .text          0x00007ed4      0x120 gcc_files/libm.a(s_scalbn.o)
+                0x00007ed4                scalbn
+ .text          0x00007ff4       0x1c gcc_files/libm.a(s_copysign.o)
+                0x00007ff4                copysign
+ .text          0x00008010      0x4f8 pre_emptive_os/pre_emptive_os.a(kernel.o)
+                0x00008010                osPid
+                0x0000805c                addToTimeList
+                0x000080c0                osInit
+                0x000080ec                osISREnter
+                0x00008110                osCreateProcess
+                0x000081ac                osGetHighPrioProc
+                0x000081c8                schedule
+                0x00008234                osISRExit
+                0x0000829c                osStart
+                0x000082c8                rmvFromTimeList
+                0x0000830c                addToRdyList
+                0x00008320                osResume
+                0x0000838c                osTick
+                0x000083e8                osStartProcess
+                0x00008450                rmvFromRdyList
+                0x0000846c                osSuspend
+                0x000084a0                osDeleteProcess
+                0x000084d0                osSleep
+ .text          0x00008508      0x124 pre_emptive_os/pre_emptive_os.a(prioqueue.o)
+                0x00008508                initPrioQueue
+                0x00008528                addToPrioQueue
+                0x00008570                rmvFromPrioQueue
+                0x000085d4                getHighPrioQueue
+                0x0000860c                isEmptyPrioQueue
+ .text          0x0000862c      0x144 pre_emptive_os/pre_emptive_os.a(count_sem.o)
+                0x0000862c                osSemInit
+                0x00008640                osSemTake
+                0x000086cc                osSemGive
+                0x00008730                osSemTryTake
+ .text          0x00008770      0x218 pre_emptive_os/pre_emptive_os.a(timer.o)
+                0x00008770                timerTick
+                0x00008854                osCreateTimer
+                0x00008880                osDeleteTimer
+                0x000088e4                osInitTimers
+ .text          0x00008988       0xa4 pre_emptive_os/pre_emptive_os.a(stack_usage.o)
+                0x00008988                osStackUsage
+                0x000089cc                createStackPattern
+                0x000089ec                checkStackLimit
+ .text          0x00008a2c      0x1ec pre_emptive_os/pre_emptive_os.a(a7hal.o)
+                0x00008a2c                timerIsr_oshal
+                0x00008a64                stkFrameInit_oshal
+                0x00008b14                halDisableInterrupts_oshal
+                0x00008b34                halEnableInterrupts_oshal
+                0x00008b44                halRestoreInterrupts_oshal
+                0x00008b4c                initTimer_oshal
+                0x00008be4                handleIRQs_oshal
+ .text          0x00008c18       0xc4 pre_emptive_os/pre_emptive_os.a(a7hal_a.o)
+                0x00008c24                startHighProc_oshal
+                0x00008c2c                ctxSwitch_oshal
+                0x00008c4c                ctxSwitchIsr_oshal
+                0x00008c6c                generalIRQ_oshal
+ .text          0x00008cdc       0xd8 pre_emptive_os/pre_emptive_os.a(event.o)
+                0x00008cdc                eventInit
+                0x00008cec                eventWait
+                0x00008d24                eventWaitReturn
+                0x00008d54                eventIsEmpty
+                0x00008d64                eventSignal
+ .text          0x00008db4       0x14 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_thumb1_case_uqi.o)
+                0x00008db4                __gnu_thumb1_case_uqi
+ .text          0x00008dc8       0x14 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_thumb1_case_uhi.o)
+                0x00008dc8                __gnu_thumb1_case_uhi
+ .text          0x00008ddc      0x118 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_udivsi3.o)
+                0x00008ddc                __aeabi_uidiv
+                0x00008ddc                __udivsi3
+                0x00008ed4                __aeabi_uidivmod
+ .text          0x00008ef4      0x148 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_divsi3.o)
+                0x00008ef4                __divsi3
+                0x00008ef4                __aeabi_idiv
+                0x0000901c                __aeabi_idivmod
+ .text          0x0000903c       0xcc c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_umodsi3.o)
+                0x0000903c                __umodsi3
+ .text          0x00009108       0xe4 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_modsi3.o)
+                0x00009108                __modsi3
+ .text          0x000091ec        0x4 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_dvmd_tls.o)
+                0x000091ec                __div0
+ .text          0x000091f0       0x3c c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+                0x000091f0                _call_via_r0
+                0x000091f4                _call_via_r1
+                0x000091f8                _call_via_r2
+                0x000091fc                _call_via_r3
+                0x00009200                _call_via_r4
+                0x00009204                _call_via_r5
+                0x00009208                _call_via_r6
+                0x0000920c                _call_via_r7
+                0x00009210                _call_via_r8
+                0x00009214                _call_via_r9
+                0x00009218                _call_via_sl
+                0x0000921c                _call_via_fp
+                0x00009220                _call_via_ip
+                0x00009224                _call_via_sp
+                0x00009228                _call_via_lr
+ .text          0x0000922c      0x400 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+                0x0000922c                __aeabi_drsub
+                0x00009234                __aeabi_dsub
+                0x00009234                __subdf3
+                0x00009238                __aeabi_dadd
+                0x00009238                __adddf3
+                0x00009518                __floatunsidf
+                0x00009518                __aeabi_ui2d
+                0x00009540                __floatsidf
+                0x00009540                __aeabi_i2d
+                0x0000956c                __aeabi_f2d
+                0x0000956c                __extendsfdf2
+                0x000095ac                __floatundidf
+                0x000095ac                __aeabi_ul2d
+                0x000095c0                __floatdidf
+                0x000095c0                __aeabi_l2d
+ .text          0x0000962c      0x470 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_muldivdf3.o)
+                0x0000962c                __aeabi_dmul
+                0x0000962c                __muldf3
+                0x00009898                __divdf3
+                0x00009898                __aeabi_ddiv
+ .text          0x00009a9c      0x12c c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+                0x00009a9c                __gtdf2
+                0x00009a9c                __gedf2
+                0x00009aa4                __ltdf2
+                0x00009aa4                __ledf2
+                0x00009aac                __nedf2
+                0x00009aac                __eqdf2
+                0x00009aac                __cmpdf2
+                0x00009b34                __aeabi_cdrcmple
+                0x00009b50                __aeabi_cdcmpeq
+                0x00009b50                __aeabi_cdcmple
+                0x00009b64                __aeabi_dcmpeq
+                0x00009b78                __aeabi_dcmplt
+                0x00009b8c                __aeabi_dcmple
+                0x00009ba0                __aeabi_dcmpge
+                0x00009bb4                __aeabi_dcmpgt
+ .text          0x00009bc8       0x5c c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixdfsi.o)
+                0x00009bc8                __aeabi_d2iz
+                0x00009bc8                __fixdfsi
+ .text          0x00009c24       0x54 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixunsdfsi.o)
+                0x00009c24                __aeabi_d2uiz
+                0x00009c24                __fixunsdfsi
+ .text          0x00009c78       0x18 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-atoi.o)
+                0x00009c78                atoi
+                0x00009c84                _atoi_r
+ .text          0x00009c90       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-errno.o)
+                0x00009c90                __errno
+ .text          0x00009ca0        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-impure.o)
+ .text          0x00009ca0       0xb4 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcmp.o)
+                0x00009ca0                memcmp
+ .text          0x00009d54       0xd8 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcpy-stub.o)
+                0x00009d54                memcpy
+ .text          0x00009e2c       0x78 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-rand.o)
+                0x00009e2c                srand
+                0x00009e48                rand
+ .text          0x00009ea4      0x1d4 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strchr.o)
+                0x00009ea4                strchr
+ .text          0x0000a078       0xf0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strcpy.o)
+                0x0000a078                strcpy
+ .text          0x0000a168       0x60 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strlen.o)
+                0x0000a168                strlen
+ .text          0x0000a1c8      0x140 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strncmp.o)
+                0x0000a1c8                strncmp
+ .text          0x0000a308      0x200 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strtol.o)
+                0x0000a308                _strtol_r
+                0x0000a4dc                strtol
+ .text          0x0000a508        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-ctype_.o)
+ *(.glue_7)
+ .glue_7        0x0000a508       0x24 linker stubs
+                0x0000a508                __osSemGive_from_arm
+                0x0000a514                __osTick_from_arm
+                0x0000a520                __osISRExit_from_arm
+ *fill*         0x0000a52c        0x4 00000000
+ .glue_7.stub   0x0000a530      0x130 linker stubs
+ *(.glue_7t)
+ .glue_7t       0x00000000        0x0 linker stubs
+
+.vfp11_veneer   0x0000a660        0x0
+ .vfp11_veneer  0x00000000        0x0 linker stubs
+
+.v4_bx          0x0000a660        0x0
+ .v4_bx         0x00000000        0x0 linker stubs
+
+.text.startup   0x0000a660       0x4c
+ .text.startup  0x0000a660       0x4c main.o
+                0x0000a660                main
+
+.iplt           0x0000a6ac        0x0
+ .iplt          0x00000000        0x0 main.o
+                0x0000a6ac                . = ALIGN (0x4)
+
+.rodata         0x0000a6ac     0x5dec
+ *(.rodata)
+ .rodata        0x0000a6ac      0x55c lcd.o
+                0x0000a6ac                charMap
+ .rodata        0x0000ac08     0x47c1 startupDisplay.o
+                0x0000ac08                _fun_0_130x90c
+                0x0000be14                _fun_1_130x90c
+                0x0000d06b                _ea_97x60c
+                0x0000d7c7                _future_128x39c
+                0x0000e303                _philips_122x25c
+                0x0000ecaf                _segger_85x40c
+ .rodata        0x0000f3c9      0x3cc tic-tac-toe.o
+                0x0000f3c9                _o
+                0x0000f5b8                _x
+ *fill*         0x0000f795        0x3 00
+ .rodata        0x0000f798       0x4c exampleGame.o
+ .rodata        0x0000f7e4       0x10 pong.o
+ .rodata        0x0000f7f4        0x9 hw.o
+ .rodata        0x0000f7fd       0x10 startup/libea_startup_thumb.a(consol.o)
+ *fill*         0x0000f80d        0x3 00
+ .rodata        0x0000f810      0x188 gcc_files/libm.a(e_rem_pio2.o)
+ .rodata        0x0000f998       0x50 gcc_files/libm.a(k_rem_pio2.o)
+ .rodata        0x0000f9e8        0x4 gcc_files/libm.a(s_lib_ver.o)
+                0x0000f9e8                __fdlib_version
+ .rodata        0x0000f9ec        0x4 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-impure.o)
+                0x0000f9ec                _global_impure_ptr
+ .rodata        0x0000f9f0      0x104 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-ctype_.o)
+                0x0000f9f0                _ctype_
+ *(.rodata*)
+ .rodata.str1.1
+                0x0000faf4      0x376 main.o
+                                0x37b (size before relaxing)
+ .rodata.str1.1
+                0x0000fe6a       0x62 tic-tac-toe.o
+                                 0x6d (size before relaxing)
+ .rodata.str1.1
+                0x0000fecc      0x2ac bt.o
+                                0x2c5 (size before relaxing)
+ .rodata.str1.1
+                0x00010178       0x14 snake.o
+                                 0x27 (size before relaxing)
+ .rodata.str1.1
+                0x0001018c       0x1c exampleGame.o
+                                 0x3d (size before relaxing)
+ .rodata.str1.1
+                0x000101a8      0x14c pong.o
+                                0x1f8 (size before relaxing)
+ .rodata.str1.1
+                0x000102f4       0xb4 react.o
+ .rodata.str1.1
+                0x000103a8       0x15 startup/libea_startup_thumb.a(consol.o)
+ .rodata.str1.1
+                0x000103bd       0xcc startup/libea_startup_thumb.a(framework.o)
+ *fill*         0x00010489        0x3 00
+ .rodata.str1.4
+                0x0001048c        0x5 gcc_files/libm.a(w_sqrt.o)
+                                  0x8 (size before relaxing)
+ *fill*         0x00010491        0x3 00
+ .rodata.str1.4
+                0x00010494        0x4 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-impure.o)
+
+.rel.dyn        0x00010498        0x0
+ .rel.iplt      0x00000000        0x0 main.o
+                0x00010498                . = ALIGN (0x4)
+                0x00010498                _etext = .
+                0x00010498                PROVIDE (etext, .)
+
+.data           0x40000080      0x5c4 load address 0x00010498
+                0x40000080                _data = .
+ *(.data)
+ .data          0x40000080        0x1 main.o
+ .data          0x40000081        0x0 lcd.o
+ .data          0x40000081        0x0 startupDisplay.o
+ .data          0x40000081        0x5 key.o
+ .data          0x40000086        0x0 select.o
+ .data          0x40000086        0x0 tic-tac-toe.o
+ .data          0x40000086        0x0 uart.o
+ .data          0x40000086        0x0 bt.o
+ .data          0x40000086        0x1 snake.o
+ .data          0x40000087      0x130 exampleGame.o
+                0x40000087                figures
+ *fill*         0x400001b7        0x1 00
+ .data          0x400001b8       0x60 pong.o
+ .data          0x40000218        0x0 eeprom.o
+ .data          0x40000218        0x0 i2c.o
+ .data          0x40000218        0x0 hw.o
+ .data          0x40000218        0x0 react.o
+ .data          0x40000218        0x0 startup/libea_startup_thumb.a(consol.o)
+ .data          0x40000218        0x0 startup/libea_startup_thumb.a(framework.o)
+ .data          0x40000218        0x0 startup/libea_startup_thumb.a(startup.o)
+ .data          0x40000218        0x0 irq_code/irqUart.a(irqUart.o)
+ .data          0x40000218        0x0 gcc_files/libm.a(s_cos.o)
+ .data          0x40000218        0x0 gcc_files/libm.a(s_floor.o)
+ .data          0x40000218        0x0 gcc_files/libm.a(s_sin.o)
+ .data          0x40000218        0x0 gcc_files/libm.a(w_sqrt.o)
+ .data          0x40000218        0x0 gcc_files/libm.a(e_rem_pio2.o)
+ .data          0x40000218        0x0 gcc_files/libm.a(e_sqrt.o)
+ .data          0x40000218        0x0 gcc_files/libm.a(k_cos.o)
+ .data          0x40000218        0x0 gcc_files/libm.a(k_rem_pio2.o)
+ .data          0x40000218        0x0 gcc_files/libm.a(k_sin.o)
+ .data          0x40000218        0x0 gcc_files/libm.a(s_fabs.o)
+ .data          0x40000218        0x0 gcc_files/libm.a(s_isnan.o)
+ .data          0x40000218        0x0 gcc_files/libm.a(s_lib_ver.o)
+ .data          0x40000218        0x0 gcc_files/libm.a(s_matherr.o)
+ .data          0x40000218        0x0 gcc_files/libm.a(s_scalbn.o)
+ .data          0x40000218        0x0 gcc_files/libm.a(s_copysign.o)
+ .data          0x40000218        0x0 pre_emptive_os/pre_emptive_os.a(kernel.o)
+ .data          0x40000218        0x0 pre_emptive_os/pre_emptive_os.a(prioqueue.o)
+ .data          0x40000218        0x0 pre_emptive_os/pre_emptive_os.a(count_sem.o)
+ .data          0x40000218        0x0 pre_emptive_os/pre_emptive_os.a(timer.o)
+ .data          0x40000218        0x0 pre_emptive_os/pre_emptive_os.a(stack_usage.o)
+ .data          0x40000218        0x0 pre_emptive_os/pre_emptive_os.a(a7hal.o)
+ .data          0x40000218        0x0 pre_emptive_os/pre_emptive_os.a(a7hal_a.o)
+ .data          0x40000218        0x0 pre_emptive_os/pre_emptive_os.a(event.o)
+ .data          0x40000218        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_thumb1_case_uqi.o)
+ .data          0x40000218        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_thumb1_case_uhi.o)
+ .data          0x40000218        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_udivsi3.o)
+ .data          0x40000218        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_divsi3.o)
+ .data          0x40000218        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_umodsi3.o)
+ .data          0x40000218        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_modsi3.o)
+ .data          0x40000218        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_dvmd_tls.o)
+ .data          0x40000218        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+ .data          0x40000218        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+ .data          0x40000218        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_muldivdf3.o)
+ .data          0x40000218        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+ .data          0x40000218        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixdfsi.o)
+ .data          0x40000218        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixunsdfsi.o)
+ .data          0x40000218        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-atoi.o)
+ .data          0x40000218        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-errno.o)
+ .data          0x40000218      0x428 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-impure.o)
+                0x40000218                _impure_ptr
+ .data          0x40000640        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcmp.o)
+ .data          0x40000640        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcpy-stub.o)
+ .data          0x40000640        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-rand.o)
+ .data          0x40000640        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strchr.o)
+ .data          0x40000640        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strcpy.o)
+ .data          0x40000640        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strlen.o)
+ .data          0x40000640        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strncmp.o)
+ .data          0x40000640        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strtol.o)
+ .data          0x40000640        0x4 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-ctype_.o)
+                0x40000640                __ctype_ptr__
+
+.igot.plt       0x40000644        0x0 load address 0x00010a5c
+ .igot.plt      0x00000000        0x0 main.o
+                0x40000644                . = ALIGN (0x4)
+                0x40000644                _edata = .
+                0x40000644                PROVIDE (edata, .)
+
+.bss            0x40000644     0x1dc8 load address 0x00010a5c
+                0x40000644                _bss = .
+                0x40000644                __bss_start = .
+                0x40000644                __bss_start__ = .
+ *(.bss)
+ .bss           0x40000644      0x57a main.o
+ .bss           0x40000bbe        0x5 lcd.o
+ .bss           0x40000bc3        0x0 startupDisplay.o
+ .bss           0x40000bc3      0x134 key.o
+ *fill*         0x40000cf7        0x1 00
+ .bss           0x40000cf8       0x34 select.o
+ .bss           0x40000d2c        0x4 tic-tac-toe.o
+ .bss           0x40000d30       0x18 uart.o
+                0x40000d30                uart1TxHead
+                0x40000d34                uart1TxTail
+                0x40000d38                uart1TxRunning
+                0x40000d3c                uart1RxHead
+                0x40000d40                uart1RxTail
+                0x40000d44                uart1RxInBuff
+ .bss           0x40000d48      0x404 bt.o
+ .bss           0x4000114c      0x288 snake.o
+ .bss           0x400013d4      0x29c exampleGame.o
+ .bss           0x40001670       0xd4 pong.o
+ .bss           0x40001744        0x0 eeprom.o
+ .bss           0x40001744       0x1c i2c.o
+ .bss           0x40001760        0x2 hw.o
+ *fill*         0x40001762        0x2 00
+ .bss           0x40001764        0xc react.o
+ .bss           0x40001770        0x0 startup/libea_startup_thumb.a(consol.o)
+ .bss           0x40001770        0x0 startup/libea_startup_thumb.a(framework.o)
+ .bss           0x40001770        0x0 startup/libea_startup_thumb.a(startup.o)
+ .bss           0x40001770        0x0 irq_code/irqUart.a(irqUart.o)
+ .bss           0x40001770        0x0 gcc_files/libm.a(s_cos.o)
+ .bss           0x40001770        0x0 gcc_files/libm.a(s_floor.o)
+ .bss           0x40001770        0x0 gcc_files/libm.a(s_sin.o)
+ .bss           0x40001770        0x0 gcc_files/libm.a(w_sqrt.o)
+ .bss           0x40001770        0x0 gcc_files/libm.a(e_rem_pio2.o)
+ .bss           0x40001770        0x0 gcc_files/libm.a(e_sqrt.o)
+ .bss           0x40001770        0x0 gcc_files/libm.a(k_cos.o)
+ .bss           0x40001770        0x0 gcc_files/libm.a(k_rem_pio2.o)
+ .bss           0x40001770        0x0 gcc_files/libm.a(k_sin.o)
+ .bss           0x40001770        0x0 gcc_files/libm.a(s_fabs.o)
+ .bss           0x40001770        0x0 gcc_files/libm.a(s_isnan.o)
+ .bss           0x40001770        0x0 gcc_files/libm.a(s_lib_ver.o)
+ .bss           0x40001770        0x0 gcc_files/libm.a(s_matherr.o)
+ .bss           0x40001770        0x0 gcc_files/libm.a(s_scalbn.o)
+ .bss           0x40001770        0x0 gcc_files/libm.a(s_copysign.o)
+ .bss           0x40001770       0x2c pre_emptive_os/pre_emptive_os.a(kernel.o)
+                0x40001770                osLockNesting
+                0x40001771                isrNesting
+                0x40001774                pNxtToRun
+                0x40001778                pRunProc
+ .bss           0x4000179c        0x0 pre_emptive_os/pre_emptive_os.a(prioqueue.o)
+ .bss           0x4000179c        0x0 pre_emptive_os/pre_emptive_os.a(count_sem.o)
+ .bss           0x4000179c      0x348 pre_emptive_os/pre_emptive_os.a(timer.o)
+ .bss           0x40001ae4        0x0 pre_emptive_os/pre_emptive_os.a(stack_usage.o)
+ .bss           0x40001ae4        0x0 pre_emptive_os/pre_emptive_os.a(a7hal.o)
+ .bss           0x40001ae4        0x0 pre_emptive_os/pre_emptive_os.a(a7hal_a.o)
+ .bss           0x40001ae4        0x0 pre_emptive_os/pre_emptive_os.a(event.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_thumb1_case_uqi.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_thumb1_case_uhi.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_udivsi3.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_divsi3.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_umodsi3.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_modsi3.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_dvmd_tls.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_muldivdf3.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixdfsi.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixunsdfsi.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-atoi.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-errno.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-impure.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcmp.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcpy-stub.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-rand.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strchr.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strcpy.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strlen.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strncmp.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strtol.o)
+ .bss           0x40001ae4        0x0 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-ctype_.o)
+ *(COMMON)
+ COMMON         0x40001ae4        0x4 main.o
+                0x40001ae4                ms
+ COMMON         0x40001ae8       0x10 tic-tac-toe.o
+                0x40001ae8                matrix
+ COMMON         0x40001af8      0x51c uart.o
+                0x40001af8                uart1RxBuf
+                0x40001ef8                receiveSem
+                0x40001f14                uart1TxBuf
+ COMMON         0x40002014      0x320 snake.o
+                0x40002014                snake
+ COMMON         0x40002334        0x2 hw.o
+                0x40002334                ver1_1
+                0x40002335                ver1_0
+ *fill*         0x40002336        0x2 00
+ COMMON         0x40002338        0x4 react.o
+                0x40002338                arrow
+ COMMON         0x4000233c        0x8 startup/libea_startup_thumb.a(framework.o)
+                0x4000233c                pHeapEnd
+                0x40002340                pHeapStart
+ COMMON         0x40002344       0xc8 pre_emptive_os/pre_emptive_os.a(kernel.o)
+                0x40002344                processControlBlocks
+                0x4000240c                . = ALIGN (0x4)
+                0x4000240c                . = ALIGN (0x4)
+                0x4000240c                __bss_end = .
+                0x4000240c                __bss_end__ = .
+                0x4000240c                _end = .
+                0x4000240c                PROVIDE (end, .)
+
+.stab           0x00000000      0x600
+ *(.stab)
+ .stab          0x00000000      0x3c0 startup/libea_startup_thumb.a(startup.o)
+ .stab          0x000003c0      0x240 pre_emptive_os/pre_emptive_os.a(a7hal_a.o)
+                                0x24c (size before relaxing)
+
+.stabstr        0x00000000       0x92
+ *(.stabstr)
+ .stabstr       0x00000000       0x92 startup/libea_startup_thumb.a(startup.o)
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment        0x00000000      0x19d
+ *(.comment)
+ .comment       0x00000000       0x11 main.o
+                                 0x12 (size before relaxing)
+ .comment       0x00000000       0x12 lcd.o
+ .comment       0x00000000       0x12 startupDisplay.o
+ .comment       0x00000000       0x12 key.o
+ .comment       0x00000000       0x12 select.o
+ .comment       0x00000000       0x12 tic-tac-toe.o
+ .comment       0x00000000       0x12 uart.o
+ .comment       0x00000000       0x12 bt.o
+ .comment       0x00000000       0x12 snake.o
+ .comment       0x00000000       0x12 exampleGame.o
+ .comment       0x00000000       0x12 pong.o
+ .comment       0x00000000       0x12 eeprom.o
+ .comment       0x00000000       0x12 i2c.o
+ .comment       0x00000000       0x12 hw.o
+ .comment       0x00000000       0x12 react.o
+ .comment       0x00000000       0x12 startup/libea_startup_thumb.a(consol.o)
+ .comment       0x00000000       0x12 startup/libea_startup_thumb.a(framework.o)
+ .comment       0x00000000       0x12 irq_code/irqUart.a(irqUart.o)
+ .comment       0x00000011       0x12 gcc_files/libm.a(s_cos.o)
+ .comment       0x00000023       0x12 gcc_files/libm.a(s_floor.o)
+ .comment       0x00000035       0x12 gcc_files/libm.a(s_sin.o)
+ .comment       0x00000047       0x12 gcc_files/libm.a(w_sqrt.o)
+ .comment       0x00000059       0x12 gcc_files/libm.a(e_rem_pio2.o)
+ .comment       0x0000006b       0x12 gcc_files/libm.a(e_sqrt.o)
+ .comment       0x0000007d       0x12 gcc_files/libm.a(k_cos.o)
+ .comment       0x0000008f       0x12 gcc_files/libm.a(k_rem_pio2.o)
+ .comment       0x000000a1       0x12 gcc_files/libm.a(k_sin.o)
+ .comment       0x000000b3       0x12 gcc_files/libm.a(s_fabs.o)
+ .comment       0x000000c5       0x12 gcc_files/libm.a(s_isnan.o)
+ .comment       0x000000d7       0x12 gcc_files/libm.a(s_lib_ver.o)
+ .comment       0x000000e9       0x12 gcc_files/libm.a(s_matherr.o)
+ .comment       0x000000fb       0x12 gcc_files/libm.a(s_scalbn.o)
+ .comment       0x0000010d       0x12 gcc_files/libm.a(s_copysign.o)
+ .comment       0x0000011f       0x12 pre_emptive_os/pre_emptive_os.a(kernel.o)
+ .comment       0x00000131       0x12 pre_emptive_os/pre_emptive_os.a(prioqueue.o)
+ .comment       0x00000143       0x12 pre_emptive_os/pre_emptive_os.a(count_sem.o)
+ .comment       0x00000155       0x12 pre_emptive_os/pre_emptive_os.a(timer.o)
+ .comment       0x00000167       0x12 pre_emptive_os/pre_emptive_os.a(stack_usage.o)
+ .comment       0x00000179       0x12 pre_emptive_os/pre_emptive_os.a(a7hal.o)
+ .comment       0x0000018b       0x12 pre_emptive_os/pre_emptive_os.a(event.o)
+ .comment       0x00000000       0x12 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-atoi.o)
+ .comment       0x00000000       0x12 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-errno.o)
+ .comment       0x00000000       0x12 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-impure.o)
+ .comment       0x00000000       0x12 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcmp.o)
+ .comment       0x00000000       0x12 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcpy-stub.o)
+ .comment       0x00000000       0x12 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-rand.o)
+ .comment       0x00000000       0x12 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strchr.o)
+ .comment       0x00000000       0x12 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strcpy.o)
+ .comment       0x00000000       0x12 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strlen.o)
+ .comment       0x00000000       0x12 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strncmp.o)
+ .comment       0x00000000       0x12 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strtol.o)
+ .comment       0x00000000       0x12 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-ctype_.o)
+
+.ARM.attributes
+                0x00000000       0x10
+ .ARM.attributes
+                0x00000000       0x10 main.o
+ .ARM.attributes
+                0x00000010       0x10 lcd.o
+ .ARM.attributes
+                0x00000020       0x10 startupDisplay.o
+ .ARM.attributes
+                0x00000030       0x10 key.o
+ .ARM.attributes
+                0x00000040       0x10 select.o
+ .ARM.attributes
+                0x00000050       0x10 tic-tac-toe.o
+ .ARM.attributes
+                0x00000060       0x10 uart.o
+ .ARM.attributes
+                0x00000070       0x10 bt.o
+ .ARM.attributes
+                0x00000080       0x10 snake.o
+ .ARM.attributes
+                0x00000090       0x10 exampleGame.o
+ .ARM.attributes
+                0x000000a0       0x10 pong.o
+ .ARM.attributes
+                0x000000b0       0x10 eeprom.o
+ .ARM.attributes
+                0x000000c0       0x10 i2c.o
+ .ARM.attributes
+                0x000000d0       0x10 hw.o
+ .ARM.attributes
+                0x000000e0       0x10 react.o
+ .ARM.attributes
+                0x000000f0       0x10 startup/libea_startup_thumb.a(consol.o)
+ .ARM.attributes
+                0x00000100       0x10 startup/libea_startup_thumb.a(framework.o)
+ .ARM.attributes
+                0x00000110       0x10 startup/libea_startup_thumb.a(startup.o)
+ .ARM.attributes
+                0x00000120       0x10 irq_code/irqUart.a(irqUart.o)
+ .ARM.attributes
+                0x00000130       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_thumb1_case_uqi.o)
+ .ARM.attributes
+                0x00000140       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_thumb1_case_uhi.o)
+ .ARM.attributes
+                0x00000150       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_udivsi3.o)
+ .ARM.attributes
+                0x00000160       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_divsi3.o)
+ .ARM.attributes
+                0x00000170       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_umodsi3.o)
+ .ARM.attributes
+                0x00000180       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_modsi3.o)
+ .ARM.attributes
+                0x00000190       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_dvmd_tls.o)
+ .ARM.attributes
+                0x000001a0       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+ .ARM.attributes
+                0x000001b0       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+ .ARM.attributes
+                0x000001c0       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_muldivdf3.o)
+ .ARM.attributes
+                0x000001d0       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+ .ARM.attributes
+                0x000001e0       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixdfsi.o)
+ .ARM.attributes
+                0x000001f0       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixunsdfsi.o)
+ .ARM.attributes
+                0x00000200       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-atoi.o)
+ .ARM.attributes
+                0x00000210       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-errno.o)
+ .ARM.attributes
+                0x00000220       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-impure.o)
+ .ARM.attributes
+                0x00000230       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcmp.o)
+ .ARM.attributes
+                0x00000240       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcpy-stub.o)
+ .ARM.attributes
+                0x00000250       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-rand.o)
+ .ARM.attributes
+                0x00000260       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strchr.o)
+ .ARM.attributes
+                0x00000270       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strcpy.o)
+ .ARM.attributes
+                0x00000280       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strlen.o)
+ .ARM.attributes
+                0x00000290       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strncmp.o)
+ .ARM.attributes
+                0x000002a0       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strtol.o)
+ .ARM.attributes
+                0x000002b0       0x10 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-ctype_.o)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges  0x00000000      0x7c8
+ *(.debug_aranges)
+ .debug_aranges
+                0x00000000       0x28 main.o
+ .debug_aranges
+                0x00000028       0x20 lcd.o
+ .debug_aranges
+                0x00000048       0x20 startupDisplay.o
+ .debug_aranges
+                0x00000068       0x20 key.o
+ .debug_aranges
+                0x00000088       0x20 select.o
+ .debug_aranges
+                0x000000a8       0x20 tic-tac-toe.o
+ .debug_aranges
+                0x000000c8       0x20 uart.o
+ .debug_aranges
+                0x000000e8       0x20 bt.o
+ .debug_aranges
+                0x00000108       0x20 snake.o
+ .debug_aranges
+                0x00000128       0x20 exampleGame.o
+ .debug_aranges
+                0x00000148       0x20 pong.o
+ .debug_aranges
+                0x00000168       0x20 eeprom.o
+ .debug_aranges
+                0x00000188       0x20 i2c.o
+ .debug_aranges
+                0x000001a8       0x20 hw.o
+ .debug_aranges
+                0x000001c8       0x20 react.o
+ .debug_aranges
+                0x000001e8       0x20 startup/libea_startup_thumb.a(consol.o)
+ .debug_aranges
+                0x00000208       0x20 startup/libea_startup_thumb.a(framework.o)
+ .debug_aranges
+                0x00000228       0x20 irq_code/irqUart.a(irqUart.o)
+ .debug_aranges
+                0x00000248       0x20 gcc_files/libm.a(s_cos.o)
+ .debug_aranges
+                0x00000268       0x20 gcc_files/libm.a(s_floor.o)
+ .debug_aranges
+                0x00000288       0x20 gcc_files/libm.a(s_sin.o)
+ .debug_aranges
+                0x000002a8       0x20 gcc_files/libm.a(w_sqrt.o)
+ .debug_aranges
+                0x000002c8       0x20 gcc_files/libm.a(e_rem_pio2.o)
+ .debug_aranges
+                0x000002e8       0x20 gcc_files/libm.a(e_sqrt.o)
+ .debug_aranges
+                0x00000308       0x20 gcc_files/libm.a(k_cos.o)
+ .debug_aranges
+                0x00000328       0x20 gcc_files/libm.a(k_rem_pio2.o)
+ .debug_aranges
+                0x00000348       0x20 gcc_files/libm.a(k_sin.o)
+ .debug_aranges
+                0x00000368       0x20 gcc_files/libm.a(s_fabs.o)
+ .debug_aranges
+                0x00000388       0x20 gcc_files/libm.a(s_isnan.o)
+ .debug_aranges
+                0x000003a8       0x20 gcc_files/libm.a(s_matherr.o)
+ .debug_aranges
+                0x000003c8       0x20 gcc_files/libm.a(s_scalbn.o)
+ .debug_aranges
+                0x000003e8       0x20 gcc_files/libm.a(s_copysign.o)
+ .debug_aranges
+                0x00000408       0x20 pre_emptive_os/pre_emptive_os.a(kernel.o)
+ .debug_aranges
+                0x00000428       0x20 pre_emptive_os/pre_emptive_os.a(prioqueue.o)
+ .debug_aranges
+                0x00000448       0x20 pre_emptive_os/pre_emptive_os.a(count_sem.o)
+ .debug_aranges
+                0x00000468       0x20 pre_emptive_os/pre_emptive_os.a(timer.o)
+ .debug_aranges
+                0x00000488       0x20 pre_emptive_os/pre_emptive_os.a(stack_usage.o)
+ .debug_aranges
+                0x000004a8       0x20 pre_emptive_os/pre_emptive_os.a(a7hal.o)
+ .debug_aranges
+                0x000004c8       0x20 pre_emptive_os/pre_emptive_os.a(event.o)
+ .debug_aranges
+                0x000004e8       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_thumb1_case_uqi.o)
+ .debug_aranges
+                0x00000508       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_thumb1_case_uhi.o)
+ .debug_aranges
+                0x00000528       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_udivsi3.o)
+ .debug_aranges
+                0x00000548       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_divsi3.o)
+ .debug_aranges
+                0x00000568       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_umodsi3.o)
+ .debug_aranges
+                0x00000588       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_modsi3.o)
+ .debug_aranges
+                0x000005a8       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_dvmd_tls.o)
+ .debug_aranges
+                0x000005c8       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+ .debug_aranges
+                0x000005e8       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+ .debug_aranges
+                0x00000608       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_muldivdf3.o)
+ .debug_aranges
+                0x00000628       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+ .debug_aranges
+                0x00000648       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixdfsi.o)
+ .debug_aranges
+                0x00000668       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixunsdfsi.o)
+ .debug_aranges
+                0x00000688       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-atoi.o)
+ .debug_aranges
+                0x000006a8       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-errno.o)
+ .debug_aranges
+                0x000006c8       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcmp.o)
+ .debug_aranges
+                0x000006e8       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcpy-stub.o)
+ .debug_aranges
+                0x00000708       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-rand.o)
+ .debug_aranges
+                0x00000728       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strchr.o)
+ .debug_aranges
+                0x00000748       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strcpy.o)
+ .debug_aranges
+                0x00000768       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strlen.o)
+ .debug_aranges
+                0x00000788       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strncmp.o)
+ .debug_aranges
+                0x000007a8       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strtol.o)
+
+.debug_pubnames
+                0x00000000      0x5e7
+ *(.debug_pubnames)
+ .debug_pubnames
+                0x00000000       0x1a gcc_files/libm.a(s_cos.o)
+ .debug_pubnames
+                0x0000001a       0x1c gcc_files/libm.a(s_floor.o)
+ .debug_pubnames
+                0x00000036       0x1a gcc_files/libm.a(s_sin.o)
+ .debug_pubnames
+                0x00000050       0x1b gcc_files/libm.a(w_sqrt.o)
+ .debug_pubnames
+                0x0000006b       0x29 gcc_files/libm.a(e_rem_pio2.o)
+ .debug_pubnames
+                0x00000094       0x25 gcc_files/libm.a(e_sqrt.o)
+ .debug_pubnames
+                0x000000b9       0x23 gcc_files/libm.a(k_cos.o)
+ .debug_pubnames
+                0x000000dc       0x28 gcc_files/libm.a(k_rem_pio2.o)
+ .debug_pubnames
+                0x00000104       0x23 gcc_files/libm.a(k_sin.o)
+ .debug_pubnames
+                0x00000127       0x1b gcc_files/libm.a(s_fabs.o)
+ .debug_pubnames
+                0x00000142       0x1c gcc_files/libm.a(s_isnan.o)
+ .debug_pubnames
+                0x0000015e       0x26 gcc_files/libm.a(s_lib_ver.o)
+ .debug_pubnames
+                0x00000184       0x1e gcc_files/libm.a(s_matherr.o)
+ .debug_pubnames
+                0x000001a2       0x1d gcc_files/libm.a(s_scalbn.o)
+ .debug_pubnames
+                0x000001bf       0x1f gcc_files/libm.a(s_copysign.o)
+ .debug_pubnames
+                0x000001de      0x17f pre_emptive_os/pre_emptive_os.a(kernel.o)
+ .debug_pubnames
+                0x0000035d       0x76 pre_emptive_os/pre_emptive_os.a(prioqueue.o)
+ .debug_pubnames
+                0x000003d3       0x4d pre_emptive_os/pre_emptive_os.a(count_sem.o)
+ .debug_pubnames
+                0x00000420       0x55 pre_emptive_os/pre_emptive_os.a(timer.o)
+ .debug_pubnames
+                0x00000475       0x4e pre_emptive_os/pre_emptive_os.a(stack_usage.o)
+ .debug_pubnames
+                0x000004c3       0xc1 pre_emptive_os/pre_emptive_os.a(a7hal.o)
+ .debug_pubnames
+                0x00000584       0x63 pre_emptive_os/pre_emptive_os.a(event.o)
+
+.debug_info     0x00000000     0xc40e
+ *(.debug_info .gnu.linkonce.wi.*)
+ .debug_info    0x00000000      0x275 main.o
+ .debug_info    0x00000275      0x612 lcd.o
+ .debug_info    0x00000887      0x1b1 startupDisplay.o
+ .debug_info    0x00000a38      0x23f key.o
+ .debug_info    0x00000c77      0x1fc select.o
+ .debug_info    0x00000e73      0x4d2 tic-tac-toe.o
+ .debug_info    0x00001345      0x4e5 uart.o
+ .debug_info    0x0000182a      0xc8f bt.o
+ .debug_info    0x000024b9      0x3e1 snake.o
+ .debug_info    0x0000289a      0x62d exampleGame.o
+ .debug_info    0x00002ec7      0xbc7 pong.o
+ .debug_info    0x00003a8e      0x317 eeprom.o
+ .debug_info    0x00003da5      0x5ce i2c.o
+ .debug_info    0x00004373      0x2a9 hw.o
+ .debug_info    0x0000461c      0x24d react.o
+ .debug_info    0x00004869      0x578 startup/libea_startup_thumb.a(consol.o)
+ .debug_info    0x00004de1      0x1fe startup/libea_startup_thumb.a(framework.o)
+ .debug_info    0x00004fdf      0x359 irq_code/irqUart.a(irqUart.o)
+ .debug_info    0x00005338       0xee gcc_files/libm.a(s_cos.o)
+ .debug_info    0x00005426      0x1a0 gcc_files/libm.a(s_floor.o)
+ .debug_info    0x000055c6       0xee gcc_files/libm.a(s_sin.o)
+ .debug_info    0x000056b4      0x172 gcc_files/libm.a(w_sqrt.o)
+ .debug_info    0x00005826      0x390 gcc_files/libm.a(e_rem_pio2.o)
+ .debug_info    0x00005bb6      0x211 gcc_files/libm.a(e_sqrt.o)
+ .debug_info    0x00005dc7      0x20c gcc_files/libm.a(k_cos.o)
+ .debug_info    0x00005fd3      0x2c0 gcc_files/libm.a(k_rem_pio2.o)
+ .debug_info    0x00006293      0x18b gcc_files/libm.a(k_sin.o)
+ .debug_info    0x0000641e      0x151 gcc_files/libm.a(s_fabs.o)
+ .debug_info    0x0000656f      0x147 gcc_files/libm.a(s_isnan.o)
+ .debug_info    0x000066b6       0xbe gcc_files/libm.a(s_lib_ver.o)
+ .debug_info    0x00006774      0x125 gcc_files/libm.a(s_matherr.o)
+ .debug_info    0x00006899      0x1f4 gcc_files/libm.a(s_scalbn.o)
+ .debug_info    0x00006a8d      0x14a gcc_files/libm.a(s_copysign.o)
+ .debug_info    0x00006bd7      0x5fe pre_emptive_os/pre_emptive_os.a(kernel.o)
+ .debug_info    0x000071d5      0x2e8 pre_emptive_os/pre_emptive_os.a(prioqueue.o)
+ .debug_info    0x000074bd      0x32b pre_emptive_os/pre_emptive_os.a(count_sem.o)
+ .debug_info    0x000077e8      0x4b8 pre_emptive_os/pre_emptive_os.a(timer.o)
+ .debug_info    0x00007ca0      0x2cf pre_emptive_os/pre_emptive_os.a(stack_usage.o)
+ .debug_info    0x00007f6f      0x189 pre_emptive_os/pre_emptive_os.a(a7hal.o)
+ .debug_info    0x000080f8      0x2ee pre_emptive_os/pre_emptive_os.a(event.o)
+ .debug_info    0x000083e6       0xc4 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_thumb1_case_uqi.o)
+ .debug_info    0x000084aa       0xc4 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_thumb1_case_uhi.o)
+ .debug_info    0x0000856e       0xc4 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_udivsi3.o)
+ .debug_info    0x00008632       0xc4 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_divsi3.o)
+ .debug_info    0x000086f6       0xc4 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_umodsi3.o)
+ .debug_info    0x000087ba       0xc4 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_modsi3.o)
+ .debug_info    0x0000887e       0xc4 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_dvmd_tls.o)
+ .debug_info    0x00008942       0xc4 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+ .debug_info    0x00008a06       0xc3 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+ .debug_info    0x00008ac9       0xc3 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_muldivdf3.o)
+ .debug_info    0x00008b8c       0xc3 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+ .debug_info    0x00008c4f       0xc3 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixdfsi.o)
+ .debug_info    0x00008d12       0xc3 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixunsdfsi.o)
+ .debug_info    0x00008dd5      0x988 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-atoi.o)
+ .debug_info    0x0000975d      0x955 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-errno.o)
+ .debug_info    0x0000a0b2      0x965 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-impure.o)
+ .debug_info    0x0000aa17      0x110 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcmp.o)
+ .debug_info    0x0000ab27      0x12e c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcpy-stub.o)
+ .debug_info    0x0000ac55      0x976 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-rand.o)
+ .debug_info    0x0000b5cb      0x111 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strchr.o)
+ .debug_info    0x0000b6dc       0xb9 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strcpy.o)
+ .debug_info    0x0000b795       0xb1 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strlen.o)
+ .debug_info    0x0000b846       0xf2 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strncmp.o)
+ .debug_info    0x0000b938      0xa5d c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strtol.o)
+ .debug_info    0x0000c395       0x79 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-ctype_.o)
+
+.debug_abbrev   0x00000000     0x3d21
+ *(.debug_abbrev)
+ .debug_abbrev  0x00000000      0x185 main.o
+ .debug_abbrev  0x00000185      0x1b2 lcd.o
+ .debug_abbrev  0x00000337       0x94 startupDisplay.o
+ .debug_abbrev  0x000003cb      0x113 key.o
+ .debug_abbrev  0x000004de       0xe5 select.o
+ .debug_abbrev  0x000005c3      0x21c tic-tac-toe.o
+ .debug_abbrev  0x000007df      0x1a1 uart.o
+ .debug_abbrev  0x00000980      0x2bc bt.o
+ .debug_abbrev  0x00000c3c      0x1a2 snake.o
+ .debug_abbrev  0x00000dde      0x29d exampleGame.o
+ .debug_abbrev  0x0000107b      0x2d9 pong.o
+ .debug_abbrev  0x00001354       0xf0 eeprom.o
+ .debug_abbrev  0x00001444      0x203 i2c.o
+ .debug_abbrev  0x00001647      0x13c hw.o
+ .debug_abbrev  0x00001783      0x129 react.o
+ .debug_abbrev  0x000018ac      0x243 startup/libea_startup_thumb.a(consol.o)
+ .debug_abbrev  0x00001aef       0xc3 startup/libea_startup_thumb.a(framework.o)
+ .debug_abbrev  0x00001bb2      0x13e irq_code/irqUart.a(irqUart.o)
+ .debug_abbrev  0x00001cf0       0x8b gcc_files/libm.a(s_cos.o)
+ .debug_abbrev  0x00001d7b       0xe8 gcc_files/libm.a(s_floor.o)
+ .debug_abbrev  0x00001e63       0x8b gcc_files/libm.a(s_sin.o)
+ .debug_abbrev  0x00001eee       0xc7 gcc_files/libm.a(w_sqrt.o)
+ .debug_abbrev  0x00001fb5      0x128 gcc_files/libm.a(e_rem_pio2.o)
+ .debug_abbrev  0x000020dd      0x104 gcc_files/libm.a(e_sqrt.o)
+ .debug_abbrev  0x000021e1       0xea gcc_files/libm.a(k_cos.o)
+ .debug_abbrev  0x000022cb       0xe6 gcc_files/libm.a(k_rem_pio2.o)
+ .debug_abbrev  0x000023b1       0x93 gcc_files/libm.a(k_sin.o)
+ .debug_abbrev  0x00002444       0xd0 gcc_files/libm.a(s_fabs.o)
+ .debug_abbrev  0x00002514       0xd4 gcc_files/libm.a(s_isnan.o)
+ .debug_abbrev  0x000025e8       0x5a gcc_files/libm.a(s_lib_ver.o)
+ .debug_abbrev  0x00002642       0x95 gcc_files/libm.a(s_matherr.o)
+ .debug_abbrev  0x000026d7       0xe8 gcc_files/libm.a(s_scalbn.o)
+ .debug_abbrev  0x000027bf       0xc5 gcc_files/libm.a(s_copysign.o)
+ .debug_abbrev  0x00002884      0x1b8 pre_emptive_os/pre_emptive_os.a(kernel.o)
+ .debug_abbrev  0x00002a3c      0x11e pre_emptive_os/pre_emptive_os.a(prioqueue.o)
+ .debug_abbrev  0x00002b5a      0x101 pre_emptive_os/pre_emptive_os.a(count_sem.o)
+ .debug_abbrev  0x00002c5b      0x154 pre_emptive_os/pre_emptive_os.a(timer.o)
+ .debug_abbrev  0x00002daf      0x170 pre_emptive_os/pre_emptive_os.a(stack_usage.o)
+ .debug_abbrev  0x00002f1f       0xf2 pre_emptive_os/pre_emptive_os.a(a7hal.o)
+ .debug_abbrev  0x00003011      0x103 pre_emptive_os/pre_emptive_os.a(event.o)
+ .debug_abbrev  0x00003114       0x14 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_thumb1_case_uqi.o)
+ .debug_abbrev  0x00003128       0x14 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_thumb1_case_uhi.o)
+ .debug_abbrev  0x0000313c       0x14 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_udivsi3.o)
+ .debug_abbrev  0x00003150       0x14 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_divsi3.o)
+ .debug_abbrev  0x00003164       0x14 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_umodsi3.o)
+ .debug_abbrev  0x00003178       0x14 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_modsi3.o)
+ .debug_abbrev  0x0000318c       0x14 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_dvmd_tls.o)
+ .debug_abbrev  0x000031a0       0x14 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+ .debug_abbrev  0x000031b4       0x14 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+ .debug_abbrev  0x000031c8       0x14 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_muldivdf3.o)
+ .debug_abbrev  0x000031dc       0x14 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+ .debug_abbrev  0x000031f0       0x14 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixdfsi.o)
+ .debug_abbrev  0x00003204       0x14 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixunsdfsi.o)
+ .debug_abbrev  0x00003218      0x185 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-atoi.o)
+ .debug_abbrev  0x0000339d      0x16e c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-errno.o)
+ .debug_abbrev  0x0000350b      0x166 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-impure.o)
+ .debug_abbrev  0x00003671       0x7c c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcmp.o)
+ .debug_abbrev  0x000036ed       0xa8 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcpy-stub.o)
+ .debug_abbrev  0x00003795      0x194 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-rand.o)
+ .debug_abbrev  0x00003929       0x8f c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strchr.o)
+ .debug_abbrev  0x000039b8       0x6f c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strcpy.o)
+ .debug_abbrev  0x00003a27       0x6d c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strlen.o)
+ .debug_abbrev  0x00003a94       0x7e c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strncmp.o)
+ .debug_abbrev  0x00003b12      0x1bd c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strtol.o)
+ .debug_abbrev  0x00003ccf       0x52 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-ctype_.o)
+
+.debug_line     0x00000000     0x4b7c
+ *(.debug_line)
+ .debug_line    0x00000000      0x100 main.o
+ .debug_line    0x00000100      0x238 lcd.o
+ .debug_line    0x00000338      0x1f8 startupDisplay.o
+ .debug_line    0x00000530       0xfb key.o
+ .debug_line    0x0000062b       0xb4 select.o
+ .debug_line    0x000006df      0x1d6 tic-tac-toe.o
+ .debug_line    0x000008b5      0x12a uart.o
+ .debug_line    0x000009df      0x439 bt.o
+ .debug_line    0x00000e18      0x201 snake.o
+ .debug_line    0x00001019      0x233 exampleGame.o
+ .debug_line    0x0000124c      0x4b9 pong.o
+ .debug_line    0x00001705      0x183 eeprom.o
+ .debug_line    0x00001888      0x1be i2c.o
+ .debug_line    0x00001a46      0x155 hw.o
+ .debug_line    0x00001b9b      0x13f react.o
+ .debug_line    0x00001cda      0x1d6 startup/libea_startup_thumb.a(consol.o)
+ .debug_line    0x00001eb0       0xa6 startup/libea_startup_thumb.a(framework.o)
+ .debug_line    0x00001f56       0xfb irq_code/irqUart.a(irqUart.o)
+ .debug_line    0x00002051       0xc2 gcc_files/libm.a(s_cos.o)
+ .debug_line    0x00002113      0x12a gcc_files/libm.a(s_floor.o)
+ .debug_line    0x0000223d       0xc2 gcc_files/libm.a(s_sin.o)
+ .debug_line    0x000022ff       0xbf gcc_files/libm.a(w_sqrt.o)
+ .debug_line    0x000023be      0x17c gcc_files/libm.a(e_rem_pio2.o)
+ .debug_line    0x0000253a      0x166 gcc_files/libm.a(e_sqrt.o)
+ .debug_line    0x000026a0      0x115 gcc_files/libm.a(k_cos.o)
+ .debug_line    0x000027b5      0x17d gcc_files/libm.a(k_rem_pio2.o)
+ .debug_line    0x00002932       0xbc gcc_files/libm.a(k_sin.o)
+ .debug_line    0x000029ee       0xf3 gcc_files/libm.a(s_fabs.o)
+ .debug_line    0x00002ae1       0xfb gcc_files/libm.a(s_isnan.o)
+ .debug_line    0x00002bdc       0x96 gcc_files/libm.a(s_lib_ver.o)
+ .debug_line    0x00002c72       0xa6 gcc_files/libm.a(s_matherr.o)
+ .debug_line    0x00002d18       0xe1 gcc_files/libm.a(s_scalbn.o)
+ .debug_line    0x00002df9       0xba gcc_files/libm.a(s_copysign.o)
+ .debug_line    0x00002eb3      0x177 pre_emptive_os/pre_emptive_os.a(kernel.o)
+ .debug_line    0x0000302a       0xbb pre_emptive_os/pre_emptive_os.a(prioqueue.o)
+ .debug_line    0x000030e5       0xd9 pre_emptive_os/pre_emptive_os.a(count_sem.o)
+ .debug_line    0x000031be      0x109 pre_emptive_os/pre_emptive_os.a(timer.o)
+ .debug_line    0x000032c7       0x97 pre_emptive_os/pre_emptive_os.a(stack_usage.o)
+ .debug_line    0x0000335e       0x8c pre_emptive_os/pre_emptive_os.a(a7hal.o)
+ .debug_line    0x000033ea       0xaf pre_emptive_os/pre_emptive_os.a(event.o)
+ .debug_line    0x00003499       0x72 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_thumb1_case_uqi.o)
+ .debug_line    0x0000350b       0x73 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_thumb1_case_uhi.o)
+ .debug_line    0x0000357e       0x98 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_udivsi3.o)
+ .debug_line    0x00003616       0xa4 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_divsi3.o)
+ .debug_line    0x000036ba       0x7f c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_umodsi3.o)
+ .debug_line    0x00003739       0x85 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_modsi3.o)
+ .debug_line    0x000037be       0x6a c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_dvmd_tls.o)
+ .debug_line    0x00003828       0x78 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+ .debug_line    0x000038a0      0x1f5 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+ .debug_line    0x00003a95      0x206 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_muldivdf3.o)
+ .debug_line    0x00003c9b       0xfd c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+ .debug_line    0x00003d98       0x7f c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixdfsi.o)
+ .debug_line    0x00003e17       0x7d c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixunsdfsi.o)
+ .debug_line    0x00003e94      0x136 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-atoi.o)
+ .debug_line    0x00003fca      0x101 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-errno.o)
+ .debug_line    0x000040cb       0xe6 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-impure.o)
+ .debug_line    0x000041b1      0x123 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcmp.o)
+ .debug_line    0x000042d4      0x159 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcpy-stub.o)
+ .debug_line    0x0000442d      0x136 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-rand.o)
+ .debug_line    0x00004563      0x11a c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strchr.o)
+ .debug_line    0x0000467d       0xab c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strcpy.o)
+ .debug_line    0x00004728       0xe7 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strlen.o)
+ .debug_line    0x0000480f      0x14b c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strncmp.o)
+ .debug_line    0x0000495a      0x1cc c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strtol.o)
+ .debug_line    0x00004b26       0x56 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-ctype_.o)
+
+.debug_frame    0x00000000     0x1bd0
+ *(.debug_frame)
+ .debug_frame   0x00000000       0xd0 main.o
+ .debug_frame   0x000000d0      0x224 lcd.o
+ .debug_frame   0x000002f4       0x38 startupDisplay.o
+ .debug_frame   0x0000032c       0x8c key.o
+ .debug_frame   0x000003b8       0x5c select.o
+ .debug_frame   0x00000414      0x118 tic-tac-toe.o
+ .debug_frame   0x0000052c      0x110 uart.o
+ .debug_frame   0x0000063c      0x198 bt.o
+ .debug_frame   0x000007d4       0xbc snake.o
+ .debug_frame   0x00000890       0xd0 exampleGame.o
+ .debug_frame   0x00000960      0x128 pong.o
+ .debug_frame   0x00000a88       0xe8 eeprom.o
+ .debug_frame   0x00000b70      0x180 i2c.o
+ .debug_frame   0x00000cf0      0x100 hw.o
+ .debug_frame   0x00000df0       0xac react.o
+ .debug_frame   0x00000e9c      0x184 startup/libea_startup_thumb.a(consol.o)
+ .debug_frame   0x00001020       0xf0 startup/libea_startup_thumb.a(framework.o)
+ .debug_frame   0x00001110       0x5c irq_code/irqUart.a(irqUart.o)
+ .debug_frame   0x0000116c       0x30 gcc_files/libm.a(s_cos.o)
+ .debug_frame   0x0000119c       0x38 gcc_files/libm.a(s_floor.o)
+ .debug_frame   0x000011d4       0x30 gcc_files/libm.a(s_sin.o)
+ .debug_frame   0x00001204       0x38 gcc_files/libm.a(w_sqrt.o)
+ .debug_frame   0x0000123c       0x3c gcc_files/libm.a(e_rem_pio2.o)
+ .debug_frame   0x00001278       0x3c gcc_files/libm.a(e_sqrt.o)
+ .debug_frame   0x000012b4       0x38 gcc_files/libm.a(k_cos.o)
+ .debug_frame   0x000012ec       0x40 gcc_files/libm.a(k_rem_pio2.o)
+ .debug_frame   0x0000132c       0x30 gcc_files/libm.a(k_sin.o)
+ .debug_frame   0x0000135c       0x28 gcc_files/libm.a(s_fabs.o)
+ .debug_frame   0x00001384       0x28 gcc_files/libm.a(s_isnan.o)
+ .debug_frame   0x000013ac       0x20 gcc_files/libm.a(s_matherr.o)
+ .debug_frame   0x000013cc       0x34 gcc_files/libm.a(s_scalbn.o)
+ .debug_frame   0x00001400       0x2c gcc_files/libm.a(s_copysign.o)
+ .debug_frame   0x0000142c      0x1e8 pre_emptive_os/pre_emptive_os.a(kernel.o)
+ .debug_frame   0x00001614       0x8c pre_emptive_os/pre_emptive_os.a(prioqueue.o)
+ .debug_frame   0x000016a0       0x84 pre_emptive_os/pre_emptive_os.a(count_sem.o)
+ .debug_frame   0x00001724       0xb8 pre_emptive_os/pre_emptive_os.a(timer.o)
+ .debug_frame   0x000017dc       0x58 pre_emptive_os/pre_emptive_os.a(stack_usage.o)
+ .debug_frame   0x00001834       0xa0 pre_emptive_os/pre_emptive_os.a(a7hal.o)
+ .debug_frame   0x000018d4       0x94 pre_emptive_os/pre_emptive_os.a(event.o)
+ .debug_frame   0x00001968       0x28 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_udivsi3.o)
+ .debug_frame   0x00001990       0x28 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_divsi3.o)
+ .debug_frame   0x000019b8       0x28 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_umodsi3.o)
+ .debug_frame   0x000019e0       0x28 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_modsi3.o)
+ .debug_frame   0x00001a08       0x30 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-atoi.o)
+ .debug_frame   0x00001a38       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-errno.o)
+ .debug_frame   0x00001a58       0x28 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcmp.o)
+ .debug_frame   0x00001a80       0x2c c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcpy-stub.o)
+ .debug_frame   0x00001aac       0x38 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-rand.o)
+ .debug_frame   0x00001ae4       0x30 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strchr.o)
+ .debug_frame   0x00001b14       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strcpy.o)
+ .debug_frame   0x00001b34       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strlen.o)
+ .debug_frame   0x00001b54       0x2c c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strncmp.o)
+ .debug_frame   0x00001b80       0x50 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strtol.o)
+
+.debug_str      0x00000000     0x28b0
+ *(.debug_str)
+ .debug_str     0x00000000      0x11e main.o
+                                0x157 (size before relaxing)
+ .debug_str     0x0000011e      0x153 lcd.o
+                                0x1f0 (size before relaxing)
+ .debug_str     0x00000271       0x86 startupDisplay.o
+                                0x152 (size before relaxing)
+ .debug_str     0x000002f7      0x102 key.o
+                                0x19b (size before relaxing)
+ .debug_str     0x000003f9       0x98 select.o
+                                0x193 (size before relaxing)
+ .debug_str     0x00000491       0xda tic-tac-toe.o
+                                0x24e (size before relaxing)
+ .debug_str     0x0000056b      0x219 uart.o
+                                0x2d1 (size before relaxing)
+ .debug_str     0x00000784      0x209 bt.o
+                                0x488 (size before relaxing)
+ .debug_str     0x0000098d       0x9c snake.o
+                                0x21a (size before relaxing)
+ .debug_str     0x00000a29       0xdc exampleGame.o
+                                0x265 (size before relaxing)
+ .debug_str     0x00000b05      0x217 pong.o
+                                0x443 (size before relaxing)
+ .debug_str     0x00000d1c       0x82 eeprom.o
+                                0x118 (size before relaxing)
+ .debug_str     0x00000d9e       0xb1 i2c.o
+                                0x262 (size before relaxing)
+ .debug_str     0x00000e4f       0xf7 hw.o
+                                0x1a6 (size before relaxing)
+ .debug_str     0x00000f46       0x69 react.o
+                                0x18c (size before relaxing)
+ .debug_str     0x00000faf      0x198 startup/libea_startup_thumb.a(consol.o)
+                                0x264 (size before relaxing)
+ .debug_str     0x00001147       0xd8 startup/libea_startup_thumb.a(framework.o)
+                                0x13d (size before relaxing)
+ .debug_str     0x0000121f       0x8c irq_code/irqUart.a(irqUart.o)
+                                0x26d (size before relaxing)
+ .debug_str     0x000012ab       0x93 gcc_files/libm.a(s_cos.o)
+                                0x11d (size before relaxing)
+ .debug_str     0x0000133e       0x7b gcc_files/libm.a(s_floor.o)
+                                0x162 (size before relaxing)
+ .debug_str     0x000013b9       0x3c gcc_files/libm.a(s_sin.o)
+                                0x11d (size before relaxing)
+ .debug_str     0x000013f5       0xb8 gcc_files/libm.a(w_sqrt.o)
+                                0x199 (size before relaxing)
+ .debug_str     0x000014ad       0xc7 gcc_files/libm.a(e_rem_pio2.o)
+                                0x1d6 (size before relaxing)
+ .debug_str     0x00001574       0x51 gcc_files/libm.a(e_sqrt.o)
+                                0x16f (size before relaxing)
+ .debug_str     0x000015c5       0x49 gcc_files/libm.a(k_cos.o)
+                                0x15d (size before relaxing)
+ .debug_str     0x0000160e       0x82 gcc_files/libm.a(k_rem_pio2.o)
+                                0x16e (size before relaxing)
+ .debug_str     0x00001690       0x49 gcc_files/libm.a(k_sin.o)
+                                0x12f (size before relaxing)
+ .debug_str     0x000016d9       0x42 gcc_files/libm.a(s_fabs.o)
+                                0x156 (size before relaxing)
+ .debug_str     0x0000171b       0x44 gcc_files/libm.a(s_isnan.o)
+                                0x158 (size before relaxing)
+ .debug_str     0x0000175f       0x85 gcc_files/libm.a(s_lib_ver.o)
+                                0x176 (size before relaxing)
+ .debug_str     0x000017e4       0x4a gcc_files/libm.a(s_matherr.o)
+                                0x148 (size before relaxing)
+ .debug_str     0x0000182e       0x55 gcc_files/libm.a(s_scalbn.o)
+                                0x17a (size before relaxing)
+ .debug_str     0x00001883       0x4c gcc_files/libm.a(s_copysign.o)
+                                0x158 (size before relaxing)
+ .debug_str     0x000018cf      0x220 pre_emptive_os/pre_emptive_os.a(kernel.o)
+                                0x359 (size before relaxing)
+ .debug_str     0x00001aef       0x7d pre_emptive_os/pre_emptive_os.a(prioqueue.o)
+                                0x241 (size before relaxing)
+ .debug_str     0x00001b6c       0x51 pre_emptive_os/pre_emptive_os.a(count_sem.o)
+                                0x256 (size before relaxing)
+ .debug_str     0x00001bbd       0xe2 pre_emptive_os/pre_emptive_os.a(timer.o)
+                                0x2f2 (size before relaxing)
+ .debug_str     0x00001c9f       0x70 pre_emptive_os/pre_emptive_os.a(stack_usage.o)
+                                0x226 (size before relaxing)
+ .debug_str     0x00001d0f      0x153 pre_emptive_os/pre_emptive_os.a(a7hal.o)
+                                0x1d8 (size before relaxing)
+ .debug_str     0x00001e62       0x51 pre_emptive_os/pre_emptive_os.a(event.o)
+                                0x260 (size before relaxing)
+ .debug_str     0x00001eb3      0x453 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-atoi.o)
+                                0x4fb (size before relaxing)
+ .debug_str     0x00002306       0xb1 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-errno.o)
+                                0x501 (size before relaxing)
+ .debug_str     0x000023b7       0xc9 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-impure.o)
+                                0x519 (size before relaxing)
+ .debug_str     0x00002480       0xba c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcmp.o)
+                                0x14f (size before relaxing)
+ .debug_str     0x0000253a       0xec c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcpy-stub.o)
+                                0x188 (size before relaxing)
+ .debug_str     0x00002626       0x3d c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-rand.o)
+                                0x50a (size before relaxing)
+ .debug_str     0x00002663       0x52 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strchr.o)
+                                0x15a (size before relaxing)
+ .debug_str     0x000026b5       0x48 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strcpy.o)
+                                0x155 (size before relaxing)
+ .debug_str     0x000026fd       0x48 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strlen.o)
+                                0x15c (size before relaxing)
+ .debug_str     0x00002745       0x42 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strncmp.o)
+                                0x151 (size before relaxing)
+ .debug_str     0x00002787       0x77 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strtol.o)
+                                0x53f (size before relaxing)
+ .debug_str     0x000027fe       0xb2 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-ctype_.o)
+                                 0xe3 (size before relaxing)
+
+.debug_loc      0x00000000     0x4c6d
+ *(.debug_loc)
+ .debug_loc     0x00000000      0x153 main.o
+ .debug_loc     0x00000153      0x64e lcd.o
+ .debug_loc     0x000007a1       0x80 startupDisplay.o
+ .debug_loc     0x00000821      0x106 key.o
+ .debug_loc     0x00000927       0x94 select.o
+ .debug_loc     0x000009bb      0x507 tic-tac-toe.o
+ .debug_loc     0x00000ec2      0x2a5 uart.o
+ .debug_loc     0x00001167      0x835 bt.o
+ .debug_loc     0x0000199c      0x212 snake.o
+ .debug_loc     0x00001bae      0x346 exampleGame.o
+ .debug_loc     0x00001ef4      0xac2 pong.o
+ .debug_loc     0x000029b6      0x684 eeprom.o
+ .debug_loc     0x0000303a      0x643 i2c.o
+ .debug_loc     0x0000367d      0x1a6 hw.o
+ .debug_loc     0x00003823      0x15b react.o
+ .debug_loc     0x0000397e      0x6c1 startup/libea_startup_thumb.a(consol.o)
+ .debug_loc     0x0000403f      0x260 startup/libea_startup_thumb.a(framework.o)
+ .debug_loc     0x0000429f      0x15b irq_code/irqUart.a(irqUart.o)
+ .debug_loc     0x000043fa       0x39 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-atoi.o)
+ .debug_loc     0x00004433       0xd3 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcmp.o)
+ .debug_loc     0x00004506      0x18d c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcpy-stub.o)
+ .debug_loc     0x00004693       0x20 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-rand.o)
+ .debug_loc     0x000046b3      0x160 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strchr.o)
+ .debug_loc     0x00004813       0x13 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strcpy.o)
+ .debug_loc     0x00004826       0x13 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strlen.o)
+ .debug_loc     0x00004839      0x12c c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strncmp.o)
+ .debug_loc     0x00004965      0x308 c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strtol.o)
+
+.debug_macinfo
+ *(.debug_macinfo)
+
+.debug_weaknames
+ *(.debug_weaknames)
+
+.debug_funcnames
+ *(.debug_funcnames)
+
+.debug_typenames
+ *(.debug_typenames)
+
+.debug_varnames
+ *(.debug_varnames)
+OUTPUT(lpc2104_color_lcd_v1.9.elf elf32-littlearm)
+
+.debug_ranges   0x00000000      0x300
+ .debug_ranges  0x00000000       0x18 main.o
+ .debug_ranges  0x00000018       0x30 tic-tac-toe.o
+ .debug_ranges  0x00000048       0x98 bt.o
+ .debug_ranges  0x000000e0       0x70 exampleGame.o
+ .debug_ranges  0x00000150      0x130 pong.o
+ .debug_ranges  0x00000280       0x20 gcc_files/libm.a(s_floor.o)
+ .debug_ranges  0x000002a0       0x18 gcc_files/libm.a(e_rem_pio2.o)
+ .debug_ranges  0x000002b8       0x18 gcc_files/libm.a(e_sqrt.o)
+ .debug_ranges  0x000002d0       0x18 gcc_files/libm.a(k_cos.o)
+ .debug_ranges  0x000002e8       0x18 gcc_files/libm.a(s_scalbn.o)
+
+Cross Reference Table
+
+Symbol                                            File
+__adddf3                                          c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+                                                  gcc_files/libm.a(s_scalbn.o)
+                                                  gcc_files/libm.a(k_sin.o)
+                                                  gcc_files/libm.a(k_rem_pio2.o)
+                                                  gcc_files/libm.a(k_cos.o)
+                                                  gcc_files/libm.a(e_sqrt.o)
+                                                  gcc_files/libm.a(e_rem_pio2.o)
+                                                  gcc_files/libm.a(s_floor.o)
+                                                  pong.o
+__aeabi_cdcmpeq                                   c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+__aeabi_cdcmple                                   c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+__aeabi_cdrcmple                                  c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+__aeabi_d2iz                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixdfsi.o)
+__aeabi_d2uiz                                     c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixunsdfsi.o)
+__aeabi_dadd                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+__aeabi_dcmpeq                                    c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+__aeabi_dcmpge                                    c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+__aeabi_dcmpgt                                    c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+__aeabi_dcmple                                    c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+__aeabi_dcmplt                                    c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+__aeabi_ddiv                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_muldivdf3.o)
+__aeabi_dmul                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_muldivdf3.o)
+__aeabi_drsub                                     c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+__aeabi_dsub                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+__aeabi_f2d                                       c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+__aeabi_i2d                                       c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+__aeabi_idiv                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_divsi3.o)
+__aeabi_idivmod                                   c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_divsi3.o)
+__aeabi_l2d                                       c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+__aeabi_ui2d                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+__aeabi_uidiv                                     c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_udivsi3.o)
+__aeabi_uidivmod                                  c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_udivsi3.o)
+__aeabi_ul2d                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+__bss_end__                                       startup/libea_startup_thumb.a(startup.o)
+__bss_start__                                     startup/libea_startup_thumb.a(startup.o)
+__cmpdf2                                          c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+__ctype_ptr__                                     c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-ctype_.o)
+                                                  c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strtol.o)
+__div0                                            c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_dvmd_tls.o)
+                                                  c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_modsi3.o)
+                                                  c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_umodsi3.o)
+                                                  c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_divsi3.o)
+                                                  c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_udivsi3.o)
+__divdf3                                          c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_muldivdf3.o)
+                                                  gcc_files/libm.a(e_sqrt.o)
+                                                  gcc_files/libm.a(w_sqrt.o)
+                                                  pong.o
+__divsi3                                          c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_divsi3.o)
+                                                  pre_emptive_os/pre_emptive_os.a(stack_usage.o)
+                                                  gcc_files/libm.a(k_rem_pio2.o)
+                                                  react.o
+                                                  snake.o
+__eqdf2                                           c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+                                                  gcc_files/libm.a(k_rem_pio2.o)
+                                                  gcc_files/libm.a(e_rem_pio2.o)
+__errno                                           c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-errno.o)
+                                                  gcc_files/libm.a(w_sqrt.o)
+__extendsfdf2                                     c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+__fdlib_version                                   gcc_files/libm.a(s_lib_ver.o)
+                                                  gcc_files/libm.a(w_sqrt.o)
+__fixdfsi                                         c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixdfsi.o)
+                                                  gcc_files/libm.a(k_sin.o)
+                                                  gcc_files/libm.a(k_rem_pio2.o)
+                                                  gcc_files/libm.a(k_cos.o)
+                                                  gcc_files/libm.a(e_rem_pio2.o)
+__fixunsdfsi                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_fixunsdfsi.o)
+                                                  pong.o
+__floatdidf                                       c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+__floatsidf                                       c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+                                                  gcc_files/libm.a(k_rem_pio2.o)
+                                                  gcc_files/libm.a(e_rem_pio2.o)
+                                                  pong.o
+__floatundidf                                     c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+__floatunsidf                                     c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+                                                  pong.o
+__gedf2                                           c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+                                                  gcc_files/libm.a(k_rem_pio2.o)
+                                                  gcc_files/libm.a(e_sqrt.o)
+                                                  pong.o
+__gnu_thumb1_case_uhi                             c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_thumb1_case_uhi.o)
+                                                  bt.o
+                                                  startupDisplay.o
+__gnu_thumb1_case_uqi                             c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_thumb1_case_uqi.o)
+                                                  react.o
+                                                  pong.o
+                                                  snake.o
+                                                  bt.o
+                                                  startupDisplay.o
+                                                  main.o
+__gtdf2                                           c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+                                                  gcc_files/libm.a(e_sqrt.o)
+                                                  gcc_files/libm.a(s_floor.o)
+                                                  pong.o
+__ieee754_rem_pio2                                gcc_files/libm.a(e_rem_pio2.o)
+                                                  gcc_files/libm.a(s_sin.o)
+                                                  gcc_files/libm.a(s_cos.o)
+__ieee754_sqrt                                    gcc_files/libm.a(e_sqrt.o)
+                                                  gcc_files/libm.a(w_sqrt.o)
+__kernel_cos                                      gcc_files/libm.a(k_cos.o)
+                                                  gcc_files/libm.a(s_sin.o)
+                                                  gcc_files/libm.a(s_cos.o)
+__kernel_rem_pio2                                 gcc_files/libm.a(k_rem_pio2.o)
+                                                  gcc_files/libm.a(e_rem_pio2.o)
+__kernel_sin                                      gcc_files/libm.a(k_sin.o)
+                                                  gcc_files/libm.a(s_sin.o)
+                                                  gcc_files/libm.a(s_cos.o)
+__ledf2                                           c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+                                                  pong.o
+__ltdf2                                           c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+                                                  gcc_files/libm.a(w_sqrt.o)
+                                                  pong.o
+__modsi3                                          c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_modsi3.o)
+                                                  react.o
+                                                  exampleGame.o
+                                                  snake.o
+                                                  tic-tac-toe.o
+__muldf3                                          c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_muldivdf3.o)
+                                                  gcc_files/libm.a(s_scalbn.o)
+                                                  gcc_files/libm.a(k_sin.o)
+                                                  gcc_files/libm.a(k_rem_pio2.o)
+                                                  gcc_files/libm.a(k_cos.o)
+                                                  gcc_files/libm.a(e_sqrt.o)
+                                                  gcc_files/libm.a(e_rem_pio2.o)
+                                                  pong.o
+__nedf2                                           c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_cmpdf2.o)
+                                                  gcc_files/libm.a(s_matherr.o)
+                                                  pong.o
+__osISRExit_from_arm                              linker stubs
+__osSemGive_from_arm                              linker stubs
+__osTick_from_arm                                 linker stubs
+__subdf3                                          c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_arm_addsubdf3.o)
+                                                  gcc_files/libm.a(k_sin.o)
+                                                  gcc_files/libm.a(k_rem_pio2.o)
+                                                  gcc_files/libm.a(k_cos.o)
+                                                  gcc_files/libm.a(e_sqrt.o)
+                                                  gcc_files/libm.a(e_rem_pio2.o)
+                                                  gcc_files/libm.a(s_sin.o)
+                                                  gcc_files/libm.a(s_cos.o)
+                                                  pong.o
+__udivsi3                                         c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_udivsi3.o)
+                                                  c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strtol.o)
+                                                  pre_emptive_os/pre_emptive_os.a(stack_usage.o)
+                                                  startup/libea_startup_thumb.a(consol.o)
+                                                  pong.o
+                                                  exampleGame.o
+                                                  bt.o
+__umodsi3                                         c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_umodsi3.o)
+                                                  c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strtol.o)
+                                                  startup/libea_startup_thumb.a(consol.o)
+                                                  pong.o
+                                                  exampleGame.o
+                                                  bt.o
+_atoi_r                                           c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-atoi.o)
+_call_via_fp                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+_call_via_ip                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+_call_via_lr                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+_call_via_r0                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+_call_via_r1                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+_call_via_r2                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+_call_via_r3                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+_call_via_r4                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+                                                  pre_emptive_os/pre_emptive_os.a(timer.o)
+_call_via_r5                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+_call_via_r6                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+_call_via_r7                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+_call_via_r8                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+_call_via_r9                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+_call_via_sl                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+_call_via_sp                                      c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3\libgcc.a(_call_via_rX.o)
+_ctype_                                           c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-ctype_.o)
+_data                                             startup/libea_startup_thumb.a(startup.o)
+_ea_97x60c                                        startupDisplay.o
+_edata                                            startup/libea_startup_thumb.a(startup.o)
+_etext                                            startup/libea_startup_thumb.a(startup.o)
+_fun_0_130x90c                                    startupDisplay.o
+_fun_1_130x90c                                    startupDisplay.o
+_future_128x39c                                   startupDisplay.o
+_global_impure_ptr                                c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-impure.o)
+_impure_ptr                                       c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-impure.o)
+                                                  c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strtol.o)
+                                                  c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-rand.o)
+                                                  c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-errno.o)
+_o                                                tic-tac-toe.o
+_philips_122x25c                                  startupDisplay.o
+_segger_85x40c                                    startupDisplay.o
+_startup                                          startup/libea_startup_thumb.a(startup.o)
+_strtol_r                                         c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strtol.o)
+                                                  c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-atoi.o)
+_x                                                tic-tac-toe.o
+activateBtProc                                    bt.o
+                                                  pong.o
+addToPrioQueue                                    pre_emptive_os/pre_emptive_os.a(prioqueue.o)
+                                                  pre_emptive_os/pre_emptive_os.a(event.o)
+                                                  pre_emptive_os/pre_emptive_os.a(kernel.o)
+addToRdyList                                      pre_emptive_os/pre_emptive_os.a(kernel.o)
+                                                  pre_emptive_os/pre_emptive_os.a(event.o)
+addToTimeList                                     pre_emptive_os/pre_emptive_os.a(kernel.o)
+                                                  pre_emptive_os/pre_emptive_os.a(event.o)
+appTick                                           main.o
+                                                  pre_emptive_os/pre_emptive_os.a(kernel.o)
+arrow                                             react.o
+atoi                                              c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-atoi.o)
+                                                  startup/libea_startup_thumb.a(consol.o)
+blockBtProc                                       bt.o
+                                                  pong.o
+charMap                                           lcd.o
+check                                             tic-tac-toe.o
+checkKey                                          key.o
+                                                  react.o
+                                                  pong.o
+                                                  exampleGame.o
+                                                  snake.o
+                                                  bt.o
+                                                  tic-tac-toe.o
+                                                  select.o
+                                                  startupDisplay.o
+                                                  main.o
+checkKey2                                         key.o
+                                                  pong.o
+checkStackLimit                                   pre_emptive_os/pre_emptive_os.a(stack_usage.o)
+consolGetCh                                       startup/libea_startup_thumb.a(consol.o)
+consolGetChar                                     startup/libea_startup_thumb.a(consol.o)
+                                                  bt.o
+consolGetIntNum                                   startup/libea_startup_thumb.a(consol.o)
+consolGetString                                   startup/libea_startup_thumb.a(consol.o)
+consolInit                                        startup/libea_startup_thumb.a(consol.o)
+                                                  startup/libea_startup_thumb.a(framework.o)
+consolScanf                                       startup/libea_startup_thumb.a(consol.o)
+consolSendCh                                      startup/libea_startup_thumb.a(consol.o)
+consolSendChar                                    startup/libea_startup_thumb.a(consol.o)
+consolSendNumber                                  startup/libea_startup_thumb.a(consol.o)
+                                                  startup/libea_startup_thumb.a(framework.o)
+consolSendString                                  startup/libea_startup_thumb.a(consol.o)
+                                                  startup/libea_startup_thumb.a(framework.o)
+copysign                                          gcc_files/libm.a(s_copysign.o)
+                                                  gcc_files/libm.a(s_scalbn.o)
+cos                                               gcc_files/libm.a(s_cos.o)
+                                                  pong.o
+createStackPattern                                pre_emptive_os/pre_emptive_os.a(stack_usage.o)
+                                                  pre_emptive_os/pre_emptive_os.a(kernel.o)
+ctxSwitchIsr_oshal                                pre_emptive_os/pre_emptive_os.a(a7hal_a.o)
+                                                  pre_emptive_os/pre_emptive_os.a(kernel.o)
+ctxSwitch_oshal                                   pre_emptive_os/pre_emptive_os.a(a7hal_a.o)
+                                                  pre_emptive_os/pre_emptive_os.a(kernel.o)
+disIrq                                            irq_code/irqUart.a(irqUart.o)
+                                                  uart.o
+disp_matrix                                       tic-tac-toe.o
+displayStartupSequence                            startupDisplay.o
+                                                  main.o
+drawMenu                                          select.o
+                                                  pong.o
+                                                  exampleGame.o
+                                                  snake.o
+                                                  bt.o
+                                                  tic-tac-toe.o
+eaInit                                            startup/libea_startup_thumb.a(framework.o)
+                                                  react.o
+                                                  main.o
+eepromPageRead                                    eeprom.o
+eepromPoll                                        eeprom.o
+eepromStartRead                                   eeprom.o
+eepromWrite                                       eeprom.o
+end                                               startup/libea_startup_thumb.a(framework.o)
+eventInit                                         pre_emptive_os/pre_emptive_os.a(event.o)
+                                                  pre_emptive_os/pre_emptive_os.a(count_sem.o)
+eventIsEmpty                                      pre_emptive_os/pre_emptive_os.a(event.o)
+                                                  pre_emptive_os/pre_emptive_os.a(count_sem.o)
+eventSignal                                       pre_emptive_os/pre_emptive_os.a(event.o)
+                                                  pre_emptive_os/pre_emptive_os.a(count_sem.o)
+eventWait                                         pre_emptive_os/pre_emptive_os.a(event.o)
+                                                  pre_emptive_os/pre_emptive_os.a(count_sem.o)
+eventWaitReturn                                   pre_emptive_os/pre_emptive_os.a(event.o)
+                                                  pre_emptive_os/pre_emptive_os.a(count_sem.o)
+exceptionHandlerInit                              startup/libea_startup_thumb.a(framework.o)
+                                                  startup/libea_startup_thumb.a(startup.o)
+fabs                                              gcc_files/libm.a(s_fabs.o)
+                                                  gcc_files/libm.a(e_rem_pio2.o)
+figures                                           exampleGame.o
+floor                                             gcc_files/libm.a(s_floor.o)
+                                                  gcc_files/libm.a(k_rem_pio2.o)
+                                                  pong.o
+generalIRQ_oshal                                  pre_emptive_os/pre_emptive_os.a(a7hal_a.o)
+                                                  pre_emptive_os/pre_emptive_os.a(a7hal.o)
+getHighPrioQueue                                  pre_emptive_os/pre_emptive_os.a(prioqueue.o)
+                                                  pre_emptive_os/pre_emptive_os.a(event.o)
+                                                  pre_emptive_os/pre_emptive_os.a(kernel.o)
+getI2cLock                                        i2c.o
+                                                  eeprom.o
+getKeys                                           hw.o
+                                                  key.o
+get_computer_move                                 tic-tac-toe.o
+halDisableInterrupts_oshal                        pre_emptive_os/pre_emptive_os.a(a7hal.o)
+                                                  pre_emptive_os/pre_emptive_os.a(timer.o)
+                                                  pre_emptive_os/pre_emptive_os.a(count_sem.o)
+                                                  pre_emptive_os/pre_emptive_os.a(kernel.o)
+halEnableInterrupts_oshal                         pre_emptive_os/pre_emptive_os.a(a7hal.o)
+halRestoreInterrupts_oshal                        pre_emptive_os/pre_emptive_os.a(a7hal.o)
+                                                  pre_emptive_os/pre_emptive_os.a(timer.o)
+                                                  pre_emptive_os/pre_emptive_os.a(count_sem.o)
+                                                  pre_emptive_os/pre_emptive_os.a(kernel.o)
+handleBt                                          bt.o
+                                                  main.o
+handleIRQs_oshal                                  pre_emptive_os/pre_emptive_os.a(a7hal.o)
+                                                  pre_emptive_os/pre_emptive_os.a(a7hal_a.o)
+i2cCheckStatus                                    i2c.o
+                                                  eeprom.o
+i2cGetChar                                        i2c.o
+                                                  eeprom.o
+i2cInit                                           i2c.o
+                                                  hw.o
+i2cMyWrite                                        i2c.o
+i2cPutChar                                        i2c.o
+                                                  eeprom.o
+i2cRead                                           i2c.o
+i2cRepeatStart                                    i2c.o
+                                                  eeprom.o
+i2cStart                                          i2c.o
+                                                  eeprom.o
+i2cStop                                           i2c.o
+                                                  eeprom.o
+i2cWaitTransmit                                   i2c.o
+i2cWrite                                          i2c.o
+i2cWriteWithWait                                  i2c.o
+                                                  eeprom.o
+immediateIoInit                                   hw.o
+                                                  main.o
+initBtProc                                        bt.o
+                                                  main.o
+initKeyProc                                       key.o
+                                                  main.o
+initPrioQueue                                     pre_emptive_os/pre_emptive_os.a(prioqueue.o)
+                                                  pre_emptive_os/pre_emptive_os.a(event.o)
+                                                  pre_emptive_os/pre_emptive_os.a(kernel.o)
+initSpiForLcd                                     hw.o
+                                                  lcd.o
+initTimer_oshal                                   pre_emptive_os/pre_emptive_os.a(a7hal.o)
+                                                  pre_emptive_os/pre_emptive_os.a(kernel.o)
+initUart1                                         uart.o
+                                                  bt.o
+init_matrix                                       tic-tac-toe.o
+isEmptyPrioQueue                                  pre_emptive_os/pre_emptive_os.a(prioqueue.o)
+                                                  pre_emptive_os/pre_emptive_os.a(event.o)
+isnan                                             gcc_files/libm.a(s_isnan.o)
+                                                  gcc_files/libm.a(w_sqrt.o)
+isrNesting                                        pre_emptive_os/pre_emptive_os.a(kernel.o)
+                                                  pre_emptive_os/pre_emptive_os.a(event.o)
+                                                  pre_emptive_os/pre_emptive_os.a(a7hal_a.o)
+                                                  pre_emptive_os/pre_emptive_os.a(count_sem.o)
+lcdClrscr                                         lcd.o
+                                                  react.o
+                                                  pong.o
+                                                  snake.o
+                                                  bt.o
+                                                  tic-tac-toe.o
+                                                  startupDisplay.o
+                                                  main.o
+lcdColor                                          lcd.o
+                                                  react.o
+                                                  pong.o
+                                                  exampleGame.o
+                                                  snake.o
+                                                  bt.o
+                                                  tic-tac-toe.o
+                                                  select.o
+                                                  startupDisplay.o
+                                                  main.o
+lcdContrast                                       lcd.o
+                                                  main.o
+lcdData                                           lcd.o
+lcdGotoxy                                         lcd.o
+                                                  react.o
+                                                  pong.o
+                                                  exampleGame.o
+                                                  snake.o
+                                                  bt.o
+                                                  tic-tac-toe.o
+                                                  select.o
+                                                  startupDisplay.o
+                                                  main.o
+lcdIcon                                           lcd.o
+                                                  tic-tac-toe.o
+                                                  startupDisplay.o
+lcdInit                                           lcd.o
+                                                  main.o
+lcdLine                                           lcd.o
+                                                  tic-tac-toe.o
+lcdOff                                            lcd.o
+lcdPutchar                                        lcd.o
+                                                  pong.o
+                                                  bt.o
+                                                  startupDisplay.o
+lcdPuts                                           lcd.o
+                                                  react.o
+                                                  pong.o
+                                                  exampleGame.o
+                                                  snake.o
+                                                  bt.o
+                                                  tic-tac-toe.o
+                                                  select.o
+                                                  main.o
+lcdRect                                           lcd.o
+                                                  react.o
+                                                  pong.o
+                                                  exampleGame.o
+                                                  snake.o
+                                                  bt.o
+                                                  tic-tac-toe.o
+                                                  select.o
+                                                  main.o
+lcdRectBrd                                        lcd.o
+                                                  exampleGame.o
+lcdWindow                                         lcd.o
+lcdWrcmd                                          lcd.o
+lcdWrdata                                         lcd.o
+lm75Read                                          eeprom.o
+lowLevelInit                                      startup/libea_startup_thumb.a(framework.o)
+                                                  startup/libea_startup_thumb.a(startup.o)
+main                                              main.o
+                                                  startup/libea_startup_thumb.a(startup.o)
+matherr                                           gcc_files/libm.a(s_matherr.o)
+                                                  gcc_files/libm.a(w_sqrt.o)
+matrix                                            react.o
+                                                  tic-tac-toe.o
+memcmp                                            c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcmp.o)
+                                                  pong.o
+                                                  bt.o
+memcpy                                            c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-memcpy-stub.o)
+                                                  startup/libea_startup_thumb.a(consol.o)
+                                                  hw.o
+                                                  bt.o
+ms                                                pong.o
+                                                  exampleGame.o
+                                                  snake.o
+                                                  bt.o
+                                                  main.o
+osCreateProcess                                   pre_emptive_os/pre_emptive_os.a(kernel.o)
+                                                  pre_emptive_os/pre_emptive_os.a(timer.o)
+                                                  bt.o
+                                                  key.o
+                                                  main.o
+osCreateTimer                                     pre_emptive_os/pre_emptive_os.a(timer.o)
+osDeleteProcess                                   pre_emptive_os/pre_emptive_os.a(kernel.o)
+                                                  main.o
+osDeleteTimer                                     pre_emptive_os/pre_emptive_os.a(timer.o)
+osGetHighPrioProc                                 pre_emptive_os/pre_emptive_os.a(kernel.o)
+osISREnter                                        pre_emptive_os/pre_emptive_os.a(kernel.o)
+osISRExit                                         pre_emptive_os/pre_emptive_os.a(kernel.o)
+                                                  pre_emptive_os/pre_emptive_os.a(a7hal_a.o)
+osInit                                            pre_emptive_os/pre_emptive_os.a(kernel.o)
+                                                  main.o
+osInitTimers                                      pre_emptive_os/pre_emptive_os.a(timer.o)
+osLockNesting                                     pre_emptive_os/pre_emptive_os.a(kernel.o)
+osPid                                             pre_emptive_os/pre_emptive_os.a(kernel.o)
+osResume                                          pre_emptive_os/pre_emptive_os.a(kernel.o)
+osSemGive                                         pre_emptive_os/pre_emptive_os.a(count_sem.o)
+                                                  pre_emptive_os/pre_emptive_os.a(timer.o)
+                                                  irq_code/irqUart.a(irqUart.o)
+                                                  i2c.o
+                                                  bt.o
+osSemInit                                         pre_emptive_os/pre_emptive_os.a(count_sem.o)
+                                                  pre_emptive_os/pre_emptive_os.a(timer.o)
+                                                  i2c.o
+                                                  bt.o
+                                                  uart.o
+osSemTake                                         pre_emptive_os/pre_emptive_os.a(count_sem.o)
+                                                  pre_emptive_os/pre_emptive_os.a(timer.o)
+                                                  i2c.o
+                                                  bt.o
+                                                  uart.o
+osSemTryTake                                      pre_emptive_os/pre_emptive_os.a(count_sem.o)
+osSleep                                           pre_emptive_os/pre_emptive_os.a(kernel.o)
+                                                  react.o
+                                                  hw.o
+                                                  pong.o
+                                                  exampleGame.o
+                                                  snake.o
+                                                  bt.o
+                                                  tic-tac-toe.o
+                                                  select.o
+                                                  key.o
+                                                  startupDisplay.o
+                                                  lcd.o
+                                                  main.o
+osStackUsage                                      pre_emptive_os/pre_emptive_os.a(stack_usage.o)
+osStart                                           pre_emptive_os/pre_emptive_os.a(kernel.o)
+                                                  main.o
+osStartProcess                                    pre_emptive_os/pre_emptive_os.a(kernel.o)
+                                                  pre_emptive_os/pre_emptive_os.a(timer.o)
+                                                  bt.o
+                                                  key.o
+                                                  main.o
+osSuspend                                         pre_emptive_os/pre_emptive_os.a(kernel.o)
+osTick                                            pre_emptive_os/pre_emptive_os.a(kernel.o)
+                                                  pre_emptive_os/pre_emptive_os.a(a7hal.o)
+pHeapEnd                                          startup/libea_startup_thumb.a(framework.o)
+pHeapStart                                        startup/libea_startup_thumb.a(framework.o)
+pNxtToRun                                         pre_emptive_os/pre_emptive_os.a(kernel.o)
+                                                  pre_emptive_os/pre_emptive_os.a(a7hal_a.o)
+pRunProc                                          pre_emptive_os/pre_emptive_os.a(kernel.o)
+                                                  pre_emptive_os/pre_emptive_os.a(event.o)
+                                                  pre_emptive_os/pre_emptive_os.a(a7hal_a.o)
+pca9532                                           eeprom.o
+                                                  hw.o
+playExample                                       exampleGame.o
+                                                  main.o
+playPong                                          pong.o
+                                                  main.o
+playReactGame                                     react.o
+                                                  main.o
+playSnake                                         snake.o
+                                                  main.o
+playTicTacToe                                     tic-tac-toe.o
+                                                  main.o
+processControlBlocks                              pre_emptive_os/pre_emptive_os.a(event.o)
+                                                  pre_emptive_os/pre_emptive_os.a(stack_usage.o)
+                                                  pre_emptive_os/pre_emptive_os.a(kernel.o)
+rand                                              c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-rand.o)
+                                                  react.o
+                                                  exampleGame.o
+                                                  snake.o
+randomMove                                        react.o
+receiveSem                                        irq_code/irqUart.a(irqUart.o)
+                                                  uart.o
+releaseI2cLock                                    i2c.o
+                                                  eeprom.o
+resetBT                                           hw.o
+                                                  bt.o
+resetLCD                                          hw.o
+                                                  main.o
+restoreIrq                                        irq_code/irqUart.a(irqUart.o)
+                                                  uart.o
+rmvFromPrioQueue                                  pre_emptive_os/pre_emptive_os.a(prioqueue.o)
+                                                  pre_emptive_os/pre_emptive_os.a(event.o)
+                                                  pre_emptive_os/pre_emptive_os.a(kernel.o)
+rmvFromRdyList                                    pre_emptive_os/pre_emptive_os.a(kernel.o)
+                                                  pre_emptive_os/pre_emptive_os.a(event.o)
+rmvFromTimeList                                   pre_emptive_os/pre_emptive_os.a(kernel.o)
+                                                  pre_emptive_os/pre_emptive_os.a(event.o)
+sampleKey                                         key.o
+scalbn                                            gcc_files/libm.a(s_scalbn.o)
+                                                  gcc_files/libm.a(k_rem_pio2.o)
+schedule                                          pre_emptive_os/pre_emptive_os.a(kernel.o)
+                                                  pre_emptive_os/pre_emptive_os.a(event.o)
+                                                  pre_emptive_os/pre_emptive_os.a(count_sem.o)
+selectLCD                                         hw.o
+                                                  lcd.o
+sendToLCD                                         hw.o
+                                                  lcd.o
+setBuzzer                                         hw.o
+                                                  react.o
+setLED                                            hw.o
+                                                  react.o
+showRandomArrow                                   react.o
+showScore                                         react.o
+simplePrintf                                      startup/libea_startup_thumb.a(consol.o)
+                                                  react.o
+                                                  pong.o
+                                                  bt.o
+                                                  tic-tac-toe.o
+                                                  main.o
+sin                                               gcc_files/libm.a(s_sin.o)
+                                                  pong.o
+snake                                             snake.o
+sqrt                                              gcc_files/libm.a(w_sqrt.o)
+                                                  pong.o
+srand                                             c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-rand.o)
+                                                  exampleGame.o
+                                                  snake.o
+startHighProc_oshal                               pre_emptive_os/pre_emptive_os.a(a7hal_a.o)
+                                                  pre_emptive_os/pre_emptive_os.a(kernel.o)
+stkFrameInit_oshal                                pre_emptive_os/pre_emptive_os.a(a7hal.o)
+                                                  pre_emptive_os/pre_emptive_os.a(kernel.o)
+strchr                                            c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strchr.o)
+                                                  pong.o
+                                                  bt.o
+strcpy                                            c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strcpy.o)
+                                                  pong.o
+strlen                                            c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strlen.o)
+                                                  startup/libea_startup_thumb.a(consol.o)
+strncmp                                           c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strncmp.o)
+                                                  pong.o
+strtol                                            c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-strtol.o)
+                                                  c:/sysgcc/arm-elf/bin/../lib/gcc/arm-elf/4.6.3/../../../../arm-elf/lib\libc.a(lib_a-atoi.o)
+timerIsr_oshal                                    pre_emptive_os/pre_emptive_os.a(a7hal.o)
+timerTick                                         pre_emptive_os/pre_emptive_os.a(timer.o)
+                                                  pre_emptive_os/pre_emptive_os.a(kernel.o)
+uart1GetCh                                        uart.o
+uart1GetChSem                                     uart.o
+uart1GetChar                                      uart.o
+                                                  pong.o
+                                                  bt.o
+uart1ISR                                          irq_code/irqUart.a(irqUart.o)
+                                                  uart.o
+uart1RxBuf                                        irq_code/irqUart.a(irqUart.o)
+                                                  uart.o
+uart1RxHead                                       uart.o
+                                                  irq_code/irqUart.a(irqUart.o)
+uart1RxInBuff                                     uart.o
+                                                  irq_code/irqUart.a(irqUart.o)
+uart1RxTail                                       uart.o
+                                                  irq_code/irqUart.a(irqUart.o)
+uart1SendCh                                       uart.o
+uart1SendChar                                     uart.o
+                                                  bt.o
+uart1SendChars                                    uart.o
+                                                  pong.o
+uart1SendString                                   uart.o
+                                                  pong.o
+                                                  bt.o
+uart1TxBuf                                        irq_code/irqUart.a(irqUart.o)
+                                                  uart.o
+uart1TxHead                                       uart.o
+                                                  irq_code/irqUart.a(irqUart.o)
+uart1TxRunning                                    uart.o
+                                                  irq_code/irqUart.a(irqUart.o)
+uart1TxTail                                       uart.o
+                                                  irq_code/irqUart.a(irqUart.o)
+useBuzzer                                         react.o
+ver1_0                                            hw.o
+                                                  main.o
+ver1_1                                            hw.o
+                                                  main.o

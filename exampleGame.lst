@@ -1,0 +1,4183 @@
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
+
+
+   1              		.code	16
+   2              		.file	"exampleGame.c"
+   3              		.text
+   4              	.Ltext0:
+   5              		.cfi_sections	.debug_frame
+   6              		.align	1
+   7              		.code	16
+   8              		.thumb_func
+   9              		.type	isValid, %function
+  10              	isValid:
+  11              	.LFB0:
+  12              		.file 1 "exampleGame.c"
+   1:exampleGame.c **** /******************************************************************************
+   2:exampleGame.c ****  *
+   3:exampleGame.c ****  * Copyright:
+   4:exampleGame.c ****  *    (C) 2006 Embedded Artists AB
+   5:exampleGame.c ****  *
+   6:exampleGame.c ****  * File:
+   7:exampleGame.c ****  *    exampleGame.c
+   8:exampleGame.c ****  *
+   9:exampleGame.c ****  * Description:
+  10:exampleGame.c ****  *    Implementation of example game.
+  11:exampleGame.c ****  *
+  12:exampleGame.c ****  *****************************************************************************/
+  13:exampleGame.c **** 
+  14:exampleGame.c **** /******************************************************************************
+  15:exampleGame.c ****  * Includes
+  16:exampleGame.c ****  *****************************************************************************/
+  17:exampleGame.c **** #include "../pre_emptive_os/api/osapi.h"
+  18:exampleGame.c **** #include "../pre_emptive_os/api/general.h"
+  19:exampleGame.c **** #include <printf_P.h>
+  20:exampleGame.c **** #include <ea_init.h>
+  21:exampleGame.c **** #include <stdlib.h>
+  22:exampleGame.c **** #include "lcd.h"
+  23:exampleGame.c **** #include "key.h"
+  24:exampleGame.c **** #include "select.h"
+  25:exampleGame.c **** 
+  26:exampleGame.c **** #include "configAppl.h"
+  27:exampleGame.c **** 
+  28:exampleGame.c **** #ifdef INCLUDE_EXAMPLE_GAME_BACKGROUND
+  29:exampleGame.c **** #include "brickWall_130x130c.h"
+  30:exampleGame.c **** #endif
+  31:exampleGame.c **** 
+  32:exampleGame.c **** 
+  33:exampleGame.c **** /******************************************************************************
+  34:exampleGame.c ****  * Typedefs and defines
+  35:exampleGame.c ****  *****************************************************************************/
+  36:exampleGame.c **** #define GAME_NOT_STARTED 0
+  37:exampleGame.c **** #define GAME_RUNNING     1
+  38:exampleGame.c **** #define GAME_OVER        2
+  39:exampleGame.c **** #define GAME_END         3
+  40:exampleGame.c **** 
+  41:exampleGame.c **** #define BOARD_WIDTH  10
+  42:exampleGame.c **** #define BOARD_HEIGHT 16
+  43:exampleGame.c **** 
+  44:exampleGame.c **** #define FIGURE_SIZE 4
+  45:exampleGame.c **** #define NUM_OF_FIGURE 19
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 2
+
+
+  46:exampleGame.c **** 
+  47:exampleGame.c **** 
+  48:exampleGame.c **** /*****************************************************************************
+  49:exampleGame.c ****  * Local variables
+  50:exampleGame.c ****  ****************************************************************************/
+  51:exampleGame.c **** static tU8 gameStatus;
+  52:exampleGame.c **** static tU8 score;
+  53:exampleGame.c **** 
+  54:exampleGame.c **** static tS32 shift[NUM_OF_FIGURE]={1,0,3,4,5,2,7,8,9,6,11,12,13,10,15,14,17,16,18};
+  55:exampleGame.c **** static tS32 board[BOARD_WIDTH][BOARD_HEIGHT];
+  56:exampleGame.c **** static tS32 currFigure;
+  57:exampleGame.c **** static tS32 currXpos;
+  58:exampleGame.c **** static tS32 currYpos;
+  59:exampleGame.c **** static volatile tU32 lastUpdate;
+  60:exampleGame.c **** static volatile tU32 delayTimeMs;
+  61:exampleGame.c **** 
+  62:exampleGame.c **** 
+  63:exampleGame.c **** /*****************************************************************************
+  64:exampleGame.c ****  * External variables
+  65:exampleGame.c ****  ****************************************************************************/
+  66:exampleGame.c **** extern volatile tU32 ms;
+  67:exampleGame.c **** 
+  68:exampleGame.c **** 
+  69:exampleGame.c **** char figures[NUM_OF_FIGURE][FIGURE_SIZE][FIGURE_SIZE]=
+  70:exampleGame.c **** {{".X..",
+  71:exampleGame.c ****   ".X..",
+  72:exampleGame.c ****   ".X..",
+  73:exampleGame.c ****   ".X.."},
+  74:exampleGame.c ****  {"....",
+  75:exampleGame.c ****   "XXXX",
+  76:exampleGame.c ****   "....",
+  77:exampleGame.c ****   "...."},
+  78:exampleGame.c **** 
+  79:exampleGame.c ****  {"XXX.",
+  80:exampleGame.c ****   "X...",
+  81:exampleGame.c ****   "....",
+  82:exampleGame.c ****   "...."},
+  83:exampleGame.c ****  {".XX.",
+  84:exampleGame.c ****   "..X.",
+  85:exampleGame.c ****   "..X.",
+  86:exampleGame.c ****   "...."},
+  87:exampleGame.c ****  {"..X.",
+  88:exampleGame.c ****   "XXX.",
+  89:exampleGame.c ****   "....",
+  90:exampleGame.c ****   "...."},
+  91:exampleGame.c ****  {".X..",
+  92:exampleGame.c ****   ".X..",
+  93:exampleGame.c ****   ".XX.",
+  94:exampleGame.c ****   "...."},
+  95:exampleGame.c **** 
+  96:exampleGame.c ****  {"XXX.",
+  97:exampleGame.c ****   "..X.",
+  98:exampleGame.c ****   "....",
+  99:exampleGame.c ****   "...."},
+ 100:exampleGame.c ****  {"..X.",
+ 101:exampleGame.c ****   "..X.",
+ 102:exampleGame.c ****   ".XX.",
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 3
+
+
+ 103:exampleGame.c ****   "...."},
+ 104:exampleGame.c ****  {"X...",
+ 105:exampleGame.c ****   "XXX.",
+ 106:exampleGame.c ****   "....",
+ 107:exampleGame.c ****   "...."},
+ 108:exampleGame.c ****  {".XX.",
+ 109:exampleGame.c ****   ".X..",
+ 110:exampleGame.c ****   ".X..",
+ 111:exampleGame.c ****   "...."},
+ 112:exampleGame.c **** 
+ 113:exampleGame.c ****  {".X..",
+ 114:exampleGame.c ****   "XXX.",
+ 115:exampleGame.c ****   "....",
+ 116:exampleGame.c ****   "...."},
+ 117:exampleGame.c ****  {".X..",
+ 118:exampleGame.c ****   ".XX.",
+ 119:exampleGame.c ****   ".X..",
+ 120:exampleGame.c ****   "...."},
+ 121:exampleGame.c ****  {"XXX.",
+ 122:exampleGame.c ****   ".X..",
+ 123:exampleGame.c ****   "....",
+ 124:exampleGame.c ****   "...."},
+ 125:exampleGame.c ****  {".X..",
+ 126:exampleGame.c ****   "XX..",
+ 127:exampleGame.c ****   ".X..",
+ 128:exampleGame.c ****   "...."},
+ 129:exampleGame.c **** 
+ 130:exampleGame.c ****  {"X...",
+ 131:exampleGame.c ****   "XX..",
+ 132:exampleGame.c ****   ".X..",
+ 133:exampleGame.c ****   "...."},
+ 134:exampleGame.c ****  {".XX.",
+ 135:exampleGame.c ****   "XX..",
+ 136:exampleGame.c ****   "....",
+ 137:exampleGame.c ****   "...."},
+ 138:exampleGame.c **** 
+ 139:exampleGame.c ****  {".X..",
+ 140:exampleGame.c ****   "XX..",
+ 141:exampleGame.c ****   "X...",
+ 142:exampleGame.c ****   "...."},
+ 143:exampleGame.c ****  {"XX..",
+ 144:exampleGame.c ****   ".XX.",
+ 145:exampleGame.c ****   "....",
+ 146:exampleGame.c ****   "...."},
+ 147:exampleGame.c ****  {"XX..",
+ 148:exampleGame.c ****   "XX..",
+ 149:exampleGame.c ****   "....",
+ 150:exampleGame.c ****   "...."}};
+ 151:exampleGame.c **** 
+ 152:exampleGame.c **** 
+ 153:exampleGame.c **** /*****************************************************************************
+ 154:exampleGame.c ****  *
+ 155:exampleGame.c ****  * Description:
+ 156:exampleGame.c ****  *    Check if current place for figure is valid
+ 157:exampleGame.c ****  *
+ 158:exampleGame.c ****  ****************************************************************************/
+ 159:exampleGame.c **** static tS8
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 4
+
+
+ 160:exampleGame.c **** isValid(tS32 x, tS32 y, tS32 shape)
+ 161:exampleGame.c **** {
+  13              		.loc 1 161 0
+  14              		.cfi_startproc
+  15 0000 F1B5     		push	{r0, r4, r5, r6, r7, lr}
+  16              	.LCFI0:
+  17              		.cfi_def_cfa_offset 24
+  18              		.cfi_offset 0, -24
+  19              		.cfi_offset 4, -20
+  20              		.cfi_offset 5, -16
+  21              		.cfi_offset 6, -12
+  22              		.cfi_offset 7, -8
+  23              		.cfi_offset 14, -4
+  24              	.LVL0:
+ 160:exampleGame.c **** isValid(tS32 x, tS32 y, tS32 shape)
+  25              		.loc 1 160 0
+  26 0002 234E     		ldr	r6, .L17
+  27 0004 1701     		lsl	r7, r2, #4
+  28              		.loc 1 161 0
+  29 0006 051C     		mov	r5, r0
+  30 0008 0024     		mov	r4, #0
+ 160:exampleGame.c **** isValid(tS32 x, tS32 y, tS32 shape)
+  31              		.loc 1 160 0
+  32 000a BF19     		add	r7, r7, r6
+  33 000c 9446     		mov	ip, r2
+  34 000e 11E0     		b	.L2
+  35              	.LVL1:
+  36              	.L5:
+  37 0010 3A19     		add	r2, r7, r4
+ 162:exampleGame.c ****   tS32 i,j;
+ 163:exampleGame.c **** 
+ 164:exampleGame.c ****   for (i=0; i<FIGURE_SIZE; i++)
+ 165:exampleGame.c ****     for (j=0; j<FIGURE_SIZE; j++)
+ 166:exampleGame.c ****       if((figures[shape][i][j] == 'X') &&
+  38              		.loc 1 166 0
+  39 0012 D25C     		ldrb	r2, [r2, r3]
+  40 0014 582A     		cmp	r2, #88
+  41 0016 06D1     		bne	.L3
+  42              		.loc 1 166 0 is_stmt 0 discriminator 1
+  43 0018 092D     		cmp	r5, #9
+  44 001a 34DC     		bgt	.L13
+ 160:exampleGame.c **** isValid(tS32 x, tS32 y, tS32 shape)
+  45              		.loc 1 160 0 is_stmt 1
+  46 001c 5A18     		add	r2, r3, r1
+ 167:exampleGame.c ****          ((i+x >= BOARD_WIDTH) || (j+y >= BOARD_HEIGHT) || (i+x < 0)))
+  47              		.loc 1 167 0
+  48 001e 0F2A     		cmp	r2, #15
+  49 0020 31DC     		bgt	.L13
+  50              		.loc 1 167 0 is_stmt 0 discriminator 1
+  51 0022 002D     		cmp	r5, #0
+  52 0024 2FDB     		blt	.L13
+  53              	.L3:
+ 165:exampleGame.c ****     for (j=0; j<FIGURE_SIZE; j++)
+  54              		.loc 1 165 0 is_stmt 1
+  55 0026 0133     		add	r3, r3, #1
+  56              	.LVL2:
+  57 0028 042B     		cmp	r3, #4
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 5
+
+
+  58 002a F1D1     		bne	.L5
+  59 002c 0434     		add	r4, r4, #4
+  60 002e 0135     		add	r5, r5, #1
+ 164:exampleGame.c ****   for (i=0; i<FIGURE_SIZE; i++)
+  61              		.loc 1 164 0
+  62 0030 102C     		cmp	r4, #16
+  63 0032 1ED0     		beq	.L6
+  64              	.LVL3:
+  65              	.L2:
+ 160:exampleGame.c **** isValid(tS32 x, tS32 y, tS32 shape)
+  66              		.loc 1 160 0 discriminator 1
+  67 0034 6246     		mov	r2, ip
+  68 0036 9200     		lsl	r2, r2, #2
+ 161:exampleGame.c **** {
+  69              		.loc 1 161 0 discriminator 1
+  70 0038 0023     		mov	r3, #0
+ 160:exampleGame.c **** isValid(tS32 x, tS32 y, tS32 shape)
+  71              		.loc 1 160 0 discriminator 1
+  72 003a 0092     		str	r2, [sp]
+  73 003c E8E7     		b	.L5
+  74              	.LVL4:
+  75              	.L8:
+ 168:exampleGame.c ****         return 0;
+ 169:exampleGame.c **** 
+ 170:exampleGame.c ****   for (i=0; i<FIGURE_SIZE; i++)
+ 171:exampleGame.c ****     for (j=0; j<FIGURE_SIZE; j++)
+ 172:exampleGame.c ****       if((i+x < BOARD_WIDTH) &&
+  76              		.loc 1 172 0
+  77 003e 092C     		cmp	r4, #9
+  78 0040 0FDC     		bgt	.L7
+ 160:exampleGame.c **** isValid(tS32 x, tS32 y, tS32 shape)
+  79              		.loc 1 160 0 discriminator 1
+  80 0042 5818     		add	r0, r3, r1
+  81              		.loc 1 172 0 discriminator 1
+  82 0044 0F28     		cmp	r0, #15
+  83 0046 0CDC     		bgt	.L7
+ 160:exampleGame.c **** isValid(tS32 x, tS32 y, tS32 shape)
+  84              		.loc 1 160 0
+  85 0048 009F     		ldr	r7, [sp]
+  86 004a D019     		add	r0, r2, r7
+  87 004c 104F     		ldr	r7, .L17
+  88 004e 8000     		lsl	r0, r0, #2
+  89 0050 C019     		add	r0, r0, r7
+ 173:exampleGame.c ****          (j+y < BOARD_HEIGHT) &&
+  90              		.loc 1 173 0
+  91 0052 C05C     		ldrb	r0, [r0, r3]
+  92 0054 5828     		cmp	r0, #88
+  93 0056 04D1     		bne	.L7
+ 160:exampleGame.c **** isValid(tS32 x, tS32 y, tS32 shape)
+  94              		.loc 1 160 0
+  95 0058 AF19     		add	r7, r5, r6
+  96 005a 9800     		lsl	r0, r3, #2
+ 174:exampleGame.c ****          (figures[shape][i][j] == 'X') &&
+  97              		.loc 1 174 0
+  98 005c 3858     		ldr	r0, [r7, r0]
+  99 005e 0028     		cmp	r0, #0
+ 100 0060 11D1     		bne	.L13
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 6
+
+
+ 101              	.L7:
+ 171:exampleGame.c ****     for (j=0; j<FIGURE_SIZE; j++)
+ 102              		.loc 1 171 0
+ 103 0062 0133     		add	r3, r3, #1
+ 104              	.LVL5:
+ 105 0064 042B     		cmp	r3, #4
+ 106 0066 EAD1     		bne	.L8
+ 170:exampleGame.c ****   for (i=0; i<FIGURE_SIZE; i++)
+ 107              		.loc 1 170 0
+ 108 0068 0132     		add	r2, r2, #1
+ 109              	.LVL6:
+ 110 006a 042A     		cmp	r2, #4
+ 111 006c 04D1     		bne	.L9
+ 175:exampleGame.c ****          (board[i+x][j+y] != 0))
+ 176:exampleGame.c ****         return 0;
+ 177:exampleGame.c **** 
+ 178:exampleGame.c ****   return 1;
+ 112              		.loc 1 178 0
+ 113 006e 0120     		mov	r0, #1
+ 114 0070 0AE0     		b	.L4
+ 115              	.LVL7:
+ 116              	.L6:
+ 160:exampleGame.c **** isValid(tS32 x, tS32 y, tS32 shape)
+ 117              		.loc 1 160 0 discriminator 1
+ 118 0072 084D     		ldr	r5, .L17+4
+ 164:exampleGame.c ****   for (i=0; i<FIGURE_SIZE; i++)
+ 119              		.loc 1 164 0 discriminator 1
+ 120 0074 0022     		mov	r2, #0
+ 160:exampleGame.c **** isValid(tS32 x, tS32 y, tS32 shape)
+ 121              		.loc 1 160 0 discriminator 1
+ 122 0076 8446     		mov	ip, r0
+ 123              	.LVL8:
+ 124              	.L9:
+ 125 0078 6046     		mov	r0, ip
+ 126 007a 1418     		add	r4, r2, r0
+ 127 007c 2601     		lsl	r6, r4, #4
+ 128 007e 7618     		add	r6, r6, r1
+ 161:exampleGame.c **** {
+ 129              		.loc 1 161 0 discriminator 1
+ 130 0080 0023     		mov	r3, #0
+ 160:exampleGame.c **** isValid(tS32 x, tS32 y, tS32 shape)
+ 131              		.loc 1 160 0 discriminator 1
+ 132 0082 B600     		lsl	r6, r6, #2
+ 133 0084 DBE7     		b	.L8
+ 134              	.LVL9:
+ 135              	.L13:
+ 176:exampleGame.c ****         return 0;
+ 136              		.loc 1 176 0
+ 137 0086 0020     		mov	r0, #0
+ 138              	.L4:
+ 179:exampleGame.c **** }
+ 139              		.loc 1 179 0
+ 140              		@ sp needed for prologue
+ 141 0088 F2BC     		pop	{r1, r4, r5, r6, r7}
+ 142 008a 02BC     		pop	{r1}
+ 143 008c 0847     		bx	r1
+ 144              	.L18:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 7
+
+
+ 145 008e C046     		.align	2
+ 146              	.L17:
+ 147 0090 00000000 		.word	.LANCHOR0
+ 148 0094 00000000 		.word	.LANCHOR1
+ 149              		.cfi_endproc
+ 150              	.LFE0:
+ 151              		.size	isValid, .-isValid
+ 152              		.align	1
+ 153              		.code	16
+ 154              		.thumb_func
+ 155              		.type	insertFigure, %function
+ 156              	insertFigure:
+ 157              	.LFB2:
+ 180:exampleGame.c **** 
+ 181:exampleGame.c **** 
+ 182:exampleGame.c **** /*****************************************************************************
+ 183:exampleGame.c ****  *
+ 184:exampleGame.c ****  * Description:
+ 185:exampleGame.c ****  *    Draw/refresh game board
+ 186:exampleGame.c ****  *
+ 187:exampleGame.c ****  ****************************************************************************/
+ 188:exampleGame.c **** static void
+ 189:exampleGame.c **** drawGame(void)
+ 190:exampleGame.c **** {
+ 191:exampleGame.c ****   tS32 i,j;
+ 192:exampleGame.c **** 
+ 193:exampleGame.c ****   for (i=1; i<=BOARD_WIDTH; i++)
+ 194:exampleGame.c ****     for (j=1; j<=BOARD_HEIGHT; j++)
+ 195:exampleGame.c ****       if(board[i-1][j-1] != 0)
+ 196:exampleGame.c ****         lcdRectBrd(30+(i*6), 10+(j*6), 6, 6, 209,50,5);
+ 197:exampleGame.c ****       else
+ 198:exampleGame.c ****         lcdRect(30+(i*6), 10+(j*6), 6, 6, 0);
+ 199:exampleGame.c **** }
+ 200:exampleGame.c **** 
+ 201:exampleGame.c **** 
+ 202:exampleGame.c **** /*****************************************************************************
+ 203:exampleGame.c ****  *
+ 204:exampleGame.c ****  * Description:
+ 205:exampleGame.c ****  *    Insert one figure at a specific x,y position on the game board
+ 206:exampleGame.c ****  *
+ 207:exampleGame.c ****  ****************************************************************************/
+ 208:exampleGame.c **** static void
+ 209:exampleGame.c **** insertFigure(tS32 shape, tS32 x, tS32 y)
+ 210:exampleGame.c **** {
+ 158              		.loc 1 210 0
+ 159              		.cfi_startproc
+ 160 0098 F1B5     		push	{r0, r4, r5, r6, r7, lr}
+ 161              	.LCFI1:
+ 162              		.cfi_def_cfa_offset 24
+ 163              		.cfi_offset 0, -24
+ 164              		.cfi_offset 4, -20
+ 165              		.cfi_offset 5, -16
+ 166              		.cfi_offset 6, -12
+ 167              		.cfi_offset 7, -8
+ 168              		.cfi_offset 14, -4
+ 169              	.LVL10:
+ 209:exampleGame.c **** insertFigure(tS32 shape, tS32 x, tS32 y)
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 8
+
+
+ 170              		.loc 1 209 0
+ 171 009a 104C     		ldr	r4, .L25
+ 172 009c 8900     		lsl	r1, r1, #2
+ 173              	.LVL11:
+ 174 009e 0001     		lsl	r0, r0, #4
+ 175              	.LVL12:
+ 176              		.loc 1 210 0
+ 177 00a0 0023     		mov	r3, #0
+ 209:exampleGame.c **** insertFigure(tS32 shape, tS32 x, tS32 y)
+ 178              		.loc 1 209 0
+ 179 00a2 0091     		str	r1, [sp]
+ 180 00a4 2018     		add	r0, r4, r0
+ 181 00a6 0FE0     		b	.L20
+ 182              	.LVL13:
+ 183              	.L22:
+ 184 00a8 C618     		add	r6, r0, r3
+ 211:exampleGame.c ****   tS32 i,j;
+ 212:exampleGame.c ****   
+ 213:exampleGame.c ****   for (i=0; i<FIGURE_SIZE; i++)
+ 214:exampleGame.c ****     for (j=0; j<FIGURE_SIZE; j++)
+ 215:exampleGame.c ****       if(figures[shape][i][j] == 'X')
+ 185              		.loc 1 215 0
+ 186 00aa 365D     		ldrb	r6, [r6, r4]
+ 187 00ac 582E     		cmp	r6, #88
+ 188 00ae 05D1     		bne	.L21
+ 209:exampleGame.c **** insertFigure(tS32 shape, tS32 x, tS32 y)
+ 189              		.loc 1 209 0
+ 190 00b0 0B4F     		ldr	r7, .L25+4
+ 191 00b2 AE00     		lsl	r6, r5, #2
+ 192 00b4 BF19     		add	r7, r7, r6
+ 216:exampleGame.c ****         board[x+i][y+j] = 1;
+ 193              		.loc 1 216 0
+ 194 00b6 0121     		mov	r1, #1
+ 209:exampleGame.c **** insertFigure(tS32 shape, tS32 x, tS32 y)
+ 195              		.loc 1 209 0
+ 196 00b8 A600     		lsl	r6, r4, #2
+ 197              		.loc 1 216 0
+ 198 00ba B951     		str	r1, [r7, r6]
+ 199              	.L21:
+ 214:exampleGame.c ****     for (j=0; j<FIGURE_SIZE; j++)
+ 200              		.loc 1 214 0
+ 201 00bc 0134     		add	r4, r4, #1
+ 202              	.LVL14:
+ 203 00be 042C     		cmp	r4, #4
+ 204 00c0 F2D1     		bne	.L22
+ 205 00c2 0433     		add	r3, r3, #4
+ 213:exampleGame.c ****   for (i=0; i<FIGURE_SIZE; i++)
+ 206              		.loc 1 213 0
+ 207 00c4 102B     		cmp	r3, #16
+ 208 00c6 05D0     		beq	.L19
+ 209              	.LVL15:
+ 210              	.L20:
+ 209:exampleGame.c **** insertFigure(tS32 shape, tS32 x, tS32 y)
+ 211              		.loc 1 209 0 discriminator 1
+ 212 00c8 0099     		ldr	r1, [sp]
+ 213 00ca 5D18     		add	r5, r3, r1
+ 214 00cc AD00     		lsl	r5, r5, #2
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 9
+
+
+ 210:exampleGame.c **** {
+ 215              		.loc 1 210 0 discriminator 1
+ 216 00ce 0024     		mov	r4, #0
+ 209:exampleGame.c **** insertFigure(tS32 shape, tS32 x, tS32 y)
+ 217              		.loc 1 209 0 discriminator 1
+ 218 00d0 AD18     		add	r5, r5, r2
+ 219 00d2 E9E7     		b	.L22
+ 220              	.LVL16:
+ 221              	.L19:
+ 217:exampleGame.c **** }
+ 222              		.loc 1 217 0
+ 223              		@ sp needed for prologue
+ 224              	.LVL17:
+ 225 00d4 F1BC     		pop	{r0, r4, r5, r6, r7}
+ 226 00d6 01BC     		pop	{r0}
+ 227 00d8 0047     		bx	r0
+ 228              	.L26:
+ 229 00da C046     		.align	2
+ 230              	.L25:
+ 231 00dc 00000000 		.word	.LANCHOR0
+ 232 00e0 00000000 		.word	.LANCHOR1
+ 233              		.cfi_endproc
+ 234              	.LFE2:
+ 235              		.size	insertFigure, .-insertFigure
+ 236              		.global	__modsi3
+ 237              		.global	__udivsi3
+ 238              		.global	__umodsi3
+ 239              		.align	1
+ 240              		.code	16
+ 241              		.thumb_func
+ 242              		.type	advanceGame, %function
+ 243              	advanceGame:
+ 244              	.LFB9:
+ 218:exampleGame.c **** 
+ 219:exampleGame.c **** 
+ 220:exampleGame.c **** /*****************************************************************************
+ 221:exampleGame.c ****  *
+ 222:exampleGame.c ****  * Description:
+ 223:exampleGame.c ****  *    Delete one figure at a specific x,y position on the game board
+ 224:exampleGame.c ****  *
+ 225:exampleGame.c ****  ****************************************************************************/
+ 226:exampleGame.c **** static void
+ 227:exampleGame.c **** deleteFigure(tS32 shape, tS32 x, tS32 y)
+ 228:exampleGame.c **** {
+ 229:exampleGame.c ****   tS32 i,j;
+ 230:exampleGame.c ****   
+ 231:exampleGame.c ****   for (i=0; i<FIGURE_SIZE; i++)
+ 232:exampleGame.c ****     for (j=0; j<FIGURE_SIZE; j++)
+ 233:exampleGame.c ****       if(figures[shape][i][j] == 'X')
+ 234:exampleGame.c ****         board[x+i][y+j] = 0;
+ 235:exampleGame.c **** }
+ 236:exampleGame.c **** 
+ 237:exampleGame.c **** 
+ 238:exampleGame.c **** /*****************************************************************************
+ 239:exampleGame.c ****  *
+ 240:exampleGame.c ****  * Description:
+ 241:exampleGame.c ****  *    Returns TRUE if one row of the board is full
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 10
+
+
+ 242:exampleGame.c ****  *
+ 243:exampleGame.c ****  ****************************************************************************/
+ 244:exampleGame.c **** static char
+ 245:exampleGame.c **** full(tS32 j)
+ 246:exampleGame.c **** {
+ 247:exampleGame.c ****   tS32 i;
+ 248:exampleGame.c ****   
+ 249:exampleGame.c ****   for(i=0; i<BOARD_WIDTH; i++)
+ 250:exampleGame.c ****     if(board[i][j] != 1)
+ 251:exampleGame.c ****       return 0;
+ 252:exampleGame.c **** 
+ 253:exampleGame.c ****   return 1;
+ 254:exampleGame.c **** }
+ 255:exampleGame.c **** 
+ 256:exampleGame.c **** 
+ 257:exampleGame.c **** /*****************************************************************************
+ 258:exampleGame.c ****  *
+ 259:exampleGame.c ****  * Description:
+ 260:exampleGame.c ****  *    Draw the current score
+ 261:exampleGame.c ****  *
+ 262:exampleGame.c ****  ****************************************************************************/
+ 263:exampleGame.c **** static void
+ 264:exampleGame.c **** drawScore(void)
+ 265:exampleGame.c **** {
+ 266:exampleGame.c ****   tU8 str[4];
+ 267:exampleGame.c ****   
+ 268:exampleGame.c ****   str[0] = score/100 + '0';
+ 269:exampleGame.c ****   str[1] = (score/10)%10 + '0';
+ 270:exampleGame.c ****   str[2] = score%10 + '0';
+ 271:exampleGame.c ****   str[3] = 0;
+ 272:exampleGame.c ****   if (str[0] == '0')
+ 273:exampleGame.c ****   {
+ 274:exampleGame.c ****     str[0] = ' ';
+ 275:exampleGame.c ****     if (str[1] == '0')
+ 276:exampleGame.c ****       str[1] = ' ';
+ 277:exampleGame.c ****   }
+ 278:exampleGame.c ****   lcdGotoxy(80,116);
+ 279:exampleGame.c ****   lcdPuts(str);
+ 280:exampleGame.c **** }
+ 281:exampleGame.c **** 
+ 282:exampleGame.c **** 
+ 283:exampleGame.c **** /*****************************************************************************
+ 284:exampleGame.c ****  *
+ 285:exampleGame.c ****  * Description:
+ 286:exampleGame.c ****  *    Check if time to update score
+ 287:exampleGame.c ****  *
+ 288:exampleGame.c ****  ****************************************************************************/
+ 289:exampleGame.c **** static void
+ 290:exampleGame.c **** checkScore(void)
+ 291:exampleGame.c **** {
+ 292:exampleGame.c ****   tS32 i,j,k;
+ 293:exampleGame.c ****   
+ 294:exampleGame.c ****   for (j=0; j<BOARD_HEIGHT; j++)
+ 295:exampleGame.c ****   {
+ 296:exampleGame.c ****     //check if one row is full
+ 297:exampleGame.c ****     if(full(j))
+ 298:exampleGame.c ****     {
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 11
+
+
+ 299:exampleGame.c ****       //if so, erase that row...
+ 300:exampleGame.c ****       for(k=j; k>0; k--)
+ 301:exampleGame.c ****         for(i=0; i<BOARD_WIDTH; i++)
+ 302:exampleGame.c ****           board[i][k] = board[i][k-1];
+ 303:exampleGame.c ****           
+ 304:exampleGame.c ****       //and update score
+ 305:exampleGame.c ****       score++;
+ 306:exampleGame.c ****       drawScore();
+ 307:exampleGame.c ****     }
+ 308:exampleGame.c ****   }
+ 309:exampleGame.c **** }
+ 310:exampleGame.c **** 
+ 311:exampleGame.c **** 
+ 312:exampleGame.c **** /*****************************************************************************
+ 313:exampleGame.c ****  *
+ 314:exampleGame.c ****  * Description:
+ 315:exampleGame.c ****  *    Returns TRUE if game is over
+ 316:exampleGame.c ****  *
+ 317:exampleGame.c ****  ****************************************************************************/
+ 318:exampleGame.c **** static char
+ 319:exampleGame.c **** gameOver(void)
+ 320:exampleGame.c **** {
+ 321:exampleGame.c ****   tS32 i;
+ 322:exampleGame.c **** 
+ 323:exampleGame.c ****   for(i=0; i<NUM_OF_FIGURE; i++)
+ 324:exampleGame.c ****     if(!isValid(3,0,i))
+ 325:exampleGame.c ****       return 1;
+ 326:exampleGame.c **** 
+ 327:exampleGame.c ****   return 0;
+ 328:exampleGame.c **** }
+ 329:exampleGame.c **** 
+ 330:exampleGame.c **** 
+ 331:exampleGame.c **** /*****************************************************************************
+ 332:exampleGame.c ****  *
+ 333:exampleGame.c ****  * Description:
+ 334:exampleGame.c ****  *    Calculate new update/advance time, based in current score
+ 335:exampleGame.c ****  *    The higher score, the shorter update time
+ 336:exampleGame.c ****  *
+ 337:exampleGame.c ****  ****************************************************************************/
+ 338:exampleGame.c **** static void
+ 339:exampleGame.c **** updateDelayTime(void)
+ 340:exampleGame.c **** {
+ 341:exampleGame.c ****   if (score >= 75)
+ 342:exampleGame.c ****     delayTimeMs = 200;
+ 343:exampleGame.c ****   else if (score >= 50)
+ 344:exampleGame.c ****     delayTimeMs = 300;
+ 345:exampleGame.c ****   else if (score >= 25)
+ 346:exampleGame.c ****     delayTimeMs = 350;
+ 347:exampleGame.c ****   else if (score >= 10)
+ 348:exampleGame.c ****     delayTimeMs = 400;
+ 349:exampleGame.c ****   else
+ 350:exampleGame.c ****     delayTimeMs = 500;
+ 351:exampleGame.c **** }
+ 352:exampleGame.c **** 
+ 353:exampleGame.c **** 
+ 354:exampleGame.c **** /*****************************************************************************
+ 355:exampleGame.c ****  *
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 12
+
+
+ 356:exampleGame.c ****  * Description:
+ 357:exampleGame.c ****  *    Advance the game, check if game is over
+ 358:exampleGame.c ****  *
+ 359:exampleGame.c ****  ****************************************************************************/
+ 360:exampleGame.c **** static void
+ 361:exampleGame.c **** advanceGame(void)
+ 362:exampleGame.c **** {
+ 245              		.loc 1 362 0
+ 246              		.cfi_startproc
+ 247 00e4 F0B5     		push	{r4, r5, r6, r7, lr}
+ 248              	.LCFI2:
+ 249              		.cfi_def_cfa_offset 20
+ 250              		.cfi_offset 4, -20
+ 251              		.cfi_offset 5, -16
+ 252              		.cfi_offset 6, -12
+ 253              		.cfi_offset 7, -8
+ 254              		.cfi_offset 14, -4
+ 363:exampleGame.c ****   insertFigure(currFigure, currXpos, currYpos);
+ 255              		.loc 1 363 0
+ 256 00e6 794B     		ldr	r3, .L62
+ 362:exampleGame.c **** {
+ 257              		.loc 1 362 0
+ 258 00e8 86B0     		sub	sp, sp, #24
+ 259              	.LCFI3:
+ 260              		.cfi_def_cfa_offset 44
+ 261              		.loc 1 363 0
+ 262 00ea 07CB     		ldmia	r3!, {r0, r1, r2}
+ 263 00ec FFF7D4FF 		bl	insertFigure
+ 264              	.LVL18:
+ 265 00f0 2426     		mov	r6, #36
+ 266 00f2 0027     		mov	r7, #0
+ 267 00f4 1DE0     		b	.L28
+ 268              	.LVL19:
+ 269              	.L31:
+ 270              	.LBB28:
+ 271              	.LBB29:
+ 195:exampleGame.c ****       if(board[i-1][j-1] != 0)
+ 272              		.loc 1 195 0
+ 273 00f6 08CD     		ldmia	r5!, {r3}
+ 274 00f8 002B     		cmp	r3, #0
+ 275 00fa 0CD0     		beq	.L29
+ 196:exampleGame.c ****         lcdRectBrd(30+(i*6), 10+(j*6), 6, 6, 209,50,5);
+ 276              		.loc 1 196 0
+ 277 00fc 3223     		mov	r3, #50
+ 278 00fe D121     		mov	r1, #209
+ 279 0100 0193     		str	r3, [sp, #4]
+ 280 0102 0622     		mov	r2, #6
+ 281 0104 0523     		mov	r3, #5
+ 282 0106 0091     		str	r1, [sp]
+ 283 0108 0293     		str	r3, [sp, #8]
+ 284 010a 301C     		mov	r0, r6
+ 285 010c 211C     		mov	r1, r4
+ 286 010e 131C     		mov	r3, r2
+ 287 0110 FFF7FEFF 		bl	lcdRectBrd
+ 288 0114 06E0     		b	.L30
+ 289              	.L29:
+ 198:exampleGame.c ****         lcdRect(30+(i*6), 10+(j*6), 6, 6, 0);
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 13
+
+
+ 290              		.loc 1 198 0
+ 291 0116 0622     		mov	r2, #6
+ 292 0118 0093     		str	r3, [sp]
+ 293 011a 301C     		mov	r0, r6
+ 294 011c 211C     		mov	r1, r4
+ 295 011e 131C     		mov	r3, r2
+ 296 0120 FFF7FEFF 		bl	lcdRect
+ 297              	.L30:
+ 298 0124 0634     		add	r4, r4, #6
+ 194:exampleGame.c ****     for (j=1; j<=BOARD_HEIGHT; j++)
+ 299              		.loc 1 194 0
+ 300 0126 702C     		cmp	r4, #112
+ 301 0128 E5D1     		bne	.L31
+ 302 012a 0137     		add	r7, r7, #1
+ 303 012c 0636     		add	r6, r6, #6
+ 193:exampleGame.c ****   for (i=1; i<=BOARD_WIDTH; i++)
+ 304              		.loc 1 193 0
+ 305 012e 0A2F     		cmp	r7, #10
+ 306 0130 04D0     		beq	.L32
+ 307              	.LVL20:
+ 308              	.L28:
+ 361:exampleGame.c **** advanceGame(void)
+ 309              		.loc 1 361 0
+ 310 0132 674C     		ldr	r4, .L62+4
+ 311 0134 BD01     		lsl	r5, r7, #6
+ 312 0136 6519     		add	r5, r4, r5
+ 313              	.LBE29:
+ 314              	.LBE28:
+ 315 0138 1024     		mov	r4, #16
+ 316 013a DCE7     		b	.L31
+ 317              	.LVL21:
+ 318              	.L32:
+ 364:exampleGame.c ****   drawGame();
+ 365:exampleGame.c ****   deleteFigure(currFigure, currXpos, currYpos);
+ 319              		.loc 1 365 0
+ 320 013c 634B     		ldr	r3, .L62
+ 321 013e 1968     		ldr	r1, [r3]
+ 322 0140 0433     		add	r3, r3, #4
+ 323 0142 21CB     		ldmia	r3!, {r0, r5}
+ 324              	.LVL22:
+ 325              	.LBB30:
+ 326              	.LBB31:
+ 361:exampleGame.c **** advanceGame(void)
+ 327              		.loc 1 361 0
+ 328 0144 634A     		ldr	r2, .L62+8
+ 329 0146 0901     		lsl	r1, r1, #4
+ 330              	.LBE31:
+ 331              	.LBE30:
+ 332              		.loc 1 365 0
+ 333 0148 0023     		mov	r3, #0
+ 334              	.LBB34:
+ 335              	.LBB32:
+ 361:exampleGame.c **** advanceGame(void)
+ 336              		.loc 1 361 0
+ 337 014a 8000     		lsl	r0, r0, #2
+ 338 014c 5118     		add	r1, r2, r1
+ 339 014e 12E0     		b	.L33
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 14
+
+
+ 340              	.LVL23:
+ 341              	.L35:
+ 342 0150 CF18     		add	r7, r1, r3
+ 233:exampleGame.c ****       if(figures[shape][i][j] == 'X')
+ 343              		.loc 1 233 0
+ 344 0152 BF5C     		ldrb	r7, [r7, r2]
+ 345 0154 582F     		cmp	r7, #88
+ 346 0156 08D1     		bne	.L34
+ 361:exampleGame.c **** advanceGame(void)
+ 347              		.loc 1 361 0
+ 348 0158 039E     		ldr	r6, [sp, #12]
+ 349 015a 5D4C     		ldr	r4, .L62+4
+ 350 015c B700     		lsl	r7, r6, #2
+ 351 015e A446     		mov	ip, r4
+ 352 0160 BC44     		add	ip, ip, r7
+ 234:exampleGame.c ****         board[x+i][y+j] = 0;
+ 353              		.loc 1 234 0
+ 354 0162 0024     		mov	r4, #0
+ 361:exampleGame.c **** advanceGame(void)
+ 355              		.loc 1 361 0
+ 356 0164 9700     		lsl	r7, r2, #2
+ 234:exampleGame.c ****         board[x+i][y+j] = 0;
+ 357              		.loc 1 234 0
+ 358 0166 6646     		mov	r6, ip
+ 359 0168 F451     		str	r4, [r6, r7]
+ 360              	.L34:
+ 232:exampleGame.c ****     for (j=0; j<FIGURE_SIZE; j++)
+ 361              		.loc 1 232 0
+ 362 016a 0132     		add	r2, r2, #1
+ 363              	.LVL24:
+ 364 016c 042A     		cmp	r2, #4
+ 365 016e EFD1     		bne	.L35
+ 366 0170 0433     		add	r3, r3, #4
+ 231:exampleGame.c ****   for (i=0; i<FIGURE_SIZE; i++)
+ 367              		.loc 1 231 0
+ 368 0172 102B     		cmp	r3, #16
+ 369 0174 05D0     		beq	.L36
+ 370              	.LVL25:
+ 371              	.L33:
+ 361:exampleGame.c **** advanceGame(void)
+ 372              		.loc 1 361 0
+ 373 0176 1E18     		add	r6, r3, r0
+ 374 0178 B600     		lsl	r6, r6, #2
+ 375 017a 7619     		add	r6, r6, r5
+ 376              	.LBE32:
+ 377              	.LBE34:
+ 363:exampleGame.c ****   insertFigure(currFigure, currXpos, currYpos);
+ 378              		.loc 1 363 0
+ 379 017c 0022     		mov	r2, #0
+ 380              	.LBB35:
+ 381              	.LBB33:
+ 361:exampleGame.c **** advanceGame(void)
+ 382              		.loc 1 361 0
+ 383 017e 0396     		str	r6, [sp, #12]
+ 384 0180 E6E7     		b	.L35
+ 385              	.LVL26:
+ 386              	.L36:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 15
+
+
+ 387              	.LBE33:
+ 388              	.LBE35:
+ 389              	.LBB36:
+ 390              	.LBB37:
+ 341:exampleGame.c ****   if (score >= 75)
+ 391              		.loc 1 341 0
+ 392 0182 524E     		ldr	r6, .L62
+ 393 0184 337B     		ldrb	r3, [r6, #12]
+ 394 0186 4A2B     		cmp	r3, #74
+ 395 0188 01D9     		bls	.L37
+ 342:exampleGame.c ****     delayTimeMs = 200;
+ 396              		.loc 1 342 0
+ 397 018a C823     		mov	r3, #200
+ 398 018c 0DE0     		b	.L60
+ 399              	.L37:
+ 343:exampleGame.c ****   else if (score >= 50)
+ 400              		.loc 1 343 0
+ 401 018e 312B     		cmp	r3, #49
+ 402 0190 01D9     		bls	.L39
+ 344:exampleGame.c ****     delayTimeMs = 300;
+ 403              		.loc 1 344 0
+ 404 0192 9623     		mov	r3, #150
+ 405 0194 08E0     		b	.L61
+ 406              	.L39:
+ 345:exampleGame.c ****   else if (score >= 25)
+ 407              		.loc 1 345 0
+ 408 0196 182B     		cmp	r3, #24
+ 409 0198 01D9     		bls	.L40
+ 346:exampleGame.c ****     delayTimeMs = 350;
+ 410              		.loc 1 346 0
+ 411 019a AF23     		mov	r3, #175
+ 412 019c 04E0     		b	.L61
+ 413              	.L40:
+ 347:exampleGame.c ****   else if (score >= 10)
+ 414              		.loc 1 347 0
+ 415 019e 092B     		cmp	r3, #9
+ 416 01a0 01D9     		bls	.L41
+ 348:exampleGame.c ****     delayTimeMs = 400;
+ 417              		.loc 1 348 0
+ 418 01a2 C823     		mov	r3, #200
+ 419 01a4 00E0     		b	.L61
+ 420              	.L41:
+ 350:exampleGame.c ****     delayTimeMs = 500;
+ 421              		.loc 1 350 0
+ 422 01a6 FA23     		mov	r3, #250
+ 423              	.L61:
+ 424 01a8 5B00     		lsl	r3, r3, #1
+ 425              	.L60:
+ 426 01aa 3361     		str	r3, [r6, #16]
+ 427              	.LBE37:
+ 428              	.LBE36:
+ 366:exampleGame.c **** 
+ 367:exampleGame.c ****   /*******************************************************
+ 368:exampleGame.c ****    * Check if time to update figure position
+ 369:exampleGame.c ****    *******************************************************/
+ 370:exampleGame.c ****   updateDelayTime();
+ 371:exampleGame.c ****   if ((ms - lastUpdate) > delayTimeMs)
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 16
+
+
+ 429              		.loc 1 371 0
+ 430 01ac 4A4B     		ldr	r3, .L62+12
+ 431 01ae 1868     		ldr	r0, [r3]
+ 432 01b0 7169     		ldr	r1, [r6, #20]
+ 433 01b2 3269     		ldr	r2, [r6, #16]
+ 434              	.LVL27:
+ 435 01b4 411A     		sub	r1, r0, r1
+ 436 01b6 9142     		cmp	r1, r2
+ 437 01b8 00D8     		bhi	.LCB401
+ 438 01ba 82E0     		b	.L27	@long jump
+ 439              	.LCB401:
+ 372:exampleGame.c ****   {
+ 373:exampleGame.c ****     lastUpdate = ms;
+ 374:exampleGame.c ****     
+ 375:exampleGame.c ****     if (isValid(currXpos, currYpos+1, currFigure))
+ 440              		.loc 1 375 0
+ 441 01bc 7468     		ldr	r4, [r6, #4]
+ 442 01be 3168     		ldr	r1, [r6]
+ 443 01c0 B568     		ldr	r5, [r6, #8]
+ 373:exampleGame.c ****     lastUpdate = ms;
+ 444              		.loc 1 373 0
+ 445 01c2 1B68     		ldr	r3, [r3]
+ 446              		.loc 1 375 0
+ 447 01c4 0394     		str	r4, [sp, #12]
+ 448 01c6 0491     		str	r1, [sp, #16]
+ 449 01c8 6C1C     		add	r4, r5, #1
+ 373:exampleGame.c ****     lastUpdate = ms;
+ 450              		.loc 1 373 0
+ 451 01ca 7361     		str	r3, [r6, #20]
+ 452              		.loc 1 375 0
+ 453 01cc 0398     		ldr	r0, [sp, #12]
+ 454 01ce 211C     		mov	r1, r4
+ 455 01d0 049A     		ldr	r2, [sp, #16]
+ 456 01d2 FFF715FF 		bl	isValid
+ 457              	.LVL28:
+ 458 01d6 071E     		sub	r7, r0, #0
+ 459 01d8 01D0     		beq	.L43
+ 376:exampleGame.c ****       currYpos++;
+ 460              		.loc 1 376 0
+ 461 01da B460     		str	r4, [r6, #8]
+ 462 01dc 1CE0     		b	.L44
+ 463              	.L43:
+ 377:exampleGame.c **** 
+ 378:exampleGame.c ****     //figure has hit bottom
+ 379:exampleGame.c ****     //insert new, random figure on the game board
+ 380:exampleGame.c ****     else
+ 381:exampleGame.c ****     {
+ 382:exampleGame.c ****       insertFigure(currFigure, currXpos, currYpos);
+ 464              		.loc 1 382 0
+ 465 01de 0399     		ldr	r1, [sp, #12]
+ 466 01e0 2A1C     		mov	r2, r5
+ 467 01e2 0498     		ldr	r0, [sp, #16]
+ 468 01e4 FFF758FF 		bl	insertFigure
+ 383:exampleGame.c ****       currYpos  = 0;
+ 384:exampleGame.c ****       currXpos  = 3;
+ 469              		.loc 1 384 0
+ 470 01e8 0323     		mov	r3, #3
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 17
+
+
+ 471 01ea 7360     		str	r3, [r6, #4]
+ 383:exampleGame.c ****       currYpos  = 0;
+ 472              		.loc 1 383 0
+ 473 01ec B760     		str	r7, [r6, #8]
+ 385:exampleGame.c ****       currFigure = rand() % NUM_OF_FIGURE;
+ 474              		.loc 1 385 0
+ 475 01ee FFF7FEFF 		bl	rand
+ 476 01f2 1321     		mov	r1, #19
+ 477 01f4 FFF7FEFF 		bl	__modsi3
+ 478 01f8 3060     		str	r0, [r6]
+ 479              	.LVL29:
+ 323:exampleGame.c ****   for(i=0; i<NUM_OF_FIGURE; i++)
+ 480              		.loc 1 323 0
+ 481 01fa 3C1C     		mov	r4, r7
+ 482              	.LVL30:
+ 483              	.L46:
+ 484              	.LBB38:
+ 485              	.LBB39:
+ 324:exampleGame.c ****     if(!isValid(3,0,i))
+ 486              		.loc 1 324 0
+ 487 01fc 0320     		mov	r0, #3
+ 488 01fe 0021     		mov	r1, #0
+ 489 0200 221C     		mov	r2, r4
+ 490 0202 FFF7FDFE 		bl	isValid
+ 491 0206 0028     		cmp	r0, #0
+ 492 0208 03D0     		beq	.L45
+ 323:exampleGame.c ****   for(i=0; i<NUM_OF_FIGURE; i++)
+ 493              		.loc 1 323 0
+ 494 020a 0134     		add	r4, r4, #1
+ 495              	.LVL31:
+ 496 020c 132C     		cmp	r4, #19
+ 497 020e F5D1     		bne	.L46
+ 498 0210 02E0     		b	.L44
+ 499              	.LVL32:
+ 500              	.L45:
+ 501              	.LBE39:
+ 502              	.LBE38:
+ 386:exampleGame.c **** 
+ 387:exampleGame.c ****       //check if game is over
+ 388:exampleGame.c ****       if (gameOver())
+ 389:exampleGame.c ****         gameStatus = GAME_OVER;
+ 503              		.loc 1 389 0
+ 504 0212 2E4B     		ldr	r3, .L62
+ 505 0214 0222     		mov	r2, #2
+ 506 0216 1A76     		strb	r2, [r3, #24]
+ 507              	.L44:
+ 508              	.LVL33:
+ 509              	.LBB40:
+ 510              	.LBB41:
+ 511              	.LBB42:
+ 512              	.LBB43:
+ 361:exampleGame.c **** advanceGame(void)
+ 513              		.loc 1 361 0
+ 514 0218 2D4E     		ldr	r6, .L62+4
+ 515 021a 50E0     		b	.L47
+ 516              	.LVL34:
+ 517              	.L49:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 18
+
+
+ 250:exampleGame.c ****     if(board[i][j] != 1)
+ 518              		.loc 1 250 0
+ 519 021c F258     		ldr	r2, [r6, r3]
+ 520 021e 012A     		cmp	r2, #1
+ 521 0220 49D1     		bne	.L48
+ 249:exampleGame.c ****   for(i=0; i<BOARD_WIDTH; i++)
+ 522              		.loc 1 249 0
+ 523 0222 A022     		mov	r2, #160
+ 250:exampleGame.c ****     if(board[i][j] != 1)
+ 524              		.loc 1 250 0
+ 525 0224 4033     		add	r3, r3, #64
+ 249:exampleGame.c ****   for(i=0; i<BOARD_WIDTH; i++)
+ 526              		.loc 1 249 0
+ 527 0226 9200     		lsl	r2, r2, #2
+ 528 0228 9342     		cmp	r3, r2
+ 529 022a F7D1     		bne	.L49
+ 530 022c 331C     		mov	r3, r6
+ 531 022e 0AE0     		b	.L50
+ 532              	.L53:
+ 533              	.LBE43:
+ 534              	.LBE42:
+ 300:exampleGame.c ****       for(k=j; k>0; k--)
+ 535              		.loc 1 300 0
+ 536 0230 0022     		mov	r2, #0
+ 537              	.L51:
+ 361:exampleGame.c **** advanceGame(void)
+ 538              		.loc 1 361 0
+ 539 0232 9918     		add	r1, r3, r2
+ 540 0234 0439     		sub	r1, r1, #4
+ 302:exampleGame.c ****           board[i][k] = board[i][k-1];
+ 541              		.loc 1 302 0
+ 542 0236 0968     		ldr	r1, [r1]
+ 301:exampleGame.c ****         for(i=0; i<BOARD_WIDTH; i++)
+ 543              		.loc 1 301 0
+ 544 0238 A024     		mov	r4, #160
+ 302:exampleGame.c ****           board[i][k] = board[i][k-1];
+ 545              		.loc 1 302 0
+ 546 023a 9950     		str	r1, [r3, r2]
+ 547 023c 4032     		add	r2, r2, #64
+ 301:exampleGame.c ****         for(i=0; i<BOARD_WIDTH; i++)
+ 548              		.loc 1 301 0
+ 549 023e A400     		lsl	r4, r4, #2
+ 550 0240 A242     		cmp	r2, r4
+ 551 0242 F6D1     		bne	.L51
+ 552 0244 043B     		sub	r3, r3, #4
+ 553              	.LVL35:
+ 554              	.L50:
+ 300:exampleGame.c ****       for(k=j; k>0; k--)
+ 555              		.loc 1 300 0
+ 556 0246 224C     		ldr	r4, .L62+4
+ 557 0248 A342     		cmp	r3, r4
+ 558 024a F1D1     		bne	.L53
+ 305:exampleGame.c ****       score++;
+ 559              		.loc 1 305 0
+ 560 024c 1F4B     		ldr	r3, .L62
+ 561 024e 1C7B     		ldrb	r4, [r3, #12]
+ 562 0250 0134     		add	r4, r4, #1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 19
+
+
+ 563 0252 2406     		lsl	r4, r4, #24
+ 564 0254 240E     		lsr	r4, r4, #24
+ 565 0256 1C73     		strb	r4, [r3, #12]
+ 566              	.LBB44:
+ 567              	.LBB45:
+ 268:exampleGame.c ****   str[0] = score/100 + '0';
+ 568              		.loc 1 268 0
+ 569 0258 201C     		mov	r0, r4
+ 570 025a 6421     		mov	r1, #100
+ 571 025c FFF7FEFF 		bl	__udivsi3
+ 572 0260 071C     		mov	r7, r0
+ 573 0262 3037     		add	r7, r7, #48
+ 574 0264 3F06     		lsl	r7, r7, #24
+ 575 0266 05AD     		add	r5, sp, #20
+ 576 0268 3F0E     		lsr	r7, r7, #24
+ 269:exampleGame.c ****   str[1] = (score/10)%10 + '0';
+ 577              		.loc 1 269 0
+ 578 026a 201C     		mov	r0, r4
+ 579 026c 0A21     		mov	r1, #10
+ 268:exampleGame.c ****   str[0] = score/100 + '0';
+ 580              		.loc 1 268 0
+ 581 026e 2F70     		strb	r7, [r5]
+ 269:exampleGame.c ****   str[1] = (score/10)%10 + '0';
+ 582              		.loc 1 269 0
+ 583 0270 FFF7FEFF 		bl	__udivsi3
+ 584 0274 0006     		lsl	r0, r0, #24
+ 585 0276 0A21     		mov	r1, #10
+ 586 0278 000E     		lsr	r0, r0, #24
+ 587 027a FFF7FEFF 		bl	__umodsi3
+ 588 027e 3030     		add	r0, r0, #48
+ 589 0280 0006     		lsl	r0, r0, #24
+ 590 0282 010E     		lsr	r1, r0, #24
+ 591 0284 0391     		str	r1, [sp, #12]
+ 592 0286 6970     		strb	r1, [r5, #1]
+ 270:exampleGame.c ****   str[2] = score%10 + '0';
+ 593              		.loc 1 270 0
+ 594 0288 201C     		mov	r0, r4
+ 595 028a 0A21     		mov	r1, #10
+ 596 028c FFF7FEFF 		bl	__umodsi3
+ 271:exampleGame.c ****   str[3] = 0;
+ 597              		.loc 1 271 0
+ 598 0290 0024     		mov	r4, #0
+ 270:exampleGame.c ****   str[2] = score%10 + '0';
+ 599              		.loc 1 270 0
+ 600 0292 3030     		add	r0, r0, #48
+ 601 0294 A870     		strb	r0, [r5, #2]
+ 271:exampleGame.c ****   str[3] = 0;
+ 602              		.loc 1 271 0
+ 603 0296 EC70     		strb	r4, [r5, #3]
+ 272:exampleGame.c ****   if (str[0] == '0')
+ 604              		.loc 1 272 0
+ 605 0298 302F     		cmp	r7, #48
+ 606 029a 05D1     		bne	.L52
+ 275:exampleGame.c ****     if (str[1] == '0')
+ 607              		.loc 1 275 0
+ 608 029c 039C     		ldr	r4, [sp, #12]
+ 274:exampleGame.c ****     str[0] = ' ';
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 20
+
+
+ 609              		.loc 1 274 0
+ 610 029e 2023     		mov	r3, #32
+ 611 02a0 2B70     		strb	r3, [r5]
+ 275:exampleGame.c ****     if (str[1] == '0')
+ 612              		.loc 1 275 0
+ 613 02a2 302C     		cmp	r4, #48
+ 614 02a4 00D1     		bne	.L52
+ 276:exampleGame.c ****       str[1] = ' ';
+ 615              		.loc 1 276 0
+ 616 02a6 6B70     		strb	r3, [r5, #1]
+ 617              	.L52:
+ 278:exampleGame.c ****   lcdGotoxy(80,116);
+ 618              		.loc 1 278 0
+ 619 02a8 5020     		mov	r0, #80
+ 620 02aa 7421     		mov	r1, #116
+ 621 02ac FFF7FEFF 		bl	lcdGotoxy
+ 279:exampleGame.c ****   lcdPuts(str);
+ 622              		.loc 1 279 0
+ 623 02b0 05A8     		add	r0, sp, #20
+ 624 02b2 FFF7FEFF 		bl	lcdPuts
+ 625              	.LVL36:
+ 626              	.L48:
+ 627              	.LBE45:
+ 628              	.LBE44:
+ 294:exampleGame.c ****   for (j=0; j<BOARD_HEIGHT; j++)
+ 629              		.loc 1 294 0
+ 630 02b6 094C     		ldr	r4, .L62+16
+ 631              	.LBB47:
+ 632              	.LBB46:
+ 279:exampleGame.c ****   lcdPuts(str);
+ 633              		.loc 1 279 0
+ 634 02b8 0436     		add	r6, r6, #4
+ 635              	.LBE46:
+ 636              	.LBE47:
+ 294:exampleGame.c ****   for (j=0; j<BOARD_HEIGHT; j++)
+ 637              		.loc 1 294 0
+ 638 02ba A642     		cmp	r6, r4
+ 639 02bc 01D0     		beq	.L27
+ 640              	.L47:
+ 641              	.LVL37:
+ 642              	.LBE41:
+ 643              	.LBE40:
+ 323:exampleGame.c ****   for(i=0; i<NUM_OF_FIGURE; i++)
+ 644              		.loc 1 323 0
+ 645 02be 0023     		mov	r3, #0
+ 646 02c0 ACE7     		b	.L49
+ 647              	.LVL38:
+ 648              	.L27:
+ 390:exampleGame.c ****     }
+ 391:exampleGame.c **** 
+ 392:exampleGame.c ****     //check score, i.e., if any rows are full
+ 393:exampleGame.c ****     checkScore();
+ 394:exampleGame.c ****   }
+ 395:exampleGame.c **** }
+ 649              		.loc 1 395 0
+ 650 02c2 06B0     		add	sp, sp, #24
+ 651              		@ sp needed for prologue
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 21
+
+
+ 652 02c4 F0BC     		pop	{r4, r5, r6, r7}
+ 653 02c6 01BC     		pop	{r0}
+ 654 02c8 0047     		bx	r0
+ 655              	.L63:
+ 656 02ca C046     		.align	2
+ 657              	.L62:
+ 658 02cc 80020000 		.word	.LANCHOR2
+ 659 02d0 00000000 		.word	.LANCHOR1
+ 660 02d4 00000000 		.word	.LANCHOR0
+ 661 02d8 00000000 		.word	ms
+ 662 02dc 40000000 		.word	.LANCHOR1+64
+ 663              		.cfi_endproc
+ 664              	.LFE9:
+ 665              		.size	advanceGame, .-advanceGame
+ 666              		.align	1
+ 667              		.code	16
+ 668              		.thumb_func
+ 669              		.type	setupGame, %function
+ 670              	setupGame:
+ 671              	.LFB10:
+ 396:exampleGame.c **** 
+ 397:exampleGame.c **** 
+ 398:exampleGame.c **** /*****************************************************************************
+ 399:exampleGame.c ****  *
+ 400:exampleGame.c ****  * Description:
+ 401:exampleGame.c ****  *    Draw game background and game board, initialize all variables
+ 402:exampleGame.c ****  *
+ 403:exampleGame.c ****  ****************************************************************************/
+ 404:exampleGame.c **** static void
+ 405:exampleGame.c **** setupGame (tBool drawBoard)
+ 406:exampleGame.c **** {
+ 672              		.loc 1 406 0
+ 673              		.cfi_startproc
+ 674 02e0 31B5     		push	{r0, r4, r5, lr}
+ 675              	.LCFI4:
+ 676              		.cfi_def_cfa_offset 16
+ 677              		.cfi_offset 0, -16
+ 678              		.cfi_offset 4, -12
+ 679              		.cfi_offset 5, -8
+ 680              		.cfi_offset 14, -4
+ 681              	.LVL39:
+ 407:exampleGame.c ****   tS32 i,j;
+ 408:exampleGame.c **** 
+ 409:exampleGame.c ****   //initialize random generator and reset score
+ 410:exampleGame.c ****   srand(ms);
+ 682              		.loc 1 410 0
+ 683 02e2 244B     		ldr	r3, .L70
+ 406:exampleGame.c **** {
+ 684              		.loc 1 406 0
+ 685 02e4 0406     		lsl	r4, r0, #24
+ 686              		.loc 1 410 0
+ 687 02e6 1868     		ldr	r0, [r3]
+ 688              	.LVL40:
+ 689 02e8 FFF7FEFF 		bl	srand
+ 411:exampleGame.c ****   score = 0;
+ 690              		.loc 1 411 0
+ 691 02ec 224B     		ldr	r3, .L70+4
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 22
+
+
+ 692 02ee 0025     		mov	r5, #0
+ 406:exampleGame.c **** {
+ 693              		.loc 1 406 0
+ 694 02f0 240E     		lsr	r4, r4, #24
+ 695              		.loc 1 411 0
+ 696 02f2 1D73     		strb	r5, [r3, #12]
+ 412:exampleGame.c **** 
+ 413:exampleGame.c **** #ifdef INCLUDE_EXAMPLE_GAME_BACKGROUND
+ 414:exampleGame.c ****   //draw background picture
+ 415:exampleGame.c ****   lcdIcon(0, 0, 130, 130, _brickWall_130x130c[2], _brickWall_130x130c[3], &_brickWall_130x130c[4]);
+ 416:exampleGame.c **** #endif
+ 417:exampleGame.c **** 
+ 418:exampleGame.c ****   //draw game board
+ 419:exampleGame.c ****   if (drawBoard == TRUE)
+ 697              		.loc 1 419 0
+ 698 02f4 012C     		cmp	r4, #1
+ 699 02f6 19D1     		bne	.L65
+ 420:exampleGame.c ****   {
+ 421:exampleGame.c ****     lcdColor(1, 0xe0);
+ 700              		.loc 1 421 0
+ 701 02f8 201C     		mov	r0, r4
+ 702 02fa E021     		mov	r1, #224
+ 703 02fc FFF7FEFF 		bl	lcdColor
+ 422:exampleGame.c ****     lcdGotoxy(16, 116);
+ 704              		.loc 1 422 0
+ 705 0300 7421     		mov	r1, #116
+ 706 0302 1020     		mov	r0, #16
+ 707 0304 FFF7FEFF 		bl	lcdGotoxy
+ 423:exampleGame.c ****     lcdPuts(" Score:   0 ");
+ 708              		.loc 1 423 0
+ 709 0308 1C48     		ldr	r0, .L70+8
+ 710 030a FFF7FEFF 		bl	lcdPuts
+ 424:exampleGame.c **** 
+ 425:exampleGame.c ****     lcdRect(34, 14, 64, 100, 3);
+ 711              		.loc 1 425 0
+ 712 030e 0323     		mov	r3, #3
+ 713 0310 0093     		str	r3, [sp]
+ 714 0312 2220     		mov	r0, #34
+ 715 0314 0E21     		mov	r1, #14
+ 716 0316 4022     		mov	r2, #64
+ 717 0318 6423     		mov	r3, #100
+ 718 031a FFF7FEFF 		bl	lcdRect
+ 426:exampleGame.c ****     lcdRect(36, 16, 60, 96, 0);
+ 719              		.loc 1 426 0
+ 720 031e 2420     		mov	r0, #36
+ 721 0320 1021     		mov	r1, #16
+ 722 0322 3C22     		mov	r2, #60
+ 723 0324 6023     		mov	r3, #96
+ 724 0326 0095     		str	r5, [sp]
+ 725 0328 FFF7FEFF 		bl	lcdRect
+ 726              	.L65:
+ 727              	.LVL41:
+ 728              		.loc 1 426 0 is_stmt 0 discriminator 1
+ 729 032c 144B     		ldr	r3, .L70+12
+ 405:exampleGame.c **** setupGame (tBool drawBoard)
+ 730              		.loc 1 405 0 is_stmt 1 discriminator 1
+ 731 032e A022     		mov	r2, #160
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 23
+
+
+ 732 0330 9200     		lsl	r2, r2, #2
+ 733 0332 9818     		add	r0, r3, r2
+ 406:exampleGame.c **** {
+ 734              		.loc 1 406 0 discriminator 1
+ 735 0334 0021     		mov	r1, #0
+ 736 0336 07E0     		b	.L66
+ 737              	.LVL42:
+ 738              	.L67:
+ 427:exampleGame.c ****   }
+ 428:exampleGame.c **** 
+ 429:exampleGame.c ****   //initialise game board
+ 430:exampleGame.c ****   for (i=0; i<BOARD_WIDTH; i++)
+ 431:exampleGame.c ****     for (j=0; j<BOARD_HEIGHT; j++)
+ 432:exampleGame.c ****       board[i][j] = 0;
+ 739              		.loc 1 432 0 discriminator 2
+ 740 0338 9950     		str	r1, [r3, r2]
+ 741 033a 0432     		add	r2, r2, #4
+ 742 033c 0025     		mov	r5, #0
+ 431:exampleGame.c ****     for (j=0; j<BOARD_HEIGHT; j++)
+ 743              		.loc 1 431 0 discriminator 2
+ 744 033e 402A     		cmp	r2, #64
+ 745 0340 FAD1     		bne	.L67
+ 431:exampleGame.c ****     for (j=0; j<BOARD_HEIGHT; j++)
+ 746              		.loc 1 431 0 is_stmt 0
+ 747 0342 4033     		add	r3, r3, #64
+ 430:exampleGame.c ****   for (i=0; i<BOARD_WIDTH; i++)
+ 748              		.loc 1 430 0 is_stmt 1
+ 749 0344 8342     		cmp	r3, r0
+ 750 0346 01D0     		beq	.L68
+ 751              	.LVL43:
+ 752              	.L66:
+ 406:exampleGame.c **** {
+ 753              		.loc 1 406 0 discriminator 1
+ 754 0348 0022     		mov	r2, #0
+ 755 034a F5E7     		b	.L67
+ 756              	.LVL44:
+ 757              	.L68:
+ 433:exampleGame.c **** 
+ 434:exampleGame.c ****   currFigure = rand() % NUM_OF_FIGURE;
+ 758              		.loc 1 434 0
+ 759 034c FFF7FEFF 		bl	rand
+ 760 0350 1321     		mov	r1, #19
+ 761 0352 FFF7FEFF 		bl	__modsi3
+ 762 0356 084C     		ldr	r4, .L70+4
+ 435:exampleGame.c ****   currXpos  = 3;
+ 763              		.loc 1 435 0
+ 764 0358 0321     		mov	r1, #3
+ 436:exampleGame.c ****   currYpos  = 0;
+ 765              		.loc 1 436 0
+ 766 035a A560     		str	r5, [r4, #8]
+ 437:exampleGame.c ****   insertFigure(currFigure, currXpos, currYpos);
+ 767              		.loc 1 437 0
+ 768 035c 2A1C     		mov	r2, r5
+ 434:exampleGame.c ****   currFigure = rand() % NUM_OF_FIGURE;
+ 769              		.loc 1 434 0
+ 770 035e 2060     		str	r0, [r4]
+ 435:exampleGame.c ****   currXpos  = 3;
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 24
+
+
+ 771              		.loc 1 435 0
+ 772 0360 6160     		str	r1, [r4, #4]
+ 773              		.loc 1 437 0
+ 774 0362 FFF799FE 		bl	insertFigure
+ 438:exampleGame.c **** 
+ 439:exampleGame.c ****   lastUpdate = ms;
+ 775              		.loc 1 439 0
+ 776 0366 034B     		ldr	r3, .L70
+ 777 0368 1B68     		ldr	r3, [r3]
+ 440:exampleGame.c **** }
+ 778              		.loc 1 440 0
+ 779              		@ sp needed for prologue
+ 439:exampleGame.c ****   lastUpdate = ms;
+ 780              		.loc 1 439 0
+ 781 036a 6361     		str	r3, [r4, #20]
+ 782              		.loc 1 440 0
+ 783 036c 31BC     		pop	{r0, r4, r5}
+ 784 036e 01BC     		pop	{r0}
+ 785 0370 0047     		bx	r0
+ 786              	.L71:
+ 787 0372 C046     		.align	2
+ 788              	.L70:
+ 789 0374 00000000 		.word	ms
+ 790 0378 80020000 		.word	.LANCHOR2
+ 791 037c 00000000 		.word	.LC17
+ 792 0380 00000000 		.word	.LANCHOR1
+ 793              		.cfi_endproc
+ 794              	.LFE10:
+ 795              		.size	setupGame, .-setupGame
+ 796              		.align	1
+ 797              		.global	playExample
+ 798              		.code	16
+ 799              		.thumb_func
+ 800              		.type	playExample, %function
+ 801              	playExample:
+ 802              	.LFB11:
+ 441:exampleGame.c **** 
+ 442:exampleGame.c **** 
+ 443:exampleGame.c **** /*****************************************************************************
+ 444:exampleGame.c ****  *
+ 445:exampleGame.c ****  * Description:
+ 446:exampleGame.c ****  *    Implements example game
+ 447:exampleGame.c ****  *    
+ 448:exampleGame.c ****  ****************************************************************************/
+ 449:exampleGame.c **** void
+ 450:exampleGame.c **** playExample(void)
+ 451:exampleGame.c **** {
+ 803              		.loc 1 451 0
+ 804              		.cfi_startproc
+ 805 0384 F0B5     		push	{r4, r5, r6, r7, lr}
+ 806              	.LCFI5:
+ 807              		.cfi_def_cfa_offset 20
+ 808              		.cfi_offset 4, -20
+ 809              		.cfi_offset 5, -16
+ 810              		.cfi_offset 6, -12
+ 811              		.cfi_offset 7, -8
+ 812              		.cfi_offset 14, -4
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 25
+
+
+ 452:exampleGame.c ****   gameStatus = GAME_NOT_STARTED;
+ 813              		.loc 1 452 0
+ 814 0386 524C     		ldr	r4, .L98
+ 815 0388 0025     		mov	r5, #0
+ 451:exampleGame.c **** {
+ 816              		.loc 1 451 0
+ 817 038a 94B0     		sub	sp, sp, #80
+ 818              	.LCFI6:
+ 819              		.cfi_def_cfa_offset 100
+ 453:exampleGame.c **** 
+ 454:exampleGame.c ****   setupGame(FALSE);
+ 820              		.loc 1 454 0
+ 821 038c 281C     		mov	r0, r5
+ 452:exampleGame.c ****   gameStatus = GAME_NOT_STARTED;
+ 822              		.loc 1 452 0
+ 823 038e 2576     		strb	r5, [r4, #24]
+ 824              		.loc 1 454 0
+ 825 0390 FFF7A6FF 		bl	setupGame
+ 455:exampleGame.c ****   lcdGotoxy(5,40);
+ 826              		.loc 1 455 0
+ 827 0394 0520     		mov	r0, #5
+ 828 0396 2821     		mov	r1, #40
+ 829 0398 FFF7FEFF 		bl	lcdGotoxy
+ 456:exampleGame.c ****   lcdColor(0,0xe0);
+ 830              		.loc 1 456 0
+ 831 039c 281C     		mov	r0, r5
+ 832 039e E021     		mov	r1, #224
+ 833 03a0 FFF7FEFF 		bl	lcdColor
+ 457:exampleGame.c ****   lcdPuts("Press to start");
+ 834              		.loc 1 457 0
+ 835 03a4 4B48     		ldr	r0, .L98+4
+ 836 03a6 FFF7FEFF 		bl	lcdPuts
+ 458:exampleGame.c **** 
+ 459:exampleGame.c ****   while(gameStatus != GAME_END)
+ 837              		.loc 1 459 0
+ 838 03aa 251C     		mov	r5, r4
+ 839 03ac 87E0     		b	.L90
+ 840              	.L87:
+ 841              	.LBB48:
+ 460:exampleGame.c ****   {
+ 461:exampleGame.c ****     tU8 anyKey;
+ 462:exampleGame.c **** 
+ 463:exampleGame.c ****     anyKey = checkKey();
+ 842              		.loc 1 463 0
+ 843 03ae FFF7FEFF 		bl	checkKey
+ 844              	.LVL45:
+ 464:exampleGame.c ****     switch(gameStatus)
+ 845              		.loc 1 464 0
+ 846 03b2 2A7E     		ldrb	r2, [r5, #24]
+ 847 03b4 141C     		mov	r4, r2
+ 848 03b6 012A     		cmp	r2, #1
+ 849 03b8 09D0     		beq	.L76
+ 850 03ba 002A     		cmp	r2, #0
+ 851 03bc 02D0     		beq	.L75
+ 852 03be 022A     		cmp	r2, #2
+ 853 03c0 7BD1     		bne	.L91
+ 854 03c2 42E0     		b	.L97
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 26
+
+
+ 855              	.L75:
+ 465:exampleGame.c ****     {
+ 466:exampleGame.c ****       case GAME_NOT_STARTED:
+ 467:exampleGame.c ****         if (anyKey != KEY_NOTHING)
+ 856              		.loc 1 467 0
+ 857 03c4 0028     		cmp	r0, #0
+ 858 03c6 7AD0     		beq	.L90
+ 468:exampleGame.c ****         {
+ 469:exampleGame.c ****           gameStatus = GAME_RUNNING;
+ 859              		.loc 1 469 0
+ 860 03c8 0123     		mov	r3, #1
+ 861 03ca 2B76     		strb	r3, [r5, #24]
+ 862 03cc 71E0     		b	.L93
+ 863              	.L76:
+ 470:exampleGame.c ****           setupGame(TRUE);
+ 471:exampleGame.c ****         }
+ 472:exampleGame.c ****         break;
+ 473:exampleGame.c ****         
+ 474:exampleGame.c ****       case GAME_RUNNING:
+ 475:exampleGame.c ****         if (anyKey != KEY_NOTHING)
+ 864              		.loc 1 475 0
+ 865 03ce 0028     		cmp	r0, #0
+ 866 03d0 35D0     		beq	.L79
+ 476:exampleGame.c ****         {
+ 477:exampleGame.c ****           if (anyKey == KEY_UP)
+ 867              		.loc 1 477 0
+ 868 03d2 0128     		cmp	r0, #1
+ 869 03d4 0CD1     		bne	.L80
+ 478:exampleGame.c ****           {
+ 479:exampleGame.c ****             if(isValid(currXpos, currYpos, shift[currFigure]))
+ 870              		.loc 1 479 0
+ 871 03d6 2A68     		ldr	r2, [r5]
+ 872 03d8 3F4B     		ldr	r3, .L98+8
+ 873 03da 9200     		lsl	r2, r2, #2
+ 874 03dc D458     		ldr	r4, [r2, r3]
+ 875 03de 6868     		ldr	r0, [r5, #4]
+ 876              	.LVL46:
+ 877 03e0 A968     		ldr	r1, [r5, #8]
+ 878 03e2 221C     		mov	r2, r4
+ 879 03e4 FFF70CFE 		bl	isValid
+ 880 03e8 0028     		cmp	r0, #0
+ 881 03ea 24D0     		beq	.L81
+ 480:exampleGame.c ****               currFigure = shift[currFigure];
+ 882              		.loc 1 480 0
+ 883 03ec 2C60     		str	r4, [r5]
+ 884 03ee 22E0     		b	.L81
+ 885              	.LVL47:
+ 886              	.L80:
+ 481:exampleGame.c ****           }
+ 482:exampleGame.c ****           else if (anyKey == KEY_DOWN)
+ 887              		.loc 1 482 0
+ 888 03f0 0428     		cmp	r0, #4
+ 889 03f2 0AD1     		bne	.L82
+ 483:exampleGame.c ****           {
+ 484:exampleGame.c ****             if(isValid(currXpos, currYpos+1, currFigure))
+ 890              		.loc 1 484 0
+ 891 03f4 AC68     		ldr	r4, [r5, #8]
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 27
+
+
+ 892 03f6 0134     		add	r4, r4, #1
+ 893 03f8 6868     		ldr	r0, [r5, #4]
+ 894              	.LVL48:
+ 895 03fa 2A68     		ldr	r2, [r5]
+ 896 03fc 211C     		mov	r1, r4
+ 897 03fe FFF7FFFD 		bl	isValid
+ 898 0402 0028     		cmp	r0, #0
+ 899 0404 17D0     		beq	.L81
+ 485:exampleGame.c ****               currYpos++;
+ 900              		.loc 1 485 0
+ 901 0406 AC60     		str	r4, [r5, #8]
+ 902 0408 15E0     		b	.L81
+ 903              	.LVL49:
+ 904              	.L82:
+ 486:exampleGame.c ****           }
+ 487:exampleGame.c ****           else if (anyKey == KEY_RIGHT)
+ 905              		.loc 1 487 0
+ 906 040a 0228     		cmp	r0, #2
+ 907 040c 02D1     		bne	.L83
+ 488:exampleGame.c ****           {
+ 489:exampleGame.c ****             if(isValid(currXpos+1, currYpos, currFigure))
+ 908              		.loc 1 489 0
+ 909 040e 6C68     		ldr	r4, [r5, #4]
+ 910 0410 0134     		add	r4, r4, #1
+ 911 0412 03E0     		b	.L96
+ 912              	.L83:
+ 490:exampleGame.c ****               currXpos++;
+ 491:exampleGame.c ****           }
+ 492:exampleGame.c ****           else if (anyKey == KEY_LEFT)
+ 913              		.loc 1 492 0
+ 914 0414 0828     		cmp	r0, #8
+ 915 0416 0AD1     		bne	.L84
+ 493:exampleGame.c ****           {
+ 494:exampleGame.c ****             if(isValid(currXpos-1, currYpos, currFigure))
+ 916              		.loc 1 494 0
+ 917 0418 6C68     		ldr	r4, [r5, #4]
+ 918 041a 013C     		sub	r4, r4, #1
+ 919              	.L96:
+ 920 041c A968     		ldr	r1, [r5, #8]
+ 921 041e 2A68     		ldr	r2, [r5]
+ 922 0420 201C     		mov	r0, r4
+ 923              	.LVL50:
+ 924 0422 FFF7EDFD 		bl	isValid
+ 925 0426 0028     		cmp	r0, #0
+ 926 0428 05D0     		beq	.L81
+ 495:exampleGame.c ****               currXpos--;
+ 927              		.loc 1 495 0
+ 928 042a 6C60     		str	r4, [r5, #4]
+ 929 042c 03E0     		b	.L81
+ 930              	.LVL51:
+ 931              	.L84:
+ 496:exampleGame.c ****           }
+ 497:exampleGame.c ****           else if (anyKey == KEY_CENTER)
+ 932              		.loc 1 497 0
+ 933 042e 1028     		cmp	r0, #16
+ 934 0430 01D1     		bne	.L81
+ 498:exampleGame.c ****             gameStatus = GAME_OVER;
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 28
+
+
+ 935              		.loc 1 498 0
+ 936 0432 0223     		mov	r3, #2
+ 937 0434 2B76     		strb	r3, [r5, #24]
+ 938              	.LVL52:
+ 939              	.L81:
+ 499:exampleGame.c **** 
+ 500:exampleGame.c ****           advanceGame();
+ 940              		.loc 1 500 0
+ 941 0436 FFF755FE 		bl	advanceGame
+ 501:exampleGame.c ****           osSleep(1);
+ 942              		.loc 1 501 0
+ 943 043a 0120     		mov	r0, #1
+ 944 043c 02E0     		b	.L94
+ 945              	.LVL53:
+ 946              	.L79:
+ 502:exampleGame.c ****         }
+ 503:exampleGame.c ****         else
+ 504:exampleGame.c ****         {
+ 505:exampleGame.c ****           advanceGame();
+ 947              		.loc 1 505 0
+ 948 043e FFF751FE 		bl	advanceGame
+ 949              	.LVL54:
+ 506:exampleGame.c ****           osSleep(1);
+ 950              		.loc 1 506 0
+ 951 0442 201C     		mov	r0, r4
+ 952              	.L94:
+ 953 0444 FFF7FEFF 		bl	osSleep
+ 954 0448 39E0     		b	.L90
+ 955              	.LVL55:
+ 956              	.L97:
+ 957              	.LBB49:
+ 507:exampleGame.c ****         }
+ 508:exampleGame.c ****         break;
+ 509:exampleGame.c ****         
+ 510:exampleGame.c ****       case GAME_OVER:
+ 511:exampleGame.c ****       {
+ 512:exampleGame.c ****         tMenu menu;
+ 513:exampleGame.c ****         
+ 514:exampleGame.c ****         menu.xPos = 10;
+ 958              		.loc 1 514 0
+ 959 044a 08AB     		add	r3, sp, #32
+ 515:exampleGame.c ****         menu.yPos = 40;
+ 516:exampleGame.c ****         menu.xLen = 6+(12*8);
+ 517:exampleGame.c ****         menu.yLen = 4*14;
+ 518:exampleGame.c ****         menu.noOfChoices = 2;
+ 519:exampleGame.c ****         menu.initialChoice = 0;
+ 520:exampleGame.c ****         menu.pHeaderText = "Game over!";
+ 521:exampleGame.c ****         menu.headerTextXpos = 20;
+ 960              		.loc 1 521 0
+ 961 044c 1420     		mov	r0, #20
+ 962              	.LVL56:
+ 963 044e 1873     		strb	r0, [r3, #12]
+ 514:exampleGame.c ****         menu.xPos = 10;
+ 964              		.loc 1 514 0
+ 965 0450 0A21     		mov	r1, #10
+ 522:exampleGame.c ****         menu.pChoice[0] = "Restart game";
+ 966              		.loc 1 522 0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 29
+
+
+ 967 0452 2248     		ldr	r0, .L98+12
+ 514:exampleGame.c ****         menu.xPos = 10;
+ 968              		.loc 1 514 0
+ 969 0454 1970     		strb	r1, [r3]
+ 515:exampleGame.c ****         menu.yPos = 40;
+ 970              		.loc 1 515 0
+ 971 0456 2821     		mov	r1, #40
+ 972 0458 5970     		strb	r1, [r3, #1]
+ 973              		.loc 1 522 0
+ 974 045a 0C90     		str	r0, [sp, #48]
+ 516:exampleGame.c ****         menu.xLen = 6+(12*8);
+ 975              		.loc 1 516 0
+ 976 045c 6621     		mov	r1, #102
+ 523:exampleGame.c ****         menu.pChoice[1] = "End game";
+ 977              		.loc 1 523 0
+ 978 045e 2048     		ldr	r0, .L98+16
+ 516:exampleGame.c ****         menu.xLen = 6+(12*8);
+ 979              		.loc 1 516 0
+ 980 0460 9970     		strb	r1, [r3, #2]
+ 517:exampleGame.c ****         menu.yLen = 4*14;
+ 981              		.loc 1 517 0
+ 982 0462 3821     		mov	r1, #56
+ 983 0464 D970     		strb	r1, [r3, #3]
+ 984              		.loc 1 523 0
+ 985 0466 0D90     		str	r0, [sp, #52]
+ 519:exampleGame.c ****         menu.initialChoice = 0;
+ 986              		.loc 1 519 0
+ 987 0468 0021     		mov	r1, #0
+ 524:exampleGame.c ****         menu.bgColor       = 0;
+ 988              		.loc 1 524 0
+ 989 046a 12A8     		add	r0, sp, #72
+ 519:exampleGame.c ****         menu.initialChoice = 0;
+ 990              		.loc 1 519 0
+ 991 046c 5971     		strb	r1, [r3, #5]
+ 992              		.loc 1 524 0
+ 993 046e 0170     		strb	r1, [r0]
+ 525:exampleGame.c ****         menu.borderColor   = 0x6d;
+ 526:exampleGame.c ****         menu.headerColor   = 0;
+ 994              		.loc 1 526 0
+ 995 0470 8170     		strb	r1, [r0, #2]
+ 525:exampleGame.c ****         menu.borderColor   = 0x6d;
+ 996              		.loc 1 525 0
+ 997 0472 6D24     		mov	r4, #109
+ 527:exampleGame.c ****         menu.choicesColor  = 0xfd;
+ 998              		.loc 1 527 0
+ 999 0474 6946     		mov	r1, sp
+ 518:exampleGame.c ****         menu.noOfChoices = 2;
+ 1000              		.loc 1 518 0
+ 1001 0476 1A71     		strb	r2, [r3, #4]
+ 525:exampleGame.c ****         menu.borderColor   = 0x6d;
+ 1002              		.loc 1 525 0
+ 1003 0478 4470     		strb	r4, [r0, #1]
+ 1004              		.loc 1 527 0
+ 1005 047a 4B31     		add	r1, r1, #75
+ 1006 047c FD20     		mov	r0, #253
+ 520:exampleGame.c ****         menu.pHeaderText = "Game over!";
+ 1007              		.loc 1 520 0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 30
+
+
+ 1008 047e 194A     		ldr	r2, .L98+20
+ 1009              		.loc 1 527 0
+ 1010 0480 0870     		strb	r0, [r1]
+ 528:exampleGame.c ****         menu.selectedColor = 0xe0;
+ 1011              		.loc 1 528 0
+ 1012 0482 E020     		mov	r0, #224
+ 1013 0484 13A9     		add	r1, sp, #76
+ 1014 0486 0870     		strb	r0, [r1]
+ 520:exampleGame.c ****         menu.pHeaderText = "Game over!";
+ 1015              		.loc 1 520 0
+ 1016 0488 0A92     		str	r2, [sp, #40]
+ 529:exampleGame.c ****         
+ 530:exampleGame.c ****         switch(drawMenu(menu))
+ 1017              		.loc 1 530 0
+ 1018 048a 0CA9     		add	r1, sp, #48
+ 1019 048c 6846     		mov	r0, sp
+ 1020 048e D0C9     		ldmia	r1!, {r4, r6, r7}
+ 1021 0490 D0C0     		stmia	r0!, {r4, r6, r7}
+ 1022 0492 D0C9     		ldmia	r1!, {r4, r6, r7}
+ 1023 0494 D0C0     		stmia	r0!, {r4, r6, r7}
+ 1024 0496 50C9     		ldmia	r1!, {r4, r6}
+ 1025 0498 50C0     		stmia	r0!, {r4, r6}
+ 1026 049a 0898     		ldr	r0, [sp, #32]
+ 1027 049c 0999     		ldr	r1, [sp, #36]
+ 1028 049e 0B9B     		ldr	r3, [sp, #44]
+ 1029 04a0 FFF7FEFF 		bl	drawMenu
+ 1030 04a4 0028     		cmp	r0, #0
+ 1031 04a6 02D0     		beq	.L85
+ 1032 04a8 0128     		cmp	r0, #1
+ 1033 04aa 08D1     		bne	.L90
+ 1034 04ac 05E0     		b	.L91
+ 1035              	.L85:
+ 531:exampleGame.c ****         {
+ 532:exampleGame.c ****           case 0: gameStatus = GAME_RUNNING; setupGame(TRUE); break;  //Restart game
+ 1036              		.loc 1 532 0
+ 1037 04ae 0127     		mov	r7, #1
+ 1038 04b0 2F76     		strb	r7, [r5, #24]
+ 1039              	.L93:
+ 1040 04b2 0120     		mov	r0, #1
+ 1041 04b4 FFF714FF 		bl	setupGame
+ 1042 04b8 01E0     		b	.L90
+ 1043              	.L91:
+ 1044              	.LBE49:
+ 533:exampleGame.c ****           case 1: gameStatus = GAME_END; break;                       //End game
+ 534:exampleGame.c ****           default: break;
+ 535:exampleGame.c ****         }
+ 536:exampleGame.c ****       }
+ 537:exampleGame.c ****         break;
+ 538:exampleGame.c ****         
+ 539:exampleGame.c ****       default:
+ 540:exampleGame.c ****         gameStatus = GAME_END;
+ 1045              		.loc 1 540 0
+ 1046 04ba 0323     		mov	r3, #3
+ 1047 04bc 2B76     		strb	r3, [r5, #24]
+ 1048              	.L90:
+ 1049              	.LBE48:
+ 459:exampleGame.c ****   while(gameStatus != GAME_END)
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 31
+
+
+ 1050              		.loc 1 459 0 discriminator 1
+ 1051 04be 2B7E     		ldrb	r3, [r5, #24]
+ 1052 04c0 032B     		cmp	r3, #3
+ 1053 04c2 00D0     		beq	.LCB916
+ 1054 04c4 73E7     		b	.L87	@long jump
+ 1055              	.LCB916:
+ 541:exampleGame.c ****         break;
+ 542:exampleGame.c ****     }
+ 543:exampleGame.c ****   }
+ 544:exampleGame.c **** }
+ 1056              		.loc 1 544 0
+ 1057 04c6 14B0     		add	sp, sp, #80
+ 1058              		@ sp needed for prologue
+ 1059 04c8 F0BC     		pop	{r4, r5, r6, r7}
+ 1060 04ca 01BC     		pop	{r0}
+ 1061 04cc 0047     		bx	r0
+ 1062              	.L99:
+ 1063 04ce C046     		.align	2
+ 1064              	.L98:
+ 1065 04d0 80020000 		.word	.LANCHOR2
+ 1066 04d4 0D000000 		.word	.LC22
+ 1067 04d8 00000000 		.word	.LANCHOR3
+ 1068 04dc 27000000 		.word	.LC27
+ 1069 04e0 34000000 		.word	.LC29
+ 1070 04e4 1C000000 		.word	.LC25
+ 1071              		.cfi_endproc
+ 1072              	.LFE11:
+ 1073              		.size	playExample, .-playExample
+ 1074              		.global	figures
+ 1075              		.section	.rodata
+ 1076              		.align	2
+ 1077              		.set	.LANCHOR3,. + 0
+ 1078              		.type	shift, %object
+ 1079              		.size	shift, 76
+ 1080              	shift:
+ 1081 0000 01000000 		.word	1
+ 1082 0004 00000000 		.word	0
+ 1083 0008 03000000 		.word	3
+ 1084 000c 04000000 		.word	4
+ 1085 0010 05000000 		.word	5
+ 1086 0014 02000000 		.word	2
+ 1087 0018 07000000 		.word	7
+ 1088 001c 08000000 		.word	8
+ 1089 0020 09000000 		.word	9
+ 1090 0024 06000000 		.word	6
+ 1091 0028 0B000000 		.word	11
+ 1092 002c 0C000000 		.word	12
+ 1093 0030 0D000000 		.word	13
+ 1094 0034 0A000000 		.word	10
+ 1095 0038 0F000000 		.word	15
+ 1096 003c 0E000000 		.word	14
+ 1097 0040 11000000 		.word	17
+ 1098 0044 10000000 		.word	16
+ 1099 0048 12000000 		.word	18
+ 1100              		.section	.rodata.str1.1,"aMS",%progbits,1
+ 1101              	.LC17:
+ 1102 0000 2053636F 		.ascii	" Score:   0 \000"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 32
+
+
+ 1102      72653A20 
+ 1102      20203020 
+ 1102      00
+ 1103              	.LC22:
+ 1104 000d 50726573 		.ascii	"Press to start\000"
+ 1104      7320746F 
+ 1104      20737461 
+ 1104      727400
+ 1105              	.LC25:
+ 1106 001c 47616D65 		.ascii	"Game over!\000"
+ 1106      206F7665 
+ 1106      722100
+ 1107              	.LC27:
+ 1108 0027 52657374 		.ascii	"Restart game\000"
+ 1108      61727420 
+ 1108      67616D65 
+ 1108      00
+ 1109              	.LC29:
+ 1110 0034 456E6420 		.ascii	"End game\000"
+ 1110      67616D65 
+ 1110      00
+ 1111              		.data
+ 1112              		.set	.LANCHOR0,. + 0
+ 1113              		.type	figures, %object
+ 1114              		.size	figures, 304
+ 1115              	figures:
+ 1116 0000 2E582E2E 		.ascii	".X.."
+ 1117 0004 2E582E2E 		.ascii	".X.."
+ 1118 0008 2E582E2E 		.ascii	".X.."
+ 1119 000c 2E582E2E 		.ascii	".X.."
+ 1120 0010 2E2E2E2E 		.ascii	"...."
+ 1121 0014 58585858 		.ascii	"XXXX"
+ 1122 0018 2E2E2E2E 		.ascii	"...."
+ 1123 001c 2E2E2E2E 		.ascii	"...."
+ 1124 0020 5858582E 		.ascii	"XXX."
+ 1125 0024 582E2E2E 		.ascii	"X..."
+ 1126 0028 2E2E2E2E 		.ascii	"...."
+ 1127 002c 2E2E2E2E 		.ascii	"...."
+ 1128 0030 2E58582E 		.ascii	".XX."
+ 1129 0034 2E2E582E 		.ascii	"..X."
+ 1130 0038 2E2E582E 		.ascii	"..X."
+ 1131 003c 2E2E2E2E 		.ascii	"...."
+ 1132 0040 2E2E582E 		.ascii	"..X."
+ 1133 0044 5858582E 		.ascii	"XXX."
+ 1134 0048 2E2E2E2E 		.ascii	"...."
+ 1135 004c 2E2E2E2E 		.ascii	"...."
+ 1136 0050 2E582E2E 		.ascii	".X.."
+ 1137 0054 2E582E2E 		.ascii	".X.."
+ 1138 0058 2E58582E 		.ascii	".XX."
+ 1139 005c 2E2E2E2E 		.ascii	"...."
+ 1140 0060 5858582E 		.ascii	"XXX."
+ 1141 0064 2E2E582E 		.ascii	"..X."
+ 1142 0068 2E2E2E2E 		.ascii	"...."
+ 1143 006c 2E2E2E2E 		.ascii	"...."
+ 1144 0070 2E2E582E 		.ascii	"..X."
+ 1145 0074 2E2E582E 		.ascii	"..X."
+ 1146 0078 2E58582E 		.ascii	".XX."
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 33
+
+
+ 1147 007c 2E2E2E2E 		.ascii	"...."
+ 1148 0080 582E2E2E 		.ascii	"X..."
+ 1149 0084 5858582E 		.ascii	"XXX."
+ 1150 0088 2E2E2E2E 		.ascii	"...."
+ 1151 008c 2E2E2E2E 		.ascii	"...."
+ 1152 0090 2E58582E 		.ascii	".XX."
+ 1153 0094 2E582E2E 		.ascii	".X.."
+ 1154 0098 2E582E2E 		.ascii	".X.."
+ 1155 009c 2E2E2E2E 		.ascii	"...."
+ 1156 00a0 2E582E2E 		.ascii	".X.."
+ 1157 00a4 5858582E 		.ascii	"XXX."
+ 1158 00a8 2E2E2E2E 		.ascii	"...."
+ 1159 00ac 2E2E2E2E 		.ascii	"...."
+ 1160 00b0 2E582E2E 		.ascii	".X.."
+ 1161 00b4 2E58582E 		.ascii	".XX."
+ 1162 00b8 2E582E2E 		.ascii	".X.."
+ 1163 00bc 2E2E2E2E 		.ascii	"...."
+ 1164 00c0 5858582E 		.ascii	"XXX."
+ 1165 00c4 2E582E2E 		.ascii	".X.."
+ 1166 00c8 2E2E2E2E 		.ascii	"...."
+ 1167 00cc 2E2E2E2E 		.ascii	"...."
+ 1168 00d0 2E582E2E 		.ascii	".X.."
+ 1169 00d4 58582E2E 		.ascii	"XX.."
+ 1170 00d8 2E582E2E 		.ascii	".X.."
+ 1171 00dc 2E2E2E2E 		.ascii	"...."
+ 1172 00e0 582E2E2E 		.ascii	"X..."
+ 1173 00e4 58582E2E 		.ascii	"XX.."
+ 1174 00e8 2E582E2E 		.ascii	".X.."
+ 1175 00ec 2E2E2E2E 		.ascii	"...."
+ 1176 00f0 2E58582E 		.ascii	".XX."
+ 1177 00f4 58582E2E 		.ascii	"XX.."
+ 1178 00f8 2E2E2E2E 		.ascii	"...."
+ 1179 00fc 2E2E2E2E 		.ascii	"...."
+ 1180 0100 2E582E2E 		.ascii	".X.."
+ 1181 0104 58582E2E 		.ascii	"XX.."
+ 1182 0108 582E2E2E 		.ascii	"X..."
+ 1183 010c 2E2E2E2E 		.ascii	"...."
+ 1184 0110 58582E2E 		.ascii	"XX.."
+ 1185 0114 2E58582E 		.ascii	".XX."
+ 1186 0118 2E2E2E2E 		.ascii	"...."
+ 1187 011c 2E2E2E2E 		.ascii	"...."
+ 1188 0120 58582E2E 		.ascii	"XX.."
+ 1189 0124 58582E2E 		.ascii	"XX.."
+ 1190 0128 2E2E2E2E 		.ascii	"...."
+ 1191 012c 2E2E2E2E 		.ascii	"...."
+ 1192              		.bss
+ 1193              		.align	2
+ 1194              		.set	.LANCHOR1,. + 0
+ 1195              		.set	.LANCHOR2,. + 640
+ 1196              		.type	board, %object
+ 1197              		.size	board, 640
+ 1198              	board:
+ 1199 0000 00000000 		.space	640
+ 1199      00000000 
+ 1199      00000000 
+ 1199      00000000 
+ 1199      00000000 
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 34
+
+
+ 1200              		.type	currFigure, %object
+ 1201              		.size	currFigure, 4
+ 1202              	currFigure:
+ 1203 0280 00000000 		.space	4
+ 1204              		.type	currXpos, %object
+ 1205              		.size	currXpos, 4
+ 1206              	currXpos:
+ 1207 0284 00000000 		.space	4
+ 1208              		.type	currYpos, %object
+ 1209              		.size	currYpos, 4
+ 1210              	currYpos:
+ 1211 0288 00000000 		.space	4
+ 1212              		.type	score, %object
+ 1213              		.size	score, 1
+ 1214              	score:
+ 1215 028c 00       		.space	1
+ 1216 028d 000000   		.space	3
+ 1217              		.type	delayTimeMs, %object
+ 1218              		.size	delayTimeMs, 4
+ 1219              	delayTimeMs:
+ 1220 0290 00000000 		.space	4
+ 1221              		.type	lastUpdate, %object
+ 1222              		.size	lastUpdate, 4
+ 1223              	lastUpdate:
+ 1224 0294 00000000 		.space	4
+ 1225              		.type	gameStatus, %object
+ 1226              		.size	gameStatus, 1
+ 1227              	gameStatus:
+ 1228 0298 00       		.space	1
+ 1229 0299 000000   		.text
+ 1230              	.Letext0:
+ 1231              		.file 2 "./startup/../pre_emptive_os/api/../api/general.h"
+ 1232              		.file 3 "select.h"
+ 1233              		.section	.debug_info,"",%progbits
+ 1234              	.Ldebug_info0:
+ 1235 0000 29060000 		.4byte	0x629
+ 1236 0004 0200     		.2byte	0x2
+ 1237 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 1238 000a 04       		.byte	0x4
+ 1239 000b 01       		.uleb128 0x1
+ 1240 000c F3010000 		.4byte	.LASF51
+ 1241 0010 01       		.byte	0x1
+ 1242 0011 AA010000 		.4byte	.LASF52
+ 1243 0015 2B000000 		.4byte	.LASF53
+ 1244 0019 00000000 		.4byte	.Ltext0
+ 1245 001d E8040000 		.4byte	.Letext0
+ 1246 0021 00000000 		.4byte	.Ldebug_line0
+ 1247 0025 02       		.uleb128 0x2
+ 1248 0026 74553800 		.ascii	"tU8\000"
+ 1249 002a 02       		.byte	0x2
+ 1250 002b 47       		.byte	0x47
+ 1251 002c 30000000 		.4byte	0x30
+ 1252 0030 03       		.uleb128 0x3
+ 1253 0031 01       		.byte	0x1
+ 1254 0032 08       		.byte	0x8
+ 1255 0033 BE010000 		.4byte	.LASF0
+ 1256 0037 03       		.uleb128 0x3
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 35
+
+
+ 1257 0038 02       		.byte	0x2
+ 1258 0039 07       		.byte	0x7
+ 1259 003a 4F010000 		.4byte	.LASF1
+ 1260 003e 04       		.uleb128 0x4
+ 1261 003f 78010000 		.4byte	.LASF2
+ 1262 0043 02       		.byte	0x2
+ 1263 0044 49       		.byte	0x49
+ 1264 0045 49000000 		.4byte	0x49
+ 1265 0049 03       		.uleb128 0x3
+ 1266 004a 04       		.byte	0x4
+ 1267 004b 07       		.byte	0x7
+ 1268 004c FA000000 		.4byte	.LASF3
+ 1269 0050 02       		.uleb128 0x2
+ 1270 0051 74533800 		.ascii	"tS8\000"
+ 1271 0055 02       		.byte	0x2
+ 1272 0056 4A       		.byte	0x4a
+ 1273 0057 5B000000 		.4byte	0x5b
+ 1274 005b 03       		.uleb128 0x3
+ 1275 005c 01       		.byte	0x1
+ 1276 005d 06       		.byte	0x6
+ 1277 005e 90000000 		.4byte	.LASF4
+ 1278 0062 03       		.uleb128 0x3
+ 1279 0063 02       		.byte	0x2
+ 1280 0064 05       		.byte	0x5
+ 1281 0065 D9010000 		.4byte	.LASF5
+ 1282 0069 04       		.uleb128 0x4
+ 1283 006a 16020000 		.4byte	.LASF6
+ 1284 006e 02       		.byte	0x2
+ 1285 006f 4C       		.byte	0x4c
+ 1286 0070 74000000 		.4byte	0x74
+ 1287 0074 05       		.uleb128 0x5
+ 1288 0075 04       		.byte	0x4
+ 1289 0076 05       		.byte	0x5
+ 1290 0077 696E7400 		.ascii	"int\000"
+ 1291 007b 04       		.uleb128 0x4
+ 1292 007c 9C000000 		.4byte	.LASF7
+ 1293 0080 02       		.byte	0x2
+ 1294 0081 4D       		.byte	0x4d
+ 1295 0082 30000000 		.4byte	0x30
+ 1296 0086 06       		.uleb128 0x6
+ 1297 0087 04       		.byte	0x4
+ 1298 0088 25000000 		.4byte	0x25
+ 1299 008c 03       		.uleb128 0x3
+ 1300 008d 04       		.byte	0x4
+ 1301 008e 07       		.byte	0x7
+ 1302 008f 27010000 		.4byte	.LASF8
+ 1303 0093 03       		.uleb128 0x3
+ 1304 0094 08       		.byte	0x8
+ 1305 0095 05       		.byte	0x5
+ 1306 0096 82000000 		.4byte	.LASF9
+ 1307 009a 03       		.uleb128 0x3
+ 1308 009b 08       		.byte	0x8
+ 1309 009c 07       		.byte	0x7
+ 1310 009d 14000000 		.4byte	.LASF10
+ 1311 00a1 03       		.uleb128 0x3
+ 1312 00a2 04       		.byte	0x4
+ 1313 00a3 05       		.byte	0x5
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 36
+
+
+ 1314 00a4 A2000000 		.4byte	.LASF11
+ 1315 00a8 03       		.uleb128 0x3
+ 1316 00a9 01       		.byte	0x1
+ 1317 00aa 08       		.byte	0x8
+ 1318 00ab FF010000 		.4byte	.LASF12
+ 1319 00af 07       		.uleb128 0x7
+ 1320 00b0 30       		.byte	0x30
+ 1321 00b1 03       		.byte	0x3
+ 1322 00b2 19       		.byte	0x19
+ 1323 00b3 7C010000 		.4byte	0x17c
+ 1324 00b7 08       		.uleb128 0x8
+ 1325 00b8 45020000 		.4byte	.LASF13
+ 1326 00bc 03       		.byte	0x3
+ 1327 00bd 1B       		.byte	0x1b
+ 1328 00be 25000000 		.4byte	0x25
+ 1329 00c2 02       		.byte	0x2
+ 1330 00c3 23       		.byte	0x23
+ 1331 00c4 00       		.uleb128 0
+ 1332 00c5 08       		.uleb128 0x8
+ 1333 00c6 1B020000 		.4byte	.LASF14
+ 1334 00ca 03       		.byte	0x3
+ 1335 00cb 1C       		.byte	0x1c
+ 1336 00cc 25000000 		.4byte	0x25
+ 1337 00d0 02       		.byte	0x2
+ 1338 00d1 23       		.byte	0x23
+ 1339 00d2 01       		.uleb128 0x1
+ 1340 00d3 08       		.uleb128 0x8
+ 1341 00d4 07010000 		.4byte	.LASF15
+ 1342 00d8 03       		.byte	0x3
+ 1343 00d9 1D       		.byte	0x1d
+ 1344 00da 25000000 		.4byte	0x25
+ 1345 00de 02       		.byte	0x2
+ 1346 00df 23       		.byte	0x23
+ 1347 00e0 02       		.uleb128 0x2
+ 1348 00e1 08       		.uleb128 0x8
+ 1349 00e2 B7000000 		.4byte	.LASF16
+ 1350 00e6 03       		.byte	0x3
+ 1351 00e7 1E       		.byte	0x1e
+ 1352 00e8 25000000 		.4byte	0x25
+ 1353 00ec 02       		.byte	0x2
+ 1354 00ed 23       		.byte	0x23
+ 1355 00ee 03       		.uleb128 0x3
+ 1356 00ef 08       		.uleb128 0x8
+ 1357 00f0 D3000000 		.4byte	.LASF17
+ 1358 00f4 03       		.byte	0x3
+ 1359 00f5 1F       		.byte	0x1f
+ 1360 00f6 25000000 		.4byte	0x25
+ 1361 00fa 02       		.byte	0x2
+ 1362 00fb 23       		.byte	0x23
+ 1363 00fc 04       		.uleb128 0x4
+ 1364 00fd 08       		.uleb128 0x8
+ 1365 00fe EC000000 		.4byte	.LASF18
+ 1366 0102 03       		.byte	0x3
+ 1367 0103 20       		.byte	0x20
+ 1368 0104 25000000 		.4byte	0x25
+ 1369 0108 02       		.byte	0x2
+ 1370 0109 23       		.byte	0x23
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 37
+
+
+ 1371 010a 05       		.uleb128 0x5
+ 1372 010b 08       		.uleb128 0x8
+ 1373 010c 59020000 		.4byte	.LASF19
+ 1374 0110 03       		.byte	0x3
+ 1375 0111 21       		.byte	0x21
+ 1376 0112 86000000 		.4byte	0x86
+ 1377 0116 02       		.byte	0x2
+ 1378 0117 23       		.byte	0x23
+ 1379 0118 08       		.uleb128 0x8
+ 1380 0119 08       		.uleb128 0x8
+ 1381 011a 0C010000 		.4byte	.LASF20
+ 1382 011e 03       		.byte	0x3
+ 1383 011f 22       		.byte	0x22
+ 1384 0120 25000000 		.4byte	0x25
+ 1385 0124 02       		.byte	0x2
+ 1386 0125 23       		.byte	0x23
+ 1387 0126 0C       		.uleb128 0xc
+ 1388 0127 08       		.uleb128 0x8
+ 1389 0128 8A010000 		.4byte	.LASF21
+ 1390 012c 03       		.byte	0x3
+ 1391 012d 23       		.byte	0x23
+ 1392 012e 7C010000 		.4byte	0x17c
+ 1393 0132 02       		.byte	0x2
+ 1394 0133 23       		.byte	0x23
+ 1395 0134 10       		.uleb128 0x10
+ 1396 0135 08       		.uleb128 0x8
+ 1397 0136 92010000 		.4byte	.LASF22
+ 1398 013a 03       		.byte	0x3
+ 1399 013b 24       		.byte	0x24
+ 1400 013c 25000000 		.4byte	0x25
+ 1401 0140 02       		.byte	0x2
+ 1402 0141 23       		.byte	0x23
+ 1403 0142 28       		.uleb128 0x28
+ 1404 0143 08       		.uleb128 0x8
+ 1405 0144 76000000 		.4byte	.LASF23
+ 1406 0148 03       		.byte	0x3
+ 1407 0149 25       		.byte	0x25
+ 1408 014a 25000000 		.4byte	0x25
+ 1409 014e 02       		.byte	0x2
+ 1410 014f 23       		.byte	0x23
+ 1411 0150 29       		.uleb128 0x29
+ 1412 0151 08       		.uleb128 0x8
+ 1413 0152 2A020000 		.4byte	.LASF24
+ 1414 0156 03       		.byte	0x3
+ 1415 0157 26       		.byte	0x26
+ 1416 0158 25000000 		.4byte	0x25
+ 1417 015c 02       		.byte	0x2
+ 1418 015d 23       		.byte	0x23
+ 1419 015e 2A       		.uleb128 0x2a
+ 1420 015f 08       		.uleb128 0x8
+ 1421 0160 DF000000 		.4byte	.LASF25
+ 1422 0164 03       		.byte	0x3
+ 1423 0165 27       		.byte	0x27
+ 1424 0166 25000000 		.4byte	0x25
+ 1425 016a 02       		.byte	0x2
+ 1426 016b 23       		.byte	0x23
+ 1427 016c 2B       		.uleb128 0x2b
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 38
+
+
+ 1428 016d 08       		.uleb128 0x8
+ 1429 016e 56000000 		.4byte	.LASF26
+ 1430 0172 03       		.byte	0x3
+ 1431 0173 28       		.byte	0x28
+ 1432 0174 25000000 		.4byte	0x25
+ 1433 0178 02       		.byte	0x2
+ 1434 0179 23       		.byte	0x23
+ 1435 017a 2C       		.uleb128 0x2c
+ 1436 017b 00       		.byte	0
+ 1437 017c 09       		.uleb128 0x9
+ 1438 017d 86000000 		.4byte	0x86
+ 1439 0181 8C010000 		.4byte	0x18c
+ 1440 0185 0A       		.uleb128 0xa
+ 1441 0186 8C000000 		.4byte	0x8c
+ 1442 018a 05       		.byte	0x5
+ 1443 018b 00       		.byte	0
+ 1444 018c 04       		.uleb128 0x4
+ 1445 018d B8010000 		.4byte	.LASF27
+ 1446 0191 03       		.byte	0x3
+ 1447 0192 29       		.byte	0x29
+ 1448 0193 AF000000 		.4byte	0xaf
+ 1449 0197 0B       		.uleb128 0xb
+ 1450 0198 9A010000 		.4byte	.LASF32
+ 1451 019c 01       		.byte	0x1
+ 1452 019d F5       		.byte	0xf5
+ 1453 019e 01       		.byte	0x1
+ 1454 019f A8000000 		.4byte	0xa8
+ 1455 01a3 01       		.byte	0x1
+ 1456 01a4 BB010000 		.4byte	0x1bb
+ 1457 01a8 0C       		.uleb128 0xc
+ 1458 01a9 6A00     		.ascii	"j\000"
+ 1459 01ab 01       		.byte	0x1
+ 1460 01ac F5       		.byte	0xf5
+ 1461 01ad 69000000 		.4byte	0x69
+ 1462 01b1 0D       		.uleb128 0xd
+ 1463 01b2 6900     		.ascii	"i\000"
+ 1464 01b4 01       		.byte	0x1
+ 1465 01b5 F7       		.byte	0xf7
+ 1466 01b6 69000000 		.4byte	0x69
+ 1467 01ba 00       		.byte	0
+ 1468 01bb 0E       		.uleb128 0xe
+ 1469 01bc 62010000 		.4byte	.LASF28
+ 1470 01c0 01       		.byte	0x1
+ 1471 01c1 0801     		.2byte	0x108
+ 1472 01c3 01       		.byte	0x1
+ 1473 01c4 01       		.byte	0x1
+ 1474 01c5 D6010000 		.4byte	0x1d6
+ 1475 01c9 0F       		.uleb128 0xf
+ 1476 01ca 73747200 		.ascii	"str\000"
+ 1477 01ce 01       		.byte	0x1
+ 1478 01cf 0A01     		.2byte	0x10a
+ 1479 01d1 D6010000 		.4byte	0x1d6
+ 1480 01d5 00       		.byte	0
+ 1481 01d6 09       		.uleb128 0x9
+ 1482 01d7 25000000 		.4byte	0x25
+ 1483 01db E6010000 		.4byte	0x1e6
+ 1484 01df 0A       		.uleb128 0xa
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 39
+
+
+ 1485 01e0 8C000000 		.4byte	0x8c
+ 1486 01e4 03       		.byte	0x3
+ 1487 01e5 00       		.byte	0
+ 1488 01e6 10       		.uleb128 0x10
+ 1489 01e7 6D000000 		.4byte	.LASF29
+ 1490 01eb 01       		.byte	0x1
+ 1491 01ec BD       		.byte	0xbd
+ 1492 01ed 01       		.byte	0x1
+ 1493 01ee 01       		.byte	0x1
+ 1494 01ef 06020000 		.4byte	0x206
+ 1495 01f3 0D       		.uleb128 0xd
+ 1496 01f4 6900     		.ascii	"i\000"
+ 1497 01f6 01       		.byte	0x1
+ 1498 01f7 BF       		.byte	0xbf
+ 1499 01f8 69000000 		.4byte	0x69
+ 1500 01fc 0D       		.uleb128 0xd
+ 1501 01fd 6A00     		.ascii	"j\000"
+ 1502 01ff 01       		.byte	0x1
+ 1503 0200 BF       		.byte	0xbf
+ 1504 0201 69000000 		.4byte	0x69
+ 1505 0205 00       		.byte	0
+ 1506 0206 10       		.uleb128 0x10
+ 1507 0207 CC010000 		.4byte	.LASF30
+ 1508 020b 01       		.byte	0x1
+ 1509 020c E3       		.byte	0xe3
+ 1510 020d 01       		.byte	0x1
+ 1511 020e 01       		.byte	0x1
+ 1512 020f 43020000 		.4byte	0x243
+ 1513 0213 11       		.uleb128 0x11
+ 1514 0214 53020000 		.4byte	.LASF31
+ 1515 0218 01       		.byte	0x1
+ 1516 0219 E3       		.byte	0xe3
+ 1517 021a 69000000 		.4byte	0x69
+ 1518 021e 0C       		.uleb128 0xc
+ 1519 021f 7800     		.ascii	"x\000"
+ 1520 0221 01       		.byte	0x1
+ 1521 0222 E3       		.byte	0xe3
+ 1522 0223 69000000 		.4byte	0x69
+ 1523 0227 0C       		.uleb128 0xc
+ 1524 0228 7900     		.ascii	"y\000"
+ 1525 022a 01       		.byte	0x1
+ 1526 022b E3       		.byte	0xe3
+ 1527 022c 69000000 		.4byte	0x69
+ 1528 0230 0D       		.uleb128 0xd
+ 1529 0231 6900     		.ascii	"i\000"
+ 1530 0233 01       		.byte	0x1
+ 1531 0234 E5       		.byte	0xe5
+ 1532 0235 69000000 		.4byte	0x69
+ 1533 0239 0D       		.uleb128 0xd
+ 1534 023a 6A00     		.ascii	"j\000"
+ 1535 023c 01       		.byte	0x1
+ 1536 023d E5       		.byte	0xe5
+ 1537 023e 69000000 		.4byte	0x69
+ 1538 0242 00       		.byte	0
+ 1539 0243 12       		.uleb128 0x12
+ 1540 0244 3F010000 		.4byte	.LASF54
+ 1541 0248 01       		.byte	0x1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 40
+
+
+ 1542 0249 5301     		.2byte	0x153
+ 1543 024b 01       		.byte	0x1
+ 1544 024c 01       		.byte	0x1
+ 1545 024d 13       		.uleb128 0x13
+ 1546 024e 4A020000 		.4byte	.LASF33
+ 1547 0252 01       		.byte	0x1
+ 1548 0253 3F01     		.2byte	0x13f
+ 1549 0255 01       		.byte	0x1
+ 1550 0256 A8000000 		.4byte	0xa8
+ 1551 025a 01       		.byte	0x1
+ 1552 025b 6A020000 		.4byte	0x26a
+ 1553 025f 0F       		.uleb128 0xf
+ 1554 0260 6900     		.ascii	"i\000"
+ 1555 0262 01       		.byte	0x1
+ 1556 0263 4101     		.2byte	0x141
+ 1557 0265 69000000 		.4byte	0x69
+ 1558 0269 00       		.byte	0
+ 1559 026a 14       		.uleb128 0x14
+ 1560 026b EB010000 		.4byte	.LASF55
+ 1561 026f 01       		.byte	0x1
+ 1562 0270 A0       		.byte	0xa0
+ 1563 0271 01       		.byte	0x1
+ 1564 0272 50000000 		.4byte	0x50
+ 1565 0276 00000000 		.4byte	.LFB0
+ 1566 027a 98000000 		.4byte	.LFE0
+ 1567 027e 00000000 		.4byte	.LLST0
+ 1568 0282 C8020000 		.4byte	0x2c8
+ 1569 0286 15       		.uleb128 0x15
+ 1570 0287 7800     		.ascii	"x\000"
+ 1571 0289 01       		.byte	0x1
+ 1572 028a A0       		.byte	0xa0
+ 1573 028b 69000000 		.4byte	0x69
+ 1574 028f 20000000 		.4byte	.LLST1
+ 1575 0293 16       		.uleb128 0x16
+ 1576 0294 7900     		.ascii	"y\000"
+ 1577 0296 01       		.byte	0x1
+ 1578 0297 A0       		.byte	0xa0
+ 1579 0298 69000000 		.4byte	0x69
+ 1580 029c 01       		.byte	0x1
+ 1581 029d 51       		.byte	0x51
+ 1582 029e 17       		.uleb128 0x17
+ 1583 029f 53020000 		.4byte	.LASF31
+ 1584 02a3 01       		.byte	0x1
+ 1585 02a4 A0       		.byte	0xa0
+ 1586 02a5 69000000 		.4byte	0x69
+ 1587 02a9 54000000 		.4byte	.LLST2
+ 1588 02ad 18       		.uleb128 0x18
+ 1589 02ae 6900     		.ascii	"i\000"
+ 1590 02b0 01       		.byte	0x1
+ 1591 02b1 A2       		.byte	0xa2
+ 1592 02b2 69000000 		.4byte	0x69
+ 1593 02b6 7D000000 		.4byte	.LLST3
+ 1594 02ba 18       		.uleb128 0x18
+ 1595 02bb 6A00     		.ascii	"j\000"
+ 1596 02bd 01       		.byte	0x1
+ 1597 02be A2       		.byte	0xa2
+ 1598 02bf 69000000 		.4byte	0x69
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 41
+
+
+ 1599 02c3 9C000000 		.4byte	.LLST4
+ 1600 02c7 00       		.byte	0
+ 1601 02c8 19       		.uleb128 0x19
+ 1602 02c9 7D010000 		.4byte	.LASF35
+ 1603 02cd 01       		.byte	0x1
+ 1604 02ce D1       		.byte	0xd1
+ 1605 02cf 01       		.byte	0x1
+ 1606 02d0 98000000 		.4byte	.LFB2
+ 1607 02d4 E4000000 		.4byte	.LFE2
+ 1608 02d8 D2000000 		.4byte	.LLST5
+ 1609 02dc 22030000 		.4byte	0x322
+ 1610 02e0 17       		.uleb128 0x17
+ 1611 02e1 53020000 		.4byte	.LASF31
+ 1612 02e5 01       		.byte	0x1
+ 1613 02e6 D1       		.byte	0xd1
+ 1614 02e7 69000000 		.4byte	0x69
+ 1615 02eb F2000000 		.4byte	.LLST6
+ 1616 02ef 15       		.uleb128 0x15
+ 1617 02f0 7800     		.ascii	"x\000"
+ 1618 02f2 01       		.byte	0x1
+ 1619 02f3 D1       		.byte	0xd1
+ 1620 02f4 69000000 		.4byte	0x69
+ 1621 02f8 05010000 		.4byte	.LLST7
+ 1622 02fc 16       		.uleb128 0x16
+ 1623 02fd 7900     		.ascii	"y\000"
+ 1624 02ff 01       		.byte	0x1
+ 1625 0300 D1       		.byte	0xd1
+ 1626 0301 69000000 		.4byte	0x69
+ 1627 0305 01       		.byte	0x1
+ 1628 0306 52       		.byte	0x52
+ 1629 0307 18       		.uleb128 0x18
+ 1630 0308 6900     		.ascii	"i\000"
+ 1631 030a 01       		.byte	0x1
+ 1632 030b D3       		.byte	0xd3
+ 1633 030c 69000000 		.4byte	0x69
+ 1634 0310 18010000 		.4byte	.LLST8
+ 1635 0314 18       		.uleb128 0x18
+ 1636 0315 6A00     		.ascii	"j\000"
+ 1637 0317 01       		.byte	0x1
+ 1638 0318 D3       		.byte	0xd3
+ 1639 0319 69000000 		.4byte	0x69
+ 1640 031d 2C010000 		.4byte	.LLST9
+ 1641 0321 00       		.byte	0
+ 1642 0322 0E       		.uleb128 0xe
+ 1643 0323 BC000000 		.4byte	.LASF34
+ 1644 0327 01       		.byte	0x1
+ 1645 0328 2201     		.2byte	0x122
+ 1646 032a 01       		.byte	0x1
+ 1647 032b 01       		.byte	0x1
+ 1648 032c 4F030000 		.4byte	0x34f
+ 1649 0330 0F       		.uleb128 0xf
+ 1650 0331 6900     		.ascii	"i\000"
+ 1651 0333 01       		.byte	0x1
+ 1652 0334 2401     		.2byte	0x124
+ 1653 0336 69000000 		.4byte	0x69
+ 1654 033a 0F       		.uleb128 0xf
+ 1655 033b 6A00     		.ascii	"j\000"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 42
+
+
+ 1656 033d 01       		.byte	0x1
+ 1657 033e 2401     		.2byte	0x124
+ 1658 0340 69000000 		.4byte	0x69
+ 1659 0344 0F       		.uleb128 0xf
+ 1660 0345 6B00     		.ascii	"k\000"
+ 1661 0347 01       		.byte	0x1
+ 1662 0348 2401     		.2byte	0x124
+ 1663 034a 69000000 		.4byte	0x69
+ 1664 034e 00       		.byte	0
+ 1665 034f 1A       		.uleb128 0x1a
+ 1666 0350 AB000000 		.4byte	.LASF36
+ 1667 0354 01       		.byte	0x1
+ 1668 0355 6901     		.2byte	0x169
+ 1669 0357 01       		.byte	0x1
+ 1670 0358 E4000000 		.4byte	.LFB9
+ 1671 035c E0020000 		.4byte	.LFE9
+ 1672 0360 56010000 		.4byte	.LLST10
+ 1673 0364 94040000 		.4byte	0x494
+ 1674 0368 1B       		.uleb128 0x1b
+ 1675 0369 E6010000 		.4byte	0x1e6
+ 1676 036d F6000000 		.4byte	.LBB28
+ 1677 0371 38010000 		.4byte	.LBE28
+ 1678 0375 01       		.byte	0x1
+ 1679 0376 6C01     		.2byte	0x16c
+ 1680 0378 99030000 		.4byte	0x399
+ 1681 037c 1C       		.uleb128 0x1c
+ 1682 037d F6000000 		.4byte	.LBB29
+ 1683 0381 38010000 		.4byte	.LBE29
+ 1684 0385 1D       		.uleb128 0x1d
+ 1685 0386 F3010000 		.4byte	0x1f3
+ 1686 038a 82010000 		.4byte	.LLST11
+ 1687 038e 1D       		.uleb128 0x1d
+ 1688 038f FC010000 		.4byte	0x1fc
+ 1689 0393 96010000 		.4byte	.LLST12
+ 1690 0397 00       		.byte	0
+ 1691 0398 00       		.byte	0
+ 1692 0399 1E       		.uleb128 0x1e
+ 1693 039a 06020000 		.4byte	0x206
+ 1694 039e 44010000 		.4byte	.LBB30
+ 1695 03a2 00000000 		.4byte	.Ldebug_ranges0+0
+ 1696 03a6 01       		.byte	0x1
+ 1697 03a7 6D01     		.2byte	0x16d
+ 1698 03a9 E1030000 		.4byte	0x3e1
+ 1699 03ad 1F       		.uleb128 0x1f
+ 1700 03ae 27020000 		.4byte	0x227
+ 1701 03b2 AA010000 		.4byte	.LLST13
+ 1702 03b6 1F       		.uleb128 0x1f
+ 1703 03b7 1E020000 		.4byte	0x21e
+ 1704 03bb C1010000 		.4byte	.LLST14
+ 1705 03bf 1F       		.uleb128 0x1f
+ 1706 03c0 13020000 		.4byte	0x213
+ 1707 03c4 D8010000 		.4byte	.LLST15
+ 1708 03c8 20       		.uleb128 0x20
+ 1709 03c9 20000000 		.4byte	.Ldebug_ranges0+0x20
+ 1710 03cd 1D       		.uleb128 0x1d
+ 1711 03ce 30020000 		.4byte	0x230
+ 1712 03d2 EF010000 		.4byte	.LLST16
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 43
+
+
+ 1713 03d6 1D       		.uleb128 0x1d
+ 1714 03d7 39020000 		.4byte	0x239
+ 1715 03db 03020000 		.4byte	.LLST17
+ 1716 03df 00       		.byte	0
+ 1717 03e0 00       		.byte	0
+ 1718 03e1 21       		.uleb128 0x21
+ 1719 03e2 43020000 		.4byte	0x243
+ 1720 03e6 82010000 		.4byte	.LBB36
+ 1721 03ea AC010000 		.4byte	.LBE36
+ 1722 03ee 01       		.byte	0x1
+ 1723 03ef 7201     		.2byte	0x172
+ 1724 03f1 1B       		.uleb128 0x1b
+ 1725 03f2 4D020000 		.4byte	0x24d
+ 1726 03f6 FC010000 		.4byte	.LBB38
+ 1727 03fa 12020000 		.4byte	.LBE38
+ 1728 03fe 01       		.byte	0x1
+ 1729 03ff 8401     		.2byte	0x184
+ 1730 0401 19040000 		.4byte	0x419
+ 1731 0405 1C       		.uleb128 0x1c
+ 1732 0406 FC010000 		.4byte	.LBB39
+ 1733 040a 12020000 		.4byte	.LBE39
+ 1734 040e 1D       		.uleb128 0x1d
+ 1735 040f 5F020000 		.4byte	0x25f
+ 1736 0413 2D020000 		.4byte	.LLST18
+ 1737 0417 00       		.byte	0
+ 1738 0418 00       		.byte	0
+ 1739 0419 22       		.uleb128 0x22
+ 1740 041a 22030000 		.4byte	0x322
+ 1741 041e 18020000 		.4byte	.LBB40
+ 1742 0422 BE020000 		.4byte	.LBE40
+ 1743 0426 01       		.byte	0x1
+ 1744 0427 8901     		.2byte	0x189
+ 1745 0429 1C       		.uleb128 0x1c
+ 1746 042a 18020000 		.4byte	.LBB41
+ 1747 042e BE020000 		.4byte	.LBE41
+ 1748 0432 23       		.uleb128 0x23
+ 1749 0433 30030000 		.4byte	0x330
+ 1750 0437 1D       		.uleb128 0x1d
+ 1751 0438 3A030000 		.4byte	0x33a
+ 1752 043c 4C020000 		.4byte	.LLST19
+ 1753 0440 23       		.uleb128 0x23
+ 1754 0441 44030000 		.4byte	0x344
+ 1755 0445 1B       		.uleb128 0x1b
+ 1756 0446 97010000 		.4byte	0x197
+ 1757 044a 18020000 		.4byte	.LBB42
+ 1758 044e 30020000 		.4byte	.LBE42
+ 1759 0452 01       		.byte	0x1
+ 1760 0453 2901     		.2byte	0x129
+ 1761 0455 72040000 		.4byte	0x472
+ 1762 0459 24       		.uleb128 0x24
+ 1763 045a A8010000 		.4byte	0x1a8
+ 1764 045e 1C       		.uleb128 0x1c
+ 1765 045f 18020000 		.4byte	.LBB43
+ 1766 0463 30020000 		.4byte	.LBE43
+ 1767 0467 1D       		.uleb128 0x1d
+ 1768 0468 B1010000 		.4byte	0x1b1
+ 1769 046c 60020000 		.4byte	.LLST20
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 44
+
+
+ 1770 0470 00       		.byte	0
+ 1771 0471 00       		.byte	0
+ 1772 0472 25       		.uleb128 0x25
+ 1773 0473 BB010000 		.4byte	0x1bb
+ 1774 0477 58020000 		.4byte	.LBB44
+ 1775 047b 40000000 		.4byte	.Ldebug_ranges0+0x40
+ 1776 047f 01       		.byte	0x1
+ 1777 0480 3201     		.2byte	0x132
+ 1778 0482 20       		.uleb128 0x20
+ 1779 0483 58000000 		.4byte	.Ldebug_ranges0+0x58
+ 1780 0487 26       		.uleb128 0x26
+ 1781 0488 C9010000 		.4byte	0x1c9
+ 1782 048c 02       		.byte	0x2
+ 1783 048d 91       		.byte	0x91
+ 1784 048e 68       		.sleb128 -24
+ 1785 048f 00       		.byte	0
+ 1786 0490 00       		.byte	0
+ 1787 0491 00       		.byte	0
+ 1788 0492 00       		.byte	0
+ 1789 0493 00       		.byte	0
+ 1790 0494 1A       		.uleb128 0x1a
+ 1791 0495 20020000 		.4byte	.LASF37
+ 1792 0499 01       		.byte	0x1
+ 1793 049a 9501     		.2byte	0x195
+ 1794 049c 01       		.byte	0x1
+ 1795 049d E0020000 		.4byte	.LFB10
+ 1796 04a1 84030000 		.4byte	.LFE10
+ 1797 04a5 74020000 		.4byte	.LLST21
+ 1798 04a9 DA040000 		.4byte	0x4da
+ 1799 04ad 27       		.uleb128 0x27
+ 1800 04ae 3B020000 		.4byte	.LASF38
+ 1801 04b2 01       		.byte	0x1
+ 1802 04b3 9501     		.2byte	0x195
+ 1803 04b5 7B000000 		.4byte	0x7b
+ 1804 04b9 94020000 		.4byte	.LLST22
+ 1805 04bd 28       		.uleb128 0x28
+ 1806 04be 6900     		.ascii	"i\000"
+ 1807 04c0 01       		.byte	0x1
+ 1808 04c1 9701     		.2byte	0x197
+ 1809 04c3 69000000 		.4byte	0x69
+ 1810 04c7 A7020000 		.4byte	.LLST23
+ 1811 04cb 28       		.uleb128 0x28
+ 1812 04cc 6A00     		.ascii	"j\000"
+ 1813 04ce 01       		.byte	0x1
+ 1814 04cf 9701     		.2byte	0x197
+ 1815 04d1 69000000 		.4byte	0x69
+ 1816 04d5 BB020000 		.4byte	.LLST24
+ 1817 04d9 00       		.byte	0
+ 1818 04da 29       		.uleb128 0x29
+ 1819 04db 01       		.byte	0x1
+ 1820 04dc 1B010000 		.4byte	.LASF56
+ 1821 04e0 01       		.byte	0x1
+ 1822 04e1 C201     		.2byte	0x1c2
+ 1823 04e3 01       		.byte	0x1
+ 1824 04e4 84030000 		.4byte	.LFB11
+ 1825 04e8 E8040000 		.4byte	.LFE11
+ 1826 04ec CF020000 		.4byte	.LLST25
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 45
+
+
+ 1827 04f0 29050000 		.4byte	0x529
+ 1828 04f4 1C       		.uleb128 0x1c
+ 1829 04f5 AE030000 		.4byte	.LBB48
+ 1830 04f9 BE040000 		.4byte	.LBE48
+ 1831 04fd 2A       		.uleb128 0x2a
+ 1832 04fe 0F020000 		.4byte	.LASF39
+ 1833 0502 01       		.byte	0x1
+ 1834 0503 CD01     		.2byte	0x1cd
+ 1835 0505 25000000 		.4byte	0x25
+ 1836 0509 FC020000 		.4byte	.LLST26
+ 1837 050d 1C       		.uleb128 0x1c
+ 1838 050e 4A040000 		.4byte	.LBB49
+ 1839 0512 BA040000 		.4byte	.LBE49
+ 1840 0516 2B       		.uleb128 0x2b
+ 1841 0517 36020000 		.4byte	.LASF40
+ 1842 051b 01       		.byte	0x1
+ 1843 051c 0002     		.2byte	0x200
+ 1844 051e 8C010000 		.4byte	0x18c
+ 1845 0522 03       		.byte	0x3
+ 1846 0523 91       		.byte	0x91
+ 1847 0524 BC7F     		.sleb128 -68
+ 1848 0526 00       		.byte	0
+ 1849 0527 00       		.byte	0
+ 1850 0528 00       		.byte	0
+ 1851 0529 2C       		.uleb128 0x2c
+ 1852 052a 9F010000 		.4byte	.LASF41
+ 1853 052e 01       		.byte	0x1
+ 1854 052f 33       		.byte	0x33
+ 1855 0530 25000000 		.4byte	0x25
+ 1856 0534 05       		.byte	0x5
+ 1857 0535 03       		.byte	0x3
+ 1858 0536 98020000 		.4byte	gameStatus
+ 1859 053a 2C       		.uleb128 0x2c
+ 1860 053b CD000000 		.4byte	.LASF42
+ 1861 053f 01       		.byte	0x1
+ 1862 0540 34       		.byte	0x34
+ 1863 0541 25000000 		.4byte	0x25
+ 1864 0545 05       		.byte	0x5
+ 1865 0546 03       		.byte	0x3
+ 1866 0547 8C020000 		.4byte	score
+ 1867 054b 09       		.uleb128 0x9
+ 1868 054c 69000000 		.4byte	0x69
+ 1869 0550 5B050000 		.4byte	0x55b
+ 1870 0554 0A       		.uleb128 0xa
+ 1871 0555 8C000000 		.4byte	0x8c
+ 1872 0559 12       		.byte	0x12
+ 1873 055a 00       		.byte	0
+ 1874 055b 2C       		.uleb128 0x2c
+ 1875 055c C7000000 		.4byte	.LASF43
+ 1876 0560 01       		.byte	0x1
+ 1877 0561 36       		.byte	0x36
+ 1878 0562 6C050000 		.4byte	0x56c
+ 1879 0566 05       		.byte	0x5
+ 1880 0567 03       		.byte	0x3
+ 1881 0568 00000000 		.4byte	shift
+ 1882 056c 2D       		.uleb128 0x2d
+ 1883 056d 4B050000 		.4byte	0x54b
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 46
+
+
+ 1884 0571 09       		.uleb128 0x9
+ 1885 0572 69000000 		.4byte	0x69
+ 1886 0576 87050000 		.4byte	0x587
+ 1887 057a 0A       		.uleb128 0xa
+ 1888 057b 8C000000 		.4byte	0x8c
+ 1889 057f 09       		.byte	0x9
+ 1890 0580 0A       		.uleb128 0xa
+ 1891 0581 8C000000 		.4byte	0x8c
+ 1892 0585 0F       		.byte	0xf
+ 1893 0586 00       		.byte	0
+ 1894 0587 2C       		.uleb128 0x2c
+ 1895 0588 39010000 		.4byte	.LASF44
+ 1896 058c 01       		.byte	0x1
+ 1897 058d 37       		.byte	0x37
+ 1898 058e 71050000 		.4byte	0x571
+ 1899 0592 05       		.byte	0x5
+ 1900 0593 03       		.byte	0x3
+ 1901 0594 00000000 		.4byte	board
+ 1902 0598 2C       		.uleb128 0x2c
+ 1903 0599 09000000 		.4byte	.LASF45
+ 1904 059d 01       		.byte	0x1
+ 1905 059e 38       		.byte	0x38
+ 1906 059f 69000000 		.4byte	0x69
+ 1907 05a3 05       		.byte	0x5
+ 1908 05a4 03       		.byte	0x3
+ 1909 05a5 80020000 		.4byte	currFigure
+ 1910 05a9 2C       		.uleb128 0x2c
+ 1911 05aa 64000000 		.4byte	.LASF46
+ 1912 05ae 01       		.byte	0x1
+ 1913 05af 39       		.byte	0x39
+ 1914 05b0 69000000 		.4byte	0x69
+ 1915 05b4 05       		.byte	0x5
+ 1916 05b5 03       		.byte	0x3
+ 1917 05b6 84020000 		.4byte	currXpos
+ 1918 05ba 2C       		.uleb128 0x2c
+ 1919 05bb 00000000 		.4byte	.LASF47
+ 1920 05bf 01       		.byte	0x1
+ 1921 05c0 3A       		.byte	0x3a
+ 1922 05c1 69000000 		.4byte	0x69
+ 1923 05c5 05       		.byte	0x5
+ 1924 05c6 03       		.byte	0x3
+ 1925 05c7 88020000 		.4byte	currYpos
+ 1926 05cb 2C       		.uleb128 0x2c
+ 1927 05cc 04020000 		.4byte	.LASF48
+ 1928 05d0 01       		.byte	0x1
+ 1929 05d1 3B       		.byte	0x3b
+ 1930 05d2 DC050000 		.4byte	0x5dc
+ 1931 05d6 05       		.byte	0x5
+ 1932 05d7 03       		.byte	0x3
+ 1933 05d8 94020000 		.4byte	lastUpdate
+ 1934 05dc 2E       		.uleb128 0x2e
+ 1935 05dd 3E000000 		.4byte	0x3e
+ 1936 05e1 2C       		.uleb128 0x2c
+ 1937 05e2 6C010000 		.4byte	.LASF49
+ 1938 05e6 01       		.byte	0x1
+ 1939 05e7 3C       		.byte	0x3c
+ 1940 05e8 DC050000 		.4byte	0x5dc
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 47
+
+
+ 1941 05ec 05       		.byte	0x5
+ 1942 05ed 03       		.byte	0x3
+ 1943 05ee 90020000 		.4byte	delayTimeMs
+ 1944 05f2 2F       		.uleb128 0x2f
+ 1945 05f3 6D7300   		.ascii	"ms\000"
+ 1946 05f6 01       		.byte	0x1
+ 1947 05f7 42       		.byte	0x42
+ 1948 05f8 DC050000 		.4byte	0x5dc
+ 1949 05fc 01       		.byte	0x1
+ 1950 05fd 01       		.byte	0x1
+ 1951 05fe 09       		.uleb128 0x9
+ 1952 05ff A8000000 		.4byte	0xa8
+ 1953 0603 1A060000 		.4byte	0x61a
+ 1954 0607 0A       		.uleb128 0xa
+ 1955 0608 8C000000 		.4byte	0x8c
+ 1956 060c 12       		.byte	0x12
+ 1957 060d 0A       		.uleb128 0xa
+ 1958 060e 8C000000 		.4byte	0x8c
+ 1959 0612 03       		.byte	0x3
+ 1960 0613 0A       		.uleb128 0xa
+ 1961 0614 8C000000 		.4byte	0x8c
+ 1962 0618 03       		.byte	0x3
+ 1963 0619 00       		.byte	0
+ 1964 061a 30       		.uleb128 0x30
+ 1965 061b E3010000 		.4byte	.LASF50
+ 1966 061f 01       		.byte	0x1
+ 1967 0620 45       		.byte	0x45
+ 1968 0621 FE050000 		.4byte	0x5fe
+ 1969 0625 01       		.byte	0x1
+ 1970 0626 05       		.byte	0x5
+ 1971 0627 03       		.byte	0x3
+ 1972 0628 00000000 		.4byte	figures
+ 1973 062c 00       		.byte	0
+ 1974              		.section	.debug_abbrev,"",%progbits
+ 1975              	.Ldebug_abbrev0:
+ 1976 0000 01       		.uleb128 0x1
+ 1977 0001 11       		.uleb128 0x11
+ 1978 0002 01       		.byte	0x1
+ 1979 0003 25       		.uleb128 0x25
+ 1980 0004 0E       		.uleb128 0xe
+ 1981 0005 13       		.uleb128 0x13
+ 1982 0006 0B       		.uleb128 0xb
+ 1983 0007 03       		.uleb128 0x3
+ 1984 0008 0E       		.uleb128 0xe
+ 1985 0009 1B       		.uleb128 0x1b
+ 1986 000a 0E       		.uleb128 0xe
+ 1987 000b 11       		.uleb128 0x11
+ 1988 000c 01       		.uleb128 0x1
+ 1989 000d 12       		.uleb128 0x12
+ 1990 000e 01       		.uleb128 0x1
+ 1991 000f 10       		.uleb128 0x10
+ 1992 0010 06       		.uleb128 0x6
+ 1993 0011 00       		.byte	0
+ 1994 0012 00       		.byte	0
+ 1995 0013 02       		.uleb128 0x2
+ 1996 0014 16       		.uleb128 0x16
+ 1997 0015 00       		.byte	0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 48
+
+
+ 1998 0016 03       		.uleb128 0x3
+ 1999 0017 08       		.uleb128 0x8
+ 2000 0018 3A       		.uleb128 0x3a
+ 2001 0019 0B       		.uleb128 0xb
+ 2002 001a 3B       		.uleb128 0x3b
+ 2003 001b 0B       		.uleb128 0xb
+ 2004 001c 49       		.uleb128 0x49
+ 2005 001d 13       		.uleb128 0x13
+ 2006 001e 00       		.byte	0
+ 2007 001f 00       		.byte	0
+ 2008 0020 03       		.uleb128 0x3
+ 2009 0021 24       		.uleb128 0x24
+ 2010 0022 00       		.byte	0
+ 2011 0023 0B       		.uleb128 0xb
+ 2012 0024 0B       		.uleb128 0xb
+ 2013 0025 3E       		.uleb128 0x3e
+ 2014 0026 0B       		.uleb128 0xb
+ 2015 0027 03       		.uleb128 0x3
+ 2016 0028 0E       		.uleb128 0xe
+ 2017 0029 00       		.byte	0
+ 2018 002a 00       		.byte	0
+ 2019 002b 04       		.uleb128 0x4
+ 2020 002c 16       		.uleb128 0x16
+ 2021 002d 00       		.byte	0
+ 2022 002e 03       		.uleb128 0x3
+ 2023 002f 0E       		.uleb128 0xe
+ 2024 0030 3A       		.uleb128 0x3a
+ 2025 0031 0B       		.uleb128 0xb
+ 2026 0032 3B       		.uleb128 0x3b
+ 2027 0033 0B       		.uleb128 0xb
+ 2028 0034 49       		.uleb128 0x49
+ 2029 0035 13       		.uleb128 0x13
+ 2030 0036 00       		.byte	0
+ 2031 0037 00       		.byte	0
+ 2032 0038 05       		.uleb128 0x5
+ 2033 0039 24       		.uleb128 0x24
+ 2034 003a 00       		.byte	0
+ 2035 003b 0B       		.uleb128 0xb
+ 2036 003c 0B       		.uleb128 0xb
+ 2037 003d 3E       		.uleb128 0x3e
+ 2038 003e 0B       		.uleb128 0xb
+ 2039 003f 03       		.uleb128 0x3
+ 2040 0040 08       		.uleb128 0x8
+ 2041 0041 00       		.byte	0
+ 2042 0042 00       		.byte	0
+ 2043 0043 06       		.uleb128 0x6
+ 2044 0044 0F       		.uleb128 0xf
+ 2045 0045 00       		.byte	0
+ 2046 0046 0B       		.uleb128 0xb
+ 2047 0047 0B       		.uleb128 0xb
+ 2048 0048 49       		.uleb128 0x49
+ 2049 0049 13       		.uleb128 0x13
+ 2050 004a 00       		.byte	0
+ 2051 004b 00       		.byte	0
+ 2052 004c 07       		.uleb128 0x7
+ 2053 004d 13       		.uleb128 0x13
+ 2054 004e 01       		.byte	0x1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 49
+
+
+ 2055 004f 0B       		.uleb128 0xb
+ 2056 0050 0B       		.uleb128 0xb
+ 2057 0051 3A       		.uleb128 0x3a
+ 2058 0052 0B       		.uleb128 0xb
+ 2059 0053 3B       		.uleb128 0x3b
+ 2060 0054 0B       		.uleb128 0xb
+ 2061 0055 01       		.uleb128 0x1
+ 2062 0056 13       		.uleb128 0x13
+ 2063 0057 00       		.byte	0
+ 2064 0058 00       		.byte	0
+ 2065 0059 08       		.uleb128 0x8
+ 2066 005a 0D       		.uleb128 0xd
+ 2067 005b 00       		.byte	0
+ 2068 005c 03       		.uleb128 0x3
+ 2069 005d 0E       		.uleb128 0xe
+ 2070 005e 3A       		.uleb128 0x3a
+ 2071 005f 0B       		.uleb128 0xb
+ 2072 0060 3B       		.uleb128 0x3b
+ 2073 0061 0B       		.uleb128 0xb
+ 2074 0062 49       		.uleb128 0x49
+ 2075 0063 13       		.uleb128 0x13
+ 2076 0064 38       		.uleb128 0x38
+ 2077 0065 0A       		.uleb128 0xa
+ 2078 0066 00       		.byte	0
+ 2079 0067 00       		.byte	0
+ 2080 0068 09       		.uleb128 0x9
+ 2081 0069 01       		.uleb128 0x1
+ 2082 006a 01       		.byte	0x1
+ 2083 006b 49       		.uleb128 0x49
+ 2084 006c 13       		.uleb128 0x13
+ 2085 006d 01       		.uleb128 0x1
+ 2086 006e 13       		.uleb128 0x13
+ 2087 006f 00       		.byte	0
+ 2088 0070 00       		.byte	0
+ 2089 0071 0A       		.uleb128 0xa
+ 2090 0072 21       		.uleb128 0x21
+ 2091 0073 00       		.byte	0
+ 2092 0074 49       		.uleb128 0x49
+ 2093 0075 13       		.uleb128 0x13
+ 2094 0076 2F       		.uleb128 0x2f
+ 2095 0077 0B       		.uleb128 0xb
+ 2096 0078 00       		.byte	0
+ 2097 0079 00       		.byte	0
+ 2098 007a 0B       		.uleb128 0xb
+ 2099 007b 2E       		.uleb128 0x2e
+ 2100 007c 01       		.byte	0x1
+ 2101 007d 03       		.uleb128 0x3
+ 2102 007e 0E       		.uleb128 0xe
+ 2103 007f 3A       		.uleb128 0x3a
+ 2104 0080 0B       		.uleb128 0xb
+ 2105 0081 3B       		.uleb128 0x3b
+ 2106 0082 0B       		.uleb128 0xb
+ 2107 0083 27       		.uleb128 0x27
+ 2108 0084 0C       		.uleb128 0xc
+ 2109 0085 49       		.uleb128 0x49
+ 2110 0086 13       		.uleb128 0x13
+ 2111 0087 20       		.uleb128 0x20
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 50
+
+
+ 2112 0088 0B       		.uleb128 0xb
+ 2113 0089 01       		.uleb128 0x1
+ 2114 008a 13       		.uleb128 0x13
+ 2115 008b 00       		.byte	0
+ 2116 008c 00       		.byte	0
+ 2117 008d 0C       		.uleb128 0xc
+ 2118 008e 05       		.uleb128 0x5
+ 2119 008f 00       		.byte	0
+ 2120 0090 03       		.uleb128 0x3
+ 2121 0091 08       		.uleb128 0x8
+ 2122 0092 3A       		.uleb128 0x3a
+ 2123 0093 0B       		.uleb128 0xb
+ 2124 0094 3B       		.uleb128 0x3b
+ 2125 0095 0B       		.uleb128 0xb
+ 2126 0096 49       		.uleb128 0x49
+ 2127 0097 13       		.uleb128 0x13
+ 2128 0098 00       		.byte	0
+ 2129 0099 00       		.byte	0
+ 2130 009a 0D       		.uleb128 0xd
+ 2131 009b 34       		.uleb128 0x34
+ 2132 009c 00       		.byte	0
+ 2133 009d 03       		.uleb128 0x3
+ 2134 009e 08       		.uleb128 0x8
+ 2135 009f 3A       		.uleb128 0x3a
+ 2136 00a0 0B       		.uleb128 0xb
+ 2137 00a1 3B       		.uleb128 0x3b
+ 2138 00a2 0B       		.uleb128 0xb
+ 2139 00a3 49       		.uleb128 0x49
+ 2140 00a4 13       		.uleb128 0x13
+ 2141 00a5 00       		.byte	0
+ 2142 00a6 00       		.byte	0
+ 2143 00a7 0E       		.uleb128 0xe
+ 2144 00a8 2E       		.uleb128 0x2e
+ 2145 00a9 01       		.byte	0x1
+ 2146 00aa 03       		.uleb128 0x3
+ 2147 00ab 0E       		.uleb128 0xe
+ 2148 00ac 3A       		.uleb128 0x3a
+ 2149 00ad 0B       		.uleb128 0xb
+ 2150 00ae 3B       		.uleb128 0x3b
+ 2151 00af 05       		.uleb128 0x5
+ 2152 00b0 27       		.uleb128 0x27
+ 2153 00b1 0C       		.uleb128 0xc
+ 2154 00b2 20       		.uleb128 0x20
+ 2155 00b3 0B       		.uleb128 0xb
+ 2156 00b4 01       		.uleb128 0x1
+ 2157 00b5 13       		.uleb128 0x13
+ 2158 00b6 00       		.byte	0
+ 2159 00b7 00       		.byte	0
+ 2160 00b8 0F       		.uleb128 0xf
+ 2161 00b9 34       		.uleb128 0x34
+ 2162 00ba 00       		.byte	0
+ 2163 00bb 03       		.uleb128 0x3
+ 2164 00bc 08       		.uleb128 0x8
+ 2165 00bd 3A       		.uleb128 0x3a
+ 2166 00be 0B       		.uleb128 0xb
+ 2167 00bf 3B       		.uleb128 0x3b
+ 2168 00c0 05       		.uleb128 0x5
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 51
+
+
+ 2169 00c1 49       		.uleb128 0x49
+ 2170 00c2 13       		.uleb128 0x13
+ 2171 00c3 00       		.byte	0
+ 2172 00c4 00       		.byte	0
+ 2173 00c5 10       		.uleb128 0x10
+ 2174 00c6 2E       		.uleb128 0x2e
+ 2175 00c7 01       		.byte	0x1
+ 2176 00c8 03       		.uleb128 0x3
+ 2177 00c9 0E       		.uleb128 0xe
+ 2178 00ca 3A       		.uleb128 0x3a
+ 2179 00cb 0B       		.uleb128 0xb
+ 2180 00cc 3B       		.uleb128 0x3b
+ 2181 00cd 0B       		.uleb128 0xb
+ 2182 00ce 27       		.uleb128 0x27
+ 2183 00cf 0C       		.uleb128 0xc
+ 2184 00d0 20       		.uleb128 0x20
+ 2185 00d1 0B       		.uleb128 0xb
+ 2186 00d2 01       		.uleb128 0x1
+ 2187 00d3 13       		.uleb128 0x13
+ 2188 00d4 00       		.byte	0
+ 2189 00d5 00       		.byte	0
+ 2190 00d6 11       		.uleb128 0x11
+ 2191 00d7 05       		.uleb128 0x5
+ 2192 00d8 00       		.byte	0
+ 2193 00d9 03       		.uleb128 0x3
+ 2194 00da 0E       		.uleb128 0xe
+ 2195 00db 3A       		.uleb128 0x3a
+ 2196 00dc 0B       		.uleb128 0xb
+ 2197 00dd 3B       		.uleb128 0x3b
+ 2198 00de 0B       		.uleb128 0xb
+ 2199 00df 49       		.uleb128 0x49
+ 2200 00e0 13       		.uleb128 0x13
+ 2201 00e1 00       		.byte	0
+ 2202 00e2 00       		.byte	0
+ 2203 00e3 12       		.uleb128 0x12
+ 2204 00e4 2E       		.uleb128 0x2e
+ 2205 00e5 00       		.byte	0
+ 2206 00e6 03       		.uleb128 0x3
+ 2207 00e7 0E       		.uleb128 0xe
+ 2208 00e8 3A       		.uleb128 0x3a
+ 2209 00e9 0B       		.uleb128 0xb
+ 2210 00ea 3B       		.uleb128 0x3b
+ 2211 00eb 05       		.uleb128 0x5
+ 2212 00ec 27       		.uleb128 0x27
+ 2213 00ed 0C       		.uleb128 0xc
+ 2214 00ee 20       		.uleb128 0x20
+ 2215 00ef 0B       		.uleb128 0xb
+ 2216 00f0 00       		.byte	0
+ 2217 00f1 00       		.byte	0
+ 2218 00f2 13       		.uleb128 0x13
+ 2219 00f3 2E       		.uleb128 0x2e
+ 2220 00f4 01       		.byte	0x1
+ 2221 00f5 03       		.uleb128 0x3
+ 2222 00f6 0E       		.uleb128 0xe
+ 2223 00f7 3A       		.uleb128 0x3a
+ 2224 00f8 0B       		.uleb128 0xb
+ 2225 00f9 3B       		.uleb128 0x3b
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 52
+
+
+ 2226 00fa 05       		.uleb128 0x5
+ 2227 00fb 27       		.uleb128 0x27
+ 2228 00fc 0C       		.uleb128 0xc
+ 2229 00fd 49       		.uleb128 0x49
+ 2230 00fe 13       		.uleb128 0x13
+ 2231 00ff 20       		.uleb128 0x20
+ 2232 0100 0B       		.uleb128 0xb
+ 2233 0101 01       		.uleb128 0x1
+ 2234 0102 13       		.uleb128 0x13
+ 2235 0103 00       		.byte	0
+ 2236 0104 00       		.byte	0
+ 2237 0105 14       		.uleb128 0x14
+ 2238 0106 2E       		.uleb128 0x2e
+ 2239 0107 01       		.byte	0x1
+ 2240 0108 03       		.uleb128 0x3
+ 2241 0109 0E       		.uleb128 0xe
+ 2242 010a 3A       		.uleb128 0x3a
+ 2243 010b 0B       		.uleb128 0xb
+ 2244 010c 3B       		.uleb128 0x3b
+ 2245 010d 0B       		.uleb128 0xb
+ 2246 010e 27       		.uleb128 0x27
+ 2247 010f 0C       		.uleb128 0xc
+ 2248 0110 49       		.uleb128 0x49
+ 2249 0111 13       		.uleb128 0x13
+ 2250 0112 11       		.uleb128 0x11
+ 2251 0113 01       		.uleb128 0x1
+ 2252 0114 12       		.uleb128 0x12
+ 2253 0115 01       		.uleb128 0x1
+ 2254 0116 40       		.uleb128 0x40
+ 2255 0117 06       		.uleb128 0x6
+ 2256 0118 01       		.uleb128 0x1
+ 2257 0119 13       		.uleb128 0x13
+ 2258 011a 00       		.byte	0
+ 2259 011b 00       		.byte	0
+ 2260 011c 15       		.uleb128 0x15
+ 2261 011d 05       		.uleb128 0x5
+ 2262 011e 00       		.byte	0
+ 2263 011f 03       		.uleb128 0x3
+ 2264 0120 08       		.uleb128 0x8
+ 2265 0121 3A       		.uleb128 0x3a
+ 2266 0122 0B       		.uleb128 0xb
+ 2267 0123 3B       		.uleb128 0x3b
+ 2268 0124 0B       		.uleb128 0xb
+ 2269 0125 49       		.uleb128 0x49
+ 2270 0126 13       		.uleb128 0x13
+ 2271 0127 02       		.uleb128 0x2
+ 2272 0128 06       		.uleb128 0x6
+ 2273 0129 00       		.byte	0
+ 2274 012a 00       		.byte	0
+ 2275 012b 16       		.uleb128 0x16
+ 2276 012c 05       		.uleb128 0x5
+ 2277 012d 00       		.byte	0
+ 2278 012e 03       		.uleb128 0x3
+ 2279 012f 08       		.uleb128 0x8
+ 2280 0130 3A       		.uleb128 0x3a
+ 2281 0131 0B       		.uleb128 0xb
+ 2282 0132 3B       		.uleb128 0x3b
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 53
+
+
+ 2283 0133 0B       		.uleb128 0xb
+ 2284 0134 49       		.uleb128 0x49
+ 2285 0135 13       		.uleb128 0x13
+ 2286 0136 02       		.uleb128 0x2
+ 2287 0137 0A       		.uleb128 0xa
+ 2288 0138 00       		.byte	0
+ 2289 0139 00       		.byte	0
+ 2290 013a 17       		.uleb128 0x17
+ 2291 013b 05       		.uleb128 0x5
+ 2292 013c 00       		.byte	0
+ 2293 013d 03       		.uleb128 0x3
+ 2294 013e 0E       		.uleb128 0xe
+ 2295 013f 3A       		.uleb128 0x3a
+ 2296 0140 0B       		.uleb128 0xb
+ 2297 0141 3B       		.uleb128 0x3b
+ 2298 0142 0B       		.uleb128 0xb
+ 2299 0143 49       		.uleb128 0x49
+ 2300 0144 13       		.uleb128 0x13
+ 2301 0145 02       		.uleb128 0x2
+ 2302 0146 06       		.uleb128 0x6
+ 2303 0147 00       		.byte	0
+ 2304 0148 00       		.byte	0
+ 2305 0149 18       		.uleb128 0x18
+ 2306 014a 34       		.uleb128 0x34
+ 2307 014b 00       		.byte	0
+ 2308 014c 03       		.uleb128 0x3
+ 2309 014d 08       		.uleb128 0x8
+ 2310 014e 3A       		.uleb128 0x3a
+ 2311 014f 0B       		.uleb128 0xb
+ 2312 0150 3B       		.uleb128 0x3b
+ 2313 0151 0B       		.uleb128 0xb
+ 2314 0152 49       		.uleb128 0x49
+ 2315 0153 13       		.uleb128 0x13
+ 2316 0154 02       		.uleb128 0x2
+ 2317 0155 06       		.uleb128 0x6
+ 2318 0156 00       		.byte	0
+ 2319 0157 00       		.byte	0
+ 2320 0158 19       		.uleb128 0x19
+ 2321 0159 2E       		.uleb128 0x2e
+ 2322 015a 01       		.byte	0x1
+ 2323 015b 03       		.uleb128 0x3
+ 2324 015c 0E       		.uleb128 0xe
+ 2325 015d 3A       		.uleb128 0x3a
+ 2326 015e 0B       		.uleb128 0xb
+ 2327 015f 3B       		.uleb128 0x3b
+ 2328 0160 0B       		.uleb128 0xb
+ 2329 0161 27       		.uleb128 0x27
+ 2330 0162 0C       		.uleb128 0xc
+ 2331 0163 11       		.uleb128 0x11
+ 2332 0164 01       		.uleb128 0x1
+ 2333 0165 12       		.uleb128 0x12
+ 2334 0166 01       		.uleb128 0x1
+ 2335 0167 40       		.uleb128 0x40
+ 2336 0168 06       		.uleb128 0x6
+ 2337 0169 01       		.uleb128 0x1
+ 2338 016a 13       		.uleb128 0x13
+ 2339 016b 00       		.byte	0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 54
+
+
+ 2340 016c 00       		.byte	0
+ 2341 016d 1A       		.uleb128 0x1a
+ 2342 016e 2E       		.uleb128 0x2e
+ 2343 016f 01       		.byte	0x1
+ 2344 0170 03       		.uleb128 0x3
+ 2345 0171 0E       		.uleb128 0xe
+ 2346 0172 3A       		.uleb128 0x3a
+ 2347 0173 0B       		.uleb128 0xb
+ 2348 0174 3B       		.uleb128 0x3b
+ 2349 0175 05       		.uleb128 0x5
+ 2350 0176 27       		.uleb128 0x27
+ 2351 0177 0C       		.uleb128 0xc
+ 2352 0178 11       		.uleb128 0x11
+ 2353 0179 01       		.uleb128 0x1
+ 2354 017a 12       		.uleb128 0x12
+ 2355 017b 01       		.uleb128 0x1
+ 2356 017c 40       		.uleb128 0x40
+ 2357 017d 06       		.uleb128 0x6
+ 2358 017e 01       		.uleb128 0x1
+ 2359 017f 13       		.uleb128 0x13
+ 2360 0180 00       		.byte	0
+ 2361 0181 00       		.byte	0
+ 2362 0182 1B       		.uleb128 0x1b
+ 2363 0183 1D       		.uleb128 0x1d
+ 2364 0184 01       		.byte	0x1
+ 2365 0185 31       		.uleb128 0x31
+ 2366 0186 13       		.uleb128 0x13
+ 2367 0187 11       		.uleb128 0x11
+ 2368 0188 01       		.uleb128 0x1
+ 2369 0189 12       		.uleb128 0x12
+ 2370 018a 01       		.uleb128 0x1
+ 2371 018b 58       		.uleb128 0x58
+ 2372 018c 0B       		.uleb128 0xb
+ 2373 018d 59       		.uleb128 0x59
+ 2374 018e 05       		.uleb128 0x5
+ 2375 018f 01       		.uleb128 0x1
+ 2376 0190 13       		.uleb128 0x13
+ 2377 0191 00       		.byte	0
+ 2378 0192 00       		.byte	0
+ 2379 0193 1C       		.uleb128 0x1c
+ 2380 0194 0B       		.uleb128 0xb
+ 2381 0195 01       		.byte	0x1
+ 2382 0196 11       		.uleb128 0x11
+ 2383 0197 01       		.uleb128 0x1
+ 2384 0198 12       		.uleb128 0x12
+ 2385 0199 01       		.uleb128 0x1
+ 2386 019a 00       		.byte	0
+ 2387 019b 00       		.byte	0
+ 2388 019c 1D       		.uleb128 0x1d
+ 2389 019d 34       		.uleb128 0x34
+ 2390 019e 00       		.byte	0
+ 2391 019f 31       		.uleb128 0x31
+ 2392 01a0 13       		.uleb128 0x13
+ 2393 01a1 02       		.uleb128 0x2
+ 2394 01a2 06       		.uleb128 0x6
+ 2395 01a3 00       		.byte	0
+ 2396 01a4 00       		.byte	0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 55
+
+
+ 2397 01a5 1E       		.uleb128 0x1e
+ 2398 01a6 1D       		.uleb128 0x1d
+ 2399 01a7 01       		.byte	0x1
+ 2400 01a8 31       		.uleb128 0x31
+ 2401 01a9 13       		.uleb128 0x13
+ 2402 01aa 52       		.uleb128 0x52
+ 2403 01ab 01       		.uleb128 0x1
+ 2404 01ac 55       		.uleb128 0x55
+ 2405 01ad 06       		.uleb128 0x6
+ 2406 01ae 58       		.uleb128 0x58
+ 2407 01af 0B       		.uleb128 0xb
+ 2408 01b0 59       		.uleb128 0x59
+ 2409 01b1 05       		.uleb128 0x5
+ 2410 01b2 01       		.uleb128 0x1
+ 2411 01b3 13       		.uleb128 0x13
+ 2412 01b4 00       		.byte	0
+ 2413 01b5 00       		.byte	0
+ 2414 01b6 1F       		.uleb128 0x1f
+ 2415 01b7 05       		.uleb128 0x5
+ 2416 01b8 00       		.byte	0
+ 2417 01b9 31       		.uleb128 0x31
+ 2418 01ba 13       		.uleb128 0x13
+ 2419 01bb 02       		.uleb128 0x2
+ 2420 01bc 06       		.uleb128 0x6
+ 2421 01bd 00       		.byte	0
+ 2422 01be 00       		.byte	0
+ 2423 01bf 20       		.uleb128 0x20
+ 2424 01c0 0B       		.uleb128 0xb
+ 2425 01c1 01       		.byte	0x1
+ 2426 01c2 55       		.uleb128 0x55
+ 2427 01c3 06       		.uleb128 0x6
+ 2428 01c4 00       		.byte	0
+ 2429 01c5 00       		.byte	0
+ 2430 01c6 21       		.uleb128 0x21
+ 2431 01c7 1D       		.uleb128 0x1d
+ 2432 01c8 00       		.byte	0
+ 2433 01c9 31       		.uleb128 0x31
+ 2434 01ca 13       		.uleb128 0x13
+ 2435 01cb 11       		.uleb128 0x11
+ 2436 01cc 01       		.uleb128 0x1
+ 2437 01cd 12       		.uleb128 0x12
+ 2438 01ce 01       		.uleb128 0x1
+ 2439 01cf 58       		.uleb128 0x58
+ 2440 01d0 0B       		.uleb128 0xb
+ 2441 01d1 59       		.uleb128 0x59
+ 2442 01d2 05       		.uleb128 0x5
+ 2443 01d3 00       		.byte	0
+ 2444 01d4 00       		.byte	0
+ 2445 01d5 22       		.uleb128 0x22
+ 2446 01d6 1D       		.uleb128 0x1d
+ 2447 01d7 01       		.byte	0x1
+ 2448 01d8 31       		.uleb128 0x31
+ 2449 01d9 13       		.uleb128 0x13
+ 2450 01da 11       		.uleb128 0x11
+ 2451 01db 01       		.uleb128 0x1
+ 2452 01dc 12       		.uleb128 0x12
+ 2453 01dd 01       		.uleb128 0x1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 56
+
+
+ 2454 01de 58       		.uleb128 0x58
+ 2455 01df 0B       		.uleb128 0xb
+ 2456 01e0 59       		.uleb128 0x59
+ 2457 01e1 05       		.uleb128 0x5
+ 2458 01e2 00       		.byte	0
+ 2459 01e3 00       		.byte	0
+ 2460 01e4 23       		.uleb128 0x23
+ 2461 01e5 34       		.uleb128 0x34
+ 2462 01e6 00       		.byte	0
+ 2463 01e7 31       		.uleb128 0x31
+ 2464 01e8 13       		.uleb128 0x13
+ 2465 01e9 00       		.byte	0
+ 2466 01ea 00       		.byte	0
+ 2467 01eb 24       		.uleb128 0x24
+ 2468 01ec 05       		.uleb128 0x5
+ 2469 01ed 00       		.byte	0
+ 2470 01ee 31       		.uleb128 0x31
+ 2471 01ef 13       		.uleb128 0x13
+ 2472 01f0 00       		.byte	0
+ 2473 01f1 00       		.byte	0
+ 2474 01f2 25       		.uleb128 0x25
+ 2475 01f3 1D       		.uleb128 0x1d
+ 2476 01f4 01       		.byte	0x1
+ 2477 01f5 31       		.uleb128 0x31
+ 2478 01f6 13       		.uleb128 0x13
+ 2479 01f7 52       		.uleb128 0x52
+ 2480 01f8 01       		.uleb128 0x1
+ 2481 01f9 55       		.uleb128 0x55
+ 2482 01fa 06       		.uleb128 0x6
+ 2483 01fb 58       		.uleb128 0x58
+ 2484 01fc 0B       		.uleb128 0xb
+ 2485 01fd 59       		.uleb128 0x59
+ 2486 01fe 05       		.uleb128 0x5
+ 2487 01ff 00       		.byte	0
+ 2488 0200 00       		.byte	0
+ 2489 0201 26       		.uleb128 0x26
+ 2490 0202 34       		.uleb128 0x34
+ 2491 0203 00       		.byte	0
+ 2492 0204 31       		.uleb128 0x31
+ 2493 0205 13       		.uleb128 0x13
+ 2494 0206 02       		.uleb128 0x2
+ 2495 0207 0A       		.uleb128 0xa
+ 2496 0208 00       		.byte	0
+ 2497 0209 00       		.byte	0
+ 2498 020a 27       		.uleb128 0x27
+ 2499 020b 05       		.uleb128 0x5
+ 2500 020c 00       		.byte	0
+ 2501 020d 03       		.uleb128 0x3
+ 2502 020e 0E       		.uleb128 0xe
+ 2503 020f 3A       		.uleb128 0x3a
+ 2504 0210 0B       		.uleb128 0xb
+ 2505 0211 3B       		.uleb128 0x3b
+ 2506 0212 05       		.uleb128 0x5
+ 2507 0213 49       		.uleb128 0x49
+ 2508 0214 13       		.uleb128 0x13
+ 2509 0215 02       		.uleb128 0x2
+ 2510 0216 06       		.uleb128 0x6
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 57
+
+
+ 2511 0217 00       		.byte	0
+ 2512 0218 00       		.byte	0
+ 2513 0219 28       		.uleb128 0x28
+ 2514 021a 34       		.uleb128 0x34
+ 2515 021b 00       		.byte	0
+ 2516 021c 03       		.uleb128 0x3
+ 2517 021d 08       		.uleb128 0x8
+ 2518 021e 3A       		.uleb128 0x3a
+ 2519 021f 0B       		.uleb128 0xb
+ 2520 0220 3B       		.uleb128 0x3b
+ 2521 0221 05       		.uleb128 0x5
+ 2522 0222 49       		.uleb128 0x49
+ 2523 0223 13       		.uleb128 0x13
+ 2524 0224 02       		.uleb128 0x2
+ 2525 0225 06       		.uleb128 0x6
+ 2526 0226 00       		.byte	0
+ 2527 0227 00       		.byte	0
+ 2528 0228 29       		.uleb128 0x29
+ 2529 0229 2E       		.uleb128 0x2e
+ 2530 022a 01       		.byte	0x1
+ 2531 022b 3F       		.uleb128 0x3f
+ 2532 022c 0C       		.uleb128 0xc
+ 2533 022d 03       		.uleb128 0x3
+ 2534 022e 0E       		.uleb128 0xe
+ 2535 022f 3A       		.uleb128 0x3a
+ 2536 0230 0B       		.uleb128 0xb
+ 2537 0231 3B       		.uleb128 0x3b
+ 2538 0232 05       		.uleb128 0x5
+ 2539 0233 27       		.uleb128 0x27
+ 2540 0234 0C       		.uleb128 0xc
+ 2541 0235 11       		.uleb128 0x11
+ 2542 0236 01       		.uleb128 0x1
+ 2543 0237 12       		.uleb128 0x12
+ 2544 0238 01       		.uleb128 0x1
+ 2545 0239 40       		.uleb128 0x40
+ 2546 023a 06       		.uleb128 0x6
+ 2547 023b 01       		.uleb128 0x1
+ 2548 023c 13       		.uleb128 0x13
+ 2549 023d 00       		.byte	0
+ 2550 023e 00       		.byte	0
+ 2551 023f 2A       		.uleb128 0x2a
+ 2552 0240 34       		.uleb128 0x34
+ 2553 0241 00       		.byte	0
+ 2554 0242 03       		.uleb128 0x3
+ 2555 0243 0E       		.uleb128 0xe
+ 2556 0244 3A       		.uleb128 0x3a
+ 2557 0245 0B       		.uleb128 0xb
+ 2558 0246 3B       		.uleb128 0x3b
+ 2559 0247 05       		.uleb128 0x5
+ 2560 0248 49       		.uleb128 0x49
+ 2561 0249 13       		.uleb128 0x13
+ 2562 024a 02       		.uleb128 0x2
+ 2563 024b 06       		.uleb128 0x6
+ 2564 024c 00       		.byte	0
+ 2565 024d 00       		.byte	0
+ 2566 024e 2B       		.uleb128 0x2b
+ 2567 024f 34       		.uleb128 0x34
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 58
+
+
+ 2568 0250 00       		.byte	0
+ 2569 0251 03       		.uleb128 0x3
+ 2570 0252 0E       		.uleb128 0xe
+ 2571 0253 3A       		.uleb128 0x3a
+ 2572 0254 0B       		.uleb128 0xb
+ 2573 0255 3B       		.uleb128 0x3b
+ 2574 0256 05       		.uleb128 0x5
+ 2575 0257 49       		.uleb128 0x49
+ 2576 0258 13       		.uleb128 0x13
+ 2577 0259 02       		.uleb128 0x2
+ 2578 025a 0A       		.uleb128 0xa
+ 2579 025b 00       		.byte	0
+ 2580 025c 00       		.byte	0
+ 2581 025d 2C       		.uleb128 0x2c
+ 2582 025e 34       		.uleb128 0x34
+ 2583 025f 00       		.byte	0
+ 2584 0260 03       		.uleb128 0x3
+ 2585 0261 0E       		.uleb128 0xe
+ 2586 0262 3A       		.uleb128 0x3a
+ 2587 0263 0B       		.uleb128 0xb
+ 2588 0264 3B       		.uleb128 0x3b
+ 2589 0265 0B       		.uleb128 0xb
+ 2590 0266 49       		.uleb128 0x49
+ 2591 0267 13       		.uleb128 0x13
+ 2592 0268 02       		.uleb128 0x2
+ 2593 0269 0A       		.uleb128 0xa
+ 2594 026a 00       		.byte	0
+ 2595 026b 00       		.byte	0
+ 2596 026c 2D       		.uleb128 0x2d
+ 2597 026d 26       		.uleb128 0x26
+ 2598 026e 00       		.byte	0
+ 2599 026f 49       		.uleb128 0x49
+ 2600 0270 13       		.uleb128 0x13
+ 2601 0271 00       		.byte	0
+ 2602 0272 00       		.byte	0
+ 2603 0273 2E       		.uleb128 0x2e
+ 2604 0274 35       		.uleb128 0x35
+ 2605 0275 00       		.byte	0
+ 2606 0276 49       		.uleb128 0x49
+ 2607 0277 13       		.uleb128 0x13
+ 2608 0278 00       		.byte	0
+ 2609 0279 00       		.byte	0
+ 2610 027a 2F       		.uleb128 0x2f
+ 2611 027b 34       		.uleb128 0x34
+ 2612 027c 00       		.byte	0
+ 2613 027d 03       		.uleb128 0x3
+ 2614 027e 08       		.uleb128 0x8
+ 2615 027f 3A       		.uleb128 0x3a
+ 2616 0280 0B       		.uleb128 0xb
+ 2617 0281 3B       		.uleb128 0x3b
+ 2618 0282 0B       		.uleb128 0xb
+ 2619 0283 49       		.uleb128 0x49
+ 2620 0284 13       		.uleb128 0x13
+ 2621 0285 3F       		.uleb128 0x3f
+ 2622 0286 0C       		.uleb128 0xc
+ 2623 0287 3C       		.uleb128 0x3c
+ 2624 0288 0C       		.uleb128 0xc
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 59
+
+
+ 2625 0289 00       		.byte	0
+ 2626 028a 00       		.byte	0
+ 2627 028b 30       		.uleb128 0x30
+ 2628 028c 34       		.uleb128 0x34
+ 2629 028d 00       		.byte	0
+ 2630 028e 03       		.uleb128 0x3
+ 2631 028f 0E       		.uleb128 0xe
+ 2632 0290 3A       		.uleb128 0x3a
+ 2633 0291 0B       		.uleb128 0xb
+ 2634 0292 3B       		.uleb128 0x3b
+ 2635 0293 0B       		.uleb128 0xb
+ 2636 0294 49       		.uleb128 0x49
+ 2637 0295 13       		.uleb128 0x13
+ 2638 0296 3F       		.uleb128 0x3f
+ 2639 0297 0C       		.uleb128 0xc
+ 2640 0298 02       		.uleb128 0x2
+ 2641 0299 0A       		.uleb128 0xa
+ 2642 029a 00       		.byte	0
+ 2643 029b 00       		.byte	0
+ 2644 029c 00       		.byte	0
+ 2645              		.section	.debug_loc,"",%progbits
+ 2646              	.Ldebug_loc0:
+ 2647              	.LLST0:
+ 2648 0000 00000000 		.4byte	.LFB0-.Ltext0
+ 2649 0004 02000000 		.4byte	.LCFI0-.Ltext0
+ 2650 0008 0200     		.2byte	0x2
+ 2651 000a 7D       		.byte	0x7d
+ 2652 000b 00       		.sleb128 0
+ 2653 000c 02000000 		.4byte	.LCFI0-.Ltext0
+ 2654 0010 98000000 		.4byte	.LFE0-.Ltext0
+ 2655 0014 0200     		.2byte	0x2
+ 2656 0016 7D       		.byte	0x7d
+ 2657 0017 18       		.sleb128 24
+ 2658 0018 00000000 		.4byte	0
+ 2659 001c 00000000 		.4byte	0
+ 2660              	.LLST1:
+ 2661 0020 02000000 		.4byte	.LVL0-.Ltext0
+ 2662 0024 3E000000 		.4byte	.LVL4-.Ltext0
+ 2663 0028 0100     		.2byte	0x1
+ 2664 002a 50       		.byte	0x50
+ 2665 002b 3E000000 		.4byte	.LVL4-.Ltext0
+ 2666 002f 72000000 		.4byte	.LVL7-.Ltext0
+ 2667 0033 0100     		.2byte	0x1
+ 2668 0035 5C       		.byte	0x5c
+ 2669 0036 72000000 		.4byte	.LVL7-.Ltext0
+ 2670 003a 78000000 		.4byte	.LVL8-.Ltext0
+ 2671 003e 0100     		.2byte	0x1
+ 2672 0040 50       		.byte	0x50
+ 2673 0041 78000000 		.4byte	.LVL8-.Ltext0
+ 2674 0045 86000000 		.4byte	.LVL9-.Ltext0
+ 2675 0049 0100     		.2byte	0x1
+ 2676 004b 5C       		.byte	0x5c
+ 2677 004c 00000000 		.4byte	0
+ 2678 0050 00000000 		.4byte	0
+ 2679              	.LLST2:
+ 2680 0054 02000000 		.4byte	.LVL0-.Ltext0
+ 2681 0058 10000000 		.4byte	.LVL1-.Ltext0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 60
+
+
+ 2682 005c 0100     		.2byte	0x1
+ 2683 005e 52       		.byte	0x52
+ 2684 005f 10000000 		.4byte	.LVL1-.Ltext0
+ 2685 0063 3E000000 		.4byte	.LVL4-.Ltext0
+ 2686 0067 0100     		.2byte	0x1
+ 2687 0069 5C       		.byte	0x5c
+ 2688 006a 72000000 		.4byte	.LVL7-.Ltext0
+ 2689 006e 78000000 		.4byte	.LVL8-.Ltext0
+ 2690 0072 0100     		.2byte	0x1
+ 2691 0074 5C       		.byte	0x5c
+ 2692 0075 00000000 		.4byte	0
+ 2693 0079 00000000 		.4byte	0
+ 2694              	.LLST3:
+ 2695 007d 02000000 		.4byte	.LVL0-.Ltext0
+ 2696 0081 10000000 		.4byte	.LVL1-.Ltext0
+ 2697 0085 0200     		.2byte	0x2
+ 2698 0087 30       		.byte	0x30
+ 2699 0088 9F       		.byte	0x9f
+ 2700 0089 6A000000 		.4byte	.LVL6-.Ltext0
+ 2701 008d 72000000 		.4byte	.LVL7-.Ltext0
+ 2702 0091 0100     		.2byte	0x1
+ 2703 0093 52       		.byte	0x52
+ 2704 0094 00000000 		.4byte	0
+ 2705 0098 00000000 		.4byte	0
+ 2706              	.LLST4:
+ 2707 009c 28000000 		.4byte	.LVL2-.Ltext0
+ 2708 00a0 34000000 		.4byte	.LVL3-.Ltext0
+ 2709 00a4 0100     		.2byte	0x1
+ 2710 00a6 53       		.byte	0x53
+ 2711 00a7 34000000 		.4byte	.LVL3-.Ltext0
+ 2712 00ab 3E000000 		.4byte	.LVL4-.Ltext0
+ 2713 00af 0200     		.2byte	0x2
+ 2714 00b1 30       		.byte	0x30
+ 2715 00b2 9F       		.byte	0x9f
+ 2716 00b3 64000000 		.4byte	.LVL5-.Ltext0
+ 2717 00b7 78000000 		.4byte	.LVL8-.Ltext0
+ 2718 00bb 0100     		.2byte	0x1
+ 2719 00bd 53       		.byte	0x53
+ 2720 00be 78000000 		.4byte	.LVL8-.Ltext0
+ 2721 00c2 86000000 		.4byte	.LVL9-.Ltext0
+ 2722 00c6 0200     		.2byte	0x2
+ 2723 00c8 30       		.byte	0x30
+ 2724 00c9 9F       		.byte	0x9f
+ 2725 00ca 00000000 		.4byte	0
+ 2726 00ce 00000000 		.4byte	0
+ 2727              	.LLST5:
+ 2728 00d2 98000000 		.4byte	.LFB2-.Ltext0
+ 2729 00d6 9A000000 		.4byte	.LCFI1-.Ltext0
+ 2730 00da 0200     		.2byte	0x2
+ 2731 00dc 7D       		.byte	0x7d
+ 2732 00dd 00       		.sleb128 0
+ 2733 00de 9A000000 		.4byte	.LCFI1-.Ltext0
+ 2734 00e2 E4000000 		.4byte	.LFE2-.Ltext0
+ 2735 00e6 0200     		.2byte	0x2
+ 2736 00e8 7D       		.byte	0x7d
+ 2737 00e9 18       		.sleb128 24
+ 2738 00ea 00000000 		.4byte	0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 61
+
+
+ 2739 00ee 00000000 		.4byte	0
+ 2740              	.LLST6:
+ 2741 00f2 9A000000 		.4byte	.LVL10-.Ltext0
+ 2742 00f6 A0000000 		.4byte	.LVL12-.Ltext0
+ 2743 00fa 0100     		.2byte	0x1
+ 2744 00fc 50       		.byte	0x50
+ 2745 00fd 00000000 		.4byte	0
+ 2746 0101 00000000 		.4byte	0
+ 2747              	.LLST7:
+ 2748 0105 9A000000 		.4byte	.LVL10-.Ltext0
+ 2749 0109 9E000000 		.4byte	.LVL11-.Ltext0
+ 2750 010d 0100     		.2byte	0x1
+ 2751 010f 51       		.byte	0x51
+ 2752 0110 00000000 		.4byte	0
+ 2753 0114 00000000 		.4byte	0
+ 2754              	.LLST8:
+ 2755 0118 9A000000 		.4byte	.LVL10-.Ltext0
+ 2756 011c A8000000 		.4byte	.LVL13-.Ltext0
+ 2757 0120 0200     		.2byte	0x2
+ 2758 0122 30       		.byte	0x30
+ 2759 0123 9F       		.byte	0x9f
+ 2760 0124 00000000 		.4byte	0
+ 2761 0128 00000000 		.4byte	0
+ 2762              	.LLST9:
+ 2763 012c BE000000 		.4byte	.LVL14-.Ltext0
+ 2764 0130 C8000000 		.4byte	.LVL15-.Ltext0
+ 2765 0134 0100     		.2byte	0x1
+ 2766 0136 54       		.byte	0x54
+ 2767 0137 C8000000 		.4byte	.LVL15-.Ltext0
+ 2768 013b D4000000 		.4byte	.LVL16-.Ltext0
+ 2769 013f 0200     		.2byte	0x2
+ 2770 0141 30       		.byte	0x30
+ 2771 0142 9F       		.byte	0x9f
+ 2772 0143 D4000000 		.4byte	.LVL16-.Ltext0
+ 2773 0147 D4000000 		.4byte	.LVL17-.Ltext0
+ 2774 014b 0100     		.2byte	0x1
+ 2775 014d 54       		.byte	0x54
+ 2776 014e 00000000 		.4byte	0
+ 2777 0152 00000000 		.4byte	0
+ 2778              	.LLST10:
+ 2779 0156 E4000000 		.4byte	.LFB9-.Ltext0
+ 2780 015a E6000000 		.4byte	.LCFI2-.Ltext0
+ 2781 015e 0200     		.2byte	0x2
+ 2782 0160 7D       		.byte	0x7d
+ 2783 0161 00       		.sleb128 0
+ 2784 0162 E6000000 		.4byte	.LCFI2-.Ltext0
+ 2785 0166 EA000000 		.4byte	.LCFI3-.Ltext0
+ 2786 016a 0200     		.2byte	0x2
+ 2787 016c 7D       		.byte	0x7d
+ 2788 016d 14       		.sleb128 20
+ 2789 016e EA000000 		.4byte	.LCFI3-.Ltext0
+ 2790 0172 E0020000 		.4byte	.LFE9-.Ltext0
+ 2791 0176 0200     		.2byte	0x2
+ 2792 0178 7D       		.byte	0x7d
+ 2793 0179 2C       		.sleb128 44
+ 2794 017a 00000000 		.4byte	0
+ 2795 017e 00000000 		.4byte	0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 62
+
+
+ 2796              	.LLST11:
+ 2797 0182 F0000000 		.4byte	.LVL18-.Ltext0
+ 2798 0186 F6000000 		.4byte	.LVL19-.Ltext0
+ 2799 018a 0200     		.2byte	0x2
+ 2800 018c 31       		.byte	0x31
+ 2801 018d 9F       		.byte	0x9f
+ 2802 018e 00000000 		.4byte	0
+ 2803 0192 00000000 		.4byte	0
+ 2804              	.LLST12:
+ 2805 0196 32010000 		.4byte	.LVL20-.Ltext0
+ 2806 019a 3C010000 		.4byte	.LVL21-.Ltext0
+ 2807 019e 0200     		.2byte	0x2
+ 2808 01a0 31       		.byte	0x31
+ 2809 01a1 9F       		.byte	0x9f
+ 2810 01a2 00000000 		.4byte	0
+ 2811 01a6 00000000 		.4byte	0
+ 2812              	.LLST13:
+ 2813 01aa 44010000 		.4byte	.LVL22-.Ltext0
+ 2814 01ae D5010000 		.4byte	.LVL28-1-.Ltext0
+ 2815 01b2 0500     		.2byte	0x5
+ 2816 01b4 03       		.byte	0x3
+ 2817 01b5 88020000 		.4byte	currYpos
+ 2818 01b9 00000000 		.4byte	0
+ 2819 01bd 00000000 		.4byte	0
+ 2820              	.LLST14:
+ 2821 01c1 44010000 		.4byte	.LVL22-.Ltext0
+ 2822 01c5 D5010000 		.4byte	.LVL28-1-.Ltext0
+ 2823 01c9 0500     		.2byte	0x5
+ 2824 01cb 03       		.byte	0x3
+ 2825 01cc 84020000 		.4byte	currXpos
+ 2826 01d0 00000000 		.4byte	0
+ 2827 01d4 00000000 		.4byte	0
+ 2828              	.LLST15:
+ 2829 01d8 44010000 		.4byte	.LVL22-.Ltext0
+ 2830 01dc D5010000 		.4byte	.LVL28-1-.Ltext0
+ 2831 01e0 0500     		.2byte	0x5
+ 2832 01e2 03       		.byte	0x3
+ 2833 01e3 80020000 		.4byte	currFigure
+ 2834 01e7 00000000 		.4byte	0
+ 2835 01eb 00000000 		.4byte	0
+ 2836              	.LLST16:
+ 2837 01ef 44010000 		.4byte	.LVL22-.Ltext0
+ 2838 01f3 50010000 		.4byte	.LVL23-.Ltext0
+ 2839 01f7 0200     		.2byte	0x2
+ 2840 01f9 30       		.byte	0x30
+ 2841 01fa 9F       		.byte	0x9f
+ 2842 01fb 00000000 		.4byte	0
+ 2843 01ff 00000000 		.4byte	0
+ 2844              	.LLST17:
+ 2845 0203 6C010000 		.4byte	.LVL24-.Ltext0
+ 2846 0207 76010000 		.4byte	.LVL25-.Ltext0
+ 2847 020b 0100     		.2byte	0x1
+ 2848 020d 52       		.byte	0x52
+ 2849 020e 76010000 		.4byte	.LVL25-.Ltext0
+ 2850 0212 82010000 		.4byte	.LVL26-.Ltext0
+ 2851 0216 0200     		.2byte	0x2
+ 2852 0218 30       		.byte	0x30
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 63
+
+
+ 2853 0219 9F       		.byte	0x9f
+ 2854 021a 82010000 		.4byte	.LVL26-.Ltext0
+ 2855 021e B4010000 		.4byte	.LVL27-.Ltext0
+ 2856 0222 0100     		.2byte	0x1
+ 2857 0224 52       		.byte	0x52
+ 2858 0225 00000000 		.4byte	0
+ 2859 0229 00000000 		.4byte	0
+ 2860              	.LLST18:
+ 2861 022d FA010000 		.4byte	.LVL29-.Ltext0
+ 2862 0231 FC010000 		.4byte	.LVL30-.Ltext0
+ 2863 0235 0200     		.2byte	0x2
+ 2864 0237 30       		.byte	0x30
+ 2865 0238 9F       		.byte	0x9f
+ 2866 0239 0C020000 		.4byte	.LVL31-.Ltext0
+ 2867 023d 12020000 		.4byte	.LVL32-.Ltext0
+ 2868 0241 0100     		.2byte	0x1
+ 2869 0243 54       		.byte	0x54
+ 2870 0244 00000000 		.4byte	0
+ 2871 0248 00000000 		.4byte	0
+ 2872              	.LLST19:
+ 2873 024c 18020000 		.4byte	.LVL33-.Ltext0
+ 2874 0250 1C020000 		.4byte	.LVL34-.Ltext0
+ 2875 0254 0200     		.2byte	0x2
+ 2876 0256 30       		.byte	0x30
+ 2877 0257 9F       		.byte	0x9f
+ 2878 0258 00000000 		.4byte	0
+ 2879 025c 00000000 		.4byte	0
+ 2880              	.LLST20:
+ 2881 0260 BE020000 		.4byte	.LVL37-.Ltext0
+ 2882 0264 C2020000 		.4byte	.LVL38-.Ltext0
+ 2883 0268 0200     		.2byte	0x2
+ 2884 026a 30       		.byte	0x30
+ 2885 026b 9F       		.byte	0x9f
+ 2886 026c 00000000 		.4byte	0
+ 2887 0270 00000000 		.4byte	0
+ 2888              	.LLST21:
+ 2889 0274 E0020000 		.4byte	.LFB10-.Ltext0
+ 2890 0278 E2020000 		.4byte	.LCFI4-.Ltext0
+ 2891 027c 0200     		.2byte	0x2
+ 2892 027e 7D       		.byte	0x7d
+ 2893 027f 00       		.sleb128 0
+ 2894 0280 E2020000 		.4byte	.LCFI4-.Ltext0
+ 2895 0284 84030000 		.4byte	.LFE10-.Ltext0
+ 2896 0288 0200     		.2byte	0x2
+ 2897 028a 7D       		.byte	0x7d
+ 2898 028b 10       		.sleb128 16
+ 2899 028c 00000000 		.4byte	0
+ 2900 0290 00000000 		.4byte	0
+ 2901              	.LLST22:
+ 2902 0294 E2020000 		.4byte	.LVL39-.Ltext0
+ 2903 0298 E8020000 		.4byte	.LVL40-.Ltext0
+ 2904 029c 0100     		.2byte	0x1
+ 2905 029e 50       		.byte	0x50
+ 2906 029f 00000000 		.4byte	0
+ 2907 02a3 00000000 		.4byte	0
+ 2908              	.LLST23:
+ 2909 02a7 2C030000 		.4byte	.LVL41-.Ltext0
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 64
+
+
+ 2910 02ab 38030000 		.4byte	.LVL42-.Ltext0
+ 2911 02af 0200     		.2byte	0x2
+ 2912 02b1 30       		.byte	0x30
+ 2913 02b2 9F       		.byte	0x9f
+ 2914 02b3 00000000 		.4byte	0
+ 2915 02b7 00000000 		.4byte	0
+ 2916              	.LLST24:
+ 2917 02bb 48030000 		.4byte	.LVL43-.Ltext0
+ 2918 02bf 4C030000 		.4byte	.LVL44-.Ltext0
+ 2919 02c3 0200     		.2byte	0x2
+ 2920 02c5 30       		.byte	0x30
+ 2921 02c6 9F       		.byte	0x9f
+ 2922 02c7 00000000 		.4byte	0
+ 2923 02cb 00000000 		.4byte	0
+ 2924              	.LLST25:
+ 2925 02cf 84030000 		.4byte	.LFB11-.Ltext0
+ 2926 02d3 86030000 		.4byte	.LCFI5-.Ltext0
+ 2927 02d7 0200     		.2byte	0x2
+ 2928 02d9 7D       		.byte	0x7d
+ 2929 02da 00       		.sleb128 0
+ 2930 02db 86030000 		.4byte	.LCFI5-.Ltext0
+ 2931 02df 8C030000 		.4byte	.LCFI6-.Ltext0
+ 2932 02e3 0200     		.2byte	0x2
+ 2933 02e5 7D       		.byte	0x7d
+ 2934 02e6 14       		.sleb128 20
+ 2935 02e7 8C030000 		.4byte	.LCFI6-.Ltext0
+ 2936 02eb E8040000 		.4byte	.LFE11-.Ltext0
+ 2937 02ef 0300     		.2byte	0x3
+ 2938 02f1 7D       		.byte	0x7d
+ 2939 02f2 E400     		.sleb128 100
+ 2940 02f4 00000000 		.4byte	0
+ 2941 02f8 00000000 		.4byte	0
+ 2942              	.LLST26:
+ 2943 02fc B2030000 		.4byte	.LVL45-.Ltext0
+ 2944 0300 E0030000 		.4byte	.LVL46-.Ltext0
+ 2945 0304 0100     		.2byte	0x1
+ 2946 0306 50       		.byte	0x50
+ 2947 0307 F0030000 		.4byte	.LVL47-.Ltext0
+ 2948 030b FA030000 		.4byte	.LVL48-.Ltext0
+ 2949 030f 0100     		.2byte	0x1
+ 2950 0311 50       		.byte	0x50
+ 2951 0312 0A040000 		.4byte	.LVL49-.Ltext0
+ 2952 0316 22040000 		.4byte	.LVL50-.Ltext0
+ 2953 031a 0100     		.2byte	0x1
+ 2954 031c 50       		.byte	0x50
+ 2955 031d 2E040000 		.4byte	.LVL51-.Ltext0
+ 2956 0321 36040000 		.4byte	.LVL52-.Ltext0
+ 2957 0325 0100     		.2byte	0x1
+ 2958 0327 50       		.byte	0x50
+ 2959 0328 3E040000 		.4byte	.LVL53-.Ltext0
+ 2960 032c 41040000 		.4byte	.LVL54-1-.Ltext0
+ 2961 0330 0100     		.2byte	0x1
+ 2962 0332 50       		.byte	0x50
+ 2963 0333 4A040000 		.4byte	.LVL55-.Ltext0
+ 2964 0337 4E040000 		.4byte	.LVL56-.Ltext0
+ 2965 033b 0100     		.2byte	0x1
+ 2966 033d 50       		.byte	0x50
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 65
+
+
+ 2967 033e 00000000 		.4byte	0
+ 2968 0342 00000000 		.4byte	0
+ 2969              		.section	.debug_aranges,"",%progbits
+ 2970 0000 1C000000 		.4byte	0x1c
+ 2971 0004 0200     		.2byte	0x2
+ 2972 0006 00000000 		.4byte	.Ldebug_info0
+ 2973 000a 04       		.byte	0x4
+ 2974 000b 00       		.byte	0
+ 2975 000c 0000     		.2byte	0
+ 2976 000e 0000     		.2byte	0
+ 2977 0010 00000000 		.4byte	.Ltext0
+ 2978 0014 E8040000 		.4byte	.Letext0-.Ltext0
+ 2979 0018 00000000 		.4byte	0
+ 2980 001c 00000000 		.4byte	0
+ 2981              		.section	.debug_ranges,"",%progbits
+ 2982              	.Ldebug_ranges0:
+ 2983 0000 44010000 		.4byte	.LBB30-.Ltext0
+ 2984 0004 48010000 		.4byte	.LBE30-.Ltext0
+ 2985 0008 4A010000 		.4byte	.LBB34-.Ltext0
+ 2986 000c 7C010000 		.4byte	.LBE34-.Ltext0
+ 2987 0010 7E010000 		.4byte	.LBB35-.Ltext0
+ 2988 0014 82010000 		.4byte	.LBE35-.Ltext0
+ 2989 0018 00000000 		.4byte	0
+ 2990 001c 00000000 		.4byte	0
+ 2991 0020 44010000 		.4byte	.LBB31-.Ltext0
+ 2992 0024 48010000 		.4byte	.LBE31-.Ltext0
+ 2993 0028 4A010000 		.4byte	.LBB32-.Ltext0
+ 2994 002c 7C010000 		.4byte	.LBE32-.Ltext0
+ 2995 0030 7E010000 		.4byte	.LBB33-.Ltext0
+ 2996 0034 82010000 		.4byte	.LBE33-.Ltext0
+ 2997 0038 00000000 		.4byte	0
+ 2998 003c 00000000 		.4byte	0
+ 2999 0040 58020000 		.4byte	.LBB44-.Ltext0
+ 3000 0044 B6020000 		.4byte	.LBE44-.Ltext0
+ 3001 0048 B8020000 		.4byte	.LBB47-.Ltext0
+ 3002 004c BA020000 		.4byte	.LBE47-.Ltext0
+ 3003 0050 00000000 		.4byte	0
+ 3004 0054 00000000 		.4byte	0
+ 3005 0058 58020000 		.4byte	.LBB45-.Ltext0
+ 3006 005c B6020000 		.4byte	.LBE45-.Ltext0
+ 3007 0060 B8020000 		.4byte	.LBB46-.Ltext0
+ 3008 0064 BA020000 		.4byte	.LBE46-.Ltext0
+ 3009 0068 00000000 		.4byte	0
+ 3010 006c 00000000 		.4byte	0
+ 3011              		.section	.debug_line,"",%progbits
+ 3012              	.Ldebug_line0:
+ 3013 0000 2F020000 		.section	.debug_str,"MS",%progbits,1
+ 3013      02006400 
+ 3013      00000201 
+ 3013      FB0E0D00 
+ 3013      01010101 
+ 3014              	.LASF47:
+ 3015 0000 63757272 		.ascii	"currYpos\000"
+ 3015      59706F73 
+ 3015      00
+ 3016              	.LASF45:
+ 3017 0009 63757272 		.ascii	"currFigure\000"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 66
+
+
+ 3017      46696775 
+ 3017      726500
+ 3018              	.LASF10:
+ 3019 0014 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 3019      206C6F6E 
+ 3019      6720756E 
+ 3019      7369676E 
+ 3019      65642069 
+ 3020              	.LASF53:
+ 3021 002b 433A5C55 		.ascii	"C:\\Users\\kozlovsky\\Downloads\\TicTac\\TicTac\000"
+ 3021      73657273 
+ 3021      5C6B6F7A 
+ 3021      6C6F7673 
+ 3021      6B795C44 
+ 3022              	.LASF26:
+ 3023 0056 73656C65 		.ascii	"selectedColor\000"
+ 3023      63746564 
+ 3023      436F6C6F 
+ 3023      7200
+ 3024              	.LASF46:
+ 3025 0064 63757272 		.ascii	"currXpos\000"
+ 3025      58706F73 
+ 3025      00
+ 3026              	.LASF29:
+ 3027 006d 64726177 		.ascii	"drawGame\000"
+ 3027      47616D65 
+ 3027      00
+ 3028              	.LASF23:
+ 3029 0076 626F7264 		.ascii	"borderColor\000"
+ 3029      6572436F 
+ 3029      6C6F7200 
+ 3030              	.LASF9:
+ 3031 0082 6C6F6E67 		.ascii	"long long int\000"
+ 3031      206C6F6E 
+ 3031      6720696E 
+ 3031      7400
+ 3032              	.LASF4:
+ 3033 0090 7369676E 		.ascii	"signed char\000"
+ 3033      65642063 
+ 3033      68617200 
+ 3034              	.LASF7:
+ 3035 009c 74426F6F 		.ascii	"tBool\000"
+ 3035      6C00
+ 3036              	.LASF11:
+ 3037 00a2 6C6F6E67 		.ascii	"long int\000"
+ 3037      20696E74 
+ 3037      00
+ 3038              	.LASF36:
+ 3039 00ab 61647661 		.ascii	"advanceGame\000"
+ 3039      6E636547 
+ 3039      616D6500 
+ 3040              	.LASF16:
+ 3041 00b7 794C656E 		.ascii	"yLen\000"
+ 3041      00
+ 3042              	.LASF34:
+ 3043 00bc 63686563 		.ascii	"checkScore\000"
+ 3043      6B53636F 
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 67
+
+
+ 3043      726500
+ 3044              	.LASF43:
+ 3045 00c7 73686966 		.ascii	"shift\000"
+ 3045      7400
+ 3046              	.LASF42:
+ 3047 00cd 73636F72 		.ascii	"score\000"
+ 3047      6500
+ 3048              	.LASF17:
+ 3049 00d3 6E6F4F66 		.ascii	"noOfChoices\000"
+ 3049      43686F69 
+ 3049      63657300 
+ 3050              	.LASF25:
+ 3051 00df 63686F69 		.ascii	"choicesColor\000"
+ 3051      63657343 
+ 3051      6F6C6F72 
+ 3051      00
+ 3052              	.LASF18:
+ 3053 00ec 696E6974 		.ascii	"initialChoice\000"
+ 3053      69616C43 
+ 3053      686F6963 
+ 3053      6500
+ 3054              	.LASF3:
+ 3055 00fa 756E7369 		.ascii	"unsigned int\000"
+ 3055      676E6564 
+ 3055      20696E74 
+ 3055      00
+ 3056              	.LASF15:
+ 3057 0107 784C656E 		.ascii	"xLen\000"
+ 3057      00
+ 3058              	.LASF20:
+ 3059 010c 68656164 		.ascii	"headerTextXpos\000"
+ 3059      65725465 
+ 3059      78745870 
+ 3059      6F7300
+ 3060              	.LASF56:
+ 3061 011b 706C6179 		.ascii	"playExample\000"
+ 3061      4578616D 
+ 3061      706C6500 
+ 3062              	.LASF8:
+ 3063 0127 6C6F6E67 		.ascii	"long unsigned int\000"
+ 3063      20756E73 
+ 3063      69676E65 
+ 3063      6420696E 
+ 3063      7400
+ 3064              	.LASF44:
+ 3065 0139 626F6172 		.ascii	"board\000"
+ 3065      6400
+ 3066              	.LASF54:
+ 3067 013f 75706461 		.ascii	"updateDelayTime\000"
+ 3067      74654465 
+ 3067      6C617954 
+ 3067      696D6500 
+ 3068              	.LASF1:
+ 3069 014f 73686F72 		.ascii	"short unsigned int\000"
+ 3069      7420756E 
+ 3069      7369676E 
+ 3069      65642069 
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 68
+
+
+ 3069      6E7400
+ 3070              	.LASF28:
+ 3071 0162 64726177 		.ascii	"drawScore\000"
+ 3071      53636F72 
+ 3071      6500
+ 3072              	.LASF49:
+ 3073 016c 64656C61 		.ascii	"delayTimeMs\000"
+ 3073      7954696D 
+ 3073      654D7300 
+ 3074              	.LASF2:
+ 3075 0178 74553332 		.ascii	"tU32\000"
+ 3075      00
+ 3076              	.LASF35:
+ 3077 017d 696E7365 		.ascii	"insertFigure\000"
+ 3077      72744669 
+ 3077      67757265 
+ 3077      00
+ 3078              	.LASF21:
+ 3079 018a 7043686F 		.ascii	"pChoice\000"
+ 3079      69636500 
+ 3080              	.LASF22:
+ 3081 0192 6267436F 		.ascii	"bgColor\000"
+ 3081      6C6F7200 
+ 3082              	.LASF32:
+ 3083 019a 66756C6C 		.ascii	"full\000"
+ 3083      00
+ 3084              	.LASF41:
+ 3085 019f 67616D65 		.ascii	"gameStatus\000"
+ 3085      53746174 
+ 3085      757300
+ 3086              	.LASF52:
+ 3087 01aa 6578616D 		.ascii	"exampleGame.c\000"
+ 3087      706C6547 
+ 3087      616D652E 
+ 3087      6300
+ 3088              	.LASF27:
+ 3089 01b8 744D656E 		.ascii	"tMenu\000"
+ 3089      7500
+ 3090              	.LASF0:
+ 3091 01be 756E7369 		.ascii	"unsigned char\000"
+ 3091      676E6564 
+ 3091      20636861 
+ 3091      7200
+ 3092              	.LASF30:
+ 3093 01cc 64656C65 		.ascii	"deleteFigure\000"
+ 3093      74654669 
+ 3093      67757265 
+ 3093      00
+ 3094              	.LASF5:
+ 3095 01d9 73686F72 		.ascii	"short int\000"
+ 3095      7420696E 
+ 3095      7400
+ 3096              	.LASF50:
+ 3097 01e3 66696775 		.ascii	"figures\000"
+ 3097      72657300 
+ 3098              	.LASF55:
+ 3099 01eb 69735661 		.ascii	"isValid\000"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 69
+
+
+ 3099      6C696400 
+ 3100              	.LASF51:
+ 3101 01f3 474E5520 		.ascii	"GNU C 4.6.3\000"
+ 3101      4320342E 
+ 3101      362E3300 
+ 3102              	.LASF12:
+ 3103 01ff 63686172 		.ascii	"char\000"
+ 3103      00
+ 3104              	.LASF48:
+ 3105 0204 6C617374 		.ascii	"lastUpdate\000"
+ 3105      55706461 
+ 3105      746500
+ 3106              	.LASF39:
+ 3107 020f 616E794B 		.ascii	"anyKey\000"
+ 3107      657900
+ 3108              	.LASF6:
+ 3109 0216 74533332 		.ascii	"tS32\000"
+ 3109      00
+ 3110              	.LASF14:
+ 3111 021b 79506F73 		.ascii	"yPos\000"
+ 3111      00
+ 3112              	.LASF37:
+ 3113 0220 73657475 		.ascii	"setupGame\000"
+ 3113      7047616D 
+ 3113      6500
+ 3114              	.LASF24:
+ 3115 022a 68656164 		.ascii	"headerColor\000"
+ 3115      6572436F 
+ 3115      6C6F7200 
+ 3116              	.LASF40:
+ 3117 0236 6D656E75 		.ascii	"menu\000"
+ 3117      00
+ 3118              	.LASF38:
+ 3119 023b 64726177 		.ascii	"drawBoard\000"
+ 3119      426F6172 
+ 3119      6400
+ 3120              	.LASF13:
+ 3121 0245 78506F73 		.ascii	"xPos\000"
+ 3121      00
+ 3122              	.LASF33:
+ 3123 024a 67616D65 		.ascii	"gameOver\000"
+ 3123      4F766572 
+ 3123      00
+ 3124              	.LASF31:
+ 3125 0253 73686170 		.ascii	"shape\000"
+ 3125      6500
+ 3126              	.LASF19:
+ 3127 0259 70486561 		.ascii	"pHeaderText\000"
+ 3127      64657254 
+ 3127      65787400 
+ 3128              		.ident	"GCC: (GNU) 4.6.3"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 70
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 exampleGame.c
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:6      .text:00000000 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:10     .text:00000000 isValid
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:147    .text:00000090 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:152    .text:00000098 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:156    .text:00000098 insertFigure
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:231    .text:000000dc $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:239    .text:000000e4 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:243    .text:000000e4 advanceGame
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:658    .text:000002cc $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:666    .text:000002e0 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:670    .text:000002e0 setupGame
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:789    .text:00000374 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:796    .text:00000384 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:801    .text:00000384 playExample
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1065   .text:000004d0 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1115   .data:00000000 figures
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1076   .rodata:00000000 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1080   .rodata:00000000 shift
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1193   .bss:00000000 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1198   .bss:00000000 board
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1202   .bss:00000280 currFigure
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1206   .bss:00000284 currXpos
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1210   .bss:00000288 currYpos
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1214   .bss:0000028c score
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1219   .bss:00000290 delayTimeMs
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1223   .bss:00000294 lastUpdate
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1227   .bss:00000298 gameStatus
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+__modsi3
+__udivsi3
+__umodsi3
+lcdRectBrd
+lcdRect
+rand
+lcdGotoxy
+lcdPuts
+ms
+srand
+lcdColor
+checkKey
+osSleep
+drawMenu
