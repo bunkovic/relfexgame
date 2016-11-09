@@ -17,16 +17,20 @@
 #include <lpc2xxx.h>
 
 static tU8 whichArrow;
+static tU8 cursor   = 0;
+
+#define MAX_LENGTH 14
+
 
 #define GAME_NOT_STARTED 0
 #define GAME_RUNNING     1
 #define GAME_OVER        2
 #define GAME_END         3
-#define GAME_START 		 4
-#define GAME_SCORED 	 5
+#define GAME_START       4
+#define GAME_SCORED      5
 #define GAME_NOT_SCORED  6
 #define GAME_SHOW_SCORE  7
-#define GAME_WON		 8
+#define GAME_WON         8
 #define GAME_LOST        9
 
 #define MODE_MOVING      0
@@ -102,6 +106,7 @@ tU8 matrix[BOARD_SIZE][BOARD_SIZE];
 // --------------------------------------
 
 static tBool arrow;
+static tBool finish;
 static int score;
 static tU8 rounds;
 static tU8 currentRound;
@@ -112,19 +117,19 @@ static tU8 currentRound;
 // --------------------------------------
 
 void showPreStartupScreen(void){
-    // clear screen
-    lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
-    lcdClrscr();
-    lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
-    printf("setup screen method");
+  // clear screen
+  lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
+  lcdClrscr();
+  lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
+  printf("setup screen method");
 
-    // print message
-    lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
-    lcdPuts("Welcome to the");
-    lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 -4);
-    lcdPuts("React Game");
-    lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 +12);
-    lcdPuts("Press Center");
+  // print message
+  lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+  lcdPuts("Welcome to the");
+  lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 -4);
+  lcdPuts("React Game");
+  lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 +12);
+  lcdPuts("Press Center");
 
 }
 
@@ -250,6 +255,7 @@ void playReactGame(void){
     showPreStartupScreen();
 
     arrow = TRUE;
+    finish = TRUE;
     score = 0;
     char strScore[16];
     rounds = 6;
@@ -259,118 +265,182 @@ void playReactGame(void){
 
     gameStatus = GAME_NOT_STARTED;
 
-    while(gameStatus != GAME_END)
-    {
-        tU8 anyKey;
+      while(gameStatus != GAME_END)
+        {
+          tU8 anyKey;
 
-        anyKey = checkKey();
+          anyKey = checkKey();
 
-        switch(gameStatus){
-            case GAME_NOT_STARTED:
-                if (anyKey == KEY_CENTER){
-                    gameStatus = GAME_START;
-                }
-                break;
+          switch(gameStatus){
+              case GAME_NOT_STARTED:
+                  if (anyKey == KEY_CENTER){
+                      gameStatus = GAME_START;
+                  }
+                  break;
 
-            case GAME_START:
-                if (currentRound == rounds){
-                    gameStatus = GAME_SHOW_SCORE;
-                    break;
-                }
+              case GAME_START:
+                  if (currentRound == rounds){
+                      gameStatus = GAME_SHOW_SCORE;
+                      break;
+                  }
 
-                if (arrow == TRUE){
-                    randomMove();
-                    showRandomArrow(whichArrow);
-                    arrow = FALSE;
-                }
-                if( anyKey != KEY_NOTHING){
-                    if (anyKey == whichArrow){
-                        currentRound++;
-                        gameStatus = GAME_SCORED;
-                    }
-                    else if (anyKey != whichArrow){
-                        currentRound++;
-                        gameStatus = GAME_NOT_SCORED;
-                    }
-                }
-                break;
+                  if (arrow == TRUE){
+                      randomMove();
+                      showRandomArrow(whichArrow);
+                      arrow = FALSE;
+                  }
+                  if( anyKey != KEY_NOTHING){
+                      if (anyKey == whichArrow){
+                          currentRound++;
+                          gameStatus = GAME_SCORED;
+                      }
+                      else if (anyKey != whichArrow){
+                          currentRound++;
+                          gameStatus = GAME_NOT_SCORED;
+                      }
+                  }
+                  break;
 
-            case GAME_SCORED:
-                lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
-                lcdClrscr();
-                lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
-                lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
-                lcdPuts("SCORED !");
-                useBuzzer(1);
+              case GAME_SCORED:
+                  lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
+                  lcdClrscr();
+                  lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
+                  lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+                  lcdPuts("SCORED !");
+                  useBuzzer(1);
 
-                setLED(LED_GREEN,TRUE);
-                osSleep(200);
-                setLED(LED_GREEN,FALSE);
+                  setLED(LED_GREEN,TRUE);
+                  osSleep(200);
+                  setLED(LED_GREEN,FALSE);
 
-                score++;
-                arrow = TRUE;
-                gameStatus = GAME_START;
-                break;
+                  score++;
+                  arrow = TRUE;
+                  gameStatus = GAME_START;
+                  break;
 
-            case GAME_NOT_SCORED:
-                TIMER1_MCR = 0x04;
+              case GAME_NOT_SCORED:
+                  TIMER1_MCR = 0x04;
 
-                lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
-                lcdClrscr();
-                lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
-                lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
-                lcdPuts("FAILED !");
-                useBuzzer(2);
+                  lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
+                  lcdClrscr();
+                  lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
+                  lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+                  lcdPuts("FAILED !");
+                  useBuzzer(2);
 
-                setLED(LED_RED,TRUE);
-                osSleep(200);
-                setLED(LED_RED,FALSE);
+                  setLED(LED_RED,TRUE);
+                  osSleep(200);
+                  setLED(LED_RED,FALSE);
 
-                arrow = TRUE;
-                gameStatus = GAME_START;
-                break;
+                  arrow = TRUE;
+                  gameStatus = GAME_START;
+                  break;
 
-            case GAME_SHOW_SCORE:
-                lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
-                lcdClrscr();
-                lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
-                lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
-                lcdPuts("You scored: ");
+              case GAME_SHOW_SCORE:
+                  lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
+                  lcdClrscr();
+                  lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
+                  lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+                  lcdPuts("You scored: ");
 
-                lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 -4);
+                  lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 -4);
 
-                showScore();
+                  showScore();
 
-                osSleep(500);
-                if(score > 3){
-                    gameStatus = GAME_WON;
-                }
-                else if (score <= 3){
-                    gameStatus = GAME_LOST;
-                }
-                break;
+                  osSleep(500);
+                  if(score > 3){
+                      gameStatus = GAME_WON;
+                  }
+                  else if (score <= 3){
+                      gameStatus = GAME_LOST;
+                  }
+                  break;
 
-            case GAME_WON:
+              case GAME_WON:
+                  lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
+                  lcdClrscr();
+                  lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
+                  lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+                  lcdPuts("You won!");
+                  saveScoreToEeprom("YOUWON");
+                  gameStatus = GAME_OVER;
+                  osSleep(500);
+                  break;
 
-                lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
-                lcdClrscr();
-                lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
-                lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
-                lcdPuts("You won!");
-                osSleep(500);
-                break;
+              case GAME_LOST:
+                  lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
+                  lcdClrscr();
+                  lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
+                  lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+                  lcdPuts("You lost!");
+                  saveScoreToEeprom("YOULOST");
 
-            case GAME_LOST:
-                lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
-                lcdClrscr();
-                lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
-                lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
-                lcdPuts("You lost!");
-                osSleep(500);
-                break;
+                  gameStatus = GAME_OVER;
+                  osSleep(500);
+                  break;
+
+              case GAME_OVER:
+                  if ( finish == TRUE ){
+                      lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
+                      lcdClrscr();
+                      lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
+                      lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+                      lcdPuts("Restart-KeyUP");
+                      lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 -4);
+                      lcdPuts("EndGame-KeyDown");
+                      readScoreFromEeprom();
+                      finish = FALSE;
+                  }
+
+                  if(anyKey == KEY_UP){
+                          currentRound = 0 ;
+                          score = 0;
+                          finish= TRUE;
+                          gameStatus = GAME_START;
+
+                  }
+                  else if (anyKey == KEY_DOWN){
+                          gameStatus = GAME_END;
+                  }
+                  break;
+
+              default:
+                  gameStatus = GAME_END;
+                  break;
+            }
         }
+    return;
+}
+
+
+
+
+void saveScoreToEeprom(tU8 score[]) {
+
+    tS8 errorCode;
+    errorCode = eepromWrite(0x0000, score, sizeof(score));
+    if(!errorCode == I2C_CODE_OK){
+        printf("EEPROM write error! \n");
+    }
+
+    return;
+
+
+}
+
+void readScoreFromEeprom(){
+    tS8 errorCode;
+    tU8 testBuf[MAX_LENGTH];
+    errorCode = eepromPageRead(0x0000, testBuf, MAX_LENGTH);
+
+    if(!errorCode == I2C_CODE_OK){
+     printf("\n%d,%d,%d,%d,%d %d,%d,%d,%d,%d %d",
+             testBuf[0],testBuf[1],testBuf[2],testBuf[3],testBuf[4],testBuf[5],testBuf[6],testBuf[7],testBuf[8],testBuf[9],testBuf[10]);
+      printf("\n%c%c%c%c%c%c%c%c%c%c%c",
+             testBuf[0],testBuf[1],testBuf[2],testBuf[3],testBuf[4],testBuf[5],testBuf[6],testBuf[7],testBuf[8],testBuf[9],testBuf[10]);
     }
     return;
+
 }
 
 
