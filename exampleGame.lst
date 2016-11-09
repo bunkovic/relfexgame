@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 1
 
 
    1              		.code	16
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
   43:exampleGame.c **** 
   44:exampleGame.c **** #define FIGURE_SIZE 4
   45:exampleGame.c **** #define NUM_OF_FIGURE 19
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 2
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 2
 
 
   46:exampleGame.c **** 
@@ -118,7 +118,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  100:exampleGame.c ****  {"..X.",
  101:exampleGame.c ****   "..X.",
  102:exampleGame.c ****   ".XX.",
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 3
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 3
 
 
  103:exampleGame.c ****   "...."},
@@ -178,7 +178,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  157:exampleGame.c ****  *
  158:exampleGame.c ****  ****************************************************************************/
  159:exampleGame.c **** static tS8
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 4
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 4
 
 
  160:exampleGame.c **** isValid(tS32 x, tS32 y, tS32 shape)
@@ -238,7 +238,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
   55 0026 0133     		add	r3, r3, #1
   56              	.LVL2:
   57 0028 042B     		cmp	r3, #4
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 5
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 5
 
 
   58 002a F1D1     		bne	.L5
@@ -298,7 +298,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
   98 005c 3858     		ldr	r0, [r7, r0]
   99 005e 0028     		cmp	r0, #0
  100 0060 11D1     		bne	.L13
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 6
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 6
 
 
  101              	.L7:
@@ -358,7 +358,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  142 008a 02BC     		pop	{r1}
  143 008c 0847     		bx	r1
  144              	.L18:
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 7
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 7
 
 
  145 008e C046     		.align	2
@@ -418,7 +418,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  168              		.cfi_offset 14, -4
  169              	.LVL10:
  209:exampleGame.c **** insertFigure(tS32 shape, tS32 x, tS32 y)
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 8
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 8
 
 
  170              		.loc 1 209 0
@@ -478,7 +478,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  212 00c8 0099     		ldr	r1, [sp]
  213 00ca 5D18     		add	r5, r3, r1
  214 00cc AD00     		lsl	r5, r5, #2
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 9
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 9
 
 
  210:exampleGame.c **** {
@@ -538,7 +538,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  239:exampleGame.c ****  *
  240:exampleGame.c ****  * Description:
  241:exampleGame.c ****  *    Returns TRUE if one row of the board is full
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 10
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 10
 
 
  242:exampleGame.c ****  *
@@ -598,7 +598,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  296:exampleGame.c ****     //check if one row is full
  297:exampleGame.c ****     if(full(j))
  298:exampleGame.c ****     {
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 11
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 11
 
 
  299:exampleGame.c ****       //if so, erase that row...
@@ -658,7 +658,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  353:exampleGame.c **** 
  354:exampleGame.c **** /*****************************************************************************
  355:exampleGame.c ****  *
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 12
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 12
 
 
  356:exampleGame.c ****  * Description:
@@ -718,7 +718,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  288 0114 06E0     		b	.L30
  289              	.L29:
  198:exampleGame.c ****         lcdRect(30+(i*6), 10+(j*6), 6, 6, 0);
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 13
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 13
 
 
  290              		.loc 1 198 0
@@ -778,7 +778,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  337 014a 8000     		lsl	r0, r0, #2
  338 014c 5118     		add	r1, r2, r1
  339 014e 12E0     		b	.L33
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 14
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 14
 
 
  340              	.LVL23:
@@ -838,7 +838,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  384 0180 E6E7     		b	.L35
  385              	.LVL26:
  386              	.L36:
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 15
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 15
 
 
  387              	.LBE33:
@@ -898,7 +898,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  369:exampleGame.c ****    *******************************************************/
  370:exampleGame.c ****   updateDelayTime();
  371:exampleGame.c ****   if ((ms - lastUpdate) > delayTimeMs)
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 16
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 16
 
 
  429              		.loc 1 371 0
@@ -958,7 +958,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  384:exampleGame.c ****       currXpos  = 3;
  469              		.loc 1 384 0
  470 01e8 0323     		mov	r3, #3
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 17
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 17
 
 
  471 01ea 7360     		str	r3, [r6, #4]
@@ -1018,7 +1018,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  515 021a 50E0     		b	.L47
  516              	.LVL34:
  517              	.L49:
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 18
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 18
 
 
  250:exampleGame.c ****     if(board[i][j] != 1)
@@ -1078,7 +1078,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  560 024c 1F4B     		ldr	r3, .L62
  561 024e 1C7B     		ldrb	r4, [r3, #12]
  562 0250 0134     		add	r4, r4, #1
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 19
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 19
 
 
  563 0252 2406     		lsl	r4, r4, #24
@@ -1138,7 +1138,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  607              		.loc 1 275 0
  608 029c 039C     		ldr	r4, [sp, #12]
  274:exampleGame.c ****     str[0] = ' ';
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 20
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 20
 
 
  609              		.loc 1 274 0
@@ -1198,7 +1198,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  649              		.loc 1 395 0
  650 02c2 06B0     		add	sp, sp, #24
  651              		@ sp needed for prologue
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 21
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 21
 
 
  652 02c4 F0BC     		pop	{r4, r5, r6, r7}
@@ -1258,7 +1258,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  411:exampleGame.c ****   score = 0;
  690              		.loc 1 411 0
  691 02ec 224B     		ldr	r3, .L70+4
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 22
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 22
 
 
  692 02ee 0025     		mov	r5, #0
@@ -1318,7 +1318,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  405:exampleGame.c **** setupGame (tBool drawBoard)
  730              		.loc 1 405 0 is_stmt 1 discriminator 1
  731 032e A022     		mov	r2, #160
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 23
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 23
 
 
  732 0330 9200     		lsl	r2, r2, #2
@@ -1378,7 +1378,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  769              		.loc 1 434 0
  770 035e 2060     		str	r0, [r4]
  435:exampleGame.c ****   currXpos  = 3;
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 24
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 24
 
 
  771              		.loc 1 435 0
@@ -1438,7 +1438,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  810              		.cfi_offset 6, -12
  811              		.cfi_offset 7, -8
  812              		.cfi_offset 14, -4
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 25
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 25
 
 
  452:exampleGame.c ****   gameStatus = GAME_NOT_STARTED;
@@ -1498,7 +1498,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  852 03be 022A     		cmp	r2, #2
  853 03c0 7BD1     		bne	.L91
  854 03c2 42E0     		b	.L97
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 26
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 26
 
 
  855              	.L75:
@@ -1558,7 +1558,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  484:exampleGame.c ****             if(isValid(currXpos, currYpos+1, currFigure))
  890              		.loc 1 484 0
  891 03f4 AC68     		ldr	r4, [r5, #8]
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 27
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 27
 
 
  892 03f6 0134     		add	r4, r4, #1
@@ -1618,7 +1618,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  933 042e 1028     		cmp	r0, #16
  934 0430 01D1     		bne	.L81
  498:exampleGame.c ****             gameStatus = GAME_OVER;
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 28
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 28
 
 
  935              		.loc 1 498 0
@@ -1678,7 +1678,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  965 0450 0A21     		mov	r1, #10
  522:exampleGame.c ****         menu.pChoice[0] = "Restart game";
  966              		.loc 1 522 0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 29
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 29
 
 
  967 0452 2248     		ldr	r0, .L98+12
@@ -1738,7 +1738,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1006 047c FD20     		mov	r0, #253
  520:exampleGame.c ****         menu.pHeaderText = "Game over!";
  1007              		.loc 1 520 0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 30
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 30
 
 
  1008 047e 194A     		ldr	r2, .L98+20
@@ -1798,7 +1798,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1048              	.L90:
  1049              	.LBE48:
  459:exampleGame.c ****   while(gameStatus != GAME_END)
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 31
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 31
 
 
  1050              		.loc 1 459 0 discriminator 1
@@ -1858,7 +1858,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1100              		.section	.rodata.str1.1,"aMS",%progbits,1
  1101              	.LC17:
  1102 0000 2053636F 		.ascii	" Score:   0 \000"
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 32
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 32
 
 
  1102      72653A20 
@@ -1918,7 +1918,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1144 0070 2E2E582E 		.ascii	"..X."
  1145 0074 2E2E582E 		.ascii	"..X."
  1146 0078 2E58582E 		.ascii	".XX."
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 33
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 33
 
 
  1147 007c 2E2E2E2E 		.ascii	"...."
@@ -1978,7 +1978,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1199      00000000 
  1199      00000000 
  1199      00000000 
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 34
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 34
 
 
  1200              		.type	currFigure, %object
@@ -2023,8 +2023,8 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1239 000b 01       		.uleb128 0x1
  1240 000c F3010000 		.4byte	.LASF51
  1241 0010 01       		.byte	0x1
- 1242 0011 AA010000 		.4byte	.LASF52
- 1243 0015 2B000000 		.4byte	.LASF53
+ 1242 0011 7F010000 		.4byte	.LASF52
+ 1243 0015 93010000 		.4byte	.LASF53
  1244 0019 00000000 		.4byte	.Ltext0
  1245 001d E8040000 		.4byte	.Letext0
  1246 0021 00000000 		.4byte	.Ldebug_line0
@@ -2038,21 +2038,21 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1254 0032 08       		.byte	0x8
  1255 0033 BE010000 		.4byte	.LASF0
  1256 0037 03       		.uleb128 0x3
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 35
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 35
 
 
  1257 0038 02       		.byte	0x2
  1258 0039 07       		.byte	0x7
- 1259 003a 4F010000 		.4byte	.LASF1
+ 1259 003a 24010000 		.4byte	.LASF1
  1260 003e 04       		.uleb128 0x4
- 1261 003f 78010000 		.4byte	.LASF2
+ 1261 003f 4D010000 		.4byte	.LASF2
  1262 0043 02       		.byte	0x2
  1263 0044 49       		.byte	0x49
  1264 0045 49000000 		.4byte	0x49
  1265 0049 03       		.uleb128 0x3
  1266 004a 04       		.byte	0x4
  1267 004b 07       		.byte	0x7
- 1268 004c FA000000 		.4byte	.LASF3
+ 1268 004c CF000000 		.4byte	.LASF3
  1269 0050 02       		.uleb128 0x2
  1270 0051 74533800 		.ascii	"tS8\000"
  1271 0055 02       		.byte	0x2
@@ -2061,7 +2061,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1274 005b 03       		.uleb128 0x3
  1275 005c 01       		.byte	0x1
  1276 005d 06       		.byte	0x6
- 1277 005e 90000000 		.4byte	.LASF4
+ 1277 005e 65000000 		.4byte	.LASF4
  1278 0062 03       		.uleb128 0x3
  1279 0063 02       		.byte	0x2
  1280 0064 05       		.byte	0x5
@@ -2076,7 +2076,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1289 0076 05       		.byte	0x5
  1290 0077 696E7400 		.ascii	"int\000"
  1291 007b 04       		.uleb128 0x4
- 1292 007c 9C000000 		.4byte	.LASF7
+ 1292 007c 71000000 		.4byte	.LASF7
  1293 0080 02       		.byte	0x2
  1294 0081 4D       		.byte	0x4d
  1295 0082 30000000 		.4byte	0x30
@@ -2086,11 +2086,11 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1299 008c 03       		.uleb128 0x3
  1300 008d 04       		.byte	0x4
  1301 008e 07       		.byte	0x7
- 1302 008f 27010000 		.4byte	.LASF8
+ 1302 008f FC000000 		.4byte	.LASF8
  1303 0093 03       		.uleb128 0x3
  1304 0094 08       		.byte	0x8
  1305 0095 05       		.byte	0x5
- 1306 0096 82000000 		.4byte	.LASF9
+ 1306 0096 57000000 		.4byte	.LASF9
  1307 009a 03       		.uleb128 0x3
  1308 009b 08       		.byte	0x8
  1309 009c 07       		.byte	0x7
@@ -2098,10 +2098,10 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1311 00a1 03       		.uleb128 0x3
  1312 00a2 04       		.byte	0x4
  1313 00a3 05       		.byte	0x5
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 36
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 36
 
 
- 1314 00a4 A2000000 		.4byte	.LASF11
+ 1314 00a4 77000000 		.4byte	.LASF11
  1315 00a8 03       		.uleb128 0x3
  1316 00a9 01       		.byte	0x1
  1317 00aa 08       		.byte	0x8
@@ -2128,7 +2128,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1338 00d1 23       		.byte	0x23
  1339 00d2 01       		.uleb128 0x1
  1340 00d3 08       		.uleb128 0x8
- 1341 00d4 07010000 		.4byte	.LASF15
+ 1341 00d4 DC000000 		.4byte	.LASF15
  1342 00d8 03       		.byte	0x3
  1343 00d9 1D       		.byte	0x1d
  1344 00da 25000000 		.4byte	0x25
@@ -2136,7 +2136,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1346 00df 23       		.byte	0x23
  1347 00e0 02       		.uleb128 0x2
  1348 00e1 08       		.uleb128 0x8
- 1349 00e2 B7000000 		.4byte	.LASF16
+ 1349 00e2 8C000000 		.4byte	.LASF16
  1350 00e6 03       		.byte	0x3
  1351 00e7 1E       		.byte	0x1e
  1352 00e8 25000000 		.4byte	0x25
@@ -2144,7 +2144,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1354 00ed 23       		.byte	0x23
  1355 00ee 03       		.uleb128 0x3
  1356 00ef 08       		.uleb128 0x8
- 1357 00f0 D3000000 		.4byte	.LASF17
+ 1357 00f0 A8000000 		.4byte	.LASF17
  1358 00f4 03       		.byte	0x3
  1359 00f5 1F       		.byte	0x1f
  1360 00f6 25000000 		.4byte	0x25
@@ -2152,13 +2152,13 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1362 00fb 23       		.byte	0x23
  1363 00fc 04       		.uleb128 0x4
  1364 00fd 08       		.uleb128 0x8
- 1365 00fe EC000000 		.4byte	.LASF18
+ 1365 00fe C1000000 		.4byte	.LASF18
  1366 0102 03       		.byte	0x3
  1367 0103 20       		.byte	0x20
  1368 0104 25000000 		.4byte	0x25
  1369 0108 02       		.byte	0x2
  1370 0109 23       		.byte	0x23
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 37
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 37
 
 
  1371 010a 05       		.uleb128 0x5
@@ -2171,7 +2171,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1378 0117 23       		.byte	0x23
  1379 0118 08       		.uleb128 0x8
  1380 0119 08       		.uleb128 0x8
- 1381 011a 0C010000 		.4byte	.LASF20
+ 1381 011a E1000000 		.4byte	.LASF20
  1382 011e 03       		.byte	0x3
  1383 011f 22       		.byte	0x22
  1384 0120 25000000 		.4byte	0x25
@@ -2179,7 +2179,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1386 0125 23       		.byte	0x23
  1387 0126 0C       		.uleb128 0xc
  1388 0127 08       		.uleb128 0x8
- 1389 0128 8A010000 		.4byte	.LASF21
+ 1389 0128 5F010000 		.4byte	.LASF21
  1390 012c 03       		.byte	0x3
  1391 012d 23       		.byte	0x23
  1392 012e 7C010000 		.4byte	0x17c
@@ -2187,7 +2187,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1394 0133 23       		.byte	0x23
  1395 0134 10       		.uleb128 0x10
  1396 0135 08       		.uleb128 0x8
- 1397 0136 92010000 		.4byte	.LASF22
+ 1397 0136 67010000 		.4byte	.LASF22
  1398 013a 03       		.byte	0x3
  1399 013b 24       		.byte	0x24
  1400 013c 25000000 		.4byte	0x25
@@ -2195,7 +2195,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1402 0141 23       		.byte	0x23
  1403 0142 28       		.uleb128 0x28
  1404 0143 08       		.uleb128 0x8
- 1405 0144 76000000 		.4byte	.LASF23
+ 1405 0144 4B000000 		.4byte	.LASF23
  1406 0148 03       		.byte	0x3
  1407 0149 25       		.byte	0x25
  1408 014a 25000000 		.4byte	0x25
@@ -2211,18 +2211,18 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1418 015d 23       		.byte	0x23
  1419 015e 2A       		.uleb128 0x2a
  1420 015f 08       		.uleb128 0x8
- 1421 0160 DF000000 		.4byte	.LASF25
+ 1421 0160 B4000000 		.4byte	.LASF25
  1422 0164 03       		.byte	0x3
  1423 0165 27       		.byte	0x27
  1424 0166 25000000 		.4byte	0x25
  1425 016a 02       		.byte	0x2
  1426 016b 23       		.byte	0x23
  1427 016c 2B       		.uleb128 0x2b
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 38
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 38
 
 
  1428 016d 08       		.uleb128 0x8
- 1429 016e 56000000 		.4byte	.LASF26
+ 1429 016e 2B000000 		.4byte	.LASF26
  1430 0172 03       		.byte	0x3
  1431 0173 28       		.byte	0x28
  1432 0174 25000000 		.4byte	0x25
@@ -2238,12 +2238,12 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1442 018a 05       		.byte	0x5
  1443 018b 00       		.byte	0
  1444 018c 04       		.uleb128 0x4
- 1445 018d B8010000 		.4byte	.LASF27
+ 1445 018d 8D010000 		.4byte	.LASF27
  1446 0191 03       		.byte	0x3
  1447 0192 29       		.byte	0x29
  1448 0193 AF000000 		.4byte	0xaf
  1449 0197 0B       		.uleb128 0xb
- 1450 0198 9A010000 		.4byte	.LASF32
+ 1450 0198 6F010000 		.4byte	.LASF32
  1451 019c 01       		.byte	0x1
  1452 019d F5       		.byte	0xf5
  1453 019e 01       		.byte	0x1
@@ -2262,7 +2262,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1466 01b6 69000000 		.4byte	0x69
  1467 01ba 00       		.byte	0
  1468 01bb 0E       		.uleb128 0xe
- 1469 01bc 62010000 		.4byte	.LASF28
+ 1469 01bc 37010000 		.4byte	.LASF28
  1470 01c0 01       		.byte	0x1
  1471 01c1 0801     		.2byte	0x108
  1472 01c3 01       		.byte	0x1
@@ -2278,14 +2278,14 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1482 01d7 25000000 		.4byte	0x25
  1483 01db E6010000 		.4byte	0x1e6
  1484 01df 0A       		.uleb128 0xa
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 39
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 39
 
 
  1485 01e0 8C000000 		.4byte	0x8c
  1486 01e4 03       		.byte	0x3
  1487 01e5 00       		.byte	0
  1488 01e6 10       		.uleb128 0x10
- 1489 01e7 6D000000 		.4byte	.LASF29
+ 1489 01e7 42000000 		.4byte	.LASF29
  1490 01eb 01       		.byte	0x1
  1491 01ec BD       		.byte	0xbd
  1492 01ed 01       		.byte	0x1
@@ -2336,9 +2336,9 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1537 023e 69000000 		.4byte	0x69
  1538 0242 00       		.byte	0
  1539 0243 12       		.uleb128 0x12
- 1540 0244 3F010000 		.4byte	.LASF54
+ 1540 0244 14010000 		.4byte	.LASF54
  1541 0248 01       		.byte	0x1
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 40
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 40
 
 
  1542 0249 5301     		.2byte	0x153
@@ -2398,13 +2398,13 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1596 02bd 01       		.byte	0x1
  1597 02be A2       		.byte	0xa2
  1598 02bf 69000000 		.4byte	0x69
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 41
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 41
 
 
  1599 02c3 9C000000 		.4byte	.LLST4
  1600 02c7 00       		.byte	0
  1601 02c8 19       		.uleb128 0x19
- 1602 02c9 7D010000 		.4byte	.LASF35
+ 1602 02c9 52010000 		.4byte	.LASF35
  1603 02cd 01       		.byte	0x1
  1604 02ce D1       		.byte	0xd1
  1605 02cf 01       		.byte	0x1
@@ -2445,7 +2445,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1640 031d 2C010000 		.4byte	.LLST9
  1641 0321 00       		.byte	0
  1642 0322 0E       		.uleb128 0xe
- 1643 0323 BC000000 		.4byte	.LASF34
+ 1643 0323 91000000 		.4byte	.LASF34
  1644 0327 01       		.byte	0x1
  1645 0328 2201     		.2byte	0x122
  1646 032a 01       		.byte	0x1
@@ -2458,7 +2458,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1653 0336 69000000 		.4byte	0x69
  1654 033a 0F       		.uleb128 0xf
  1655 033b 6A00     		.ascii	"j\000"
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 42
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 42
 
 
  1656 033d 01       		.byte	0x1
@@ -2471,7 +2471,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1663 034a 69000000 		.4byte	0x69
  1664 034e 00       		.byte	0
  1665 034f 1A       		.uleb128 0x1a
- 1666 0350 AB000000 		.4byte	.LASF36
+ 1666 0350 80000000 		.4byte	.LASF36
  1667 0354 01       		.byte	0x1
  1668 0355 6901     		.2byte	0x169
  1669 0357 01       		.byte	0x1
@@ -2518,7 +2518,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1710 03cd 1D       		.uleb128 0x1d
  1711 03ce 30020000 		.4byte	0x230
  1712 03d2 EF010000 		.4byte	.LLST16
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 43
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 43
 
 
  1713 03d6 1D       		.uleb128 0x1d
@@ -2578,7 +2578,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1767 0467 1D       		.uleb128 0x1d
  1768 0468 B1010000 		.4byte	0x1b1
  1769 046c 60020000 		.4byte	.LLST20
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 44
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 44
 
 
  1770 0470 00       		.byte	0
@@ -2631,14 +2631,14 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1817 04d9 00       		.byte	0
  1818 04da 29       		.uleb128 0x29
  1819 04db 01       		.byte	0x1
- 1820 04dc 1B010000 		.4byte	.LASF56
+ 1820 04dc F0000000 		.4byte	.LASF56
  1821 04e0 01       		.byte	0x1
  1822 04e1 C201     		.2byte	0x1c2
  1823 04e3 01       		.byte	0x1
  1824 04e4 84030000 		.4byte	.LFB11
  1825 04e8 E8040000 		.4byte	.LFE11
  1826 04ec CF020000 		.4byte	.LLST25
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 45
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 45
 
 
  1827 04f0 29050000 		.4byte	0x529
@@ -2666,7 +2666,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1849 0527 00       		.byte	0
  1850 0528 00       		.byte	0
  1851 0529 2C       		.uleb128 0x2c
- 1852 052a 9F010000 		.4byte	.LASF41
+ 1852 052a 74010000 		.4byte	.LASF41
  1853 052e 01       		.byte	0x1
  1854 052f 33       		.byte	0x33
  1855 0530 25000000 		.4byte	0x25
@@ -2674,7 +2674,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1857 0535 03       		.byte	0x3
  1858 0536 98020000 		.4byte	gameStatus
  1859 053a 2C       		.uleb128 0x2c
- 1860 053b CD000000 		.4byte	.LASF42
+ 1860 053b A2000000 		.4byte	.LASF42
  1861 053f 01       		.byte	0x1
  1862 0540 34       		.byte	0x34
  1863 0541 25000000 		.4byte	0x25
@@ -2689,7 +2689,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1872 0559 12       		.byte	0x12
  1873 055a 00       		.byte	0
  1874 055b 2C       		.uleb128 0x2c
- 1875 055c C7000000 		.4byte	.LASF43
+ 1875 055c 9C000000 		.4byte	.LASF43
  1876 0560 01       		.byte	0x1
  1877 0561 36       		.byte	0x36
  1878 0562 6C050000 		.4byte	0x56c
@@ -2698,7 +2698,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1881 0568 00000000 		.4byte	shift
  1882 056c 2D       		.uleb128 0x2d
  1883 056d 4B050000 		.4byte	0x54b
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 46
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 46
 
 
  1884 0571 09       		.uleb128 0x9
@@ -2712,7 +2712,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1892 0585 0F       		.byte	0xf
  1893 0586 00       		.byte	0
  1894 0587 2C       		.uleb128 0x2c
- 1895 0588 39010000 		.4byte	.LASF44
+ 1895 0588 0E010000 		.4byte	.LASF44
  1896 058c 01       		.byte	0x1
  1897 058d 37       		.byte	0x37
  1898 058e 71050000 		.4byte	0x571
@@ -2728,7 +2728,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1908 05a4 03       		.byte	0x3
  1909 05a5 80020000 		.4byte	currFigure
  1910 05a9 2C       		.uleb128 0x2c
- 1911 05aa 64000000 		.4byte	.LASF46
+ 1911 05aa 39000000 		.4byte	.LASF46
  1912 05ae 01       		.byte	0x1
  1913 05af 39       		.byte	0x39
  1914 05b0 69000000 		.4byte	0x69
@@ -2754,11 +2754,11 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1934 05dc 2E       		.uleb128 0x2e
  1935 05dd 3E000000 		.4byte	0x3e
  1936 05e1 2C       		.uleb128 0x2c
- 1937 05e2 6C010000 		.4byte	.LASF49
+ 1937 05e2 41010000 		.4byte	.LASF49
  1938 05e6 01       		.byte	0x1
  1939 05e7 3C       		.byte	0x3c
  1940 05e8 DC050000 		.4byte	0x5dc
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 47
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 47
 
 
  1941 05ec 05       		.byte	0x5
@@ -2818,7 +2818,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  1995 0013 02       		.uleb128 0x2
  1996 0014 16       		.uleb128 0x16
  1997 0015 00       		.byte	0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 48
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 48
 
 
  1998 0016 03       		.uleb128 0x3
@@ -2878,7 +2878,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  2052 004c 07       		.uleb128 0x7
  2053 004d 13       		.uleb128 0x13
  2054 004e 01       		.byte	0x1
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 49
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 49
 
 
  2055 004f 0B       		.uleb128 0xb
@@ -2938,7 +2938,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  2109 0085 49       		.uleb128 0x49
  2110 0086 13       		.uleb128 0x13
  2111 0087 20       		.uleb128 0x20
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 50
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 50
 
 
  2112 0088 0B       		.uleb128 0xb
@@ -2998,7 +2998,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  2166 00be 0B       		.uleb128 0xb
  2167 00bf 3B       		.uleb128 0x3b
  2168 00c0 05       		.uleb128 0x5
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 51
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 51
 
 
  2169 00c1 49       		.uleb128 0x49
@@ -3058,7 +3058,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  2223 00f7 3A       		.uleb128 0x3a
  2224 00f8 0B       		.uleb128 0xb
  2225 00f9 3B       		.uleb128 0x3b
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 52
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 52
 
 
  2226 00fa 05       		.uleb128 0x5
@@ -3118,7 +3118,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  2280 0130 3A       		.uleb128 0x3a
  2281 0131 0B       		.uleb128 0xb
  2282 0132 3B       		.uleb128 0x3b
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 53
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 53
 
 
  2283 0133 0B       		.uleb128 0xb
@@ -3178,7 +3178,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  2337 0169 01       		.uleb128 0x1
  2338 016a 13       		.uleb128 0x13
  2339 016b 00       		.byte	0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 54
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 54
 
 
  2340 016c 00       		.byte	0
@@ -3238,7 +3238,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  2394 01a2 06       		.uleb128 0x6
  2395 01a3 00       		.byte	0
  2396 01a4 00       		.byte	0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 55
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 55
 
 
  2397 01a5 1E       		.uleb128 0x1e
@@ -3298,7 +3298,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  2451 01db 01       		.uleb128 0x1
  2452 01dc 12       		.uleb128 0x12
  2453 01dd 01       		.uleb128 0x1
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 56
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 56
 
 
  2454 01de 58       		.uleb128 0x58
@@ -3358,7 +3358,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  2508 0214 13       		.uleb128 0x13
  2509 0215 02       		.uleb128 0x2
  2510 0216 06       		.uleb128 0x6
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 57
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 57
 
 
  2511 0217 00       		.byte	0
@@ -3418,7 +3418,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  2565 024d 00       		.byte	0
  2566 024e 2B       		.uleb128 0x2b
  2567 024f 34       		.uleb128 0x34
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 58
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 58
 
 
  2568 0250 00       		.byte	0
@@ -3478,7 +3478,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  2622 0286 0C       		.uleb128 0xc
  2623 0287 3C       		.uleb128 0x3c
  2624 0288 0C       		.uleb128 0xc
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 59
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 59
 
 
  2625 0289 00       		.byte	0
@@ -3538,7 +3538,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  2679              	.LLST2:
  2680 0054 02000000 		.4byte	.LVL0-.Ltext0
  2681 0058 10000000 		.4byte	.LVL1-.Ltext0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 60
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 60
 
 
  2682 005c 0100     		.2byte	0x1
@@ -3598,7 +3598,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  2736 00e8 7D       		.byte	0x7d
  2737 00e9 18       		.sleb128 24
  2738 00ea 00000000 		.4byte	0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 61
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 61
 
 
  2739 00ee 00000000 		.4byte	0
@@ -3658,7 +3658,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  2793 0179 2C       		.sleb128 44
  2794 017a 00000000 		.4byte	0
  2795 017e 00000000 		.4byte	0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 62
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 62
 
 
  2796              	.LLST11:
@@ -3718,7 +3718,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  2850 0212 82010000 		.4byte	.LVL26-.Ltext0
  2851 0216 0200     		.2byte	0x2
  2852 0218 30       		.byte	0x30
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 63
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 63
 
 
  2853 0219 9F       		.byte	0x9f
@@ -3778,7 +3778,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  2907 02a3 00000000 		.4byte	0
  2908              	.LLST23:
  2909 02a7 2C030000 		.4byte	.LVL41-.Ltext0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 64
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 64
 
 
  2910 02ab 38030000 		.4byte	.LVL42-.Ltext0
@@ -3838,7 +3838,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  2964 0337 4E040000 		.4byte	.LVL56-.Ltext0
  2965 033b 0100     		.2byte	0x1
  2966 033d 50       		.byte	0x50
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 65
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 65
 
 
  2967 033e 00000000 		.4byte	0
@@ -3898,7 +3898,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  3015      00
  3016              	.LASF45:
  3017 0009 63757272 		.ascii	"currFigure\000"
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 66
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 66
 
 
  3017      46696775 
@@ -3909,156 +3909,156 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  3019      6720756E 
  3019      7369676E 
  3019      65642069 
- 3020              	.LASF53:
- 3021 002b 433A5C55 		.ascii	"C:\\Users\\kozlovsky\\Downloads\\TicTac\\TicTac\000"
- 3021      73657273 
- 3021      5C6B6F7A 
- 3021      6C6F7673 
- 3021      6B795C44 
- 3022              	.LASF26:
- 3023 0056 73656C65 		.ascii	"selectedColor\000"
- 3023      63746564 
- 3023      436F6C6F 
- 3023      7200
- 3024              	.LASF46:
- 3025 0064 63757272 		.ascii	"currXpos\000"
- 3025      58706F73 
+ 3020              	.LASF26:
+ 3021 002b 73656C65 		.ascii	"selectedColor\000"
+ 3021      63746564 
+ 3021      436F6C6F 
+ 3021      7200
+ 3022              	.LASF46:
+ 3023 0039 63757272 		.ascii	"currXpos\000"
+ 3023      58706F73 
+ 3023      00
+ 3024              	.LASF29:
+ 3025 0042 64726177 		.ascii	"drawGame\000"
+ 3025      47616D65 
  3025      00
- 3026              	.LASF29:
- 3027 006d 64726177 		.ascii	"drawGame\000"
- 3027      47616D65 
- 3027      00
- 3028              	.LASF23:
- 3029 0076 626F7264 		.ascii	"borderColor\000"
- 3029      6572436F 
- 3029      6C6F7200 
- 3030              	.LASF9:
- 3031 0082 6C6F6E67 		.ascii	"long long int\000"
- 3031      206C6F6E 
- 3031      6720696E 
- 3031      7400
- 3032              	.LASF4:
- 3033 0090 7369676E 		.ascii	"signed char\000"
- 3033      65642063 
- 3033      68617200 
- 3034              	.LASF7:
- 3035 009c 74426F6F 		.ascii	"tBool\000"
- 3035      6C00
- 3036              	.LASF11:
- 3037 00a2 6C6F6E67 		.ascii	"long int\000"
- 3037      20696E74 
- 3037      00
- 3038              	.LASF36:
- 3039 00ab 61647661 		.ascii	"advanceGame\000"
- 3039      6E636547 
- 3039      616D6500 
- 3040              	.LASF16:
- 3041 00b7 794C656E 		.ascii	"yLen\000"
- 3041      00
- 3042              	.LASF34:
- 3043 00bc 63686563 		.ascii	"checkScore\000"
- 3043      6B53636F 
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 67
+ 3026              	.LASF23:
+ 3027 004b 626F7264 		.ascii	"borderColor\000"
+ 3027      6572436F 
+ 3027      6C6F7200 
+ 3028              	.LASF9:
+ 3029 0057 6C6F6E67 		.ascii	"long long int\000"
+ 3029      206C6F6E 
+ 3029      6720696E 
+ 3029      7400
+ 3030              	.LASF4:
+ 3031 0065 7369676E 		.ascii	"signed char\000"
+ 3031      65642063 
+ 3031      68617200 
+ 3032              	.LASF7:
+ 3033 0071 74426F6F 		.ascii	"tBool\000"
+ 3033      6C00
+ 3034              	.LASF11:
+ 3035 0077 6C6F6E67 		.ascii	"long int\000"
+ 3035      20696E74 
+ 3035      00
+ 3036              	.LASF36:
+ 3037 0080 61647661 		.ascii	"advanceGame\000"
+ 3037      6E636547 
+ 3037      616D6500 
+ 3038              	.LASF16:
+ 3039 008c 794C656E 		.ascii	"yLen\000"
+ 3039      00
+ 3040              	.LASF34:
+ 3041 0091 63686563 		.ascii	"checkScore\000"
+ 3041      6B53636F 
+ 3041      726500
+ 3042              	.LASF43:
+ 3043 009c 73686966 		.ascii	"shift\000"
+ 3043      7400
+ 3044              	.LASF42:
+ 3045 00a2 73636F72 		.ascii	"score\000"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 67
 
 
- 3043      726500
- 3044              	.LASF43:
- 3045 00c7 73686966 		.ascii	"shift\000"
- 3045      7400
- 3046              	.LASF42:
- 3047 00cd 73636F72 		.ascii	"score\000"
- 3047      6500
- 3048              	.LASF17:
- 3049 00d3 6E6F4F66 		.ascii	"noOfChoices\000"
- 3049      43686F69 
- 3049      63657300 
- 3050              	.LASF25:
- 3051 00df 63686F69 		.ascii	"choicesColor\000"
- 3051      63657343 
- 3051      6F6C6F72 
- 3051      00
- 3052              	.LASF18:
- 3053 00ec 696E6974 		.ascii	"initialChoice\000"
- 3053      69616C43 
- 3053      686F6963 
- 3053      6500
- 3054              	.LASF3:
- 3055 00fa 756E7369 		.ascii	"unsigned int\000"
- 3055      676E6564 
- 3055      20696E74 
+ 3045      6500
+ 3046              	.LASF17:
+ 3047 00a8 6E6F4F66 		.ascii	"noOfChoices\000"
+ 3047      43686F69 
+ 3047      63657300 
+ 3048              	.LASF25:
+ 3049 00b4 63686F69 		.ascii	"choicesColor\000"
+ 3049      63657343 
+ 3049      6F6C6F72 
+ 3049      00
+ 3050              	.LASF18:
+ 3051 00c1 696E6974 		.ascii	"initialChoice\000"
+ 3051      69616C43 
+ 3051      686F6963 
+ 3051      6500
+ 3052              	.LASF3:
+ 3053 00cf 756E7369 		.ascii	"unsigned int\000"
+ 3053      676E6564 
+ 3053      20696E74 
+ 3053      00
+ 3054              	.LASF15:
+ 3055 00dc 784C656E 		.ascii	"xLen\000"
  3055      00
- 3056              	.LASF15:
- 3057 0107 784C656E 		.ascii	"xLen\000"
- 3057      00
- 3058              	.LASF20:
- 3059 010c 68656164 		.ascii	"headerTextXpos\000"
- 3059      65725465 
- 3059      78745870 
- 3059      6F7300
- 3060              	.LASF56:
- 3061 011b 706C6179 		.ascii	"playExample\000"
- 3061      4578616D 
- 3061      706C6500 
- 3062              	.LASF8:
- 3063 0127 6C6F6E67 		.ascii	"long unsigned int\000"
- 3063      20756E73 
- 3063      69676E65 
- 3063      6420696E 
- 3063      7400
- 3064              	.LASF44:
- 3065 0139 626F6172 		.ascii	"board\000"
- 3065      6400
- 3066              	.LASF54:
- 3067 013f 75706461 		.ascii	"updateDelayTime\000"
- 3067      74654465 
- 3067      6C617954 
- 3067      696D6500 
- 3068              	.LASF1:
- 3069 014f 73686F72 		.ascii	"short unsigned int\000"
- 3069      7420756E 
- 3069      7369676E 
- 3069      65642069 
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 68
+ 3056              	.LASF20:
+ 3057 00e1 68656164 		.ascii	"headerTextXpos\000"
+ 3057      65725465 
+ 3057      78745870 
+ 3057      6F7300
+ 3058              	.LASF56:
+ 3059 00f0 706C6179 		.ascii	"playExample\000"
+ 3059      4578616D 
+ 3059      706C6500 
+ 3060              	.LASF8:
+ 3061 00fc 6C6F6E67 		.ascii	"long unsigned int\000"
+ 3061      20756E73 
+ 3061      69676E65 
+ 3061      6420696E 
+ 3061      7400
+ 3062              	.LASF44:
+ 3063 010e 626F6172 		.ascii	"board\000"
+ 3063      6400
+ 3064              	.LASF54:
+ 3065 0114 75706461 		.ascii	"updateDelayTime\000"
+ 3065      74654465 
+ 3065      6C617954 
+ 3065      696D6500 
+ 3066              	.LASF1:
+ 3067 0124 73686F72 		.ascii	"short unsigned int\000"
+ 3067      7420756E 
+ 3067      7369676E 
+ 3067      65642069 
+ 3067      6E7400
+ 3068              	.LASF28:
+ 3069 0137 64726177 		.ascii	"drawScore\000"
+ 3069      53636F72 
+ 3069      6500
+ 3070              	.LASF49:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 68
 
 
- 3069      6E7400
- 3070              	.LASF28:
- 3071 0162 64726177 		.ascii	"drawScore\000"
- 3071      53636F72 
- 3071      6500
- 3072              	.LASF49:
- 3073 016c 64656C61 		.ascii	"delayTimeMs\000"
- 3073      7954696D 
- 3073      654D7300 
- 3074              	.LASF2:
- 3075 0178 74553332 		.ascii	"tU32\000"
+ 3071 0141 64656C61 		.ascii	"delayTimeMs\000"
+ 3071      7954696D 
+ 3071      654D7300 
+ 3072              	.LASF2:
+ 3073 014d 74553332 		.ascii	"tU32\000"
+ 3073      00
+ 3074              	.LASF35:
+ 3075 0152 696E7365 		.ascii	"insertFigure\000"
+ 3075      72744669 
+ 3075      67757265 
  3075      00
- 3076              	.LASF35:
- 3077 017d 696E7365 		.ascii	"insertFigure\000"
- 3077      72744669 
- 3077      67757265 
- 3077      00
- 3078              	.LASF21:
- 3079 018a 7043686F 		.ascii	"pChoice\000"
- 3079      69636500 
- 3080              	.LASF22:
- 3081 0192 6267436F 		.ascii	"bgColor\000"
- 3081      6C6F7200 
- 3082              	.LASF32:
- 3083 019a 66756C6C 		.ascii	"full\000"
- 3083      00
- 3084              	.LASF41:
- 3085 019f 67616D65 		.ascii	"gameStatus\000"
- 3085      53746174 
- 3085      757300
- 3086              	.LASF52:
- 3087 01aa 6578616D 		.ascii	"exampleGame.c\000"
- 3087      706C6547 
- 3087      616D652E 
- 3087      6300
- 3088              	.LASF27:
- 3089 01b8 744D656E 		.ascii	"tMenu\000"
- 3089      7500
+ 3076              	.LASF21:
+ 3077 015f 7043686F 		.ascii	"pChoice\000"
+ 3077      69636500 
+ 3078              	.LASF22:
+ 3079 0167 6267436F 		.ascii	"bgColor\000"
+ 3079      6C6F7200 
+ 3080              	.LASF32:
+ 3081 016f 66756C6C 		.ascii	"full\000"
+ 3081      00
+ 3082              	.LASF41:
+ 3083 0174 67616D65 		.ascii	"gameStatus\000"
+ 3083      53746174 
+ 3083      757300
+ 3084              	.LASF52:
+ 3085 017f 6578616D 		.ascii	"exampleGame.c\000"
+ 3085      706C6547 
+ 3085      616D652E 
+ 3085      6300
+ 3086              	.LASF27:
+ 3087 018d 744D656E 		.ascii	"tMenu\000"
+ 3087      7500
+ 3088              	.LASF53:
+ 3089 0193 433A5C55 		.ascii	"C:\\Users\\kozlovsky\\Documents\\Szkola\\TicTac\000"
+ 3089      73657273 
+ 3089      5C6B6F7A 
+ 3089      6C6F7673 
+ 3089      6B795C44 
  3090              	.LASF0:
  3091 01be 756E7369 		.ascii	"unsigned char\000"
  3091      676E6564 
@@ -4078,7 +4078,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  3097      72657300 
  3098              	.LASF55:
  3099 01eb 69735661 		.ascii	"isValid\000"
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 69
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 69
 
 
  3099      6C696400 
@@ -4132,38 +4132,38 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 1
  3127      64657254 
  3127      65787400 
  3128              		.ident	"GCC: (GNU) 4.6.3"
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s 			page 70
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s 			page 70
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 exampleGame.c
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:6      .text:00000000 $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:10     .text:00000000 isValid
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:147    .text:00000090 $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:152    .text:00000098 $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:156    .text:00000098 insertFigure
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:231    .text:000000dc $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:239    .text:000000e4 $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:243    .text:000000e4 advanceGame
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:658    .text:000002cc $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:666    .text:000002e0 $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:670    .text:000002e0 setupGame
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:789    .text:00000374 $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:796    .text:00000384 $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:801    .text:00000384 playExample
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1065   .text:000004d0 $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1115   .data:00000000 figures
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1076   .rodata:00000000 $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1080   .rodata:00000000 shift
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1193   .bss:00000000 $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1198   .bss:00000000 board
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1202   .bss:00000280 currFigure
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1206   .bss:00000284 currXpos
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1210   .bss:00000288 currYpos
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1214   .bss:0000028c score
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1219   .bss:00000290 delayTimeMs
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1223   .bss:00000294 lastUpdate
-C:\Users\KOZLOV~1\AppData\Local\Temp\cc1Z4E8u.s:1227   .bss:00000298 gameStatus
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:6      .text:00000000 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:10     .text:00000000 isValid
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:147    .text:00000090 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:152    .text:00000098 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:156    .text:00000098 insertFigure
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:231    .text:000000dc $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:239    .text:000000e4 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:243    .text:000000e4 advanceGame
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:658    .text:000002cc $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:666    .text:000002e0 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:670    .text:000002e0 setupGame
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:789    .text:00000374 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:796    .text:00000384 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:801    .text:00000384 playExample
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:1065   .text:000004d0 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:1115   .data:00000000 figures
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:1076   .rodata:00000000 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:1080   .rodata:00000000 shift
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:1193   .bss:00000000 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:1198   .bss:00000000 board
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:1202   .bss:00000280 currFigure
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:1206   .bss:00000284 currXpos
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:1210   .bss:00000288 currYpos
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:1214   .bss:0000028c score
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:1219   .bss:00000290 delayTimeMs
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:1223   .bss:00000294 lastUpdate
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccLKmZOG.s:1227   .bss:00000298 gameStatus
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

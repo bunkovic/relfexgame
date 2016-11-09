@@ -324,7 +324,7 @@ getI2cLock();
 
   /* Generate Stop condition */
   i2cStop();
-releaseI2cLock();
+  releaseI2cLock();
 
   return retCode;
 

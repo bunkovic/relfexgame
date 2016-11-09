@@ -19,12 +19,12 @@
 static tU8 whichArrow;
 static tU8 cursor   = 0;
 
-#define MAX_LENGTH 14
+#define MAX_LENGTH 25
 
 /*******************************************
- *
- *  Define game states: 
- *
+ *                                         *
+ *  Define game states:                    *
+ *                                         *
  *******************************************/
 #define GAME_NOT_STARTED 0
 #define GAME_RUNNING     1
@@ -40,7 +40,6 @@ static tU8 cursor   = 0;
 #define SCREEN_WIDTH  ((tU8)130)
 #define SCREEN_HEIGHT ((tU8)130)
 
-
 #define BOARD_GRID_COLOR  ((tU8)0)    // black
 #define BOARD_BKG_COLOR   ((tU8)0xff) // white
 #define GAME_BKG_COLOR_OK    ((tU8)0x0c) // green
@@ -50,18 +49,6 @@ static tU8 cursor   = 0;
 #define CHAR_WIDTH   8
 #define CENTER_X(numchars) ((SCREEN_WIDTH - numchars*CHAR_WIDTH)/2)
 
-static tU8 gameStatus;
-static tU8 gameMode;
-
-// ------------------------------------
-#include <lpc2xxx.h>
-#include <printf_P.h>
-#include <ea_init.h>
-#include "startup/config.h"
-
-
-
-// TIMER DEFINES
 #define tU8   unsigned char
 #define tU16  unsigned short
 #define tU32  unsigned int
@@ -72,16 +59,17 @@ static tU8 gameMode;
 #define TRUE  1
 #define FALSE 0
 
-// --------------------------------------
+#define LED_GREEN  1
+#define LED_RED    2
 
+static tU8 gameStatus;
+static tU8 gameMode;
 static tBool arrow;
 static tBool finish;
 static int score;
 static tU8 rounds;
 static tU8 currentRound;
-
-#define LED_GREEN  1
-#define LED_RED    2
+static tU8 eepromTest;
 
 // --------------------------------------
 
@@ -93,11 +81,11 @@ void showPreStartupScreen(void){
   printf("setup screen method");
 
   // print message
-  lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+  lcdGotoxy(CENTER_X(14), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
   lcdPuts("Welcome to the");
-  lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 -4);
+  lcdGotoxy(CENTER_X(10), SCREEN_HEIGHT/2 -4);
   lcdPuts("React Game");
-  lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 +12);
+  lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 + 12);
   lcdPuts("Press Center");
 
 }
@@ -128,7 +116,7 @@ void showRandomArrow(whichArrow) {
             lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
             lcdClrscr();
             lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
-            lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+            lcdGotoxy(CENTER_X(2), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
             lcdPuts("UP");
             break;
 
@@ -136,7 +124,7 @@ void showRandomArrow(whichArrow) {
             lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
             lcdClrscr();
             lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
-            lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+            lcdGotoxy(CENTER_X(5), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
             lcdPuts("RIGHT");
             break;
 
@@ -144,7 +132,7 @@ void showRandomArrow(whichArrow) {
             lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
             lcdClrscr();
             lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
-            lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+            lcdGotoxy(CENTER_X(4), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
             lcdPuts("DOWN");
             break;
 
@@ -152,7 +140,7 @@ void showRandomArrow(whichArrow) {
             lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
             lcdClrscr();
             lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
-            lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+            lcdGotoxy(CENTER_X(4), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
             lcdPuts("LEFT");
             break;
 
@@ -160,7 +148,7 @@ void showRandomArrow(whichArrow) {
             lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
             lcdClrscr();
             lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
-            lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+            lcdGotoxy(CENTER_X(6), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
             lcdPuts("CENTER");
             break;
 
@@ -168,7 +156,7 @@ void showRandomArrow(whichArrow) {
             lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
             lcdClrscr();
             lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
-            lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+            lcdGotoxy(CENTER_X(2), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
             lcdPuts("UP");
             break;
     }
@@ -219,8 +207,7 @@ void showScore() {
 
 
 void playReactGame(void){
-    printf("\nPlay React-Game works!\n");
-
+    // printf("\nPlay React-Game works!\n");
     showPreStartupScreen();
 
     arrow = TRUE;
@@ -274,7 +261,7 @@ void playReactGame(void){
                   lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
                   lcdClrscr();
                   lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
-                  lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+                  lcdGotoxy(CENTER_X(8), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
                   lcdPuts("SCORED !");
                   useBuzzer(1);
 
@@ -293,7 +280,7 @@ void playReactGame(void){
                   lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
                   lcdClrscr();
                   lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
-                  lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+                  lcdGotoxy(CENTER_X(8), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
                   lcdPuts("FAILED !");
                   useBuzzer(2);
 
@@ -309,7 +296,7 @@ void playReactGame(void){
                   lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
                   lcdClrscr();
                   lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
-                  lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+                  lcdGotoxy(CENTER_X(13), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
                   lcdPuts("You scored: ");
 
                   lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 -4);
@@ -329,10 +316,10 @@ void playReactGame(void){
                   lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
                   lcdClrscr();
                   lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
-                  lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+                  lcdGotoxy(CENTER_X(8), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
                   lcdPuts("You won!");
-                  //TEST: 
-                  saveScoreToEeprom("YOUWON");
+             
+                  saveScoreToEeprom("WIN");
                   gameStatus = GAME_OVER;
                   osSleep(500);
                   break;
@@ -341,11 +328,9 @@ void playReactGame(void){
                   lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
                   lcdClrscr();
                   lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
-                  lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+                  lcdGotoxy(CENTER_X(9), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
                   lcdPuts("You lost!");
-                  //TEST: 
-                  saveScoreToEeprom("YOULOST");
-
+                  saveScoreToEeprom("LOSE");
                   gameStatus = GAME_OVER;
                   osSleep(500);
                   break;
@@ -355,12 +340,14 @@ void playReactGame(void){
                       lcdColor(GAME_BKG_COLOR_OK,BOARD_GRID_COLOR);
                       lcdClrscr();
                       lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
-                      lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
-                      lcdPuts("Restart-KeyUP");
+                      lcdGotoxy(CENTER_X(10), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
+                      lcdPuts("Restart-Up");
                       lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 -4);
-                      lcdPuts("EndGame-KeyDown");
+                      lcdPuts("EndGame-Down");
                       //TEST:
-                      readScoreFromEeprom();
+                      lcdGotoxy(CENTER_X(10), SCREEN_HEIGHT/2 + CHAR_HEIGHT);
+                      readScoreFromEeprom();                   
+                      //lcdPuts(eepromTest);
                       finish = FALSE;
                   }
 
@@ -369,7 +356,6 @@ void playReactGame(void){
                           score = 0;
                           finish= TRUE;
                           gameStatus = GAME_START;
-
                   }
                   else if (anyKey == KEY_DOWN){
                           gameStatus = GAME_END;
@@ -390,7 +376,7 @@ void playReactGame(void){
 void saveScoreToEeprom(tS8 score[]) {
 
     tS8 errorCode;
-    errorCode = eepromWrite(0x0000, score, sizeof(score));
+    errorCode = eepromWrite(0x0004, score, sizeof(score));
     if(!errorCode == I2C_CODE_OK){
         printf("EEPROM write error! \n");
     }
@@ -400,19 +386,19 @@ void saveScoreToEeprom(tS8 score[]) {
 
 }
 
-void readScoreFromEeprom(){
+void readScoreFromEeprom(void){
     tS8 errorCode;
-    tS8 testBuf[MAX_LENGTH];
-    errorCode = eepromPageRead(0x0000, testBuf, MAX_LENGTH);
-
+    tU8 testBuf[MAX_LENGTH];
+    errorCode = eepromPageRead(0x0004, testBuf, MAX_LENGTH);
     if(!errorCode == I2C_CODE_OK){
      printf("\n%d,%d,%d,%d,%d %d,%d,%d,%d,%d %d",
              testBuf[0],testBuf[1],testBuf[2],testBuf[3],testBuf[4],testBuf[5],testBuf[6],testBuf[7],testBuf[8],testBuf[9],testBuf[10]);
       printf("\n%c%c%c%c%c%c%c%c%c%c%c",
              testBuf[0],testBuf[1],testBuf[2],testBuf[3],testBuf[4],testBuf[5],testBuf[6],testBuf[7],testBuf[8],testBuf[9],testBuf[10]);
     }
+    lcdPuts(testBuf);
+    // eepromTest = testBuf;
     return;
-
 }
 
 

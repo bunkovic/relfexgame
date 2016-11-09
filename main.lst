@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 1
 
 
    1              		.code	16
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
   43:main.c        **** #include "fire_5_100x40c.h"
   44:main.c        **** #include "fire_6_100x40c.h"
   45:main.c        **** #endif
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 2
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 2
 
 
   46:main.c        **** 
@@ -118,7 +118,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  100:main.c        ****   return 0;
  101:main.c        **** }
  102:main.c        **** 
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 3
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 3
 
 
  103:main.c        **** 
@@ -178,7 +178,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  157:main.c        ****   lcdPuts("MENU");
  158:main.c        ****   drawMenuCursor(cursor);
  159:main.c        **** }
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 4
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 4
 
 
  160:main.c        **** 
@@ -238,7 +238,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  214:main.c        ****       }
  215:main.c        ****       
  216:main.c        ****       //move cursor up
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 5
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 5
 
 
  217:main.c        ****       else if (anyKey == KEY_UP)
@@ -298,7 +298,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  271:main.c        ****  *
  272:main.c        ****  * Description:
  273:main.c        ****  *    The entry function for the initialization process. 
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 6
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 6
 
 
  274:main.c        ****  *
@@ -358,7 +358,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
   49 002c 2948     		ldr	r0, .L5+24
   50 002e FFF7FEFF 		bl	simplePrintf
  292:main.c        ****   printf("\n*                                                       *");
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 7
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 7
 
 
   51              		.loc 1 292 0
@@ -418,7 +418,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
   88              		.loc 1 309 0
   89 0070 2148     		ldr	r0, .L5+60
   90 0072 FFF7FEFF 		bl	simplePrintf
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 8
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 8
 
 
  310:main.c        ****   printf("\n*                                                       *");
@@ -478,7 +478,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  129              	.L6:
  130              		.align	2
  131              	.L5:
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 9
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 9
 
 
  132 00bc 00000000 		.word	.LC0
@@ -538,7 +538,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  182 011a FFF7FEFF 		bl	lcdGotoxy
  122:main.c        ****       lcdColor(0x00,0xe0);
  183              		.loc 1 122 0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 10
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 10
 
 
  184 011e 0020     		mov	r0, #0
@@ -598,7 +598,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  229              	.L21:
  230 0152 FFF7FEFF 		bl	lcdPuts
  231              	.L10:
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 11
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 11
 
 
  118:main.c        ****   for(row=0; row<MAIN_MENU_ROWS; row++)
@@ -658,7 +658,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  279              		.loc 1 152 0
  280 018c 0E20     		mov	r0, #14
  281 018e 0021     		mov	r1, #0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 12
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 12
 
 
  282 0190 6622     		mov	r2, #102
@@ -718,7 +718,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  328              		.type	proc1, %function
  329              	proc1:
  330              	.LFB3:
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 13
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 13
 
 
  173:main.c        **** {
@@ -778,7 +778,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  375 020b 0C       		.byte	(.L34-.L37)/2
  376 020c 0F       		.byte	(.L35-.L37)/2
  377 020d 12       		.byte	(.L36-.L37)/2
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 14
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 14
 
 
  378              		.align	1
@@ -838,7 +838,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  421              		.loc 1 222 0
  422 0248 0622     		mov	r2, #6
  423              	.L48:
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 15
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 15
 
 
  424 024a DA77     		strb	r2, [r3, #31]
@@ -898,7 +898,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  241:main.c        ****           contrast = 127;
  469              		.loc 1 241 0
  470 0282 7F22     		mov	r2, #127
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 16
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 16
 
 
  471 0284 06E0     		b	.L51
@@ -958,7 +958,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  518              		.cfi_offset 0, -32
  519              		.cfi_offset 1, -28
  520              		.cfi_offset 2, -24
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 17
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 17
 
 
  521              		.cfi_offset 3, -20
@@ -1018,7 +1018,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  568              		.cfi_endproc
  569              	.LFE0:
  570              		.size	main, .-main
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 18
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 18
 
 
  571              		.text
@@ -1078,7 +1078,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  602      2A2A2A2A 
  602      2A2A00
  603              	.LC2:
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 19
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 19
 
 
  604 003b 0A2A2020 		.ascii	"\012*                                              "
@@ -1138,7 +1138,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  622 019d 0A2A2050 		.ascii	"\012* Program version:  %d.%d                      "
  622      726F6772 
  622      616D2076 
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 20
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 20
 
 
  622      65727369 
@@ -1198,7 +1198,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  642 0304 0A2A2A2A 		.ascii	"\012***********************************************"
  642      2A2A2A2A 
  642      2A2A2A2A 
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 21
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 21
 
 
  642      2A2A2A2A 
@@ -1258,7 +1258,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  678 0321 00       		.space	1
  679              		.type	initStack, %object
  680              		.size	initStack, 600
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 22
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 22
 
 
  681              	initStack:
@@ -1280,8 +1280,8 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  693 000b 01       		.uleb128 0x1
  694 000c 46000000 		.4byte	.LASF25
  695 0010 01       		.byte	0x1
- 696 0011 FB000000 		.4byte	.LASF26
- 697 0015 73000000 		.4byte	.LASF27
+ 696 0011 D0000000 		.4byte	.LASF26
+ 697 0015 F7000000 		.4byte	.LASF27
  698 0019 00000000 		.4byte	0
  699 001d 00000000 		.4byte	0
  700 0021 00000000 		.4byte	.Ldebug_ranges0+0
@@ -1307,7 +1307,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  720 004d 03       		.uleb128 0x3
  721 004e 04       		.byte	0x4
  722 004f 07       		.byte	0x7
- 723 0050 9E000000 		.4byte	.LASF3
+ 723 0050 73000000 		.4byte	.LASF3
  724 0054 03       		.uleb128 0x3
  725 0055 01       		.byte	0x1
  726 0056 06       		.byte	0x6
@@ -1318,7 +1318,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  731 005e 22010000 		.4byte	.LASF5
  732 0062 05       		.uleb128 0x5
  733 0063 04       		.byte	0x4
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 23
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 23
 
 
  734 0064 05       		.byte	0x5
@@ -1337,11 +1337,11 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  747 007d 03       		.uleb128 0x3
  748 007e 08       		.byte	0x8
  749 007f 05       		.byte	0x5
- 750 0080 ED000000 		.4byte	.LASF8
+ 750 0080 C2000000 		.4byte	.LASF8
  751 0084 03       		.uleb128 0x3
  752 0085 08       		.byte	0x8
  753 0086 07       		.byte	0x7
- 754 0087 B7000000 		.4byte	.LASF9
+ 754 0087 8C000000 		.4byte	.LASF9
  755 008b 03       		.uleb128 0x3
  756 008c 04       		.byte	0x4
  757 008d 05       		.byte	0x5
@@ -1349,9 +1349,9 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  759 0092 03       		.uleb128 0x3
  760 0093 01       		.byte	0x1
  761 0094 08       		.byte	0x8
- 762 0095 02010000 		.4byte	.LASF11
+ 762 0095 D7000000 		.4byte	.LASF11
  763 0099 07       		.uleb128 0x7
- 764 009a DE000000 		.4byte	.LASF12
+ 764 009a B3000000 		.4byte	.LASF12
  765 009e 01       		.byte	0x1
  766 009f 1801     		.2byte	0x118
  767 00a1 01       		.byte	0x1
@@ -1366,7 +1366,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  776 00ba 7B000000 		.4byte	0x7b
  777 00be 20000000 		.4byte	.LLST1
  778 00c2 09       		.uleb128 0x9
- 779 00c3 E7000000 		.4byte	.LASF15
+ 779 00c3 BC000000 		.4byte	.LASF15
  780 00c7 01       		.byte	0x1
  781 00c8 1A01     		.2byte	0x11a
  782 00ca 29000000 		.4byte	0x29
@@ -1378,7 +1378,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  788 00d3 52000000 		.4byte	.LASF13
  789 00d7 01       		.byte	0x1
  790 00d8 72       		.byte	0x72
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 24
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 24
 
 
  791 00d9 01       		.byte	0x1
@@ -1400,7 +1400,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  807 0104 66000000 		.4byte	.LLST4
  808 0108 00       		.byte	0
  809 0109 0D       		.uleb128 0xd
- 810 010a D5000000 		.4byte	.LASF28
+ 810 010a AA000000 		.4byte	.LASF28
  811 010e 01       		.byte	0x1
  812 010f 93       		.byte	0x93
  813 0110 01       		.byte	0x1
@@ -1426,7 +1426,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  833 0145 EA010000 		.4byte	.LBB2
  834 0149 A2020000 		.4byte	.LBE2
  835 014d 10       		.uleb128 0x10
- 836 014e CE000000 		.4byte	.LASF17
+ 836 014e A3000000 		.4byte	.LASF17
  837 0152 01       		.byte	0x1
  838 0153 C0       		.byte	0xc0
  839 0154 29000000 		.4byte	0x29
@@ -1438,7 +1438,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  845 0161 29000000 		.4byte	0x29
  846 0165 00       		.byte	0
  847 0166 00       		.byte	0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 25
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 25
 
 
  848 0167 00       		.byte	0
@@ -1454,7 +1454,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  858 017d 0C010000 		.4byte	.LLST9
  859 0181 A3010000 		.4byte	0x1a3
  860 0185 13       		.uleb128 0x13
- 861 0186 E7000000 		.4byte	.LASF15
+ 861 0186 BC000000 		.4byte	.LASF15
  862 018a 01       		.byte	0x1
  863 018b 58       		.byte	0x58
  864 018c 29000000 		.4byte	0x29
@@ -1470,7 +1470,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  874 01a2 00       		.byte	0
  875 01a3 14       		.uleb128 0x14
  876 01a4 01       		.byte	0x1
- 877 01a5 15010000 		.4byte	.LASF30
+ 877 01a5 EA000000 		.4byte	.LASF30
  878 01a9 01       		.byte	0x1
  879 01aa 5101     		.2byte	0x151
  880 01ac 01       		.byte	0x1
@@ -1481,7 +1481,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  885 01b7 00       		.sleb128 0
  886 01b8 CD010000 		.4byte	0x1cd
  887 01bc 15       		.uleb128 0x15
- 888 01bd AB000000 		.4byte	.LASF18
+ 888 01bd 80000000 		.4byte	.LASF18
  889 01c1 01       		.byte	0x1
  890 01c2 5101     		.2byte	0x151
  891 01c4 42000000 		.4byte	0x42
@@ -1498,7 +1498,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  902 01df 4C010000 		.4byte	.LASF19
  903 01e3 01       		.byte	0x1
  904 01e4 40       		.byte	0x40
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 26
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 26
 
 
  905 01e5 CD010000 		.4byte	0x1cd
@@ -1521,7 +1521,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  922 020c 03       		.byte	0x3
  923 020d 22030000 		.4byte	initStack
  924 0211 13       		.uleb128 0x13
- 925 0212 1D010000 		.4byte	.LASF21
+ 925 0212 F2000000 		.4byte	.LASF21
  926 0216 01       		.byte	0x1
  927 0217 42       		.byte	0x42
  928 0218 29000000 		.4byte	0x29
@@ -1545,20 +1545,20 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  946 023f 03       		.byte	0x3
  947 0240 21030000 		.4byte	cursor
  948 0244 18       		.uleb128 0x18
- 949 0245 07010000 		.4byte	.LASF23
+ 949 0245 DC000000 		.4byte	.LASF23
  950 0249 03       		.byte	0x3
  951 024a 21       		.byte	0x21
  952 024b 69000000 		.4byte	0x69
  953 024f 01       		.byte	0x1
  954 0250 01       		.byte	0x1
  955 0251 18       		.uleb128 0x18
- 956 0252 0E010000 		.4byte	.LASF24
+ 956 0252 E3000000 		.4byte	.LASF24
  957 0256 03       		.byte	0x3
  958 0257 22       		.byte	0x22
  959 0258 69000000 		.4byte	0x69
  960 025c 01       		.byte	0x1
  961 025d 01       		.byte	0x1
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 27
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 27
 
 
  962 025e 19       		.uleb128 0x19
@@ -1618,7 +1618,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  1016 0028 0B       		.uleb128 0xb
  1017 0029 03       		.uleb128 0x3
  1018 002a 0E       		.uleb128 0xe
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 28
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 28
 
 
  1019 002b 00       		.byte	0
@@ -1678,7 +1678,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  1073 0061 08       		.uleb128 0x8
  1074 0062 05       		.uleb128 0x5
  1075 0063 00       		.byte	0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 29
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 29
 
 
  1076 0064 03       		.uleb128 0x3
@@ -1738,7 +1738,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  1130 009a 0B       		.uleb128 0xb
  1131 009b 3B       		.uleb128 0x3b
  1132 009c 0B       		.uleb128 0xb
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 30
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 30
 
 
  1133 009d 49       		.uleb128 0x49
@@ -1798,7 +1798,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  1187 00d3 00       		.byte	0
  1188 00d4 0F       		.uleb128 0xf
  1189 00d5 0B       		.uleb128 0xb
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 31
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 31
 
 
  1190 00d6 01       		.byte	0x1
@@ -1858,7 +1858,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  1244 010c 12       		.uleb128 0x12
  1245 010d 01       		.uleb128 0x1
  1246 010e 40       		.uleb128 0x40
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 32
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 32
 
 
  1247 010f 06       		.uleb128 0x6
@@ -1918,7 +1918,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  1301 0145 02       		.uleb128 0x2
  1302 0146 06       		.uleb128 0x6
  1303 0147 00       		.byte	0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 33
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 33
 
 
  1304 0148 00       		.byte	0
@@ -1978,7 +1978,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  1358 017e 35       		.uleb128 0x35
  1359 017f 00       		.byte	0
  1360 0180 49       		.uleb128 0x49
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 34
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 34
 
 
  1361 0181 13       		.uleb128 0x13
@@ -2038,7 +2038,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  1415 007a 0100     		.2byte	0x1
  1416 007c 55       		.byte	0x55
  1417 007d 00000000 		.4byte	0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 35
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 35
 
 
  1418 0081 00000000 		.4byte	0
@@ -2098,7 +2098,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  1472 010c 00000000 		.4byte	.LFB0
  1473 0110 02000000 		.4byte	.LCFI4
  1474 0114 0200     		.2byte	0x2
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 36
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 36
 
 
  1475 0116 7D       		.byte	0x7d
@@ -2158,7 +2158,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  1525 0000 636F6E74 		.ascii	"contrast\000"
  1525      72617374 
  1525      00
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 37
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 37
 
 
  1526              	.LASF20:
@@ -2200,67 +2200,67 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  1542              	.LASF16:
  1543 006d 70726F63 		.ascii	"proc1\000"
  1543      3100
- 1544              	.LASF27:
- 1545 0073 433A5C55 		.ascii	"C:\\Users\\kozlovsky\\Downloads\\TicTac\\TicTac\000"
- 1545      73657273 
- 1545      5C6B6F7A 
- 1545      6C6F7673 
- 1545      6B795C44 
- 1546              	.LASF3:
- 1547 009e 756E7369 		.ascii	"unsigned int\000"
- 1547      676E6564 
- 1547      20696E74 
- 1547      00
- 1548              	.LASF18:
- 1549 00ab 656C6170 		.ascii	"elapsedTime\000"
- 1549      73656454 
- 1549      696D6500 
- 1550              	.LASF9:
- 1551 00b7 6C6F6E67 		.ascii	"long long unsigned int\000"
- 1551      206C6F6E 
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 38
+ 1544              	.LASF3:
+ 1545 0073 756E7369 		.ascii	"unsigned int\000"
+ 1545      676E6564 
+ 1545      20696E74 
+ 1545      00
+ 1546              	.LASF18:
+ 1547 0080 656C6170 		.ascii	"elapsedTime\000"
+ 1547      73656454 
+ 1547      696D6500 
+ 1548              	.LASF9:
+ 1549 008c 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1549      206C6F6E 
+ 1549      6720756E 
+ 1549      7369676E 
+ 1549      65642069 
+ 1550              	.LASF17:
+ 1551 00a3 616E794B 		.ascii	"anyKey\000"
+ 1551      657900
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 38
 
 
- 1551      6720756E 
- 1551      7369676E 
- 1551      65642069 
- 1552              	.LASF17:
- 1553 00ce 616E794B 		.ascii	"anyKey\000"
- 1553      657900
- 1554              	.LASF28:
- 1555 00d5 64726177 		.ascii	"drawMenu\000"
- 1555      4D656E75 
+ 1552              	.LASF28:
+ 1553 00aa 64726177 		.ascii	"drawMenu\000"
+ 1553      4D656E75 
+ 1553      00
+ 1554              	.LASF12:
+ 1555 00b3 696E6974 		.ascii	"initProc\000"
+ 1555      50726F63 
  1555      00
- 1556              	.LASF12:
- 1557 00de 696E6974 		.ascii	"initProc\000"
- 1557      50726F63 
- 1557      00
- 1558              	.LASF15:
- 1559 00e7 6572726F 		.ascii	"error\000"
- 1559      7200
- 1560              	.LASF8:
- 1561 00ed 6C6F6E67 		.ascii	"long long int\000"
- 1561      206C6F6E 
- 1561      6720696E 
- 1561      7400
- 1562              	.LASF26:
- 1563 00fb 6D61696E 		.ascii	"main.c\000"
- 1563      2E6300
- 1564              	.LASF11:
- 1565 0102 63686172 		.ascii	"char\000"
- 1565      00
- 1566              	.LASF23:
- 1567 0107 76657231 		.ascii	"ver1_0\000"
- 1567      5F3000
- 1568              	.LASF24:
- 1569 010e 76657231 		.ascii	"ver1_1\000"
- 1569      5F3100
- 1570              	.LASF30:
- 1571 0115 61707054 		.ascii	"appTick\000"
- 1571      69636B00 
- 1572              	.LASF21:
- 1573 011d 70696431 		.ascii	"pid1\000"
- 1573      00
+ 1556              	.LASF15:
+ 1557 00bc 6572726F 		.ascii	"error\000"
+ 1557      7200
+ 1558              	.LASF8:
+ 1559 00c2 6C6F6E67 		.ascii	"long long int\000"
+ 1559      206C6F6E 
+ 1559      6720696E 
+ 1559      7400
+ 1560              	.LASF26:
+ 1561 00d0 6D61696E 		.ascii	"main.c\000"
+ 1561      2E6300
+ 1562              	.LASF11:
+ 1563 00d7 63686172 		.ascii	"char\000"
+ 1563      00
+ 1564              	.LASF23:
+ 1565 00dc 76657231 		.ascii	"ver1_0\000"
+ 1565      5F3000
+ 1566              	.LASF24:
+ 1567 00e3 76657231 		.ascii	"ver1_1\000"
+ 1567      5F3100
+ 1568              	.LASF30:
+ 1569 00ea 61707054 		.ascii	"appTick\000"
+ 1569      69636B00 
+ 1570              	.LASF21:
+ 1571 00f2 70696431 		.ascii	"pid1\000"
+ 1571      00
+ 1572              	.LASF27:
+ 1573 00f7 433A5C55 		.ascii	"C:\\Users\\kozlovsky\\Documents\\Szkola\\TicTac\000"
+ 1573      73657273 
+ 1573      5C6B6F7A 
+ 1573      6C6F7673 
+ 1573      6B795C44 
  1574              	.LASF5:
  1575 0122 73686F72 		.ascii	"short int\000"
  1575      7420696E 
@@ -2278,7 +2278,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  1581      68617200 
  1582              	.LASF6:
  1583 0146 74426F6F 		.ascii	"tBool\000"
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 39
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 39
 
 
  1583      6C00
@@ -2287,40 +2287,40 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 1
  1585      31537461 
  1585      636B00
  1586              		.ident	"GCC: (GNU) 4.6.3"
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 40
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 40
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 main.c
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:6      .text:00000000 $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:10     .text:00000000 initProc
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:132    .text:000000bc $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:329    .text:000001d8 proc1
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:155    .text:0000010c $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:159    .text:0000010c drawMenuCursor
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:199    .text:00000136 $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:205    .text:0000013c $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:247    .text:00000164 $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:256    .text:0000017c $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:260    .text:0000017c drawMenu
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:320    .text:000001d0 $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:325    .text:000001d8 $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:372    .text:00000208 $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:378    .text:0000020e $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:500    .text:000002a4 $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:506    .text.startup:00000000 $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:511    .text.startup:00000000 main
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:566    .text.startup:00000044 $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:572    .text:000002ac $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:577    .text:000002ac appTick
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:594    .text:000002b8 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:6      .text:00000000 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:10     .text:00000000 initProc
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:132    .text:000000bc $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:329    .text:000001d8 proc1
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:155    .text:0000010c $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:159    .text:0000010c drawMenuCursor
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:199    .text:00000136 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:205    .text:0000013c $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:247    .text:00000164 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:256    .text:0000017c $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:260    .text:0000017c drawMenu
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:320    .text:000001d0 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:325    .text:000001d8 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:372    .text:00000208 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:378    .text:0000020e $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:500    .text:000002a4 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:506    .text.startup:00000000 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:511    .text.startup:00000000 main
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:566    .text.startup:00000044 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:572    .text:000002ac $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:577    .text:000002ac appTick
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:594    .text:000002b8 $d
                             *COM*:00000004 ms
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:662    .data:00000000 contrast
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:669    .bss:00000000 proc1Stack
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:670    .bss:00000000 $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:673    .bss:00000320 pid1
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:677    .bss:00000321 cursor
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s:681    .bss:00000322 initStack
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:662    .data:00000000 contrast
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:669    .bss:00000000 proc1Stack
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:670    .bss:00000000 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:673    .bss:00000320 pid1
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:677    .bss:00000321 cursor
+C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s:681    .bss:00000322 initStack
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS
@@ -2347,7 +2347,7 @@ playExample
 playSnake
 playPong
 handleBt
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccp2azow.s 			page 41
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cczth1rZ.s 			page 41
 
 
 playTicTacToe

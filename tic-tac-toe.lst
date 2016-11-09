@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 1
 
 
    1              		.code	16
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
   43:tic-tac-toe.c **** 0x05,0xe4,0xff,0x00,0x0b,0xff,0xe4,0xe4,0x00,0x0d,0xff,0xe4,0x00,0x04,0xe4,0xff,
   44:tic-tac-toe.c **** 0x00,0x0b,0xff,0xe4,0xe4,0x00,0x0d,0xff,0xe4,0x00,0x05,0xe4,0xff,0x00,0x0a,0xff,
   45:tic-tac-toe.c **** 0xe4,0xe4,0x00,0x0c,0xff,0xe4,0x00,0x06,0xe4,0xff,0x00,0x0a,0xff,0xe4,0xe4,0x00,
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 2
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 2
 
 
   46:tic-tac-toe.c **** 0x0b,0xff,0xe4,0x00,0x08,0xe4,0xff,0x00,0x09,0xff,0xe4,0xe4,0x00,0x0b,0xff,0xe4,
@@ -118,7 +118,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  100:tic-tac-toe.c **** #define GAME_NOT_STARTED 0
  101:tic-tac-toe.c **** #define GAME_RUNNING     1
  102:tic-tac-toe.c **** #define GAME_OVER        2
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 3
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 3
 
 
  103:tic-tac-toe.c **** #define GAME_END         3
@@ -178,7 +178,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  157:tic-tac-toe.c **** void init_matrix(void);
  158:tic-tac-toe.c **** void get_player_move(void);
  159:tic-tac-toe.c **** tU8 get_computer_move(void);
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 4
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 4
 
 
  160:tic-tac-toe.c **** void disp_matrix(void);
@@ -238,7 +238,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  214:tic-tac-toe.c **** {
  215:tic-tac-toe.c ****   tU8 done;
  216:tic-tac-toe.c ****   
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 5
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 5
 
 
  217:tic-tac-toe.c ****  
@@ -298,7 +298,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  271:tic-tac-toe.c **** 		      }
  272:tic-tac-toe.c **** 		      done=get_computer_move();
  273:tic-tac-toe.c **** 		      //disp_matrix();
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 6
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 6
 
 
  274:tic-tac-toe.c **** 		      if(done!=' '){
@@ -358,7 +358,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  328:tic-tac-toe.c ****     }
  329:tic-tac-toe.c ****   
  330:tic-tac-toe.c ****   
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 7
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 7
 
 
  331:tic-tac-toe.c ****   return;
@@ -418,7 +418,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  385:tic-tac-toe.c **** 
  386:tic-tac-toe.c **** /* See if there is a winner. */
  387:tic-tac-toe.c **** tU8 check(void)
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 8
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 8
 
 
  388:tic-tac-toe.c **** {
@@ -478,7 +478,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
   31 0006 1E25     		mov	r5, #30
  419:tic-tac-toe.c **** {
   32              		.loc 1 419 0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 9
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 9
 
 
   33 0008 3F0E     		lsr	r7, r7, #24
@@ -538,7 +538,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  431:tic-tac-toe.c ****   // clear cell
  432:tic-tac-toe.c ****   lcdRect(xOff,yOff,CELL_WIDTH,CELL_HEIGHT,bkgColor);
   73              		.loc 1 432 0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 10
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 10
 
 
   74 002e 1D22     		mov	r2, #29
@@ -598,7 +598,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  121 0074 000E     		lsr	r0, r0, #24
  122 0076 090E     		lsr	r1, r1, #24
  123 0078 7333     		add	r3, r3, #115
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 11
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 11
 
 
  124              	.L6:
@@ -658,7 +658,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  453:tic-tac-toe.c **** {
  162              		.loc 1 453 0
  163 009c 0606     		lsl	r6, r0, #24
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 12
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 12
 
 
  164 009e 0C06     		lsl	r4, r1, #24
@@ -718,7 +718,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  207              	.LVL17:
  340:tic-tac-toe.c ****     for(j=0; j<3; j++) matrix[i][j] =  ' ';
  208              		.loc 1 340 0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 13
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 13
 
 
  209 00c8 054B     		ldr	r3, .L13
@@ -778,7 +778,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  259 00ec 0024     		mov	r4, #0
  260 00ee 1C70     		strb	r4, [r3]
  180:tic-tac-toe.c ****   currCol = 0;
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 14
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 14
 
 
  261              		.loc 1 180 0
@@ -838,7 +838,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  287 0114 0420     		mov	r0, #4
  288 0116 7922     		mov	r2, #121
  289 0118 0023     		mov	r3, #0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 15
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 15
 
 
  290 011a 1E35     		add	r5, r5, #30
@@ -898,7 +898,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  318 0142 211C     		mov	r1, r4
  319 0144 281C     		mov	r0, r5
  320 0146 0022     		mov	r2, #0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 16
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 16
 
 
  321 0148 0134     		add	r4, r4, #1
@@ -958,7 +958,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  367 0184 281C     		mov	r0, r5
  186:tic-tac-toe.c ****     for (col=0;col<BOARD_SIZE;col++)
  368              		.loc 1 186 0 is_stmt 1 discriminator 3
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 17
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 17
 
 
  369 0186 0134     		add	r4, r4, #1
@@ -1018,7 +1018,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  417              		.cfi_def_cfa_offset 16
  418              		.cfi_offset 4, -16
  419              		.cfi_offset 5, -12
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 18
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 18
 
 
  420              		.cfi_offset 6, -8
@@ -1078,7 +1078,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  464              	.LVL49:
  465 01d6 9078     		ldrb	r0, [r2, #2]
  348:tic-tac-toe.c ****     for(j=0; j<3; j++)
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 19
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 19
 
 
  466              		.loc 1 348 0
@@ -1138,7 +1138,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  510 020a 0122     		mov	r2, #1
  511 020c 1878     		ldrb	r0, [r3]
  512 020e 5978     		ldrb	r1, [r3, #1]
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 20
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 20
 
 
  513 0210 FFF7F6FE 		bl	drawCell
@@ -1198,7 +1198,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  559              		.loc 1 378 0
  560 0232 2978     		ldrb	r1, [r5]
  561 0234 2A79     		ldrb	r2, [r5, #4]
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 21
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 21
 
 
  562 0236 2B7A     		ldrb	r3, [r5, #8]
@@ -1258,7 +1258,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  610              		.cfi_def_cfa_offset 12
  611              		.cfi_offset 4, -12
  612              		.cfi_offset 5, -8
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 22
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 22
 
 
  613              		.cfi_offset 14, -4
@@ -1318,7 +1318,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  656 02a4 F5D1     		bne	.L57
  400:tic-tac-toe.c ****   if(matrix[0][0]==matrix[1][1] &&
  657              		.loc 1 400 0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 23
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 23
 
 
  658 02a6 094A     		ldr	r2, .L63
@@ -1378,7 +1378,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  706              		.cfi_offset 5, -16
  707              		.cfi_offset 6, -12
  708              		.cfi_offset 7, -8
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 24
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 24
 
 
  709              		.cfi_offset 14, -4
@@ -1438,7 +1438,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  754              		.loc 1 227 0
  755 0314 0120     		mov	r0, #1
  756 0316 FFF7FEFF 		bl	osSleep
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 25
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 25
 
 
  229:tic-tac-toe.c ****       anyKey = checkKey();
@@ -1498,7 +1498,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  802 0352 0AD1     		bne	.L75
  249:tic-tac-toe.c **** 		  moveTo((currRow+1) % 3,currCol);
  803              		.loc 1 249 0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 26
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 26
 
 
  804 0354 2878     		ldrb	r0, [r5]
@@ -1558,7 +1558,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  852              	.LVL75:
  853 0396 3E4F     		ldr	r7, .L99+12
  854 0398 8C00     		lsl	r4, r1, #2
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 27
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 27
 
 
  855 039a 2418     		add	r4, r4, r0
@@ -1618,7 +1618,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  279:tic-tac-toe.c **** 		      if(done!=' ') gameStatus = GAME_OVER;
  899              		.loc 1 279 0 is_stmt 0 discriminator 1
  900 03d0 0223     		mov	r3, #2
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 28
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 28
 
 
  901 03d2 E370     		strb	r3, [r4, #3]
@@ -1678,7 +1678,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  302:tic-tac-toe.c **** 	  else if(done=='O') menu.pHeaderText = "I won!!!";
  944              		.loc 1 302 0 is_stmt 1
  945 0400 4F2E     		cmp	r6, #79
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 29
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 29
 
 
  946 0402 01D1     		bne	.L82
@@ -1738,7 +1738,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  986 042e 1170     		strb	r1, [r2]
  311:tic-tac-toe.c **** 	  menu.selectedColor = 0xe0;
  987              		.loc 1 311 0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 30
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 30
 
 
  988 0430 E021     		mov	r1, #224
@@ -1798,7 +1798,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  1037 0476 032B     		cmp	r3, #3
  1038 0478 00D0     		beq	.LCB882
  1039 047a 4BE7     		b	.L85	@long jump
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 31
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 31
 
 
  1040              	.LCB882:
@@ -1858,7 +1858,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  1093 0015 03       		.byte	3
  1094 0016 03       		.byte	3
  1095 0017 00       		.byte	0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 32
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 32
 
 
  1096 0018 0B       		.byte	11
@@ -1918,7 +1918,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  1150 004e 0A       		.byte	10
  1151 004f FF       		.byte	-1
  1152 0050 07       		.byte	7
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 33
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 33
 
 
  1153 0051 00       		.byte	0
@@ -1978,7 +1978,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  1207 0087 00       		.byte	0
  1208 0088 0E       		.byte	14
  1209 0089 FF       		.byte	-1
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 34
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 34
 
 
  1210 008a 07       		.byte	7
@@ -2038,7 +2038,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  1264 00c0 04       		.byte	4
  1265 00c1 07       		.byte	7
  1266 00c2 FF       		.byte	-1
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 35
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 35
 
 
  1267 00c3 03       		.byte	3
@@ -2098,7 +2098,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  1321 00f9 07       		.byte	7
  1322 00fa FF       		.byte	-1
  1323 00fb 00       		.byte	0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 36
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 36
 
 
  1324 00fc 10       		.byte	16
@@ -2158,7 +2158,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  1378 0132 FF       		.byte	-1
  1379 0133 FF       		.byte	-1
  1380 0134 03       		.byte	3
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 37
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 37
 
 
  1381 0135 03       		.byte	3
@@ -2218,7 +2218,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  1435 016b FF       		.byte	-1
  1436 016c FF       		.byte	-1
  1437 016d 03       		.byte	3
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 38
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 38
 
 
  1438 016e 03       		.byte	3
@@ -2278,7 +2278,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  1492 01a4 04       		.byte	4
  1493 01a5 07       		.byte	7
  1494 01a6 FF       		.byte	-1
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 39
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 39
 
 
  1495 01a7 00       		.byte	0
@@ -2338,7 +2338,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  1549 01dd 03       		.byte	3
  1550 01de 03       		.byte	3
  1551 01df 03       		.byte	3
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 40
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 40
 
 
  1552 01e0 03       		.byte	3
@@ -2398,7 +2398,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  1606 0213 E4       		.byte	-28
  1607 0214 00       		.byte	0
  1608 0215 04       		.byte	4
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 41
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 41
 
 
  1609 0216 FF       		.byte	-1
@@ -2458,7 +2458,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  1663 024c FF       		.byte	-1
  1664 024d E4       		.byte	-28
  1665 024e E4       		.byte	-28
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 42
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 42
 
 
  1666 024f 00       		.byte	0
@@ -2518,7 +2518,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  1720 0285 0A       		.byte	10
  1721 0286 FF       		.byte	-1
  1722 0287 E4       		.byte	-28
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 43
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 43
 
 
  1723 0288 00       		.byte	0
@@ -2578,7 +2578,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  1777 02be 00       		.byte	0
  1778 02bf 0C       		.byte	12
  1779 02c0 FF       		.byte	-1
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 44
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 44
 
 
  1780 02c1 E4       		.byte	-28
@@ -2638,7 +2638,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  1834 02f7 08       		.byte	8
  1835 02f8 E4       		.byte	-28
  1836 02f9 FF       		.byte	-1
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 45
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 45
 
 
  1837 02fa 00       		.byte	0
@@ -2698,7 +2698,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  1891 0330 FF       		.byte	-1
  1892 0331 E4       		.byte	-28
  1893 0332 E4       		.byte	-28
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 46
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 46
 
 
  1894 0333 00       		.byte	0
@@ -2758,7 +2758,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  1948 0369 E4       		.byte	-28
  1949 036a 00       		.byte	0
  1950 036b 06       		.byte	6
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 47
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 47
 
 
  1951 036c FF       		.byte	-1
@@ -2818,7 +2818,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2005 03a2 E4       		.byte	-28
  2006 03a3 00       		.byte	0
  2007 03a4 1E       		.byte	30
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 48
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 48
 
 
  2008 03a5 FF       		.byte	-1
@@ -2878,7 +2878,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2055      73206275 
  2055      74746F6E 
  2055      00
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 49
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 49
 
 
  2056              	.LC28:
@@ -2938,11 +2938,11 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2096 000b 01       		.uleb128 0x1
  2097 000c F3010000 		.4byte	.LASF48
  2098 0010 01       		.byte	0x1
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 50
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 50
 
 
- 2099 0011 8C000000 		.4byte	.LASF49
- 2100 0015 1C000000 		.4byte	.LASF50
+ 2099 0011 61000000 		.4byte	.LASF49
+ 2100 0015 87010000 		.4byte	.LASF50
  2101 0019 00000000 		.4byte	.Ltext0
  2102 001d A8040000 		.4byte	.Letext0
  2103 0021 00000000 		.4byte	.Ldebug_line0
@@ -2958,15 +2958,15 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2113 0037 03       		.uleb128 0x3
  2114 0038 02       		.byte	0x2
  2115 0039 07       		.byte	0x7
- 2116 003a 25010000 		.4byte	.LASF1
+ 2116 003a FA000000 		.4byte	.LASF1
  2117 003e 03       		.uleb128 0x3
  2118 003f 04       		.byte	0x4
  2119 0040 07       		.byte	0x7
- 2120 0041 E9000000 		.4byte	.LASF2
+ 2120 0041 BE000000 		.4byte	.LASF2
  2121 0045 03       		.uleb128 0x3
  2122 0046 01       		.byte	0x1
  2123 0047 06       		.byte	0x6
- 2124 0048 78000000 		.4byte	.LASF3
+ 2124 0048 4D000000 		.4byte	.LASF3
  2125 004c 03       		.uleb128 0x3
  2126 004d 02       		.byte	0x2
  2127 004e 05       		.byte	0x5
@@ -2976,7 +2976,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2131 0055 05       		.byte	0x5
  2132 0056 696E7400 		.ascii	"int\000"
  2133 005a 05       		.uleb128 0x5
- 2134 005b A1000000 		.4byte	.LASF5
+ 2134 005b 76000000 		.4byte	.LASF5
  2135 005f 03       		.byte	0x3
  2136 0060 4D       		.byte	0x4d
  2137 0061 30000000 		.4byte	0x30
@@ -2986,11 +2986,11 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2141 006b 03       		.uleb128 0x3
  2142 006c 04       		.byte	0x4
  2143 006d 07       		.byte	0x7
- 2144 006e 0A010000 		.4byte	.LASF6
+ 2144 006e DF000000 		.4byte	.LASF6
  2145 0072 03       		.uleb128 0x3
  2146 0073 08       		.byte	0x8
  2147 0074 05       		.byte	0x5
- 2148 0075 6A000000 		.4byte	.LASF7
+ 2148 0075 3F000000 		.4byte	.LASF7
  2149 0079 03       		.uleb128 0x3
  2150 007a 08       		.byte	0x8
  2151 007b 07       		.byte	0x7
@@ -2998,10 +2998,10 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2153 0080 03       		.uleb128 0x3
  2154 0081 04       		.byte	0x4
  2155 0082 05       		.byte	0x5
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 51
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 51
 
 
- 2156 0083 A7000000 		.4byte	.LASF9
+ 2156 0083 7C000000 		.4byte	.LASF9
  2157 0087 03       		.uleb128 0x3
  2158 0088 01       		.byte	0x1
  2159 0089 08       		.byte	0x8
@@ -3028,7 +3028,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2180 00b0 23       		.byte	0x23
  2181 00b1 01       		.uleb128 0x1
  2182 00b2 08       		.uleb128 0x8
- 2183 00b3 F6000000 		.4byte	.LASF13
+ 2183 00b3 CB000000 		.4byte	.LASF13
  2184 00b7 02       		.byte	0x2
  2185 00b8 1D       		.byte	0x1d
  2186 00b9 25000000 		.4byte	0x25
@@ -3036,7 +3036,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2188 00be 23       		.byte	0x23
  2189 00bf 02       		.uleb128 0x2
  2190 00c0 08       		.uleb128 0x8
- 2191 00c1 B6000000 		.4byte	.LASF14
+ 2191 00c1 8B000000 		.4byte	.LASF14
  2192 00c5 02       		.byte	0x2
  2193 00c6 1E       		.byte	0x1e
  2194 00c7 25000000 		.4byte	0x25
@@ -3044,7 +3044,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2196 00cc 23       		.byte	0x23
  2197 00cd 03       		.uleb128 0x3
  2198 00ce 08       		.uleb128 0x8
- 2199 00cf BB000000 		.4byte	.LASF15
+ 2199 00cf 90000000 		.4byte	.LASF15
  2200 00d3 02       		.byte	0x2
  2201 00d4 1F       		.byte	0x1f
  2202 00d5 25000000 		.4byte	0x25
@@ -3052,13 +3052,13 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2204 00da 23       		.byte	0x23
  2205 00db 04       		.uleb128 0x4
  2206 00dc 08       		.uleb128 0x8
- 2207 00dd DB000000 		.4byte	.LASF16
+ 2207 00dd B0000000 		.4byte	.LASF16
  2208 00e1 02       		.byte	0x2
  2209 00e2 20       		.byte	0x20
  2210 00e3 25000000 		.4byte	0x25
  2211 00e7 02       		.byte	0x2
  2212 00e8 23       		.byte	0x23
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 52
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 52
 
 
  2213 00e9 05       		.uleb128 0x5
@@ -3071,7 +3071,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2220 00f6 23       		.byte	0x23
  2221 00f7 08       		.uleb128 0x8
  2222 00f8 08       		.uleb128 0x8
- 2223 00f9 FB000000 		.4byte	.LASF18
+ 2223 00f9 D0000000 		.4byte	.LASF18
  2224 00fd 02       		.byte	0x2
  2225 00fe 22       		.byte	0x22
  2226 00ff 25000000 		.4byte	0x25
@@ -3079,7 +3079,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2228 0104 23       		.byte	0x23
  2229 0105 0C       		.uleb128 0xc
  2230 0106 08       		.uleb128 0x8
- 2231 0107 52010000 		.4byte	.LASF19
+ 2231 0107 27010000 		.4byte	.LASF19
  2232 010b 02       		.byte	0x2
  2233 010c 23       		.byte	0x23
  2234 010d 5B010000 		.4byte	0x15b
@@ -3087,7 +3087,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2236 0112 23       		.byte	0x23
  2237 0113 10       		.uleb128 0x10
  2238 0114 08       		.uleb128 0x8
- 2239 0115 5A010000 		.4byte	.LASF20
+ 2239 0115 2F010000 		.4byte	.LASF20
  2240 0119 02       		.byte	0x2
  2241 011a 24       		.byte	0x24
  2242 011b 25000000 		.4byte	0x25
@@ -3095,7 +3095,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2244 0120 23       		.byte	0x23
  2245 0121 28       		.uleb128 0x28
  2246 0122 08       		.uleb128 0x8
- 2247 0123 55000000 		.4byte	.LASF21
+ 2247 0123 2A000000 		.4byte	.LASF21
  2248 0127 02       		.byte	0x2
  2249 0128 25       		.byte	0x25
  2250 0129 25000000 		.4byte	0x25
@@ -3111,18 +3111,18 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2260 013c 23       		.byte	0x23
  2261 013d 2A       		.uleb128 0x2a
  2262 013e 08       		.uleb128 0x8
- 2263 013f C7000000 		.4byte	.LASF23
+ 2263 013f 9C000000 		.4byte	.LASF23
  2264 0143 02       		.byte	0x2
  2265 0144 27       		.byte	0x27
  2266 0145 25000000 		.4byte	0x25
  2267 0149 02       		.byte	0x2
  2268 014a 23       		.byte	0x23
  2269 014b 2B       		.uleb128 0x2b
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 53
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 53
 
 
  2270 014c 08       		.uleb128 0x8
- 2271 014d 47000000 		.4byte	.LASF24
+ 2271 014d 1C000000 		.4byte	.LASF24
  2272 0151 02       		.byte	0x2
  2273 0152 28       		.byte	0x28
  2274 0153 25000000 		.4byte	0x25
@@ -3138,12 +3138,12 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2284 0169 05       		.byte	0x5
  2285 016a 00       		.byte	0
  2286 016b 05       		.uleb128 0x5
- 2287 016c AC010000 		.4byte	.LASF25
+ 2287 016c 81010000 		.4byte	.LASF25
  2288 0170 02       		.byte	0x2
  2289 0171 29       		.byte	0x29
  2290 0172 8E000000 		.4byte	0x8e
  2291 0176 0B       		.uleb128 0xb
- 2292 0177 6B010000 		.4byte	.LASF51
+ 2292 0177 40010000 		.4byte	.LASF51
  2293 017b 01       		.byte	0x1
  2294 017c C5       		.byte	0xc5
  2295 017d 01       		.byte	0x1
@@ -3170,15 +3170,15 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2316 01b0 25000000 		.4byte	0x25
  2317 01b4 33000000 		.4byte	.LLST2
  2318 01b8 0E       		.uleb128 0xe
- 2319 01b9 80010000 		.4byte	.LASF26
+ 2319 01b9 55010000 		.4byte	.LASF26
  2320 01bd 01       		.byte	0x1
  2321 01be A201     		.2byte	0x1a2
  2322 01c0 5A000000 		.4byte	0x5a
  2323 01c4 46000000 		.4byte	.LLST3
  2324 01c8 0F       		.uleb128 0xf
- 2325 01c9 1C010000 		.4byte	.LASF27
+ 2325 01c9 F1000000 		.4byte	.LASF27
  2326 01cd 01       		.byte	0x1
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 54
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 54
 
 
  2327 01ce A401     		.2byte	0x1a4
@@ -3198,7 +3198,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2341 01f4 AD000000 		.4byte	.LLST6
  2342 01f8 00       		.byte	0
  2343 01f9 0C       		.uleb128 0xc
- 2344 01fa 44010000 		.4byte	.LASF31
+ 2344 01fa 19010000 		.4byte	.LASF31
  2345 01fe 01       		.byte	0x1
  2346 01ff C401     		.2byte	0x1c4
  2347 0201 01       		.byte	0x1
@@ -3207,13 +3207,13 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2350 020a E2000000 		.4byte	.LLST7
  2351 020e 33020000 		.4byte	0x233
  2352 0212 0E       		.uleb128 0xe
- 2353 0213 4B010000 		.4byte	.LASF32
+ 2353 0213 20010000 		.4byte	.LASF32
  2354 0217 01       		.byte	0x1
  2355 0218 C401     		.2byte	0x1c4
  2356 021a 25000000 		.4byte	0x25
  2357 021e 02010000 		.4byte	.LLST8
  2358 0222 0E       		.uleb128 0xe
- 2359 0223 9A000000 		.4byte	.LASF33
+ 2359 0223 6F000000 		.4byte	.LASF33
  2360 0227 01       		.byte	0x1
  2361 0228 C401     		.2byte	0x1c4
  2362 022a 25000000 		.4byte	0x25
@@ -3221,7 +3221,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2364 0232 00       		.byte	0
  2365 0233 10       		.uleb128 0x10
  2366 0234 01       		.byte	0x1
- 2367 0235 38010000 		.4byte	.LASF34
+ 2367 0235 0D010000 		.4byte	.LASF34
  2368 0239 01       		.byte	0x1
  2369 023a 4F01     		.2byte	0x14f
  2370 023c 01       		.byte	0x1
@@ -3238,7 +3238,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2381 0252 25000000 		.4byte	0x25
  2382 0256 28010000 		.4byte	.LLST10
  2383 025a 11       		.uleb128 0x11
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 55
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 55
 
 
  2384 025b 6A00     		.ascii	"j\000"
@@ -3248,7 +3248,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2388 0264 60010000 		.4byte	.LLST11
  2389 0268 00       		.byte	0
  2390 0269 12       		.uleb128 0x12
- 2391 026a 62010000 		.4byte	.LASF52
+ 2391 026a 37010000 		.4byte	.LASF52
  2392 026e 01       		.byte	0x1
  2393 026f D701     		.2byte	0x1d7
  2394 0271 01       		.byte	0x1
@@ -3298,7 +3298,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2438 02d5 16       		.uleb128 0x16
  2439 02d6 69020000 		.4byte	0x269
  2440 02da F4000000 		.4byte	.LBB8
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 56
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 56
 
 
  2441 02de 00000000 		.4byte	.Ldebug_ranges0+0
@@ -3347,7 +3347,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2484 034a 00       		.byte	0
  2485 034b 1A       		.uleb128 0x1a
  2486 034c 01       		.byte	0x1
- 2487 034d 94010000 		.4byte	.LASF35
+ 2487 034d 69010000 		.4byte	.LASF35
  2488 0351 01       		.byte	0x1
  2489 0352 7501     		.2byte	0x175
  2490 0354 01       		.byte	0x1
@@ -3358,7 +3358,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2495 0365 11       		.uleb128 0x11
  2496 0366 7400     		.ascii	"t\000"
  2497 0368 01       		.byte	0x1
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 57
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 57
 
 
  2498 0369 7701     		.2byte	0x177
@@ -3367,7 +3367,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2501 0373 00       		.byte	0
  2502 0374 19       		.uleb128 0x19
  2503 0375 01       		.byte	0x1
- 2504 0376 B0000000 		.4byte	.LASF37
+ 2504 0376 85000000 		.4byte	.LASF37
  2505 037a 01       		.byte	0x1
  2506 037b 8301     		.2byte	0x183
  2507 037d 01       		.byte	0x1
@@ -3418,7 +3418,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2552 03f1 E0030000 		.4byte	.LBB15
  2553 03f5 70040000 		.4byte	.LBE15
  2554 03f9 1F       		.uleb128 0x1f
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 58
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 58
 
 
  2555 03fa 38020000 		.4byte	.LASF41
@@ -3432,7 +3432,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2563 040a 00       		.byte	0
  2564 040b 00       		.byte	0
  2565 040c 20       		.uleb128 0x20
- 2566 040d 89010000 		.4byte	.LASF42
+ 2566 040d 5E010000 		.4byte	.LASF42
  2567 0411 01       		.byte	0x1
  2568 0412 91       		.byte	0x91
  2569 0413 25000000 		.4byte	0x25
@@ -3440,7 +3440,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2571 0418 03       		.byte	0x3
  2572 0419 03000000 		.4byte	gameStatus
  2573 041d 20       		.uleb128 0x20
- 2574 041e 61000000 		.4byte	.LASF43
+ 2574 041e 36000000 		.4byte	.LASF43
  2575 0422 01       		.byte	0x1
  2576 0423 92       		.byte	0x92
  2577 0424 25000000 		.4byte	0x25
@@ -3448,7 +3448,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2579 0429 03       		.byte	0x3
  2580 042a 02000000 		.4byte	gameMode
  2581 042e 20       		.uleb128 0x20
- 2582 042f 84000000 		.4byte	.LASF44
+ 2582 042f 59000000 		.4byte	.LASF44
  2583 0433 01       		.byte	0x1
  2584 0434 94       		.byte	0x94
  2585 0435 25000000 		.4byte	0x25
@@ -3464,7 +3464,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2595 044b 03       		.byte	0x3
  2596 044c 01000000 		.4byte	currCol
  2597 0450 21       		.uleb128 0x21
- 2598 0451 A0010000 		.4byte	.LASF46
+ 2598 0451 75010000 		.4byte	.LASF46
  2599 0455 01       		.byte	0x1
  2600 0456 97       		.byte	0x97
  2601 0457 25000000 		.4byte	0x25
@@ -3478,7 +3478,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2609 046c 23       		.uleb128 0x23
  2610 046d 5F7800   		.ascii	"_x\000"
  2611 0470 01       		.byte	0x1
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 59
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 59
 
 
  2612 0471 1D       		.byte	0x1d
@@ -3518,7 +3518,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2646 04bd 03       		.byte	0x3
  2647 04be 00       		.byte	0
  2648 04bf 25       		.uleb128 0x25
- 2649 04c0 D4000000 		.4byte	.LASF47
+ 2649 04c0 A9000000 		.4byte	.LASF47
  2650 04c4 01       		.byte	0x1
  2651 04c5 9A       		.byte	0x9a
  2652 04c6 A9040000 		.4byte	0x4a9
@@ -3538,7 +3538,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2666 0006 0B       		.uleb128 0xb
  2667 0007 03       		.uleb128 0x3
  2668 0008 0E       		.uleb128 0xe
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 60
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 60
 
 
  2669 0009 1B       		.uleb128 0x1b
@@ -3598,7 +3598,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2723 003f 49       		.uleb128 0x49
  2724 0040 13       		.uleb128 0x13
  2725 0041 00       		.byte	0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 61
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 61
 
 
  2726 0042 00       		.byte	0
@@ -3658,7 +3658,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2780 0078 00       		.byte	0
  2781 0079 00       		.byte	0
  2782 007a 0B       		.uleb128 0xb
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 62
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 62
 
 
  2783 007b 2E       		.uleb128 0x2e
@@ -3718,7 +3718,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2837 00b1 0E       		.uleb128 0xe
  2838 00b2 3A       		.uleb128 0x3a
  2839 00b3 0B       		.uleb128 0xb
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 63
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 63
 
 
  2840 00b4 3B       		.uleb128 0x3b
@@ -3778,7 +3778,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2894 00ea 05       		.uleb128 0x5
  2895 00eb 49       		.uleb128 0x49
  2896 00ec 13       		.uleb128 0x13
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 64
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 64
 
 
  2897 00ed 02       		.uleb128 0x2
@@ -3838,7 +3838,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  2951 0123 34       		.uleb128 0x34
  2952 0124 00       		.byte	0
  2953 0125 03       		.uleb128 0x3
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 65
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 65
 
 
  2954 0126 08       		.uleb128 0x8
@@ -3898,7 +3898,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  3008 015c 0C       		.uleb128 0xc
  3009 015d 49       		.uleb128 0x49
  3010 015e 13       		.uleb128 0x13
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 66
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 66
 
 
  3011 015f 11       		.uleb128 0x11
@@ -3958,7 +3958,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  3065 0195 00       		.byte	0
  3066 0196 00       		.byte	0
  3067 0197 1C       		.uleb128 0x1c
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 67
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 67
 
 
  3068 0198 34       		.uleb128 0x34
@@ -4018,7 +4018,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  3122 01ce 34       		.uleb128 0x34
  3123 01cf 00       		.byte	0
  3124 01d0 03       		.uleb128 0x3
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 68
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 68
 
 
  3125 01d1 0E       		.uleb128 0xe
@@ -4078,7 +4078,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  3179 0207 13       		.uleb128 0x13
  3180 0208 00       		.byte	0
  3181 0209 00       		.byte	0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 69
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 69
 
 
  3182 020a 25       		.uleb128 0x25
@@ -4138,7 +4138,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  3236              	.LLST4:
  3237 0059 2E000000 		.4byte	.LVL5-.Ltext0
  3238 005d 34000000 		.4byte	.LVL7-.Ltext0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 70
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 70
 
 
  3239 0061 0100     		.2byte	0x1
@@ -4198,7 +4198,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  3293 00d3 75       		.byte	0x75
  3294 00d4 05       		.sleb128 5
  3295 00d5 48       		.byte	0x48
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 71
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 71
 
 
  3296 00d6 24       		.byte	0x24
@@ -4258,7 +4258,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  3350 0158 00000000 		.4byte	0
  3351 015c 00000000 		.4byte	0
  3352              	.LLST11:
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 72
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 72
 
 
  3353 0160 C8000000 		.4byte	.LVL17-.Ltext0
@@ -4318,7 +4318,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  3407 01e4 E6000000 		.4byte	.LCFI2-.Ltext0
  3408 01e8 0200     		.2byte	0x2
  3409 01ea 7D       		.byte	0x7d
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 73
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 73
 
 
  3410 01eb 00       		.sleb128 0
@@ -4378,7 +4378,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  3464 0274 22010000 		.4byte	.LVL29-.Ltext0
  3465 0278 2A010000 		.4byte	.LVL30-.Ltext0
  3466 027c 0200     		.2byte	0x2
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 74
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 74
 
 
  3467 027e 31       		.byte	0x31
@@ -4438,7 +4438,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  3521 0300 00020000 		.4byte	.LVL53-.Ltext0
  3522 0304 07020000 		.4byte	.LVL55-1-.Ltext0
  3523 0308 0100     		.2byte	0x1
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 75
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 75
 
 
  3524 030a 51       		.byte	0x51
@@ -4498,7 +4498,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  3578 0394 0200     		.2byte	0x2
  3579 0396 30       		.byte	0x30
  3580 0397 9F       		.byte	0x9f
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 76
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 76
 
 
  3581 0398 4E020000 		.4byte	.LVL58-.Ltext0
@@ -4558,7 +4558,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  3635 0421 0100     		.2byte	0x1
  3636 0423 56       		.byte	0x56
  3637 0424 B2030000 		.4byte	.LVL77-.Ltext0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 77
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 77
 
 
  3638 0428 B9030000 		.4byte	.LVL78-1-.Ltext0
@@ -4618,7 +4618,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  3692 04ba 0100     		.2byte	0x1
  3693 04bc 50       		.byte	0x50
  3694 04bd 6A030000 		.4byte	.LVL70-.Ltext0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 78
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 78
 
 
  3695 04c1 70030000 		.4byte	.LVL71-.Ltext0
@@ -4678,7 +4678,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  3748      02006400 
  3748      00000201 
  3748      FB0E0D00 
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 79
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 79
 
 
  3748      01010101 
@@ -4691,155 +4691,155 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  3752      6720756E 
  3752      7369676E 
  3752      65642069 
- 3753              	.LASF50:
- 3754 001c 433A5C55 		.ascii	"C:\\Users\\kozlovsky\\Downloads\\TicTac\\TicTac\000"
- 3754      73657273 
- 3754      5C6B6F7A 
- 3754      6C6F7673 
- 3754      6B795C44 
- 3755              	.LASF24:
- 3756 0047 73656C65 		.ascii	"selectedColor\000"
- 3756      63746564 
- 3756      436F6C6F 
- 3756      7200
- 3757              	.LASF21:
- 3758 0055 626F7264 		.ascii	"borderColor\000"
- 3758      6572436F 
- 3758      6C6F7200 
- 3759              	.LASF43:
- 3760 0061 67616D65 		.ascii	"gameMode\000"
- 3760      4D6F6465 
- 3760      00
- 3761              	.LASF7:
- 3762 006a 6C6F6E67 		.ascii	"long long int\000"
- 3762      206C6F6E 
- 3762      6720696E 
- 3762      7400
- 3763              	.LASF3:
- 3764 0078 7369676E 		.ascii	"signed char\000"
- 3764      65642063 
- 3764      68617200 
- 3765              	.LASF44:
- 3766 0084 63757272 		.ascii	"currRow\000"
- 3766      526F7700 
- 3767              	.LASF49:
- 3768 008c 7469632D 		.ascii	"tic-tac-toe.c\000"
- 3768      7461632D 
- 3768      746F652E 
- 3768      6300
- 3769              	.LASF33:
- 3770 009a 6E657743 		.ascii	"newCol\000"
- 3770      6F6C00
- 3771              	.LASF5:
- 3772 00a1 74426F6F 		.ascii	"tBool\000"
- 3772      6C00
- 3773              	.LASF9:
- 3774 00a7 6C6F6E67 		.ascii	"long int\000"
- 3774      20696E74 
- 3774      00
- 3775              	.LASF37:
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 80
+ 3753              	.LASF24:
+ 3754 001c 73656C65 		.ascii	"selectedColor\000"
+ 3754      63746564 
+ 3754      436F6C6F 
+ 3754      7200
+ 3755              	.LASF21:
+ 3756 002a 626F7264 		.ascii	"borderColor\000"
+ 3756      6572436F 
+ 3756      6C6F7200 
+ 3757              	.LASF43:
+ 3758 0036 67616D65 		.ascii	"gameMode\000"
+ 3758      4D6F6465 
+ 3758      00
+ 3759              	.LASF7:
+ 3760 003f 6C6F6E67 		.ascii	"long long int\000"
+ 3760      206C6F6E 
+ 3760      6720696E 
+ 3760      7400
+ 3761              	.LASF3:
+ 3762 004d 7369676E 		.ascii	"signed char\000"
+ 3762      65642063 
+ 3762      68617200 
+ 3763              	.LASF44:
+ 3764 0059 63757272 		.ascii	"currRow\000"
+ 3764      526F7700 
+ 3765              	.LASF49:
+ 3766 0061 7469632D 		.ascii	"tic-tac-toe.c\000"
+ 3766      7461632D 
+ 3766      746F652E 
+ 3766      6300
+ 3767              	.LASF33:
+ 3768 006f 6E657743 		.ascii	"newCol\000"
+ 3768      6F6C00
+ 3769              	.LASF5:
+ 3770 0076 74426F6F 		.ascii	"tBool\000"
+ 3770      6C00
+ 3771              	.LASF9:
+ 3772 007c 6C6F6E67 		.ascii	"long int\000"
+ 3772      20696E74 
+ 3772      00
+ 3773              	.LASF37:
+ 3774 0085 63686563 		.ascii	"check\000"
+ 3774      6B00
+ 3775              	.LASF14:
+ 3776 008b 794C656E 		.ascii	"yLen\000"
+ 3776      00
+ 3777              	.LASF15:
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 80
 
 
- 3776 00b0 63686563 		.ascii	"check\000"
- 3776      6B00
- 3777              	.LASF14:
- 3778 00b6 794C656E 		.ascii	"yLen\000"
- 3778      00
- 3779              	.LASF15:
- 3780 00bb 6E6F4F66 		.ascii	"noOfChoices\000"
- 3780      43686F69 
- 3780      63657300 
- 3781              	.LASF23:
- 3782 00c7 63686F69 		.ascii	"choicesColor\000"
- 3782      63657343 
- 3782      6F6C6F72 
- 3782      00
- 3783              	.LASF47:
- 3784 00d4 6D617472 		.ascii	"matrix\000"
- 3784      697800
- 3785              	.LASF16:
- 3786 00db 696E6974 		.ascii	"initialChoice\000"
- 3786      69616C43 
- 3786      686F6963 
- 3786      6500
- 3787              	.LASF2:
- 3788 00e9 756E7369 		.ascii	"unsigned int\000"
- 3788      676E6564 
- 3788      20696E74 
+ 3778 0090 6E6F4F66 		.ascii	"noOfChoices\000"
+ 3778      43686F69 
+ 3778      63657300 
+ 3779              	.LASF23:
+ 3780 009c 63686F69 		.ascii	"choicesColor\000"
+ 3780      63657343 
+ 3780      6F6C6F72 
+ 3780      00
+ 3781              	.LASF47:
+ 3782 00a9 6D617472 		.ascii	"matrix\000"
+ 3782      697800
+ 3783              	.LASF16:
+ 3784 00b0 696E6974 		.ascii	"initialChoice\000"
+ 3784      69616C43 
+ 3784      686F6963 
+ 3784      6500
+ 3785              	.LASF2:
+ 3786 00be 756E7369 		.ascii	"unsigned int\000"
+ 3786      676E6564 
+ 3786      20696E74 
+ 3786      00
+ 3787              	.LASF13:
+ 3788 00cb 784C656E 		.ascii	"xLen\000"
  3788      00
- 3789              	.LASF13:
- 3790 00f6 784C656E 		.ascii	"xLen\000"
- 3790      00
- 3791              	.LASF18:
- 3792 00fb 68656164 		.ascii	"headerTextXpos\000"
- 3792      65725465 
- 3792      78745870 
- 3792      6F7300
- 3793              	.LASF6:
- 3794 010a 6C6F6E67 		.ascii	"long unsigned int\000"
- 3794      20756E73 
- 3794      69676E65 
- 3794      6420696E 
- 3794      7400
- 3795              	.LASF27:
- 3796 011c 626B6743 		.ascii	"bkgColor\000"
- 3796      6F6C6F72 
- 3796      00
- 3797              	.LASF1:
- 3798 0125 73686F72 		.ascii	"short unsigned int\000"
- 3798      7420756E 
- 3798      7369676E 
- 3798      65642069 
- 3798      6E7400
- 3799              	.LASF34:
- 3800 0138 696E6974 		.ascii	"init_matrix\000"
- 3800      5F6D6174 
- 3800      72697800 
- 3801              	.LASF31:
- 3802 0144 6D6F7665 		.ascii	"moveTo\000"
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 81
+ 3789              	.LASF18:
+ 3790 00d0 68656164 		.ascii	"headerTextXpos\000"
+ 3790      65725465 
+ 3790      78745870 
+ 3790      6F7300
+ 3791              	.LASF6:
+ 3792 00df 6C6F6E67 		.ascii	"long unsigned int\000"
+ 3792      20756E73 
+ 3792      69676E65 
+ 3792      6420696E 
+ 3792      7400
+ 3793              	.LASF27:
+ 3794 00f1 626B6743 		.ascii	"bkgColor\000"
+ 3794      6F6C6F72 
+ 3794      00
+ 3795              	.LASF1:
+ 3796 00fa 73686F72 		.ascii	"short unsigned int\000"
+ 3796      7420756E 
+ 3796      7369676E 
+ 3796      65642069 
+ 3796      6E7400
+ 3797              	.LASF34:
+ 3798 010d 696E6974 		.ascii	"init_matrix\000"
+ 3798      5F6D6174 
+ 3798      72697800 
+ 3799              	.LASF31:
+ 3800 0119 6D6F7665 		.ascii	"moveTo\000"
+ 3800      546F00
+ 3801              	.LASF32:
+ 3802 0120 6E657752 		.ascii	"newRow\000"
+ 3802      6F7700
+ 3803              	.LASF19:
+ 3804 0127 7043686F 		.ascii	"pChoice\000"
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 81
 
 
- 3802      546F00
- 3803              	.LASF32:
- 3804 014b 6E657752 		.ascii	"newRow\000"
- 3804      6F7700
- 3805              	.LASF19:
- 3806 0152 7043686F 		.ascii	"pChoice\000"
- 3806      69636500 
- 3807              	.LASF20:
- 3808 015a 6267436F 		.ascii	"bgColor\000"
- 3808      6C6F7200 
- 3809              	.LASF52:
- 3810 0162 64726177 		.ascii	"drawGrid\000"
- 3810      47726964 
- 3810      00
- 3811              	.LASF51:
- 3812 016b 73686F77 		.ascii	"showPreStartupScreen\000"
- 3812      50726553 
- 3812      74617274 
- 3812      75705363 
- 3812      7265656E 
- 3813              	.LASF26:
- 3814 0180 73656C65 		.ascii	"selected\000"
- 3814      63746564 
- 3814      00
- 3815              	.LASF42:
- 3816 0189 67616D65 		.ascii	"gameStatus\000"
- 3816      53746174 
- 3816      757300
- 3817              	.LASF35:
- 3818 0194 64697370 		.ascii	"disp_matrix\000"
- 3818      5F6D6174 
- 3818      72697800 
- 3819              	.LASF46:
- 3820 01a0 73656C65 		.ascii	"selectedNum\000"
- 3820      63746564 
- 3820      4E756D00 
- 3821              	.LASF25:
- 3822 01ac 744D656E 		.ascii	"tMenu\000"
- 3822      7500
+ 3804      69636500 
+ 3805              	.LASF20:
+ 3806 012f 6267436F 		.ascii	"bgColor\000"
+ 3806      6C6F7200 
+ 3807              	.LASF52:
+ 3808 0137 64726177 		.ascii	"drawGrid\000"
+ 3808      47726964 
+ 3808      00
+ 3809              	.LASF51:
+ 3810 0140 73686F77 		.ascii	"showPreStartupScreen\000"
+ 3810      50726553 
+ 3810      74617274 
+ 3810      75705363 
+ 3810      7265656E 
+ 3811              	.LASF26:
+ 3812 0155 73656C65 		.ascii	"selected\000"
+ 3812      63746564 
+ 3812      00
+ 3813              	.LASF42:
+ 3814 015e 67616D65 		.ascii	"gameStatus\000"
+ 3814      53746174 
+ 3814      757300
+ 3815              	.LASF35:
+ 3816 0169 64697370 		.ascii	"disp_matrix\000"
+ 3816      5F6D6174 
+ 3816      72697800 
+ 3817              	.LASF46:
+ 3818 0175 73656C65 		.ascii	"selectedNum\000"
+ 3818      63746564 
+ 3818      4E756D00 
+ 3819              	.LASF25:
+ 3820 0181 744D656E 		.ascii	"tMenu\000"
+ 3820      7500
+ 3821              	.LASF50:
+ 3822 0187 433A5C55 		.ascii	"C:\\Users\\kozlovsky\\Documents\\Szkola\\TicTac\000"
+ 3822      73657273 
+ 3822      5C6B6F7A 
+ 3822      6C6F7673 
+ 3822      6B795C44 
  3823              	.LASF0:
  3824 01b2 756E7369 		.ascii	"unsigned char\000"
  3824      676E6564 
@@ -4858,7 +4858,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  3830      54696354 
  3830      6163546F 
  3830      6500
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 82
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 82
 
 
  3831              	.LASF36:
@@ -4908,43 +4908,43 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 1
  3856      64657254 
  3856      65787400 
  3857              		.ident	"GCC: (GNU) 4.6.3"
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s 			page 83
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s 			page 83
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 tic-tac-toe.c
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:6      .text:00000000 $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:10     .text:00000000 drawCell
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:138    .text:0000008c $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:6      .text:00000000 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:10     .text:00000000 drawCell
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:138    .text:0000008c $d
                             *COM*:00000010 matrix
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:144    .text:00000098 $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:148    .text:00000098 moveTo
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:194    .text:000000c4 $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:198    .text:000000c8 $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:203    .text:000000c8 init_matrix
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:235    .text:000000e0 $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:239    .text:000000e4 $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:243    .text:000000e4 setupGame
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:402    .text:000001a0 $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:406    .text:000001a4 $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:411    .text:000001a4 get_computer_move
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:526    .text:00000220 $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:531    .text:00000228 $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:536    .text:00000228 disp_matrix
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:592    .text:00000260 $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:599    .text:00000270 $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:604    .text:00000270 check
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:688    .text:000002cc $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:693    .text:000002d0 $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:698    .text:000002d0 playTicTacToe
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:1051   .text:00000484 $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:1071   .rodata:00000000 _o
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:1569   .rodata:000001ef _x
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:2072   .bss:00000000 currRow
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:2073   .bss:00000000 $d
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:2076   .bss:00000001 currCol
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:2080   .bss:00000002 gameMode
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccpRL6Px.s:2084   .bss:00000003 gameStatus
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:144    .text:00000098 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:148    .text:00000098 moveTo
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:194    .text:000000c4 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:198    .text:000000c8 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:203    .text:000000c8 init_matrix
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:235    .text:000000e0 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:239    .text:000000e4 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:243    .text:000000e4 setupGame
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:402    .text:000001a0 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:406    .text:000001a4 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:411    .text:000001a4 get_computer_move
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:526    .text:00000220 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:531    .text:00000228 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:536    .text:00000228 disp_matrix
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:592    .text:00000260 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:599    .text:00000270 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:604    .text:00000270 check
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:688    .text:000002cc $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:693    .text:000002d0 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:698    .text:000002d0 playTicTacToe
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:1051   .text:00000484 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:1071   .rodata:00000000 _o
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:1569   .rodata:000001ef _x
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:2072   .bss:00000000 currRow
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:2073   .bss:00000000 $d
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:2076   .bss:00000001 currCol
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:2080   .bss:00000002 gameMode
+C:\Users\KOZLOV~1\AppData\Local\Temp\ccD8Mgmf.s:2084   .bss:00000003 gameStatus
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS
