@@ -21,7 +21,11 @@ static tU8 cursor   = 0;
 
 #define MAX_LENGTH 14
 
-
+/*******************************************
+ *
+ *  Define game states: 
+ *
+ *******************************************/
 #define GAME_NOT_STARTED 0
 #define GAME_RUNNING     1
 #define GAME_OVER        2
@@ -33,56 +37,21 @@ static tU8 cursor   = 0;
 #define GAME_WON         8
 #define GAME_LOST        9
 
-#define MODE_MOVING      0
-#define MODE_SELECTING   1
-
 #define SCREEN_WIDTH  ((tU8)130)
 #define SCREEN_HEIGHT ((tU8)130)
-#define NUM_COLS ((tU8)4)
-#define NUM_ROWS ((tU8)4)
 
-#define BORDER ((tU8)1)
-#define BOARD_X_OFFSET  ((tU8)4)
-#define BOARD_Y_OFFSET  ((tU8)4)
-
-#define CELL_WIDTH   ((tU8)(130-(BOARD_X_OFFSET*2)-(NUM_COLS+1)*BORDER)/NUM_COLS)
-#define CELL_HEIGHT  ((tU8)(130-(BOARD_Y_OFFSET*2)-(NUM_ROWS+1)*BORDER)/NUM_ROWS)
-
-#define BOARD_WIDTH  ((tU8)((NUM_COLS+1)*BORDER+NUM_COLS*CELL_WIDTH))
-#define BOARD_HEIGHT ((tU8)((NUM_ROWS+1)*BORDER+NUM_ROWS*CELL_HEIGHT))
 
 #define BOARD_GRID_COLOR  ((tU8)0)    // black
 #define BOARD_BKG_COLOR   ((tU8)0xff) // white
 #define GAME_BKG_COLOR_OK    ((tU8)0x0c) // green
 #define GAME_BKG_COLOR_ERR   ((tU8)0xe0) // red
 
-#define SELECTED_BKG_COLOR  ((tU8)0xfc) // yellow
-#define FONT_FIXED_COLOR    ((tU8)0xe0) // black
-#define FONT_UNFIXED_COLOR  ((tU8)0x02) // blue
-
-#define CELL_X_OFFSET(col)  (BOARD_X_OFFSET + BORDER + (col*BORDER) + ((col)*CELL_WIDTH))
-#define CELL_Y_OFFSET(row)  (BOARD_Y_OFFSET + BORDER + (row*BORDER) + ((row)*CELL_WIDTH))
-
-#define CELL_PAD_X  ((tU8)3)
-#define CELL_PAD_Y  ((tU8)3)
-
 #define CHAR_HEIGHT 14
 #define CHAR_WIDTH   8
 #define CENTER_X(numchars) ((SCREEN_WIDTH - numchars*CHAR_WIDTH)/2)
 
-
-#define IS_SELECTED(row,col) (row==currRow && col==currCol)
-
 static tU8 gameStatus;
 static tU8 gameMode;
-
-static tU8 currRow;
-static tU8 currCol;
-
-static tU8 selectedNum;
-
-#define BOARD_SIZE               4
-tU8 matrix[BOARD_SIZE][BOARD_SIZE];
 
 // ------------------------------------
 #include <lpc2xxx.h>
@@ -160,7 +129,7 @@ void showRandomArrow(whichArrow) {
             lcdClrscr();
             lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
             lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
-            lcdPuts("KEY_UP");
+            lcdPuts("UP");
             break;
 
         case KEY_RIGHT:
@@ -168,7 +137,7 @@ void showRandomArrow(whichArrow) {
             lcdClrscr();
             lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
             lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
-            lcdPuts("KEY_RIGHT");
+            lcdPuts("RIGHT");
             break;
 
         case KEY_DOWN:
@@ -176,7 +145,7 @@ void showRandomArrow(whichArrow) {
             lcdClrscr();
             lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
             lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
-            lcdPuts("KEY_DOWN");
+            lcdPuts("DOWN");
             break;
 
         case KEY_LEFT:
@@ -184,7 +153,7 @@ void showRandomArrow(whichArrow) {
             lcdClrscr();
             lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
             lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
-            lcdPuts("KEY_LEFT");
+            lcdPuts("LEFT");
             break;
 
         case KEY_CENTER:
@@ -192,7 +161,7 @@ void showRandomArrow(whichArrow) {
             lcdClrscr();
             lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
             lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
-            lcdPuts("KEY_CENTER");
+            lcdPuts("CENTER");
             break;
 
         default:
@@ -200,7 +169,7 @@ void showRandomArrow(whichArrow) {
             lcdClrscr();
             lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
             lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
-            lcdPuts("KEY_UP");
+            lcdPuts("UP");
             break;
     }
 }
@@ -362,6 +331,7 @@ void playReactGame(void){
                   lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
                   lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
                   lcdPuts("You won!");
+                  //TEST: 
                   saveScoreToEeprom("YOUWON");
                   gameStatus = GAME_OVER;
                   osSleep(500);
@@ -373,6 +343,7 @@ void playReactGame(void){
                   lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
                   lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
                   lcdPuts("You lost!");
+                  //TEST: 
                   saveScoreToEeprom("YOULOST");
 
                   gameStatus = GAME_OVER;
@@ -388,6 +359,7 @@ void playReactGame(void){
                       lcdPuts("Restart-KeyUP");
                       lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 -4);
                       lcdPuts("EndGame-KeyDown");
+                      //TEST:
                       readScoreFromEeprom();
                       finish = FALSE;
                   }
@@ -415,7 +387,7 @@ void playReactGame(void){
 
 
 
-void saveScoreToEeprom(tU8 score[]) {
+void saveScoreToEeprom(tS8 score[]) {
 
     tS8 errorCode;
     errorCode = eepromWrite(0x0000, score, sizeof(score));
@@ -430,7 +402,7 @@ void saveScoreToEeprom(tU8 score[]) {
 
 void readScoreFromEeprom(){
     tS8 errorCode;
-    tU8 testBuf[MAX_LENGTH];
+    tS8 testBuf[MAX_LENGTH];
     errorCode = eepromPageRead(0x0000, testBuf, MAX_LENGTH);
 
     if(!errorCode == I2C_CODE_OK){
