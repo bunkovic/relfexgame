@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 1
 
 
    1              		.code	16
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
   42:eeprom.c      ****  *    Note: After a stop condition, you may need a bus free time before you 
   43:eeprom.c      ****  *          can generate a new start condition.
   44:eeprom.c      ****  *
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 2
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 2
 
 
   45:eeprom.c      ****  * Returns:
@@ -118,7 +118,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
   42              		.loc 1 66 0
   43 0018 0506     		lsl	r5, r0, #24
   44 001a 2D16     		asr	r5, r5, #24
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 3
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 3
 
 
   45 001c 2B1D     		add	r3, r5, #4
@@ -178,7 +178,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
   71 003e FF26     		mov	r6, #255
   72              	.LVL4:
   73              	.L2:
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 4
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 4
 
 
   94:eeprom.c      ****       }
@@ -238,7 +238,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  120:eeprom.c      ****  *
  121:eeprom.c      ****  *****************************************************************************/
  122:eeprom.c      ****  
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 5
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 5
 
 
  123:eeprom.c      ****   tS8 eepromStartRead(tU8  devAddr, tU16 address) {
@@ -298,7 +298,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  138 007c F8D0     		beq	.L15
  139:eeprom.c      ****     }
  140:eeprom.c      ****   }
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 6
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 6
 
 
  141:eeprom.c      **** 
@@ -358,7 +358,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  181:eeprom.c      ****           /* Data transmitted and ACK received */
  182:eeprom.c      ****           /* Write data */
  183:eeprom.c      ****           retCode = i2cPutChar( (tU8)(address & 0xff) );
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 7
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 7
 
 
  153              		.loc 1 183 0
@@ -418,7 +418,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  211:eeprom.c      ****     }
  212:eeprom.c      ****     else if( status != 0xf8 )
  179              		.loc 1 212 0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 8
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 8
 
 
  180 00aa F828     		cmp	r0, #248
@@ -478,7 +478,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  235:eeprom.c      ****   while(1)
  236:eeprom.c      ****   {
  237:eeprom.c      ****     /* Get new status */
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 9
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 9
 
 
  238:eeprom.c      ****     status = i2cCheckStatus();
@@ -538,7 +538,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  259:eeprom.c      **** /******************************************************************************
  260:eeprom.c      ****  *
  261:eeprom.c      ****  * Description:
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 10
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 10
 
 
  262:eeprom.c      ****  *    Random read from 'address'. Write read bytes to 'pBuf'.
@@ -598,7 +598,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  281:eeprom.c      ****     /* wait until address transmitted and receive data */
  282:eeprom.c      ****     for(i = 1; i <= len; i++ )
  283:eeprom.c      ****     {
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 11
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 11
 
 
  284:eeprom.c      ****       /* wait until data transmitted */
@@ -658,7 +658,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  305 0128 FFF7FEFF 		bl	i2cGetChar
  306:eeprom.c      ****           while( retCode == I2C_CODE_EMPTY )
  306              		.loc 1 306 0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 12
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 12
 
 
  307 012c 0306     		lsl	r3, r0, #24
@@ -718,7 +718,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  347 014e DAD9     		bls	.L46
  348              	.LVL46:
  349              	.L36:
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 13
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 13
 
 
  319:eeprom.c      ****           break;
@@ -729,7 +729,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  324:eeprom.c      **** 
  325:eeprom.c      ****   /* Generate Stop condition */
  326:eeprom.c      ****   i2cStop();
- 327:eeprom.c      **** releaseI2cLock();
+ 327:eeprom.c      ****   releaseI2cLock();
  328:eeprom.c      **** 
  329:eeprom.c      ****   return retCode;
  350              		.loc 1 329 0
@@ -742,7 +742,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  331:eeprom.c      **** }
  355              		.loc 1 331 0
  356              		@ sp needed for prologue
- 327:eeprom.c      **** releaseI2cLock();
+ 327:eeprom.c      ****   releaseI2cLock();
  357              		.loc 1 327 0
  358 0156 FFF7FEFF 		bl	releaseI2cLock
  329:eeprom.c      ****   return retCode;
@@ -778,7 +778,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  344:eeprom.c      **** {
  376              		.loc 1 344 0
  377              		.cfi_startproc
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 14
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 14
 
 
  378 0162 F1B5     		push	{r0, r4, r5, r6, r7, lr}
@@ -838,7 +838,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  360:eeprom.c      **** //    retCode = i2cWriteWithWait(I2C_EEPROM_ADDR);
  361:eeprom.c      ****     if(retCode != I2C_CODE_OK)
  416              		.loc 1 361 0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 15
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 15
 
 
  417 018c 0128     		cmp	r0, #1
@@ -898,7 +898,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  449 01b4 B342     		cmp	r3, r6
  450 01b6 F4D3     		bcc	.L53
  451 01b8 00E0     		b	.L51
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 16
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 16
 
 
  452              	.LVL59:
@@ -958,7 +958,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  401:eeprom.c      ****  *    Read the temperature from a LM75 temperature sensor
  402:eeprom.c      ****  *
  403:eeprom.c      ****  *****************************************************************************/
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 17
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 17
 
 
  404:eeprom.c      **** tS8 
@@ -1018,7 +1018,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  423:eeprom.c      ****         /* Get new status */
  424:eeprom.c      ****         status = i2cCheckStatus();
  517              		.loc 1 424 0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 18
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 18
 
 
  518 01ee FFF7FEFF 		bl	i2cCheckStatus
@@ -1078,7 +1078,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  550 0218 041C     		mov	r4, r0
  551              	.LVL69:
  442:eeprom.c      ****           while( retCode == I2C_CODE_EMPTY )
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 19
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 19
 
 
  552              		.loc 1 442 0
@@ -1138,7 +1138,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  458:eeprom.c      ****     }
  459:eeprom.c      ****   }
  460:eeprom.c      **** 
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 20
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 20
 
 
  461:eeprom.c      ****   /* Generate Stop condition */
@@ -1198,7 +1198,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  621              		.cfi_offset 0, -28
  622              		.cfi_offset 1, -24
  623              		.cfi_offset 4, -20
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 21
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 21
 
 
  624              		.cfi_offset 5, -16
@@ -1258,7 +1258,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  660              		.loc 1 496 0
  661 0272 0128     		cmp	r0, #1
  662 0274 0ED1     		bne	.L72
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 22
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 22
 
 
  663 0276 06E0     		b	.L73
@@ -1318,7 +1318,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  515:eeprom.c      **** 
  516:eeprom.c      ****     /* Transmit device address */
  517:eeprom.c      ****     if( retCode == I2C_CODE_OK)
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 23
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 23
 
 
  697              		.loc 1 517 0
@@ -1378,7 +1378,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  540:eeprom.c      ****         /* error */
  541:eeprom.c      ****         retCode = I2C_CODE_ERROR;
  542:eeprom.c      ****         break;
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 24
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 24
 
 
  543:eeprom.c      ****       }
@@ -1438,7 +1438,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  754 02e0 0020     		mov	r0, #0
  755              	.L97:
  756 02e2 391C     		mov	r1, r7
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 25
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 25
 
 
  757 02e4 FFF7FEFF 		bl	i2cGetChar
@@ -1498,7 +1498,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  791              	.LVL108:
  792 0308 2D04     		lsl	r5, r5, #16
  793              	.LVL109:
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 26
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 26
 
 
  794 030a 2D0C     		lsr	r5, r5, #16
@@ -1558,7 +1558,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  829              	.Ldebug_info0:
  830 0000 13030000 		.4byte	0x313
  831 0004 0200     		.2byte	0x2
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 27
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 27
 
 
  832 0006 00000000 		.4byte	.Ldebug_abbrev0
@@ -1618,7 +1618,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  886 007b 06       		.uleb128 0x6
  887 007c 01       		.byte	0x1
  888 007d E4000000 		.4byte	.LASF10
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 28
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 28
 
 
  889 0081 01       		.byte	0x1
@@ -1678,7 +1678,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  943 0108 50000000 		.4byte	0x50
  944 010c B5000000 		.4byte	.LLST7
  945 0110 07       		.uleb128 0x7
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 29
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 29
 
 
  946 0111 42000000 		.4byte	.LASF8
@@ -1738,7 +1738,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  1000 019d 0E       		.uleb128 0xe
  1001 019e 04       		.byte	0x4
  1002 019f 25000000 		.4byte	0x25
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 30
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 30
 
 
  1003 01a3 09       		.uleb128 0x9
@@ -1798,7 +1798,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  1057 022f 49000000 		.4byte	.LASF13
  1058 0233 01       		.byte	0x1
  1059 0234 9501     		.2byte	0x195
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 31
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 31
 
 
  1060 0236 25000000 		.4byte	0x25
@@ -1858,7 +1858,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  1114 02c3 19050000 		.4byte	.LLST31
  1115 02c7 0A       		.uleb128 0xa
  1116 02c8 9C000000 		.4byte	.LASF20
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 32
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 32
 
 
  1117 02cc 01       		.byte	0x1
@@ -1918,7 +1918,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  1171 0016 03       		.uleb128 0x3
  1172 0017 08       		.uleb128 0x8
  1173 0018 3A       		.uleb128 0x3a
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 33
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 33
 
 
  1174 0019 0B       		.uleb128 0xb
@@ -1978,7 +1978,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  1228 004f 0C       		.uleb128 0xc
  1229 0050 49       		.uleb128 0x49
  1230 0051 13       		.uleb128 0x13
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 34
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 34
 
 
  1231 0052 11       		.uleb128 0x11
@@ -2038,7 +2038,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  1285 0088 13       		.uleb128 0x13
  1286 0089 11       		.uleb128 0x11
  1287 008a 01       		.uleb128 0x1
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 35
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 35
 
 
  1288 008b 12       		.uleb128 0x12
@@ -2098,7 +2098,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  1342 00c1 34       		.uleb128 0x34
  1343 00c2 00       		.byte	0
  1344 00c3 03       		.uleb128 0x3
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 36
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 36
 
 
  1345 00c4 08       		.uleb128 0x8
@@ -2158,7 +2158,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  1399 0014 0200     		.2byte	0x2
  1400 0016 7D       		.byte	0x7d
  1401 0017 10       		.sleb128 16
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 37
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 37
 
 
  1402 0018 00000000 		.4byte	0
@@ -2218,7 +2218,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  1456 00aa 0100     		.2byte	0x1
  1457 00ac 51       		.byte	0x51
  1458 00ad 00000000 		.4byte	0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 38
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 38
 
 
  1459 00b1 00000000 		.4byte	0
@@ -2278,7 +2278,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  1513 0142 50       		.byte	0x50
  1514 0143 00000000 		.4byte	0
  1515 0147 00000000 		.4byte	0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 39
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 39
 
 
  1516              	.LLST9:
@@ -2338,7 +2338,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  1570 01d9 0100     		.2byte	0x1
  1571 01db 50       		.byte	0x50
  1572 01dc 3A010000 		.4byte	.LVL38-.Ltext0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 40
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 40
 
 
  1573 01e0 4A010000 		.4byte	.LVL44-.Ltext0
@@ -2398,7 +2398,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  1627 026a 48010000 		.4byte	.LVL43-.Ltext0
  1628 026e 4A010000 		.4byte	.LVL44-.Ltext0
  1629 0272 0100     		.2byte	0x1
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 41
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 41
 
 
  1630 0274 55       		.byte	0x55
@@ -2458,7 +2458,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  1684 0301 0200     		.2byte	0x2
  1685 0303 30       		.byte	0x30
  1686 0304 9F       		.byte	0x9f
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 42
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 42
 
 
  1687 0305 78010000 		.4byte	.LVL51-.Ltext0
@@ -2518,7 +2518,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  1741 0395 D0010000 		.4byte	.LCFI4-.Ltext0
  1742 0399 0200     		.2byte	0x2
  1743 039b 7D       		.byte	0x7d
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 43
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 43
 
 
  1744 039c 00       		.sleb128 0
@@ -2578,7 +2578,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  1798 042c 54       		.byte	0x54
  1799 042d 32020000 		.4byte	.LVL77-.Ltext0
  1800 0431 34020000 		.4byte	.LVL78-.Ltext0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 44
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 44
 
 
  1801 0435 0100     		.2byte	0x1
@@ -2638,7 +2638,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  1855 04bf 34020000 		.4byte	.LVL78-.Ltext0
  1856 04c3 0200     		.2byte	0x2
  1857 04c5 30       		.byte	0x30
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 45
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 45
 
 
  1858 04c6 9F       		.byte	0x9f
@@ -2698,7 +2698,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  1912 0554 53       		.byte	0x53
  1913 0555 00000000 		.4byte	0
  1914 0559 00000000 		.4byte	0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 46
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 46
 
 
  1915              	.LLST34:
@@ -2758,7 +2758,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  1969 05ec 0100     		.2byte	0x1
  1970 05ee 50       		.byte	0x50
  1971 05ef FE020000 		.4byte	.LVL105-.Ltext0
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 47
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 47
 
 
  1972 05f3 16030000 		.4byte	.LVL113-.Ltext0
@@ -2818,7 +2818,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  2026 0680 00000000 		.4byte	0
  2027              		.section	.debug_aranges,"",%progbits
  2028 0000 1C000000 		.4byte	0x1c
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 48
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 48
 
 
  2029 0004 0200     		.2byte	0x2
@@ -2878,7 +2878,7 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  2063 005e 70427566 		.ascii	"pBuf\000"
  2063      00
  2064              	.LASF1:
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 49
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 49
 
 
  2065 0063 756E7369 		.ascii	"unsigned char\000"
@@ -2938,24 +2938,24 @@ ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 1
  2091      6F6D2E63 
  2091      00
  2092              	.LASF18:
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 50
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 50
 
 
  2093 0112 70446174 		.ascii	"pData\000"
  2093      6100
  2094              		.ident	"GCC: (GNU) 4.6.3"
-ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s 			page 51
+ARM GAS  C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s 			page 51
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 eeprom.c
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s:6      .text:00000000 $t
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s:11     .text:00000000 eepromPoll
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s:99     .text:00000056 eepromStartRead
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s:241    .text:000000e6 eepromPageRead
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s:374    .text:00000162 eepromWrite
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s:481    .text:000001ce lm75Read
-C:\Users\KOZLOV~1\AppData\Local\Temp\ccM4HcVx.s:614    .text:0000024a pca9532
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s:6      .text:00000000 $t
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s:11     .text:00000000 eepromPoll
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s:99     .text:00000056 eepromStartRead
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s:241    .text:000000e6 eepromPageRead
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s:374    .text:00000162 eepromWrite
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s:481    .text:000001ce lm75Read
+C:\Users\KOZLOV~1\AppData\Local\Temp\cc41ZxIH.s:614    .text:0000024a pca9532
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

@@ -71,6 +71,10 @@ static tU8 rounds;
 static tU8 currentRound;
 static tU8 eepromTest;
 
+static tS8 str[7];
+
+static char buffer[10];
+static tU8 char_score;
 // --------------------------------------
 
 void showPreStartupScreen(void){
@@ -174,8 +178,6 @@ void useBuzzer(int MAX){
 
 void showScore() {
 
-    tU8 str[13];
-
     str[0] = score / 100000 + '0';
     str[1] = (score / 10000) % 10 + '0';
     str[2] = (score / 1000) % 10 + '0';
@@ -236,6 +238,8 @@ void playReactGame(void){
 
               case GAME_START:
                   if (currentRound == rounds){
+                    sprintf(buffer,"%d",score);
+                    saveScoreToEeprom(buffer);
                       gameStatus = GAME_SHOW_SCORE;
                       break;
                   }
@@ -301,7 +305,7 @@ void playReactGame(void){
 
                   lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 -4);
 
-                  showScore();
+                  readScoreFromEeprom();
 
                   osSleep(500);
                   if(score > 3){
@@ -318,8 +322,7 @@ void playReactGame(void){
                   lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
                   lcdGotoxy(CENTER_X(8), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
                   lcdPuts("You won!");
-             
-                  saveScoreToEeprom("WIN");
+
                   gameStatus = GAME_OVER;
                   osSleep(500);
                   break;
@@ -330,7 +333,8 @@ void playReactGame(void){
                   lcdRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_BKG_COLOR_OK);
                   lcdGotoxy(CENTER_X(9), SCREEN_HEIGHT/2 - CHAR_HEIGHT-8);
                   lcdPuts("You lost!");
-                  saveScoreToEeprom("LOSE");
+
+
                   gameStatus = GAME_OVER;
                   osSleep(500);
                   break;
@@ -344,10 +348,7 @@ void playReactGame(void){
                       lcdPuts("Restart-Up");
                       lcdGotoxy(CENTER_X(12), SCREEN_HEIGHT/2 -4);
                       lcdPuts("EndGame-Down");
-                      //TEST:
-                      lcdGotoxy(CENTER_X(10), SCREEN_HEIGHT/2 + CHAR_HEIGHT);
-                      readScoreFromEeprom();                   
-                      //lcdPuts(eepromTest);
+
                       finish = FALSE;
                   }
 
@@ -374,16 +375,12 @@ void playReactGame(void){
 
 
 void saveScoreToEeprom(tS8 score[]) {
-
     tS8 errorCode;
     errorCode = eepromWrite(0x0004, score, sizeof(score));
     if(!errorCode == I2C_CODE_OK){
         printf("EEPROM write error! \n");
     }
-
     return;
-
-
 }
 
 void readScoreFromEeprom(void){
